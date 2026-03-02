@@ -1,0 +1,15 @@
+{
+  "name": "cyberhex-server",
+  "version": "1.0.0",
+  "description": "server of the cyberhex",
+  "type": "module",
+  "main": "index.js",
+  "author": "T.D Rasindu Dulshan Siriwardhana",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mongoose": "^9.2.3"
+  }
+}
