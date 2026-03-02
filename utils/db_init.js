@@ -10,5 +10,4 @@ const DBinitialize = () => {
     });
 }
 
-
 export default DBinitialize;

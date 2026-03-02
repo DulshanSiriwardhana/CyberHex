@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 DBinitialize();
 
 
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.send('Hello World!');
 });
 
