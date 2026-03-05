@@ -1,10 +1,7 @@
 import mongoose from "mongoose";
 
 const DBinitialize = () => {
-    mongoose.connect(process.env.DB_URI, {
-        userNewUrlParser: true,
-        useUnifiedTopology: true
-    })
+    mongoose.connect(process.env.DB_URI)
     .then(()=>{
         console.log("Connected to MongoDB");
     })
@@ -12,6 +9,5 @@ const DBinitialize = () => {
         console.error("Error connecting to MongoDB:", error);
     });
 }
-
 
 export default DBinitialize;
