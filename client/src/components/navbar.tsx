@@ -18,9 +18,9 @@ const NavBar = () => {
     };
 
     return (
-    <nav className="bg-green-700 text-white p-8 rounded-xl">
+    <nav className="bg-green-500 text-white p-6 rounded-xl border-4 border-black">
         <div className="mx-auto flex justify-between items-between">
-        <div className="text-2xl font-extrabold text-black">CyberHex</div>
+        <div className="text-4xl font-extrabold text-black text-center flex items-center justify-center">CyberHex</div>
         <div className="flex space-x-4">
             {items.map((item) => (
                 <NavItem
