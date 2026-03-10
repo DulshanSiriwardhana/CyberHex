@@ -1,6 +1,7 @@
 import { useState } from "react";
 import NavItem from "./navitem";
 import { useNavigate } from "react-router-dom";
+import AuthButtons from "./authbuttons";
 
 const items = [
   { name: "Home", path: "/" },
@@ -18,10 +19,10 @@ const NavBar = () => {
     };
 
     return (
-    <nav className="bg-green-700 text-white p-8 rounded-xl">
+    <nav className="bg-red-700 text-white p-4 rounded-xl border-2 border-black max-w-boundary mx-auto">
         <div className="mx-auto flex justify-between items-between">
-        <div className="text-2xl font-extrabold text-black">CyberHex</div>
-        <div className="flex space-x-4">
+        <div className="text-2xl font-extrabold text-white text-center flex items-center justify-center">CyberHex</div>
+        <div className="flex space-x-2">
             {items.map((item) => (
                 <NavItem
                     key={item.name}
@@ -30,6 +31,7 @@ const NavBar = () => {
                     onClick={() => handleItemClick(item.name)}
                 />
             ))}
+            <AuthButtons/>
         </div>
         </div>
     </nav>
