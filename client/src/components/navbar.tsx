@@ -19,10 +19,10 @@ const NavBar = () => {
     };
 
     return (
-    <nav className="bg-red-700 text-white p-6 rounded-xl border-4 border-black">
+    <nav className="bg-red-700 text-white p-4 rounded-xl border-2 border-black max-w-boundary mx-auto">
         <div className="mx-auto flex justify-between items-between">
-        <div className="text-4xl font-extrabold text-white text-center flex items-center justify-center">CyberHex</div>
-        <div className="flex space-x-4">
+        <div className="text-2xl font-extrabold text-white text-center flex items-center justify-center">CyberHex</div>
+        <div className="flex space-x-2">
             {items.map((item) => (
                 <NavItem
                     key={item.name}
