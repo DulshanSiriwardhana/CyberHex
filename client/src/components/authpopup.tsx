@@ -1,7 +1,9 @@
+import SignIn from "./signin";
+
 const AuthPopup=()=>{
     return(
-        <div>
-            
+        <div className="">
+            <SignIn/>
         </div>
     )
 }

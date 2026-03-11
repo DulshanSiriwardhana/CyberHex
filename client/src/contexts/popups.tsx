@@ -1,4 +1,5 @@
 import React, { createContext, useState } from "react";
+import { IoIosClose } from "react-icons/io";
 
 interface PopupContextType {
     isOpen: boolean;
@@ -33,7 +34,10 @@ export const PopupProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             {children}
             {isOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/10 backdrop-blur-xs z-20">
-                    <div className="bg-red-700 p-2 rounded-md shadow">
+                    <div className="bg-red-700 p-px rounded-l-md rounded-br-md rounded-tr-2xl shadow relative overflow-hidden">
+                        <div className="absolute text-white top-1 right-1 bg-red-600 rounded-full">
+                            <IoIosClose onClick={closePopup} className="cursor-pointer" size={20} />
+                        </div>
                         {popupContent}
                     </div>
                 </div>
