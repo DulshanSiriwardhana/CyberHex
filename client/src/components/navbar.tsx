@@ -23,10 +23,11 @@ const NavBar = () => {
     };
 
     const handleLogoClick = () => {
-        setIsOpen(!isOpen);
         if(!isOpen) {
+            setIsOpen(true);
             openPopup(<MainPopup/>);
         } else {
+            setIsOpen(false);
             closePopup();
         }
     };
