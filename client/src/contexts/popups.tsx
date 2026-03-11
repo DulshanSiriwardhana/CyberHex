@@ -9,7 +9,7 @@ interface PopupContextType {
 
 export const PopupContext = createContext<PopupContextType>({
     isOpen: false,
-    openPopup: (content: React.ReactNode) => {},
+    openPopup: () => {},
     closePopup: () => {},
     popupContent: null
 });
@@ -32,10 +32,9 @@ export const PopupProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         <PopupContext.Provider value={{ isOpen, openPopup, closePopup, popupContent }}>
             {children}
             {isOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white p-4 rounded shadow">
+                <div className="fixed inset-0 flex items-center justify-center bg-black/10 backdrop-blur-xs z-20">
+                    <div className="bg-red-700 p-2 rounded-md shadow">
                         {popupContent}
-                        <button onClick={closePopup} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Close</button>
                     </div>
                 </div>
             )}
