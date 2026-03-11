@@ -7,7 +7,7 @@ import { PopupProvider } from './contexts/popups';
 function App() {
 
   return (
-    <div className=''>
+    <div className='font-spectral'>
       <Router>
         <PopupProvider>
           <Layer>
