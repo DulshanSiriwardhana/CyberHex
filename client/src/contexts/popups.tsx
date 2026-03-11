@@ -9,7 +9,7 @@ interface PopupContextType {
 
 export const PopupContext = createContext<PopupContextType>({
     isOpen: false,
-    openPopup: (content: React.ReactNode) => {},
+    openPopup: () => {},
     closePopup: () => {},
     popupContent: null
 });
