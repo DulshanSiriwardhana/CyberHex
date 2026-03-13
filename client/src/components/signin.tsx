@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { PopupContext } from "../contexts/popups";
-import SignUp from "./signup";
+import SignUp from "./signup/signup";
 
 const SignIn =()=>{
     const [email, setEmail] = useState('');

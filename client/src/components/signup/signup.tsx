@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import SignIn from "./signin";
-import { PopupContext } from "../contexts/popups";
+import SignIn from "../signin";
+import { PopupContext } from "../../contexts/popups";
 import ProgressBar from "./progressbar";
 
 const SignUp =()=>{
@@ -9,7 +9,7 @@ const SignUp =()=>{
     return (
         <div className="w-full max-w-md h-fit flex items-center justify-center flex-col bg-black min-w-[320px] text-white">
             <div className="pt-4">
-                <ProgressBar/>
+                <ProgressBar step={3}/>
             </div>
             <div className="flex items-center justify-center flex-col gap-4 w-full px-4 pb-4">
                 <div className="flex items-start justify-center flex-col gap-1 w-full">
