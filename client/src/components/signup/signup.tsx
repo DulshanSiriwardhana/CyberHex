@@ -34,7 +34,7 @@ const SignUp =()=>{
                             return (<OTP otp={otp} setOtp={setOtp}/>);
                         }
                         else {
-                            return (<div className="text-sm pt-4">Account Created Successfully!</div>);
+                            return (<div className="text-sm pt-8">Account Created Successfully!</div>);
                         }
                     })()
                 }
