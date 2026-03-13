@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import SignIn from "../signin";
 import { PopupContext } from "../../contexts/popups";
 import ProgressBar from "./progressbar";
@@ -13,8 +13,15 @@ const SignUp =()=>{
     const [ username, setUsername ] = useState('');
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
+    const [ confirmPassword, setConfirmPassword ] = useState('');
     const [ otp, setOtp ] = useState('');
     const [ step, _setStep ] = useState(1);
+
+    useEffect(() => {
+        if(step === 5) {
+            console.log('Form submitted with:', { fullname, username, email, password, confirmPassword, otp });
+        }
+    }, [step]);
 
     return (
         <div className="w-full max-w-md h-fit flex items-center justify-center flex-col bg-black min-w-[320px] text-white">
@@ -29,7 +36,7 @@ const SignUp =()=>{
                         } else if(step === 2) {
                             return (<Email email={email} setEmail={setEmail}/>);
                         } else if(step === 3) {
-                            return (<Password password={password} setPassword={setPassword}/>);
+                            return (<Password password={password} confirmPassword={confirmPassword} setPassword={setPassword} setConfirmPassword={setConfirmPassword}/>);
                         } else if(step === 4) {
                             return (<OTP otp={otp} setOtp={setOtp}/>);
                         }
