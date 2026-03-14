@@ -6,7 +6,7 @@ const SignIn =()=>{
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [otp, setOtp] = useState('');
-    const [randomString, setRandomString] = useState('Hello World');
+    const [randomString, _setRandomString] = useState('Hello World');
     const { openPopup } = useContext(PopupContext);
 
     const handleSignIn = () => {
