@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { PopupContext } from "../contexts/popups";
 import Banner from "../components/opening/banner";
 import { StoreContext } from "../contexts/store";
+import Hero from "../components/landingpage/hero";
 
 const LandingPage = () => {
     const { openPopup, closePopup } = useContext(PopupContext);
@@ -21,8 +22,8 @@ const LandingPage = () => {
     }, []);
 
     return (
-        <div className="border w-full h-full flex items-center justify-center">
-            This is the landing page. Welcome to CyberHex!
+        <div className="w-full h-full flex items-start justify-center">
+            <Hero/> a
         </div>
     );
 };
