@@ -1,13 +1,21 @@
 import { useContext, useEffect } from "react";
 import { PopupContext } from "../contexts/popups";
 import Banner from "../components/opening/banner";
+import { StoreContext } from "../contexts/store";
 
 const LandingPage = () => {
     const { openPopup, closePopup } = useContext(PopupContext);
+    const { createState, updateState, state } = useContext(StoreContext);
 
     useEffect(() => {
-        openPopup(<Banner />);
+        console.log(state);
+        if(state.welcome === undefined) {
+            createState("welcome", 0);
+            openPopup(<Banner />);
+        } else {
+        }
         return () => {
+            updateState("welcome", state.welcome + 1);
             closePopup();
         }
     }, []);
