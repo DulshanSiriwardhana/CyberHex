@@ -20,7 +20,7 @@ const Layer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </div>
         <div
           style={{ minHeight: `calc(100vh - ${navHeight+16}px)` }}
-          className="w-full flex items-center justify-center h-full"
+          className="flex items-start justify-center"
           >
           {children}
         </div>
