@@ -28,11 +28,15 @@ const NavBar = () => {
         }
     };
 
+    const handleSidebarToggle = () => {
+        setIsOpen(!isOpen);
+    };
+
     return (
-    <nav className="bg-red-700 text-white p-4 rounded-xl border-2 border-black max-w-boundary mx-auto">
+    <nav className="bg-red-700 text-white rounded-xl border-2 px-4 border-black max-w-boundary mx-auto">
         <div className="mx-auto flex justify-between items-between">
-        <div onClick={handleLogoClick} className="cursor-pointer text-sm md:text-base lg:text-lg xl:text-2xl font-extrabold text-white text-center flex items-center justify-center">CyberHex</div>
-        <div className="flex space-x-2">
+        <div onClick={handleLogoClick} className="cursor-pointer text-sm md:text-2xl font-extrabold text-white text-center flex items-center justify-center">CyberHex</div>
+        <div className="space-x-2 hidden md:flex py-4">
             {items.map((item) => (
                 <NavItem
                     key={item.name}
@@ -42,6 +46,12 @@ const NavBar = () => {
                 />
             ))}
             <AuthButtons/>
+        </div>
+        <div className="flex flex-col gap-1 py-3 md:hidden cursor-pointer" onClick={handleSidebarToggle}>
+            <div className="w-8 h-0.5 bg-white rounded-2xl"></div>
+            <div className="w-8 h-0.5 bg-white rounded-2xl"></div>
+            <div className="w-8 h-0.5 bg-white rounded-2xl"></div>
+            <div className="w-8 h-0.5 bg-white rounded-2xl"></div>
         </div>
         </div>
     </nav>
