@@ -1,10 +1,12 @@
 import { useContext, useState } from "react";
 import NavItem from "./navitem";
 import { useNavigate } from "react-router-dom";
-import AuthButtons from "./authbuttons";
-import { PopupContext } from "../contexts/popups";
-import MainPopup from "./mainpopup";
-import { items } from "../const/data";
+import AuthButtons from "../authbuttons";
+import { PopupContext } from "../../contexts/popups";
+import MainPopup from "../mainpopup";
+import { items } from "../../const/data";
+import Hamburger from "./hamburger";
+import NavPopup from "./navpopup";
 
 
 const NavBar = () => {
@@ -33,7 +35,7 @@ const NavBar = () => {
     };
 
     return (
-    <nav className="bg-red-700 text-white rounded-xl border-2 px-4 border-black max-w-boundary mx-auto">
+    <nav className="bg-red-700 text-white rounded-xl border-2 px-4 border-black max-w-boundary mx-auto relative">
         <div className="mx-auto flex justify-between items-between">
         <div onClick={handleLogoClick} className="cursor-pointer text-sm md:text-2xl font-extrabold text-white text-center flex items-center justify-center">CyberHex</div>
         <div className="space-x-2 hidden md:flex py-4">
@@ -47,12 +49,10 @@ const NavBar = () => {
             ))}
             <AuthButtons/>
         </div>
-        <div className="flex flex-col gap-1 py-3 md:hidden cursor-pointer" onClick={handleSidebarToggle}>
-            <div className="w-8 h-0.5 bg-white rounded-2xl"></div>
-            <div className="w-8 h-0.5 bg-white rounded-2xl"></div>
-            <div className="w-8 h-0.5 bg-white rounded-2xl"></div>
-            <div className="w-8 h-0.5 bg-white rounded-2xl"></div>
-        </div>
+        <Hamburger onClick={handleSidebarToggle} isOpen={isOpen}/>
+        {
+            isOpen && <NavPopup/>
+        }
         </div>
     </nav>
     );
