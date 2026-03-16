@@ -22,7 +22,7 @@ const LandingPage = () => {
     }, []);
 
     return (
-        <div className="w-full h-full flex items-center justify-center py-2 gap-4 flex-col border">
+        <div className="w-full h-full flex items-center justify-center py-2 gap-4 flex-col">
             <Hero/>
         </div>
     );
