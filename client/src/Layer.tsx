@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import NavBar from "./components/navbar";
+import NavBar from "./components/navbar/navbar";
 
 const Layer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navRef = useRef<HTMLDivElement>(null);
