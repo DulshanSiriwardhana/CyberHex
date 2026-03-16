@@ -1,13 +1,13 @@
-import banner from '../../assets/videos/banner.mp4';
+import banner from '../../assets/images/banner.png';
 
 const Hero=()=>{
     return(
-        <div className="">
+        <div className="w-full flex flex-row items-center justify-between gap-4">
+            <div className='w-full border'>
+                hello world
+            </div>
             <div>
-                <video autoPlay loop muted>
-                    <source src={banner} type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
+                <img src={banner} alt="banner" className="h-auto w-full border-2 border-red-600 rounded-2xl"/>
             </div>
         </div>
     )
