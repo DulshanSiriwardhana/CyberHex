@@ -1,8 +1,15 @@
+import { useEffect, useState } from "react";
 import { items } from "../../const/data";
 
 const NavPopup = () => {
+    const [delayed, setDelayed] = useState(false);
+
+    useEffect(() => {
+        setDelayed(true);
+    }, []);
+
     return (
-        <div className="bg-gray-800 text-white p-4 rounded-xl border-2 border-black max-w-boundary mt-2 fixed top-16 left-0 right-0 z-50 mx-2">
+        <div className={`text-white p-4 rounded-xl border-2 border-black max-w-boundary mt-2 fixed top-16 left-0 right-0 z-50 mx-2 bg-black ${delayed ? "transform translate-y-0" : "transform -translate-y-full"} transition-transform-all duration-300`}>
             <ul className="space-y-2">
                 {
                     items.map((item) => (
