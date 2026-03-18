@@ -1,6 +1,6 @@
 export const items = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
-  { name: "Services", path: "/services" },
+  { name: "Cyber Games", path: "/cyber-games" },
   { name: "Contact", path: "/contact" },
 ];
