@@ -14,6 +14,7 @@ const NavBar = () => {
     const [selectedItem, setSelectedItem] = useState(items[0].name);
     const { openPopup, closePopup } = useContext(PopupContext);
     const [ isOpen, setIsOpen ] = useState(false);
+    const [ isDropdownOpen, setIsDropdownOpen ] = useState(false);
 
     const handleItemClick = (itemName: string) => {
         setSelectedItem(itemName);
@@ -31,13 +32,13 @@ const NavBar = () => {
     };
 
     const handleSidebarToggle = () => {
-        setIsOpen(!isOpen);
+        setIsDropdownOpen(!isDropdownOpen);
     };
 
     return (
     <nav className="bg-red-700 text-white rounded-xl border-2 px-4 border-black max-w-boundary mx-auto relative">
         <div className="mx-auto flex justify-between items-between">
-        <div onClick={handleLogoClick} className="cursor-pointer text-sm md:text-2xl font-extrabold text-white text-center flex items-center justify-center">CyberHex</div>
+        <div onClick={handleLogoClick} className="cursor-pointer text-lg sm:text-xl lg:text-2xl font-extrabold text-white text-center flex items-center justify-center">CyberHex</div>
         <div className="space-x-2 hidden md:flex py-4">
             {items.map((item) => (
                 <NavItem
@@ -49,9 +50,9 @@ const NavBar = () => {
             ))}
             <AuthButtons/>
         </div>
-        <Hamburger onClick={handleSidebarToggle} isOpen={isOpen}/>
+        <Hamburger onClick={handleSidebarToggle} isOpen={isDropdownOpen}/>
         {
-            isOpen && <NavPopup/>
+            isDropdownOpen && <NavPopup/>
         }
         </div>
     </nav>

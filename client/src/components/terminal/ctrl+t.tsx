@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const Terminal = () => {
-    const [numberOfLines, setNumberOfLines] = useState(0);
+    const [numberOfLines, _setNumberOfLines] = useState(0);
 
     return (
         <div className="w-full h-full flex items-center justify-center">
