@@ -5,6 +5,7 @@ import LandingPage from './pages/LandingPage';
 import { PopupProvider } from './contexts/popups';
 import { StoreProvider } from './contexts/store';
 import CyberGames from './pages/CyberGames';
+import TestPage from './pages/TestPage';
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
                   <Route path='/cyber-games' element={<CyberGames/>}/>
                   <Route path="/about" element={<div>About Page</div>} />
                   <Route path="/contact" element={<div>Contact Page</div>} />
+                  <Route path="/test" element={<TestPage />} />
                 </Routes>
             </Layer>
           </PopupProvider>
