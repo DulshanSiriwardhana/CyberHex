@@ -9,10 +9,6 @@ double pow(double number, int n){
     return value;
 }
 
-// double power(double number, double n){
-    
-// }
-
 double abs(double x){
     if(x<=0){
         return -x;
