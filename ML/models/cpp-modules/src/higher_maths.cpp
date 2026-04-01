@@ -1,4 +1,5 @@
 #include "higher_maths.h"
+#include "basic_maths.h"
 
 double calc_mean(double* array, int size){
     double sum = 0.0;
@@ -32,3 +33,25 @@ double calc_n_order_mean(double* array, int size, int order){
 
     return sum/size;
 }
+
+// This is only for n between -1 and +1
+double natural_log(double n, double error){
+    int k = -1;
+    int s = 1;
+    int old_value = 0;
+    double value = -k * pow(n, s)/s;
+    while(true){
+        k *= -1;
+        s++;
+        old_value = value;
+        value = -k * pow(n, s)/s;
+
+        if (abs(old_value - value) < error){
+            break;
+        }
+    }
+
+    return value;
+}
+
+//double exp(double n, int error);

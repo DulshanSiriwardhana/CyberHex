@@ -1,5 +1,6 @@
 #include "iostream"
 #include "higher_maths.h"
+#include "basic_maths.h"
 
 using namespace std;
 
@@ -8,6 +9,8 @@ int main() {
     double mean = calc_mean(array, 3);
     double square_mean = calc_square_mean(array, 3);
     double square_mean_2 = calc_n_order_mean(array, 3, 2);
-    cout << square_mean_2 << endl;
+    double n = natural_log(0.5, 0.0001);
+    double b = pow(10,2);
+    cout << n << endl;
     return 0;
 }
