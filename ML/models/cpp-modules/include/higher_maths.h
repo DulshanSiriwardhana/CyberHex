@@ -6,6 +6,7 @@ double calc_square_mean(double* array, int size);
 double calc_n_order_mean(double* array, int size, int order);
 
 double natural_log(double n, double error);
-//double exp(double n, int error);
+double factorial(int n);
+double exp(double n, int error);
 
 #endif
