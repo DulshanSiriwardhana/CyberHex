@@ -38,13 +38,14 @@ double calc_n_order_mean(double* array, int size, int order){
 double natural_log(double n, double error){
     int k = -1;
     int s = 1;
-    int old_value = 0;
-    double value = -k * pow(n, s)/s;
+    double old_value = 0;
+    double value = k * pow(n, s)/s;
+
     while(true){
         k *= -1;
         s++;
         old_value = value;
-        value = -k * pow(n, s)/s;
+        value -= k * pow(n-1, s)/s;
 
         if (abs(old_value - value) < error){
             break;
