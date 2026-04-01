@@ -2,16 +2,15 @@
 #include "higher_maths.h"
 #include "basic_maths.h"
 #include "stat.h"
+#include "machine_learning_algorithms.h"
 
 using namespace std;
 
 int main() {
-    double array[3] = {1,3,3};
-    double mean = calc_mean(array, 3);
-    double square_mean = calc_square_mean(array, 3);
-    double square_mean_2 = calc_n_order_mean(array, 3, 2);
-    double n = power(0.9,3);
-    double b = pow(10,2);
-    cout << n << endl;
+    double arrayX[3] = {1,2,4};
+    double arrayY[3] = {1,2,3};
+    double* n = new double[2];
+    linear_regression_data(arrayX, arrayY, 3, n);
+    cout << n[0] << " " << n[1] << endl;
     return 0;
 }

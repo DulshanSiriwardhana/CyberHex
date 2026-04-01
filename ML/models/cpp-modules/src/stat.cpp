@@ -33,7 +33,7 @@ double calc_n_order_mean(double* array, int size, int order){
     return sum/size;
 }
 
-double calc_multiplicative_mean(double* x, double* y, size){
+double calc_multiplicative_mean(double* x, double* y, int size){
     double sum = 0.0;
     for(int i=0; i<size; i++){
         sum+=x[i] * y[i];
