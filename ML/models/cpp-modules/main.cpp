@@ -9,7 +9,7 @@ int main() {
     double mean = calc_mean(array, 3);
     double square_mean = calc_square_mean(array, 3);
     double square_mean_2 = calc_n_order_mean(array, 3, 2);
-    double n = natural_log(0.5, 0.0001);
+    double n = natural_log(0.5, 0.000001);
     double b = pow(10,2);
     cout << n << endl;
     return 0;
