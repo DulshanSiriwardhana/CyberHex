@@ -1,6 +1,7 @@
 #include "iostream"
 #include "higher_maths.h"
 #include "basic_maths.h"
+#include "stat.h"
 
 using namespace std;
 
