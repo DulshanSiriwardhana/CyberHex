@@ -2,8 +2,6 @@
 #define BASIC_MATH_H
 
 double pow(double number, int n);
-//double power(double number, double n);
-
 double abs(double x);
 
 
