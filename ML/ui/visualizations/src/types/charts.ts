@@ -1,4 +1,4 @@
-export type LineChart = {
+export interface LineChartType {
     domain: {
         start: number,
         end: number
