@@ -39,17 +39,33 @@ double det(double* double* A, int size){
         double* y = new x[size-1];
 
         removeRowColumn(A, 0, i, size, y);
-        sum += k*A[0][i]* det(y);
+        sum += k*A[0][i]* det(y, size-1);
         k *= -1;
     }
 
     return sum;
 }
 
-void solve_AX_eq_B(double* double* A, double* X, double* B, int size){
-    for(int i=0;i<size-1;i++){
-        for(int j=i+1;j<size;j++){
-
+void replaceRow(double* double A, int row, int size, double*  relacingRow, double* double* ret){
+    for(int i=0;i<size;i++){
+        for(int j=0;j<size;j++){
+            if(i == row){
+                ret[i][j] = relacingRow[j];
+            }
+            else{
+                ret[i][j] = A[i][j];
+            }
         }
+    }
+}
+
+void solve_AX_eq_B(double* double* A, double* X, double* B, int size){
+    double detA = det(A, size);
+    for(int i=0;i<size-1;i++){
+        double* row = new double[size];
+        double* newA = new row[size];
+        
+        relacingRow(A, i, size, B, newA);
+        X[i] = det(newA, size)/detA;
     }
 }
