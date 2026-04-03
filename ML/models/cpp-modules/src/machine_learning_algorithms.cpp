@@ -1,5 +1,6 @@
 #include "machine_learning_algorithms.h"
 #include "stat.h"
+#include "matrix.h"
 
 void linear_regression_data(double* dataX, double* dataY, int size, double* return_data){
     double x_mean = calc_mean(dataX, size);
@@ -14,16 +15,27 @@ void linear_regression_data(double* dataX, double* dataY, int size, double* retu
 }
 
 void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size, int degree, double* return_data){
-    double* x_power_means = new double[2*degree + 1];
     double* xy_means = new double[degree+1];
-    x_power_means[0] = 1;
+
+    double** A = new double*[degree];
+    for(int i=0;i<degree;i++){
+        A[i] = new double[degree];
+    }
+
     xy_means[0] = calc_mean(dataY, size);
 
     for(int i =0; i<2*degree;i++){
-        x_power_means[i+1] = calc_n_order_mean(dataX, size, i+1);
+        if(i==0){
+            A[0][0] = 1;
+        }
+        for(int j=0;j<=i;j++){
+            A[j][i-j] = calc_n_order_mean(dataX, size, i+1);
+        }
     }
     
     for(int i=0;i<degree;i++){
         xy_means[i+1] = calc_n_order_multiplicative_mean(dataX, i+1, dataY, 1, size);
     }
+
+    solve_AX_eq_B(A, return_data, xy_means, degree);
 }
