@@ -3,5 +3,6 @@
 
 void linear_regression_data(double* dataX, double* dataY, int size, double* return_data);
 void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size, int degree, double* return_data);
+void logistic(double x);
 
 #endif
