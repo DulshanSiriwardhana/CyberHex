@@ -10,27 +10,28 @@ using namespace std;
 int main() {
     double arrayX[3] = {1,2,4};
     double arrayY[3] = {1,2,3};
-    double* n = new double[2];
+    double* n = new double[3];
 
-    double** A = new double*[3];
-    A[0] = new double[3];
-    A[1] = new double[3];
-    A[2] = new double[3];
+    // double** A = new double*[3];
+    // A[0] = new double[3];
+    // A[1] = new double[3];
+    // A[2] = new double[3];
 
-    A[0][0] = 1;
-    A[0][1] = 1;
-    A[0][2] = 1;
-    A[1][0] = 2;
-    A[1][1] = 2;
-    A[1][2] = 1;
-    A[2][0] = 3;
-    A[2][1] = 1;
-    A[2][2] = 1;
+    // A[0][0] = 1;
+    // A[0][1] = 1;
+    // A[0][2] = 1;
+    // A[1][0] = 2;
+    // A[1][1] = 2;
+    // A[1][2] = 1;
+    // A[2][0] = 3;
+    // A[2][1] = 1;
+    // A[2][2] = 1;
 
-    double X[3];
-    double B[3] = {3,4,3};
-    solve_AX_eq_B(A, X, B, 3);
+    // double X[3];
+    // double B[3] = {3,4,3};
+    // solve_AX_eq_B(A, X, B, 3);
     //linear_regression_data(arrayX, arrayY, 3, n);
-    cout << X[0] << " " << X[1] << " " << X[2] << endl;
+    k_degree_polynomial_regression_data(arrayX, arrayY, 3, 3, n);
+    cout << n[0] << " " << n[1] << endl;
     return 0;
 }
