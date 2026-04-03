@@ -1,13 +1,14 @@
 import { useRef, useState } from "react";
 import type { LineChartType } from "../../types/charts";
+import { calcLeftPercent, calcTopPercent } from "../../utils/functions";
 
 const LineChart=({info}:{info:LineChartType})=>{
     const {data, domain, range} = info;
     const [chartWidth, setChartWidth] = useState();
     const [chartHeight, setChartHeight] = useState();
     const chartRef = useRef(null);
-    const topPercent = (-range.start * 100) / (-range.start - range.end);
-    const leftPercent = (-domain.start * 100) / (-domain.start + domain.end);
+    const leftPercent = calcLeftPercent(domain);
+    const topPercent = calcTopPercent(domain);
 
     return(
         <div ref={chartRef} className="relative border w-full h-full min-h-[720px] max-w-[90%] mx-auto">
