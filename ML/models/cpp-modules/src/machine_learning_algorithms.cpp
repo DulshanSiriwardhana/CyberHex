@@ -1,6 +1,9 @@
 #include "machine_learning_algorithms.h"
 #include "stat.h"
 #include "matrix.h"
+#include "iostream"
+
+using namespace std;
 
 void linear_regression_data(double* dataX, double* dataY, int size, double* return_data){
     double x_mean = calc_mean(dataX, size);
@@ -24,14 +27,17 @@ void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size,
 
     xy_means[0] = calc_mean(dataY, size);
 
-    for(int i =0; i<2*degree;i++){
-        for(int j=0;j<=i;j++){
-            if(i==0 && j==0){
-                A[0][0] = 1;
-            }
-            else{
-                A[j][i-j] = calc_n_order_mean(dataX, size, i+1);
-            }
+    double* temp = new double[2*degree + 1];
+
+    temp[0] = 1;
+
+    for(int i =1; i<=2*degree;i++){
+        temp[i] = calc_n_order_mean(dataX, size, i);
+    }
+
+    for(int i =0; i<degree;i++){
+        for(int j=0; j<degree; j++){
+            A[i][j] = temp[i+j];
         }
     }
     
@@ -39,8 +45,5 @@ void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size,
         xy_means[i+1] = calc_n_order_multiplicative_mean(dataX, i+1, dataY, 1, size);
     }
 
-    //solve_AX_eq_B(A, return_data, xy_means, degree);
-    return_data[0] = A[0][0];
-    return_data[1] = A[0][1];
-    return_data[2] = A[0][2];
+    solve_AX_eq_B(A, return_data, xy_means, degree);
 }
