@@ -30,7 +30,7 @@ int main() {
     // double X[3];
     // double B[3] = {3,4,3};
     // solve_AX_eq_B(A, X, B, 3);
-    //linear_regression_data(arrayX, arrayY, 3, n);
+    // linear_regression_data(arrayX, arrayY, 3, n);
     k_degree_polynomial_regression_data(arrayX, arrayY, 3, 3, n);
     cout << n[0] << " " << n[1] << " " << n[2] << " " << n[3] <<endl;
     return 0;
