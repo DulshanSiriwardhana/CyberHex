@@ -1,7 +1,26 @@
 #include "matrix.h"
 
 void removeRowColumn(double* double A, int row, int column, int size, double* double* ret){
-    
+    for(int i=0;i<size-1;i++){
+        for(int j=0;j<size-1;j++){
+            if(j>=column){
+                if(i>=row){
+                    ret[i][j] = A[i+1][j+1];
+                }
+                else{
+                    ret[i][j] = A[i][j+1];
+                }
+            }
+            else{
+                if(i>=row){
+                    ret[i][j] = A[i+1][j];
+                }
+                else{
+                    ret[i][j] = A[i][j];
+                }
+            }
+        }
+    }
 }
 
 double det2x2(double* double A){
