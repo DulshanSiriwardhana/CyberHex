@@ -35,7 +35,11 @@ double det(double* double* A, int size){
     int k=1;
     double sum =0;
     for(int i =0;i<size;i++){
-        sum += k*A[0][i]* det();
+        double* x =  new double[size-1];
+        double* y = new x[size-1];
+
+        removeRowColumn(A, 0, i, size, y);
+        sum += k*A[0][i]* det(y);
         k *= -1;
     }
 
