@@ -18,17 +18,17 @@ int main() {
     A[2] = new double[3];
 
     A[0][0] = 1;
-    A[0][1] = 2;
-    A[0][2] = 3;
-    A[1][0] = 1;
+    A[0][1] = 1;
+    A[0][2] = 1;
+    A[1][0] = 2;
     A[1][1] = 2;
     A[1][2] = 1;
-    A[2][0] = 1;
+    A[2][0] = 3;
     A[2][1] = 1;
     A[2][2] = 1;
 
     double X[3];
-    double B[3] = {6,4,3};
+    double B[3] = {3,4,3};
     solve_AX_eq_B(A, X, B, 3);
     //linear_regression_data(arrayX, arrayY, 3, n);
     cout << X[0] << " " << X[1] << " " << X[2] << endl;
