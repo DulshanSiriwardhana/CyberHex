@@ -63,9 +63,22 @@ void replaceRow(double** &A, int row, int size, double*  replacingRow, double** 
     }
 }
 
+void replaceColumn(double** &A, int column, int size, double*  replacingColumn, double** &ret){
+    for(int i=0;i<size;i++){
+        for(int j=0;j<size;j++){
+            if(j == column){
+                ret[i][j] = replacingColumn[i];
+            }
+            else{
+                ret[i][j] = A[i][j];
+            }
+        }
+    }
+}
+
 void solve_AX_eq_B(double** &A, double* X, double* B, int size){
     double detA = det(A, size);
-    for(int i=0;i<size-1;i++){
+    for(int i=0;i<size;i++){
 
         double** newA = new double*[size];
 
@@ -73,7 +86,7 @@ void solve_AX_eq_B(double** &A, double* X, double* B, int size){
             newA[k] = new double[size];
         }
         
-        replaceRow(A, i, size, B, newA);
+        replaceColumn(A, i, size, B, newA);
         X[i] = det(newA, size)/detA;
     }
 }
