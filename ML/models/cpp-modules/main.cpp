@@ -8,9 +8,9 @@
 using namespace std;
 
 int main() {
-    double arrayX[3] = {1,2,4};
-    double arrayY[3] = {1,2,3};
-    double* n = new double[3];
+    double arrayX[3] = {1,2,3};
+    double arrayY[3] = {1,4,9};
+    double* n = new double[4];
 
     // double** A = new double*[3];
     // A[0] = new double[3];
@@ -32,6 +32,6 @@ int main() {
     // solve_AX_eq_B(A, X, B, 3);
     //linear_regression_data(arrayX, arrayY, 3, n);
     k_degree_polynomial_regression_data(arrayX, arrayY, 3, 3, n);
-    cout << n[0] << " " << n[1] << endl;
+    cout << n[0] << " " << n[1] << " " << n[2] << " " << n[3] <<endl;
     return 0;
 }
