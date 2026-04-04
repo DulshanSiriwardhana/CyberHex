@@ -59,3 +59,12 @@ double power(double number, double n){
 
     return exp(up,ERROR);
 }
+
+double euclid_distance(double* pointA, double* pointB, int dimension){
+    double sum = 0.0;
+    for(int i=0;i<dimension;i++){
+        sum+=pow(pointA[i]-pointB[i], 2);
+    }
+
+    return power(sum, 1);
+}
