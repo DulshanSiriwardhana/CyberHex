@@ -49,5 +49,10 @@ void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size,
 }
 
 void knn(double** &data, int dimension, int k, double* point, int distance_function){
-    
+    switch(distance_function){
+        case 0:
+
+        default:
+            
+    }
 }
