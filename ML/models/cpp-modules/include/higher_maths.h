@@ -9,5 +9,6 @@ double power(double number, double n);
 double square_root(double number);
 double euclid_distance(double* pointA, double* pointB, int dimension);
 double manhattan_distance(double* pointA, double* pointB, int dimension);
+double chebyshev_distance(double* pointA, double* pointB);
 
 #endif
