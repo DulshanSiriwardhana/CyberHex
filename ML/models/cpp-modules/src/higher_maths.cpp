@@ -54,8 +54,56 @@ double get_e(double error){
 double power(double number, double n){
     double ERROR = 0.000001;
     double e = get_e(ERROR);
-    int cost = (int) number/e;
-    double up = n*(cost+natural_log((number/e - cost)*e, ERROR));
+    int cost = 0;
+    while(number>1){
+        number/=e;
+        cost++;
+    }
+    double up = n*(cost+natural_log(number, ERROR));
 
-    return exp(up,ERROR);
+    return exp(up, ERROR);
+}
+
+double square_root(double number){
+    double ERROR = 0.000001;
+    double prev = 2;
+    double sqrt = number;
+    while(abs(sqrt-prev)>=ERROR){
+        double temp = sqrt;
+        sqrt = 2*number/(prev+sqrt);
+        prev = temp;
+    }
+
+    return sqrt;
+}
+
+double euclid_distance(double* pointA, double* pointB, int dimension){
+    double sum = 0.0;
+    for(int i=0;i<dimension;i++){
+        sum+=pow(pointA[i]-pointB[i], 2);
+    }
+
+    return square_root(sum);
+}
+
+double manhattan_distance(double* pointA, double* pointB, int dimension){
+    double sum = 0.0;
+    for(int i=0;i<dimension;i++){
+        sum+=abs(pointA[i]-pointB[i]);
+    }
+
+    return sum;
+}
+
+double chebyshev_distance(double* pointA, double* pointB){
+    return abs(pointA[0]-pointB[0]);
+}
+
+double minkowski_distance(double* pointA, double* pointB, int dimension, int p){
+    double sum = 0.0;
+    for(int i=0;i<dimension;i++){
+        sum+=pow(pointA[i]-pointB[i], p);
+    }
+
+    return power(sum, 1.0/p);
 }
