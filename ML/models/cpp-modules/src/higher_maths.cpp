@@ -81,3 +81,12 @@ double euclid_distance(double* pointA, double* pointB, int dimension){
 
     return square_root(sum);
 }
+
+double manhattan_distance(double* pointA, double* pointB, int dimension){
+    double sum = 0.0;
+    for(int i=0;i<dimension;i++){
+        sum+=abs(pointA[i]-pointB[i]);
+    }
+
+    return sum;
+}
