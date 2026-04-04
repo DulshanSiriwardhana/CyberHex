@@ -60,11 +60,24 @@ double power(double number, double n){
     return exp(up,ERROR);
 }
 
+double square_root(double number){
+    double ERROR = 0.000001;
+    double prev = 2;
+    double sqrt = number;
+    while(abs(sqrt-prev)>=ERROR){
+        double temp = sqrt;
+        sqrt = 2*number/(prev+sqrt);
+        prev = temp;
+    }
+
+    return sqrt;
+}
+
 double euclid_distance(double* pointA, double* pointB, int dimension){
     double sum = 0.0;
     for(int i=0;i<dimension;i++){
         sum+=pow(pointA[i]-pointB[i], 2);
     }
 
-    return power(sum, 1);
+    return square_root(sum);
 }
