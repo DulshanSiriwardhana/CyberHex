@@ -10,5 +10,6 @@ double square_root(double number);
 double euclid_distance(double* pointA, double* pointB, int dimension);
 double manhattan_distance(double* pointA, double* pointB, int dimension);
 double chebyshev_distance(double* pointA, double* pointB);
+double minkowski_distance(double* pointA, double pointB, int dimension, int p);
 
 #endif

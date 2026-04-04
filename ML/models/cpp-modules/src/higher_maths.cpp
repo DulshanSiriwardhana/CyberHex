@@ -94,3 +94,12 @@ double manhattan_distance(double* pointA, double* pointB, int dimension){
 double chebyshev_distance(double* pointA, double* pointB){
     return abs(pointA[0]-pointB[0]);
 }
+
+double minkowski_distance(double* pointA, double pointB, int dimension, int p){
+    double sum = 0.0;
+    for(int i=0;i<dimension;i++){
+        sum+=pow(pointA[i]-pointB[i], p);
+    }
+
+    return power(sum, 1.0/p);
+}
