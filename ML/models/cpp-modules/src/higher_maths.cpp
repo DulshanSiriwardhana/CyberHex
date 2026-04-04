@@ -90,3 +90,7 @@ double manhattan_distance(double* pointA, double* pointB, int dimension){
 
     return sum;
 }
+
+double chebyshev_distance(double* pointA, double* pointB){
+    return abs(pointA[0]-pointB[0]);
+}
