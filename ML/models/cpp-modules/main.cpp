@@ -33,6 +33,7 @@ int main() {
     // linear_regression_data(arrayX, arrayY, 3, n);
     k_degree_polynomial_regression_data(arrayX, arrayY, 3, 3, n);
     double distance = euclid_distance(arrayX, arrayY, 3);
-    cout << distance << " " << n[1] << " " << n[2] << " " << n[3] <<endl;
+    double x = power(3.0,0.5);
+    cout << x << " " << n[1] << " " << n[2] << " " << n[3] <<endl;
     return 0;
 }
