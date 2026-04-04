@@ -47,3 +47,7 @@ void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size,
 
     solve_AX_eq_B(A, return_data, xy_means, degree);
 }
+
+void knn(double** &data, int dimension, int k, double* point, int distance_function){
+    
+}

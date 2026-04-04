@@ -5,6 +5,6 @@ void linear_regression_data(double* dataX, double* dataY, int size, double* retu
 void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size, int degree, double* return_data);
 void logistic(double x);
 void fittest_polynomial_regression_data();
-void knn(double** &data, int dimension, int k, double* point);
+void knn(double** &data, int dimension, int k, double* point, int distance_function);
 
 #endif
