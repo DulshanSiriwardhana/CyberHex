@@ -108,6 +108,12 @@ double minkowski_distance(double* pointA, double* pointB, int dimension, int p){
     return power(sum, 1.0/p);
 }
 
+void swap(double* array, int index1, int index2){
+    array[index1] = array[index1] - array[index2];
+    array[index2] = array[index1] + array[index2];
+    array[index1] = array[index2] - array[index1];
+}
+
 // The Sorting is begun
 
 void bubble_sort(double* array){
