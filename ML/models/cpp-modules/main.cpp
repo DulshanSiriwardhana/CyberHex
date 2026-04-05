@@ -36,8 +36,8 @@ int main() {
     // double x = power(3.0,0.5);
     // cout << x << " " << n[1] << " " << n[2] << " " << n[3] <<endl;
 
-    double array[10] = {9,8,7,6,5,4,3,2,1,0};
+    double array[10] = {9.0,8.0,7.0,6.0,5.0,4.0,3.0,2.0,1.0,0.0};
     bubble_sort(array, 10);
-    cout<< array[1]<< endl;
+    cout<< array[0]<< endl;
     return 0;
 }

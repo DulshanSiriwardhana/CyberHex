@@ -22,7 +22,7 @@ double natural_log(double n, double error){
         old_value = value;
         value -= k * pow(n-1, s)/s;
 
-        if (abs(old_value - value) < error){
+        if (absolute(old_value - value) < error){
             break;
         }
     }
@@ -36,7 +36,7 @@ double exp(double n, int error){
 
     int k =0;
 
-    while(abs(old_value-value)>error){
+    while(absolute(old_value-value)>error){
         old_value = value;
         k++;
 
@@ -68,7 +68,7 @@ double square_root(double number){
     double ERROR = 0.000001;
     double prev = 2;
     double sqrt = number;
-    while(abs(sqrt-prev)>=ERROR){
+    while(absolute(sqrt-prev)>=ERROR){
         double temp = sqrt;
         sqrt = 2*number/(prev+sqrt);
         prev = temp;
@@ -89,14 +89,14 @@ double euclid_distance(double* pointA, double* pointB, int dimension){
 double manhattan_distance(double* pointA, double* pointB, int dimension){
     double sum = 0.0;
     for(int i=0;i<dimension;i++){
-        sum+=abs(pointA[i]-pointB[i]);
+        sum+=absolute(pointA[i]-pointB[i]);
     }
 
     return sum;
 }
 
 double chebyshev_distance(double* pointA, double* pointB){
-    return abs(pointA[0]-pointB[0]);
+    return absolute(pointA[0]-pointB[0]);
 }
 
 double minkowski_distance(double* pointA, double* pointB, int dimension, int p){
@@ -117,7 +117,7 @@ void swap(double* array, int index1, int index2){
 // The Sorting is begun
 
 void bubble_sort(double* array, int size){
-    for(int i=0;i>size-1;i++){
+    for(int i=0;i<size-1;i++){
         bool isSwapped = false;
         for(int j=0;j<size-1;j++){
             if(array[j+1]<array[j]){
@@ -125,7 +125,7 @@ void bubble_sort(double* array, int size){
                 isSwapped = true;
             }
         }
-        if(isSwapped){
+        if(!isSwapped){
             break;
         }
     }
