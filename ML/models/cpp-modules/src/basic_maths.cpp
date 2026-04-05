@@ -9,7 +9,7 @@ double pow(double number, int n){
     return value;
 }
 
-double abs(double x){
+double absolute(double x){
     if(x<=0){
         return -x;
     }
