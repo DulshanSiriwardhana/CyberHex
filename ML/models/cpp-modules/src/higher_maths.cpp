@@ -107,3 +107,24 @@ double minkowski_distance(double* pointA, double* pointB, int dimension, int p){
 
     return power(sum, 1.0/p);
 }
+
+// The Sorting is begun
+
+void bubble_sort(double* array){
+
+}
+void selection_sort(double* array){
+
+}
+void insertion_sort(double* array){
+
+}
+void merge_sort(double* array){
+
+}
+void quick_sort(double* array){
+
+}
+void heap_sort(double* array){
+
+}
