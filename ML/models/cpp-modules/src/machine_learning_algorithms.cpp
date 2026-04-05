@@ -1,6 +1,7 @@
 #include "machine_learning_algorithms.h"
 #include "stat.h"
 #include "matrix.h"
+#include "types.h"
 #include "iostream"
 
 using namespace std;
@@ -48,11 +49,28 @@ void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size,
     solve_AX_eq_B(A, return_data, xy_means, degree);
 }
 
-void knn(double** &data, int dimension, int k, double* point, int distance_function){
-    switch(distance_function){
-        case 0:
+void knn(labeledDataPoint* &data, int size, int dimension, int k, double* point, int distance_function){
+    struct nearest {
+        double dis;
+        int label;
+    };
 
-        default:
-            
+    nearest k_nearest[k];
+
+    for(int i=0;i<size){
+        if(i<k){
+            nearest n = new nearest({
+                dis: euclid_distance(data[i].point, point);,
+                label: data[i].label;
+            })
+            k_nearest[i] = n;
+        }
+        else{
+            double dis = euclid_distance(data[i].point, point);
+
+            for(int j=0;j<k;j++){
+                if()
+            }
+        }
     }
 }
