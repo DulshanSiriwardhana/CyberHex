@@ -17,5 +17,5 @@ void insertion_sort(double* array);
 void merge_sort(double* array);
 void quick_sort(double* array);
 void heap_sort(double* array);
-
+void swap(double* array, int index1, int index2);
 #endif
