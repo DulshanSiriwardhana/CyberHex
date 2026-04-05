@@ -120,7 +120,7 @@ void bubble_sort(double* array, int size){
     for(int i=0;i>size-1;i++){
         bool isSwapped = false;
         for(int j=0;j<size-1;j++){
-            if(array[j+1]>array[j]){
+            if(array[j+1]<array[j]){
                 swap(array, j, j+1);
                 isSwapped = true;
             }

@@ -4,5 +4,4 @@
 double pow(double number, int n);
 double abs(double x);
 
-
 #endif
