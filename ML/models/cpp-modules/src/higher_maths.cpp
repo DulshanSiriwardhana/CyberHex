@@ -116,21 +116,37 @@ void swap(double* array, int index1, int index2){
 
 // The Sorting is begun
 
-void bubble_sort(double* array){
+void bubble_sort(double* array, int size){
+    for(int i=0;i>size-1;i++){
+        bool isSwapped = false;
+        for(int j=0;j<size-1;j++){
+            if(array[j+1]>array[j]){
+                swap(array, j, j+1);
+                isSwapped = true;
+            }
+        }
+        if(isSwapped){
+            break;
+        }
+    }
+}
+
+void selection_sort(double* array, int size){
 
 }
-void selection_sort(double* array){
+
+void insertion_sort(double* array, int size){
 
 }
-void insertion_sort(double* array){
+
+void merge_sort(double* array, int size){
 
 }
-void merge_sort(double* array){
+
+void quick_sort(double* array, int size){
 
 }
-void quick_sort(double* array){
 
-}
-void heap_sort(double* array){
+void heap_sort(double* array, int size){
 
 }
