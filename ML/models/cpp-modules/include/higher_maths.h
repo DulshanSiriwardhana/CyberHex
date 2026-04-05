@@ -11,6 +11,11 @@ double euclid_distance(double* pointA, double* pointB, int dimension);
 double manhattan_distance(double* pointA, double* pointB, int dimension);
 double chebyshev_distance(double* pointA, double* pointB);
 double minkowski_distance(double* pointA, double* pointB, int dimension, int p);
-void sort(double* array);
+void bubble_sort(double* array);
+void selection_sort(double* array);
+void insertion_sort(double* array);
+void merge_sort(double* array);
+void quick_sort(double* array);
+void heap_sort(double* array);
 
 #endif
