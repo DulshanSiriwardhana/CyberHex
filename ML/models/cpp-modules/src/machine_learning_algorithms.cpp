@@ -57,20 +57,20 @@ void knn(labeledDataPoint* &data, int size, int dimension, int k, double* point,
 
     nearest k_nearest[k];
 
-    for(int i=0;i<size){
-        if(i<k){
-            nearest n = new nearest({
-                dis: euclid_distance(data[i].point, point);,
-                label: data[i].label;
-            })
-            k_nearest[i] = n;
-        }
-        else{
-            double dis = euclid_distance(data[i].point, point);
+    // for(int i=0;i<size){
+    //     if(i<k){
+    //         nearest n = new nearest({
+    //             dis: euclid_distance(data[i].point, point);
+    //             label: data[i].label;
+    //         })
+    //         k_nearest[i] = n;
+    //     }
+    //     else{
+    //         double dis = euclid_distance(data[i].point, point);
 
-            for(int j=0;j<k;j++){
-                if()
-            }
-        }
-    }
+    //         for(int j=0;j<k;j++){
+    //             if()
+    //         }
+    //     }
+    // }
 }
