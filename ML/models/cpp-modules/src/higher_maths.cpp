@@ -132,7 +132,19 @@ void bubble_sort(double* array, int size){
 }
 
 void selection_sort(double* array, int size){
-
+    for(int i=0;i<size-1;i++){
+        double min = array[i];
+        int min_index = i;
+        for(int j=i+1;j<size;j++){
+            if(array[j]<min){
+                min = array[j];
+                min_index = j;
+            }
+        }
+        if(i!=min_index){
+            swap(array, i, min_index);
+        }
+    }
 }
 
 void insertion_sort(double* array, int size){
