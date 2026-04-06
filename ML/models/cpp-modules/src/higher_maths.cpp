@@ -148,7 +148,7 @@ void selection_sort(double* array, int size){
 }
 
 void insertion_sort(double* array, int size){
-
+    sorted_end=0;
 }
 
 void merge_sort(double* array, int size){
