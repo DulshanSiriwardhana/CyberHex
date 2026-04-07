@@ -149,6 +149,9 @@ void selection_sort(double* array, int size){
 
 void insertion_sort(double* array, int size){
     sorted_end=0;
+    for(int i=sorted_end;i<size;i++){
+        
+    }
 }
 
 void merge_sort(double* array, int size){
