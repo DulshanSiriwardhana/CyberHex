@@ -42,11 +42,20 @@ int main() {
     selection_sort(array, 10);
     print_array(array, 10);
 
-    labeledDataPoint* data[10] = {
-        {
-            label: 0,
-            point: [0,0,0,0]
-        }
+    labeledDataPoint data[10];
+
+    for (int i = 0; i < 10; i++) {
+        data[i].label = (double) ((i*2%3) + 0.1);
+        data[i].point = new double[4]{(double) i,(double) i*i,(double) i-1,(double) i/2.0};
     }
+    for (int i = 0; i < 10; i++) {
+        cout<<data[i].label;
+        print_array(data[i].point, 4);
+    }
+
+    double point[4] = {1,2,3,4};
+
+    int ret = knn(data, 10, 4, 6, point, 1);
+    cout<<ret<<endl;
     return 0;
 }
