@@ -50,7 +50,7 @@ void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size,
     solve_AX_eq_B(A, return_data, xy_means, degree);
 }
 
-int knn(labeledDataPoint* &data, int size, int dimension, int k, double* point, int distance_function){
+int knn(labeledDataPoint* data, int size, int dimension, int k, double* point, int distance_function){
     struct nearest {
         double dis;
         int label;
@@ -62,12 +62,12 @@ int knn(labeledDataPoint* &data, int size, int dimension, int k, double* point, 
 
     for(int i=0;i<size; i++){
         if(i<k){
-            nearest n = new nearest({
+            nearest n = {
                 euclid_distance(data[i].point, point, dimension),
                 data[i].label
-            })
+            };
             k_nearest[i] = n;
-            max_labels[label] = max_labels[label] + 1;
+            max_labels[data[i].label] = max_labels[data[i].label] + 1;
         }
         else{
             double dis = euclid_distance(data[i].point, point, dimension);
@@ -79,15 +79,18 @@ int knn(labeledDataPoint* &data, int size, int dimension, int k, double* point, 
             for(int j=0;j<k;j++){
                 if(k_nearest[j].dis > dis){
                     isLess = true;
-                    if(maximum < k_nearest[j]){
-                        maximum = k_nearest[j];
-                        max = k_nearest[j].dis;
+                    if(maximum < k_nearest[j].dis){
+                        maximum = k_nearest[j].dis;
+                        max = j;
                     }
                 }
             }
 
             if(isLess){
-                k_nearest[max] = data[i];
+                k_nearest[max] = {
+                euclid_distance(data[i].point, point, dimension),
+                data[i].label
+            };
                 max_labels[data[i].label] = max_labels[data[i].label] + 1;                
             }
         }
