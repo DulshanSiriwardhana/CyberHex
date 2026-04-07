@@ -5,6 +5,7 @@
 #include "machine_learning_algorithms.h"
 #include "matrix.h"
 #include "io.h"
+#include "types.h"
 
 using namespace std;
 
@@ -40,5 +41,12 @@ int main() {
     double array[10] = {9,8.0,7.0,6.0,5.0,4.0,3.0,2.0,1.0,0.0};
     selection_sort(array, 10);
     print_array(array, 10);
+
+    labeledDataPoint* data[10] = {
+        {
+            label: 0,
+            point: [0,0,0,0]
+        }
+    }
     return 0;
 }

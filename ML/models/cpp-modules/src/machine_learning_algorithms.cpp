@@ -2,6 +2,7 @@
 #include "stat.h"
 #include "matrix.h"
 #include "types.h"
+#include "higher_maths.h"
 #include "iostream"
 
 using namespace std;
@@ -59,17 +60,17 @@ int knn(labeledDataPoint* &data, int size, int dimension, int k, double* point, 
 
     nearest k_nearest[k];
 
-    for(int i=0;i<size){
+    for(int i=0;i<size; i++){
         if(i<k){
             nearest n = new nearest({
-                dis: euclid_distance(data[i].point, point);
-                label: data[i].label;
+                euclid_distance(data[i].point, point, dimension),
+                data[i].label
             })
             k_nearest[i] = n;
             max_labels[label] = max_labels[label] + 1;
         }
         else{
-            double dis = euclid_distance(data[i].point, point);
+            double dis = euclid_distance(data[i].point, point, dimension);
 
             double isLess = false;
             int max = -1;
