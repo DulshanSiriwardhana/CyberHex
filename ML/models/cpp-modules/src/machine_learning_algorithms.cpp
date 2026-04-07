@@ -49,28 +49,56 @@ void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size,
     solve_AX_eq_B(A, return_data, xy_means, degree);
 }
 
-void knn(labeledDataPoint* &data, int size, int dimension, int k, double* point, int distance_function){
+int knn(labeledDataPoint* &data, int size, int dimension, int k, double* point, int distance_function){
     struct nearest {
         double dis;
         int label;
     };
 
+    int max_labels[size]={0};
+
     nearest k_nearest[k];
 
-    // for(int i=0;i<size){
-    //     if(i<k){
-    //         nearest n = new nearest({
-    //             dis: euclid_distance(data[i].point, point);
-    //             label: data[i].label;
-    //         })
-    //         k_nearest[i] = n;
-    //     }
-    //     else{
-    //         double dis = euclid_distance(data[i].point, point);
+    for(int i=0;i<size){
+        if(i<k){
+            nearest n = new nearest({
+                dis: euclid_distance(data[i].point, point);
+                label: data[i].label;
+            })
+            k_nearest[i] = n;
+            max_labels[label] = max_labels[label] + 1;
+        }
+        else{
+            double dis = euclid_distance(data[i].point, point);
 
-    //         for(int j=0;j<k;j++){
-    //             if()
-    //         }
-    //     }
-    // }
+            double isLess = false;
+            int max = -1;
+            double maximum = k_nearest[0].dis;
+
+            for(int j=0;j<k;j++){
+                if(k_nearest[j].dis > dis){
+                    isLess = true;
+                    if(maximum < k_nearest[j]){
+                        maximum = k_nearest[j];
+                        max = k_nearest[j].dis;
+                    }
+                }
+            }
+
+            if(isLess){
+                k_nearest[max] = data[i];
+                max_labels[data[i].label] = max_labels[data[i].label] + 1;                
+            }
+        }
+    }
+    int max_label = 0;
+    int max_label_count = 1;
+    for(int i=0;i<size; i++){
+        if(max_labels[i]>max_label_count){
+            max_label_count = max_labels[i];
+            max_label = i;
+        }
+    }
+
+    return max_label;
 }
