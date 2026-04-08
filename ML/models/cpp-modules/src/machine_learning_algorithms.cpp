@@ -3,6 +3,7 @@
 #include "matrix.h"
 #include "types.h"
 #include "higher_maths.h"
+#include "io.h"
 #include "iostream"
 
 using namespace std;
@@ -95,6 +96,8 @@ int knn(labeledDataPoint* data, int size, int dimension, int k, double* point, i
             }
         }
     }
+
+    print_array(max_labels, size);
     int max_label = 0;
     int max_label_count = 1;
     for(int i=0;i<size; i++){
