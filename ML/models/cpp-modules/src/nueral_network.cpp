@@ -1,0 +1,4 @@
+class Neuron {
+    private:
+         
+}
