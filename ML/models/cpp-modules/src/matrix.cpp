@@ -90,3 +90,9 @@ void solve_AX_eq_B(double** &A, double* X, double* B, int size){
         X[i] = det(newA, size)/detA;
     }
 }
+
+void multiply_matrices(double** &A, double** &B, int dimensions[4], double** &ret){
+    for(int i=0;i<dimension[0];i++){
+        int row = i;
+    }
+}
