@@ -81,7 +81,9 @@ int main() {
     ret[0] = new double[2];
     ret[1] = new double[2];
 
-    multiply_matrices(A, B, {2,2,2,2}, ret);
+    int sizes[4] = {2,2,2,2};
+
+    multiply_matrices(A, B, sizes, ret);
 
     return 0;
 }
