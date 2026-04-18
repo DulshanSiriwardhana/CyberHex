@@ -19,4 +19,14 @@ void print_array(T* array, int size){
     }
 }
 
+template <typename T>
+void print_matrix(T** &matrix, int* dimensions){
+    for(int i=0;i<dimensions[0];i++){
+        for(int j=0;j<dimensions[1];j++){
+            cout<< matrix[i][j] << " ";
+        }
+        cout<< endl;
+    }
+}
+
 #endif
