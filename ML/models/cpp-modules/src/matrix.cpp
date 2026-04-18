@@ -93,6 +93,16 @@ void solve_AX_eq_B(double** &A, double* X, double* B, int size){
 
 void multiply_matrices(double** &A, double** &B, int dimensions[4], double** &ret){
     for(int i=0;i<dimension[0];i++){
-        int row = i;
+        //int row = i;
+        for(int j=0;j<dimension[3];j++){
+            //int column = j;
+            double value = 0;
+            for(int k=0;k<dimension[1];k++){
+                //int posX = dimension[1] * i + k;
+                //int posY = dimension[2] * k + j;
+                value + = A[i][k] * B[k][j];
+            }
+            ret[i][j] = value;
+        }
     }
 }
