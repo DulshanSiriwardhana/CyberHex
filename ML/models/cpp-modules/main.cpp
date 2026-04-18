@@ -57,5 +57,31 @@ int main() {
 
     // int ret = knn(data, 100, 4, 6, point, 1);
     // cout<<ret<<endl;
+
+
+    double** A = new double*[2];
+    A[0] = new double[2];
+    A[1] = new double[2];
+
+    A[0][0] = 1;
+    A[0][1] = 1;
+    A[1][0] = 2;
+    A[1][1] = 2;
+
+    double** B = new double*[2];
+    B[0] = new double[2];
+    B[1] = new double[2];
+
+    B[0][0] = 1;
+    B[0][1] = 1;
+    B[1][0] = 2;
+    B[1][1] = 2;
+
+    double** ret =  new double*[2];
+    ret[0] = new double[2];
+    ret[1] = new double[2];
+
+    multiply_matrices(A, B, {2,2,2,2}, ret);
+
     return 0;
 }
