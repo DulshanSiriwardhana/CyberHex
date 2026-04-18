@@ -85,5 +85,9 @@ int main() {
 
     multiply_matrices(A, B, sizes, ret);
 
+    int dimensions[2] = {2,2};
+
+    print_matrix(ret, dimensions);
+
     return 0;
 }

@@ -91,7 +91,7 @@ void solve_AX_eq_B(double** &A, double* X, double* B, int size){
     }
 }
 
-void multiply_matrices(double** &A, double** &B, int dimensions[4], double** &ret){
+void multiply_matrices(double** &A, double** &B, int* dimensions, double** &ret){
     for(int i=0;i<dimensions[0];i++){
         //int row = i;
         for(int j=0;j<dimensions[3];j++){
