@@ -7,6 +7,6 @@ double det(double** &A, int size);
 void replaceRow(double** &A, int row, int size, double*  replacingRow, double** &ret);
 void replaceColumn(double** &A, int column, int size, double*  replacingColumn, double** &ret);
 void solve_AX_eq_B(double** &A, double* X, double* B, int size);
-void multiply_matrices(double** &A, double** &B, int dimensions[4], double** &ret);
+void multiply_matrices(double** &A, double** &B, int* dimensions, double** &ret);
 
 #endif
