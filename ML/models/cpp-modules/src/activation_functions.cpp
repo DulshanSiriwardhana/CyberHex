@@ -1,4 +1,5 @@
 #include "activation_functions.h"
+#include "basic_maths.h"
 
 void full_linear_filter(double* value){
     value = value;
@@ -35,5 +36,5 @@ void full_sign_filter(double* value){
 }
 
 void inverse_square_normalize_filter(double* value){
-    
+    value = 1/(1+pow(value,2));
 }
