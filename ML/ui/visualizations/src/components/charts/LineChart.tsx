@@ -19,14 +19,14 @@ const LineChart=({info}:{info:LineChartType})=>{
             <div className="relative flex-1 w-full h-full">
                 <div className="absolute flex w-full items-center justify-between h-full">
                     {
-                        Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((i)=>(
+                        Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((_i)=>(
                             <div className="h-full w-[0.5px] bg-black"></div>
                         ))
                     }
                 </div>
                 <div className="absolute flex flex-col w-full items-center justify-between h-full">
                     {
-                        Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((i)=>(
+                        Array.from({length: range.end - range.start + 1}, (_, i)=> i).map((_i)=>(
                             <div className="w-full h-[0.5px] bg-black"></div>
                         ))
                     }
