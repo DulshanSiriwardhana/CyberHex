@@ -1,7 +1,7 @@
-const DataPoint=()=>{
+const DataPoint=({point}:{point: {x: number, y:number}})=>{
     return(
-        <div>
-
+        <div className="absolute">
+            {point.x}
         </div>
     )
 }
