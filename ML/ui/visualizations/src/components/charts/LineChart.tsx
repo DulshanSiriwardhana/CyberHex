@@ -15,7 +15,7 @@ const LineChart=({info}:{info:LineChartType})=>{
     }, [info]);
 
     return(
-        <div ref={chartRef} className="w-full h-full min-h-[720px] max-w-[90%] mx-auto flex flex-col items-center justify-center bg-blue-200/30">
+        <div ref={chartRef} className="w-full h-full min-h-[720px] max-w-[90%] mx-auto flex flex-col items-center justify-center bg-cyan-200/30">
             <div className="relative flex-1 w-full h-full">
                 <div className="absolute flex w-full items-center justify-between h-full">
                     {
