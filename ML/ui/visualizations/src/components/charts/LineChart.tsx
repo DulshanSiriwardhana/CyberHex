@@ -1,12 +1,18 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { LineChartType } from "../../types/charts";
 import { calcLeftPercent, calcTopPercent } from "../../utils/functions";
+import DataPoint from "./DataPoint";
 
 const LineChart=({info}:{info:LineChartType})=>{
     const {data, domain, range} = info;
     const chartRef = useRef(null);
     const leftPercent = calcLeftPercent(domain);
-    const topPercent = calcTopPercent(domain);
+    const topPercent = calcTopPercent(range);
+    const [points, setPoints] = useState(data);
+
+    useEffect(()=>{
+        setPoints(data);
+    }, [info]);
 
     return(
         <div ref={chartRef} className="border w-full h-full min-h-[720px] max-w-[90%] mx-auto flex flex-col items-center justify-center">
@@ -18,6 +24,11 @@ const LineChart=({info}:{info:LineChartType})=>{
                 }
                 {
                     <>
+                        {
+                            points.map((point)=>(
+                                <DataPoint point={point}/>
+                            ))
+                        }
                         <div style={{ top: `${topPercent}%`}} className="absolute w-full left-0 h-0.5 bg-black flex">
                             <div style={{ width: `${leftPercent}%` }} className="h-1 bg-red-500">
 
