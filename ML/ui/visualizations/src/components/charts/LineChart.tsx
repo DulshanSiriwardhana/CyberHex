@@ -24,11 +24,15 @@ const LineChart=({info}:{info:LineChartType})=>{
                 }
                 {
                     <>
-                        {
-                            points.map((point)=>(
-                                <DataPoint point={point}/>
-                            ))
-                        }
+                        <div className="absolute w-full h-full inset-0">
+                            <div className="relative h-full w-full">
+                            {
+                                points.map((point)=>(
+                                    <DataPoint point={point}/>
+                                ))
+                            }
+                            </div>
+                        </div>
                         <div style={{ top: `${topPercent}%`}} className="absolute w-full left-0 h-0.5 bg-black flex">
                             <div style={{ width: `${leftPercent}%` }} className="h-1 bg-red-500">
 
