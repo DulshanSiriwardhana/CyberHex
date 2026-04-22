@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { LineChartType } from "../../types/charts";
 import { calcLeftPercent, calcTopPercent } from "../../utils/functions";
 
@@ -6,7 +6,12 @@ const LineChart=({info}:{info:LineChartType})=>{
     const {data, domain, range} = info;
     const chartRef = useRef(null);
     const leftPercent = calcLeftPercent(domain);
-    const topPercent = calcTopPercent(domain);
+    const topPercent = calcTopPercent(range);
+    const [points, setPoints] = useState(data);
+
+    useEffect(()=>{
+        setPoints(data);
+    }, [info]);
 
     return(
         <div ref={chartRef} className="border w-full h-full min-h-[720px] max-w-[90%] mx-auto flex flex-col items-center justify-center">
