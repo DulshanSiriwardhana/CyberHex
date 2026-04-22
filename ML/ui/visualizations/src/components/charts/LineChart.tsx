@@ -57,18 +57,18 @@ const LineChart=({info}:{info:LineChartType})=>{
                             </div>
                         </div>
                         <div style={{ top: `${topPercent}%`}} className="absolute w-full left-0 h-0.5 bg-black flex">
-                            <div style={{ width: `${leftPercent}%` }} className="h-1 bg-red-500">
+                            <div style={{ width: `${leftPercent}%` }} className="h-1 bg-red-500 hidden">
 
                             </div>
-                            <div style={{ width: `${100-leftPercent}%` }} className="w-full h-1 bg-green-500">
+                            <div style={{ width: `${100-leftPercent}%` }} className="w-full h-1 bg-green-500 hidden">
 
                             </div>
                         </div>
                         <div style={{ left: `${leftPercent}%` }} className="absolute w-0.5 h-full bg-black">
-                            <div style={{ height: `${topPercent}%` }} className="w-1 bg-red-500">
+                            <div style={{ height: `${topPercent}%` }} className="w-1 bg-red-500 hidden">
 
                             </div>
-                            <div style={{ height: `${100-topPercent}%` }} className="w-1 bg-green-500">
+                            <div style={{ height: `${100-topPercent}%` }} className="w-1 bg-green-500 hidden">
 
                             </div>
                         </div>
