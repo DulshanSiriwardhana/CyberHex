@@ -15,19 +15,19 @@ const LineChart=({info}:{info:LineChartType})=>{
     }, [info]);
 
     return(
-        <div ref={chartRef} className="w-full h-full min-h-[720px] max-w-[90%] mx-auto flex flex-col items-center justify-center">
+        <div ref={chartRef} className="w-full h-full min-h-[720px] max-w-[90%] mx-auto flex flex-col items-center justify-center bg-blue-200/30">
             <div className="relative flex-1 w-full h-full">
                 <div className="absolute flex w-full items-center justify-between h-full">
                     {
                         Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((_i)=>(
-                            <div className="h-full w-[0.5px] bg-black"></div>
+                            <div className="h-full w-[0.5px] bg-black opacity-30"></div>
                         ))
                     }
                 </div>
                 <div className="absolute flex flex-col w-full items-center justify-between h-full">
                     {
                         Array.from({length: range.end - range.start + 1}, (_, i)=> i).map((_i)=>(
-                            <div className="w-full h-[0.5px] bg-black"></div>
+                            <div className="w-full h-[0.5px] bg-black opacity-30"></div>
                         ))
                     }
                 </div>
