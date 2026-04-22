@@ -24,12 +24,16 @@ const LineChart=({info}:{info:LineChartType})=>{
                         ))
                     }
                 </div>
-                <div className="absolute flex w-full items-center justify-between" style={{ top: `${topPercent}%`}}>
-                    {
-                        Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((i)=>(
-                            <div className="h-full mt-1 font-bold text-sm">{domain.start + i}</div>
-                        ))
-                    }
+                <div className="absolute w-full h-full inset-0">
+                    <div className="relative w-full h-full">
+                        <div className="h-full flex flex-col absolute" style={{ left: `${leftPercent}%`}}>
+                            {
+                                Array.from({length: range.end - range.start + 1}, (_, i)=> i).map((i)=>(
+                                    <div className="h-full ml-1 font-bold text-sm flex items-center justify-center">{(range.end - i) ? (range.end - i) : null}</div>
+                                ))
+                            }
+                        </div>
+                    </div>
                 </div>
                 {
                     <>
