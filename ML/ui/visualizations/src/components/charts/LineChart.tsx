@@ -17,6 +17,13 @@ const LineChart=({info}:{info:LineChartType})=>{
     return(
         <div ref={chartRef} className="border w-full h-full min-h-[720px] max-w-[90%] mx-auto flex flex-col items-center justify-center">
             <div className="relative flex-1 w-[calc(100%-20px)] h-[calc(100%-20px)]">
+                <div className="absolute flex w-full items-center justify-between h-full">
+                    {
+                        Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((i)=>(
+                            <div className="h-full w-[0.5px] bg-black"></div>
+                        ))
+                    }
+                </div>
                 <div className="absolute flex w-full items-center justify-between" style={{ top: `${topPercent}%`}}>
                     {
                         Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((i)=>(
