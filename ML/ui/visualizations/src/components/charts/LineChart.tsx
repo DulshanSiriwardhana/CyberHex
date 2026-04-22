@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { LineChartType } from "../../types/charts";
 import { calcLeftPercent, calcTopPercent } from "../../utils/functions";
+import DataPoint from "./DataPoint";
 
 const LineChart=({info}:{info:LineChartType})=>{
     const {data, domain, range} = info;
@@ -23,6 +24,11 @@ const LineChart=({info}:{info:LineChartType})=>{
                 }
                 {
                     <>
+                        {
+                            points.map((point)=>(
+                                <DataPoint point={point}/>
+                            ))
+                        }
                         <div style={{ top: `${topPercent}%`}} className="absolute w-full left-0 h-0.5 bg-black flex">
                             <div style={{ width: `${leftPercent}%` }} className="h-1 bg-red-500">
 
