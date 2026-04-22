@@ -15,8 +15,22 @@ const LineChart=({info}:{info:LineChartType})=>{
     }, [info]);
 
     return(
-        <div ref={chartRef} className="border w-full h-full min-h-[720px] max-w-[90%] mx-auto flex flex-col items-center justify-center">
-            <div className="relative flex-1 w-[calc(100%-20px)] h-[calc(100%-20px)]">
+        <div ref={chartRef} className="w-full h-full min-h-[720px] max-w-[90%] mx-auto flex flex-col items-center justify-center">
+            <div className="relative flex-1 w-full h-full">
+                <div className="absolute flex w-full items-center justify-between h-full">
+                    {
+                        Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((i)=>(
+                            <div className="h-full w-[0.5px] bg-black"></div>
+                        ))
+                    }
+                </div>
+                <div className="absolute flex flex-col w-full items-center justify-between h-full">
+                    {
+                        Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((i)=>(
+                            <div className="w-full h-[0.5px] bg-black"></div>
+                        ))
+                    }
+                </div>
                 <div className="absolute flex w-full items-center justify-between" style={{ top: `${topPercent}%`}}>
                     {
                         Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((i)=>(
@@ -24,16 +38,12 @@ const LineChart=({info}:{info:LineChartType})=>{
                         ))
                     }
                 </div>
-                <div className="absolute w-full h-full inset-0">
-                    <div className="relative w-full h-full">
-                        <div className="h-full flex flex-col absolute" style={{ left: `${leftPercent}%`}}>
-                            {
-                                Array.from({length: range.end - range.start + 1}, (_, i)=> i).map((i)=>(
-                                    <div className="h-full ml-1 font-bold text-sm flex items-center justify-center">{(range.end - i) ? (range.end - i) : null}</div>
-                                ))
-                            }
-                        </div>
-                    </div>
+                <div className="absolute h-full flex flex-col items-center justify-between" style={{ left: `${leftPercent}%`}}>
+                    {
+                        Array.from({length: range.end - range.start + 1}, (_, i)=> i).map((i)=>(
+                            <div className="ml-1 font-bold text-sm py-2">{(range.end - i) ? (range.end - i) : null}</div>
+                        ))
+                    }
                 </div>
                 {
                     <>
@@ -54,11 +64,11 @@ const LineChart=({info}:{info:LineChartType})=>{
 
                             </div>
                         </div>
-                        <div style={{ left: `${leftPercent}%` }} className="absolute w-0.5 h-[calc(100%-20px)] top-[10px] bg-black">
-                            <div style={{ height: `${leftPercent}%` }} className="w-1 bg-red-500">
+                        <div style={{ left: `${leftPercent}%` }} className="absolute w-0.5 h-full bg-black">
+                            <div style={{ height: `${topPercent}%` }} className="w-1 bg-red-500">
 
                             </div>
-                            <div style={{ height: `${100-leftPercent}%` }} className="w-1 bg-green-500">
+                            <div style={{ height: `${100-topPercent}%` }} className="w-1 bg-green-500">
 
                             </div>
                         </div>
