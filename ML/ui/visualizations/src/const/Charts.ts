@@ -11,6 +11,6 @@ export const linechartdata:LineChartType = {
     },
     range: {
         start: -4,
-        end: -4
+        end: 4
     }
 }
