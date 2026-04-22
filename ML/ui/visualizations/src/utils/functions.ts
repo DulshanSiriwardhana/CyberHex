@@ -29,6 +29,6 @@ export const calcPosition=(domain: LineChartType["domain"], range: LineChartType
 }
 
 export const getLine=(point: {x: number, y: number}, next: {x: number, y: number}, domain: LineChartType["domain"], range: LineChartType["range"])=>{
-    var ratio = Math.pow((domain.end - domain.start)/(range.end - range.start),2);
-    return [100*(Math.sqrt(Math.pow(next.x-point.x, 2)+ ratio * Math.pow(next.y-point.y, 2)))/(domain.end - domain.start), (-180/Math.PI)*Math.atan(((next.y-point.y)* (range.end - range.start))/((next.x-point.x)*(range.end - range.start)))]
+    var ratio = Math.pow((range.end - range.start)/(domain.end - domain.start),2);
+    return [100*(Math.sqrt(Math.pow(next.x-point.x, 2)+ (ratio * Math.pow(next.y-point.y, 2))))/(domain.end - domain.start), (-180/Math.PI)*Math.atan(((next.y-point.y)* (range.end - range.start))/((next.x-point.x)*(range.end - range.start)))]
 }
