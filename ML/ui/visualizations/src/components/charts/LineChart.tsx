@@ -50,8 +50,8 @@ const LineChart=({info}:{info:LineChartType})=>{
                         <div className="absolute w-full h-full inset-0">
                             <div className="relative h-full w-full">
                             {
-                                points.map((point)=>(
-                                    <DataPoint domain={domain} range={range} point={point}/>
+                                points.map((point, index)=>(
+                                    <DataPoint next={points[index + 1]} domain={domain} range={range} point={point}/>
                                 ))
                             }
                             </div>
