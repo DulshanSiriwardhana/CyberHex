@@ -7,9 +7,10 @@ export interface LineChartType {
         start: number,
         end: number
     };
-    data: {
-        x: number[],
-        y: number[]
-    };
+    data:
+        {
+            x: number,
+            y: number
+        }[];
     
 }

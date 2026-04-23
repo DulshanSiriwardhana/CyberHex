@@ -23,3 +23,12 @@ export const calcTopPercent=(range: LineChartType["range"])=>{
 
     return 100;
 }
+
+export const calcPosition=(domain: LineChartType["domain"], range: LineChartType["range"], point: {x: number, y: number})=>{
+    return [(100*(point.x-domain.start)/(domain.end-domain.start)), (100*(point.y-range.end)/(range.start-range.end))];
+}
+
+export const getLine=(point: {x: number, y: number}, next: {x: number, y: number}, domain: LineChartType["domain"], range: LineChartType["range"])=>{
+    var ratio = Math.pow((range.end - range.start)/(domain.end - domain.start),2);
+    return [100*(Math.sqrt(Math.pow(next.x-point.x, 2)+ (ratio * Math.pow(next.y-point.y, 2))))/(domain.end - domain.start), (-180/Math.PI)*Math.atan(((next.y-point.y)* (range.end - range.start))/((next.x-point.x)*(range.end - range.start)))]
+}
