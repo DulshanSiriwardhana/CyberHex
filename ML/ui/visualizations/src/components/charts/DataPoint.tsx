@@ -9,10 +9,29 @@ const DataPoint=({domain, range, point, next}:{domain: LineChartType["domain"], 
     const [current_point, setCurrentPoint] = useState<{x: number | undefined, y:number | undefined}>();
     const [next_point, setNextPoint] = useState<{x: number | undefined, y:number | undefined}>();
 
+    useEffect(() => {
+        const observer = new ResizeObserver(() => {
+            if (current_point_ref.current) {
+                const rect = current_point_ref.current.getBoundingClientRect();
+                setCurrentPoint({ x: rect.left, y: rect.top });
+            }
+
+            if (next_point_ref.current) {
+                const rect = next_point_ref.current.getBoundingClientRect();
+                setNextPoint({ x: rect.left, y: rect.top });
+            }
+        });
+
+        if (current_point_ref.current) observer.observe(current_point_ref.current);
+        if (next_point_ref.current) observer.observe(next_point_ref.current);
+
+        return () => observer.disconnect();
+    }, [point, next]);
+
     useEffect(()=>{
-        setCurrentPoint({x: current_point_ref.current?.offsetLeft, y: current_point_ref.current?.offsetTop});
-        setNextPoint({x: next_point_ref.current?.offsetLeft, y: next_point_ref.current?.offsetTop});
-    }, []);
+        console.log(current_point);
+        console.log(next_point);
+    },[current_point, next_point]);
 
     return(
         <div className="absolute w-full h-full">
