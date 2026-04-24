@@ -21,28 +21,8 @@ const DataPoint=({domain, range, point, next}:{domain: LineChartType["domain"], 
     }, []);
 
     return(
-        <div className="absolute w-full h-full">
-            <div className="absolute" style={{left:`${calcPosition(domain, range, point)[0]}%`, top: `${calcPosition(domain, range, point)[1]}%`}}>
-                <div ref={containerRef} className="h-2 w-2 rounded-full bg-black flex items-start justify-start ml-[-4px] mt-[-4px]">
-                    
-                </div>
-            </div>
-
-            { next &&
-                <div className="absolute invisible bg-green-500" style={{left:`${calcPosition(domain, range, next)[0]}%`, top: `${calcPosition(domain, range, next)[1]}%`}}>
-                    <div ref={next_point_ref} className="h-2 w-2 rounded-full bg-black flex items-start justify-start ml-[-4px] mt-[-4px]">
-                        
-                    </div>
-                </div>
-            }
-
-            <div className="absolute w-full h-full">
-                {
-                    next && (
-                        <div className="absolute bg-black h-1" style={{left:`${calcPosition(domain, range, point)[0]}%`, top: `${calcPosition(domain, range, point)[1]}%`, width: `${getLine(point, next, domain, range)[0]}%`, rotate:`${getLine(point, next, domain, range)[1]}deg`}}></div>
-                    )
-                }
-            </div>
+        <div ref={containerRef} className="absolute w-full h-full">
+            <div className="absolute" style={{left: x1_precentage}}></div>
         </div>
     )
 }
