@@ -28,7 +28,18 @@ export const calcPosition=(domain: LineChartType["domain"], range: LineChartType
     return [(100*(point.x-domain.start)/(domain.end-domain.start)), (100*(point.y-range.end)/(range.start-range.end))];
 }
 
-export const getLine=(point: {x: number, y: number}, next: {x: number, y: number}, domain: LineChartType["domain"], range: LineChartType["range"])=>{
-    var ratio = Math.pow((range.end - range.start)/(domain.end - domain.start),2);
-    return [100*(Math.sqrt(Math.pow(next.x-point.x, 2)+ (ratio * Math.pow(next.y-point.y, 2))))/(domain.end - domain.start), (-180/Math.PI)*Math.atan(((next.y-point.y)* (range.end - range.start))/((next.x-point.x)*(range.end - range.start)))]
+export const getLine=(x1_percentage: number, y1_percentage: number, x2_percentage: number, y2_percentage: number, width: number, height: number)=>{
+    const x1 = (x1_percentage/100) *width;
+    const y1 = (y1_percentage/100)* height;
+
+    const x2 = (x2_percentage/100) *width;
+    const y2 = (y2_percentage/100)* height;
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+
+    const length = Math.sqrt(dx*dx + dy*dy);
+    const angle = Math.atan2(dy, dx) * (180/ Math.PI);
+
+    return {x1: x1, y1: y1, length: length, angle: angle};
 }
