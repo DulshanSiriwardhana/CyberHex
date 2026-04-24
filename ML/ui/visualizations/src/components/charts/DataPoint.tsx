@@ -34,7 +34,7 @@ const DataPoint=({domain, range, point, next, activeIndex, setActiveIndex, index
                 {
                     isActive && (
                         <div className="absolute mb-2 border">
-                            <ToolTip x={x1} y={y1} label={`${index}`}/>
+                            <ToolTip x={point.x} y={point.y} label={`${index}`}/>
                         </div>
                     )
                 }
