@@ -28,13 +28,13 @@ const DataPoint=({domain, range, point, next, activeIndex, setActiveIndex, index
     },[size]);
 
     return(
-        <div ref={containerRef} className="absolute w-full h-full z-50">
-            <div className="absolute z-50" style={{left: x1, top: y1, transform:"translate(-50%, -50%)"}}>
-                <div onMouseEnter={()=>setActiveIndex(index)} onMouseLeave={()=>setActiveIndex(null)} className="h-2 w-2 rounded-full bg-blue-600 z-10"></div>
+        <div ref={containerRef} className="absolute w-full h-full">
+            <div onMouseEnter={()=>setActiveIndex(index)} onMouseLeave={()=>setActiveIndex(null)} className="absolute z-50" style={{left: x1, top: y1, transform:"translate(-50%, -50%)"}}>
+                <div className="h-2 w-2 rounded-full bg-blue-600 z-10"></div>
                 {
                     isActive && (
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2">
-                            <ToolTip data={x1}/>
+                        <div className="absolute mb-2 border">
+                            <ToolTip x={x1} y={y1} label={`${index}`}/>
                         </div>
                     )
                 }
