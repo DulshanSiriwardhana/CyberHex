@@ -1,9 +1,8 @@
-const ToolTip=({data}: {data: any})=>{
+const ToolTip=({x, y, label}: {x: number, y: number, label: string})=>{
 
-    console.log(data);
     return(
-        <div className="absolute w-10 h-10 bg-white z-50">
-            hi
+        <div className="absolute min-w-20 max-w-32 min-h-14 bg-gray-600 text-white z-50 w-full flex items-center justify-center rounded-sm shadow-md">
+            {label}
         </div>
     )
 }
