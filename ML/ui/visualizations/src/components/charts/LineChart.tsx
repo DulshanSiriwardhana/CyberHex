@@ -19,29 +19,29 @@ const LineChart=({info}:{info:LineChartType})=>{
             <div className="relative flex-1 w-full h-full">
                 <div className="absolute flex w-full items-center justify-between h-full">
                     {
-                        Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((_i)=>(
-                            <div className="h-full w-[0.5px] bg-black opacity-30"></div>
+                        Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((i)=>(
+                            <div key={"one"+i.toString()} className="h-full w-[0.5px] bg-black opacity-30"></div>
                         ))
                     }
                 </div>
                 <div className="absolute flex flex-col w-full items-center justify-between h-full">
                     {
-                        Array.from({length: range.end - range.start + 1}, (_, i)=> i).map((_i)=>(
-                            <div className="w-full h-[0.5px] bg-black opacity-30"></div>
+                        Array.from({length: range.end - range.start + 1}, (_, i)=> i).map((i)=>(
+                            <div key={"two"+i.toString()} className="w-full h-[0.5px] bg-black opacity-30"></div>
                         ))
                     }
                 </div>
                 <div className="absolute flex w-full items-center justify-between" style={{ top: `${topPercent}%`}}>
                     {
                         Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((i)=>(
-                            <div className="h-full mt-1 font-bold text-sm">{domain.start + i}</div>
+                            <div key={"three"+i.toString()} className="h-full mt-1 font-bold text-sm">{domain.start + i}</div>
                         ))
                     }
                 </div>
                 <div className="absolute h-full flex flex-col items-center justify-between" style={{ left: `${leftPercent}%`}}>
                     {
                         Array.from({length: range.end - range.start + 1}, (_, i)=> i).map((i)=>(
-                            <div className="ml-1 font-bold text-sm py-2">{(range.end - i) ? (range.end - i) : null}</div>
+                            <div key={"four"+i.toString()} className="ml-1 font-bold text-sm py-2">{(range.end - i) ? (range.end - i) : null}</div>
                         ))
                     }
                 </div>
@@ -51,7 +51,7 @@ const LineChart=({info}:{info:LineChartType})=>{
                             <div className="relative h-full w-full">
                             {
                                 points.map((point, index)=>(
-                                    <DataPoint next={points[index + 1]} domain={domain} range={range} point={point}/>
+                                    <DataPoint key={index} next={points[index + 1]} domain={domain} range={range} point={point}/>
                                 ))
                             }
                             </div>
