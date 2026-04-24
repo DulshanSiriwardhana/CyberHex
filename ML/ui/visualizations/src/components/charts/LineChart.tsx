@@ -9,6 +9,7 @@ const LineChart=({info}:{info:LineChartType})=>{
     const leftPercent = calcLeftPercent(domain);
     const topPercent = calcTopPercent(range);
     const [points, setPoints] = useState(data);
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     useEffect(()=>{
         setPoints(data);
@@ -48,10 +49,10 @@ const LineChart=({info}:{info:LineChartType})=>{
                 {
                     <>
                         <div className="absolute w-full h-full inset-0">
-                            <div className="relative h-full w-full">
+                            <div className="relative h-full w-full z-50">
                             {
                                 points.map((point, index)=>(
-                                    <DataPoint key={index} next={points[index + 1]} domain={domain} range={range} point={point}/>
+                                    <DataPoint key={index} index={index} next={points[index + 1]} domain={domain} range={range} point={point} activeIndex={activeIndex} setActiveIndex={setActiveIndex}/>
                                 ))
                             }
                             </div>
