@@ -1,61 +1,55 @@
 import { useEffect, useRef, useState } from "react";
 import type { LineChartType } from "../../types/charts";
 import { calcPosition, getLine } from "../../utils/functions";
+import ToolTip from "../ui/ToolTip";
 
-const DataPoint=({domain, range, point, next}:{domain: LineChartType["domain"], range: LineChartType["range"], point: {x: number, y:number}, next?: {x: number, y:number}})=>{
-    const current_point_ref = useRef<HTMLDivElement | null>(null);
-    const next_point_ref = useRef<HTMLDivElement | null>(null);
-
-    const [current_point, setCurrentPoint] = useState<{x: number | undefined, y:number | undefined}>();
-    const [next_point, setNextPoint] = useState<{x: number | undefined, y:number | undefined}>();
+const DataPoint=({domain, range, point, next, activeIndex, setActiveIndex, index}:{domain: LineChartType["domain"], range: LineChartType["range"], point: {x: number, y:number}, next?: {x: number, y: number} , activeIndex: number | null, setActiveIndex: (i: number | null) => void, index: number})=>{
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const [x1_precentage, y1_precentage] = calcPosition(domain, range, point);
+    const [x2_precentage, y2_precentage] = next ? calcPosition(domain, range, next) : [0, 0];
+    const [size, setSize] = useState({width: 0, height: 0});
+    const [{x1, y1, length, angle}, setLine] = useState(getLine(x1_precentage, y1_precentage, x2_precentage, y2_precentage, size.width, size.height));
+    const isActive = activeIndex === index;
 
     useEffect(() => {
-        const observer = new ResizeObserver(() => {
-            if (current_point_ref.current) {
-                const rect = current_point_ref.current.getBoundingClientRect();
-                setCurrentPoint({ x: rect.left, y: rect.top });
-            }
+        if(!containerRef.current) return;
 
-            if (next_point_ref.current) {
-                const rect = next_point_ref.current.getBoundingClientRect();
-                setNextPoint({ x: rect.left, y: rect.top });
-            }
+        const observer = new ResizeObserver(([entry]) => {
+            const {width, height} = entry.contentRect;
+            setSize({width, height});
         });
 
-        if (current_point_ref.current) observer.observe(current_point_ref.current);
-        if (next_point_ref.current) observer.observe(next_point_ref.current);
-
+        observer.observe(containerRef.current);
         return () => observer.disconnect();
-    }, [point, next]);
+    }, []);
 
     useEffect(()=>{
-        console.log(current_point);
-        console.log(next_point);
-    },[current_point, next_point]);
+        setLine(getLine(x1_precentage, y1_precentage, x2_precentage, y2_precentage, size.width, size.height))
+    },[size]);
 
     return(
-        <div className="absolute w-full h-full">
-            <div className="absolute" style={{left:`${calcPosition(domain, range, point)[0]}%`, top: `${calcPosition(domain, range, point)[1]}%`}}>
-                <div ref={current_point_ref} className="h-2 w-2 rounded-full bg-black flex items-start justify-start ml-[-4px] mt-[-4px]">
-                    
-                </div>
-            </div>
-
-            { next &&
-                <div className="absolute invisible bg-green-500" style={{left:`${calcPosition(domain, range, next)[0]}%`, top: `${calcPosition(domain, range, next)[1]}%`}}>
-                    <div ref={next_point_ref} className="h-2 w-2 rounded-full bg-black flex items-start justify-start ml-[-4px] mt-[-4px]">
-                        
-                    </div>
-                </div>
-            }
-
-            <div className="absolute w-full h-full">
+        <div ref={containerRef} className="absolute w-full h-full">
+            <div onMouseEnter={()=>setActiveIndex(index)} onMouseLeave={()=>setActiveIndex(null)} className="absolute z-50" style={{left: x1, top: y1, transform:"translate(-50%, -50%)"}}>
+                <div className="h-2 w-2 rounded-full bg-blue-600 z-10"></div>
                 {
-                    next && (
-                        <div className="absolute bg-black h-1" style={{left:`${calcPosition(domain, range, point)[0]}%`, top: `${calcPosition(domain, range, point)[1]}%`, width: `${getLine(point, next, domain, range)[0]}%`, rotate:`${getLine(point, next, domain, range)[1]}deg`}}></div>
+                    isActive && (
+                        <div className="absolute mb-2 border">
+                            <ToolTip x={point.x} y={point.y} label={`${index}`}/>
+                        </div>
                     )
                 }
             </div>
+            {next && (
+                <div
+                className="absolute bg-black h-[2px] origin-left z-0"
+                style={{
+                    left: x1,
+                    top: y1,
+                    width: length,
+                    transform: `translateY(-50%) rotate(${angle}deg)`,
+                }}
+                />
+            )}
         </div>
     )
 }
