@@ -6,6 +6,7 @@
 #include "matrix.h"
 #include "io.h"
 #include "types.h"
+#include "data_structures.h"
 
 using namespace std;
 
@@ -88,6 +89,16 @@ int main() {
     int dimensions[2] = {2,2};
 
     print_matrix(ret, dimensions);
+
+    LinkedList list;
+
+    list.insertAtEnd(10);
+    list.insertAtEnd(20);
+    list.insertAtEnd(30);
+
+    list.display();
+
+    return 0;
 
     return 0;
 }
