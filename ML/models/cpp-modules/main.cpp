@@ -93,8 +93,17 @@ int main() {
     LinkedList list;
 
     list.insertAtEnd(10);
+    cout<<list.getLength()<<endl;
     list.insertAtEnd(20);
+    cout<<list.getLength()<<endl;
     list.insertAtEnd(30);
+    cout<<list.getLength()<<endl;
+    list.insertAtBegining(0);
+    cout<<list.getLength()<<endl;
+    list.insertAtEnd(40);
+    cout<<list.getLength()<<endl;
+    list.insertAt(2, 100);
+    cout<<list.getLength()<<endl;
 
     list.display();
 

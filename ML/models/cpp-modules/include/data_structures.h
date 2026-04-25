@@ -15,10 +15,14 @@ class Node {
 class LinkedList {
     private:
         Node* head;
+        int length;
 
     public:
         LinkedList();
+        int getLength();
+        void insertAtBegining(double val);
         void insertAtEnd(double val);
+        void insertAt(int index, double val);
         void display();
 };
 
