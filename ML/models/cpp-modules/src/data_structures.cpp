@@ -60,12 +60,12 @@ void LinkedList::insertAt(int index, double val) {
     Node* newNode =  new Node(val);
     Node* temp = head;
 
-    for(int i=0;i<index;i++){
+    for(int i=0;i<index-1;i++){
         temp = temp->next;
     }
 
-    temp->next = newNode;
     newNode->next = (temp->next)->next;
+    temp->next = newNode;
 }
 
 void LinkedList::display() {
@@ -77,4 +77,8 @@ void LinkedList::display() {
     }
 
     cout << "NULL" << endl;
+}
+
+int LinkedList::getLength() {
+    return length;
 }
