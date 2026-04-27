@@ -6,3 +6,7 @@ class Neuron {
 class Layer {
     
 }
+
+class NeuralNetwork {
+    
+}
