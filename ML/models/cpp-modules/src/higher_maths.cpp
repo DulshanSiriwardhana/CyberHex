@@ -165,3 +165,7 @@ void quick_sort(double* array, int size){
 void heap_sort(double* array, int size){
 
 }
+
+double random() {
+    return 0.0;
+}
