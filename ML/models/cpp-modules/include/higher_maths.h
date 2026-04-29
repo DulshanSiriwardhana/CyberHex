@@ -18,5 +18,6 @@ void merge_sort(double* array, int size);
 void quick_sort(double* array, int size);
 void heap_sort(double* array, int size);
 void swap(double* array, int index1, int index2);
+double randd();
 
 #endif

@@ -98,7 +98,10 @@ int main() {
 
     list.display();
 
-    return 0;
+    for(int k=0;k<100;k++){
+        double x = randd();
+        cout<< x<< endl;
+    }
 
     return 0;
 }
