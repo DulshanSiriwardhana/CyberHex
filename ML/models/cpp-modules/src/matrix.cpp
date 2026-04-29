@@ -1,4 +1,36 @@
 #include "matrix.h"
+#include <iostream>
+
+using namespace std;
+
+Matrix::Matrix(int r, int c, double val) {
+    cols = c;
+    rows =r;
+    matrix = new double*[rows];
+
+    for(int i=0;i<rows;i++){
+        matrix[i] = new double[cols];
+        for(int j=0;j<cols;j++){
+            matrix[i][j] = val;
+        }
+    }
+}
+
+Matrix::~Matrix() {
+    for (int i = 0; i < rows; i++) {
+        delete[] matrix[i];
+    }
+    delete[] matrix;
+}
+
+void Matrix::print() const {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
 
 void removeRowColumn(double** &A, int row, int column, int size, double** &ret){
     for(int i=0;i<size-1;i++){
