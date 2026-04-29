@@ -1,4 +1,125 @@
 #include "matrix.h"
+#include <iostream>
+
+using namespace std;
+
+Matrix::Matrix(int r, int c, double val) {
+    rows = r;
+    cols = c;
+    matrix = new double*[rows];
+
+    for (int i = 0; i < rows; i++) {
+        matrix[i] = new double[cols];
+
+        for (int j = 0; j < cols; j++)
+            matrix[i][j] = val;
+    }
+}
+
+Matrix::Matrix(const Matrix& other) {
+    rows = other.rows;
+    cols = other.cols;
+    matrix = new double*[rows];
+
+    for (int i = 0; i < rows; i++) {
+        matrix[i] = new double[cols];
+
+        for (int j = 0; j < cols; j++)
+            matrix[i][j] = other.matrix[i][j];
+    }
+}
+
+Matrix& Matrix::operator=(const Matrix& other) {
+    if (this == &other) return *this;
+    for (int i = 0; i < rows; i++)
+        delete[] matrix[i];
+    delete[] matrix;
+
+    rows = other.rows;
+    cols = other.cols;
+
+    matrix = new double*[rows];
+    for (int i = 0; i < rows; i++) {
+        matrix[i] = new double[cols];
+        for (int j = 0; j < cols; j++)
+            matrix[i][j] = other.matrix[i][j];
+    }
+
+    return *this;
+}
+
+Matrix::~Matrix() {
+    for (int i = 0; i < rows; i++) {
+        delete[] matrix[i];
+    }
+    delete[] matrix;
+}
+
+Matrix Matrix::dot(const Matrix& other) const {
+    Matrix result(rows, other.cols, 0.0);
+
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < other.cols; j++)
+            for (int k = 0; k < cols; k++)
+                result.matrix[i][j] += matrix[i][k] * other.matrix[k][j];
+
+    return result;
+}
+
+Matrix Matrix::transpose() const {
+    Matrix t(cols, rows);
+
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+            t.matrix[j][i] = matrix[i][j];
+
+    return t;
+}
+
+Matrix Matrix::operator+(const Matrix& other) const {
+    Matrix r(rows, cols);
+
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+            r.matrix[i][j] = matrix[i][j] + other.matrix[i][j];
+
+    return r;
+}
+
+Matrix Matrix::operator-(const Matrix& other) const {
+    Matrix r(rows, cols);
+
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+            r.matrix[i][j] = matrix[i][j] - other.matrix[i][j];
+
+    return r;
+}
+
+Matrix Matrix::operator*(double scalar) const {
+    Matrix r(rows, cols);
+
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+            r.matrix[i][j] = matrix[i][j] * scalar;
+
+    return r;
+}
+
+void Matrix::apply(double (*func)(double)) {
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+            matrix[i][j] = func(matrix[i][j]);
+}
+
+void Matrix::print() const {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
 
 void removeRowColumn(double** &A, int row, int column, int size, double** &ret){
     for(int i=0;i<size-1;i++){

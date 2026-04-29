@@ -166,6 +166,19 @@ void heap_sort(double* array, int size){
 
 }
 
-double random() {
-    return 0.0;
+
+// Here is an experiment
+int a = 1;
+int b = 2;
+int c = 3;
+double randd() {
+    a = ((b+c) % (++a + b)) % 100;
+    b = ((a+c) % (++b + c)) % 100;
+    c = ((a+b) % (++c + a)) % 100;
+
+    double x = (double) ((a+b+c)%(a+2))/((double) (a+1));
+    double y = (double) ((a+b+c)%(b+2))/((double) (b+1));
+    double z = (double) ((a+b+c)%(c+2))/((double) (c+1));
+
+    return (x+y+z)/3.0;
 }
