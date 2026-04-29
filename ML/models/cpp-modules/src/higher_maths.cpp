@@ -181,5 +181,4 @@ double randd() {
     double z = (double) ((a+b+c)%(c+2))/((double) (c+1));
 
     return (x+y+z)/3.0;
-    //return 0.0;
 }
