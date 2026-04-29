@@ -2,6 +2,7 @@
 #define MATRIX_H
 
 
+
 class Matrix {
     public:
         int rows;
@@ -9,7 +10,18 @@ class Matrix {
         double** matrix;
 
         Matrix(int r, int c, double val = 0.0);
+        Matrix(const Matrix& other);
+        Matrix& operator=(const Matrix& other);
         ~Matrix();
+
+        Matrix dot(const Matrix& other) const;
+        Matrix transpose() const;
+
+        Matrix operator+(const Matrix& other) const;
+        Matrix operator-(const Matrix& other) const;
+        Matrix operator*(double scalar) const;
+
+        void apply(double (*func)(double));
         void print() const;
 };
 
