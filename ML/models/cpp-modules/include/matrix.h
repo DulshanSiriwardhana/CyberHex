@@ -1,6 +1,18 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+
+class Matrix {
+    public:
+        int rows;
+        int cols;
+        double** matrix;
+
+        Matrix(int r, int c, double val = 0.0);
+        ~Matrix();
+        void print() const;
+};
+
 void removeRowColumn(double** &A, int row, int column, int size, double** &ret);
 double det2x2(double** &A);
 double det(double** &A, int size);

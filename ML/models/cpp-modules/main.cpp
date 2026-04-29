@@ -103,5 +103,8 @@ int main() {
         cout<< x<< endl;
     }
 
+    Matrix m(3, 3, 5.0);
+    m.print();
+
     return 0;
 }
