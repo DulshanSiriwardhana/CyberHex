@@ -3,6 +3,12 @@
 
 using namespace std;
 
+Matrix::Matrix() {
+    rows = 0;
+    cols = 0;
+    matrix = nullptr;
+}
+
 Matrix::Matrix(int r, int c, double val) {
     rows = r;
     cols = c;
@@ -31,14 +37,18 @@ Matrix::Matrix(const Matrix& other) {
 
 Matrix& Matrix::operator=(const Matrix& other) {
     if (this == &other) return *this;
-    for (int i = 0; i < rows; i++)
-        delete[] matrix[i];
-    delete[] matrix;
+
+    if (matrix) {
+        for (int i = 0; i < rows; i++)
+            delete[] matrix[i];
+        delete[] matrix;
+    }
 
     rows = other.rows;
     cols = other.cols;
 
     matrix = new double*[rows];
+
     for (int i = 0; i < rows; i++) {
         matrix[i] = new double[cols];
         for (int j = 0; j < cols; j++)
@@ -49,6 +59,8 @@ Matrix& Matrix::operator=(const Matrix& other) {
 }
 
 Matrix::~Matrix() {
+    if (!matrix) return;
+
     for (int i = 0; i < rows; i++) {
         delete[] matrix[i];
     }

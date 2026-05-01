@@ -9,6 +9,7 @@ class Matrix {
         int cols;
         double** matrix;
 
+        Matrix();
         Matrix(int r, int c, double val = 0.0);
         Matrix(const Matrix& other);
         Matrix& operator=(const Matrix& other);
