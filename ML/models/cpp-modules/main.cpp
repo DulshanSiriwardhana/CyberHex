@@ -7,6 +7,9 @@
 #include "io.h"
 #include "types.h"
 #include "data_structures.h"
+#include "model.h"
+#include "dense.h"
+#include "activations.h"
 
 using namespace std;
 
@@ -114,6 +117,33 @@ int main() {
 
     Matrix m(3, 3, 5.0);
     m.print();
+
+
+    
+    Matrix X(4, 2);
+    X.matrix[0][0] = 0; X.matrix[0][1] = 0;
+    X.matrix[1][0] = 0; X.matrix[1][1] = 1;
+    X.matrix[2][0] = 1; X.matrix[2][1] = 0;
+    X.matrix[3][0] = 1; X.matrix[3][1] = 1;
+
+    Matrix y(4, 1);
+    y.matrix[0][0] = 0;
+    y.matrix[1][0] = 1;
+    y.matrix[2][0] = 1;
+    y.matrix[3][0] = 0;
+
+    Model model;
+
+    model.add(new Dense(2, 8));
+    model.add(new ReLU());
+
+    model.add(new Dense(8, 4));
+    model.add(new ReLU());
+
+    model.add(new Dense(4, 1));
+    model.add(new Sigmoid());
+
+    model.train(X, y, 5000, 0.1);
 
     return 0;
 }
