@@ -14,6 +14,6 @@ class Dense : public Layer {
 
         Matrix forward(const Matrix& input) override;
         Matrix backward(const Matrix& grad, double lr) override;
-}
+};
 
 #endif

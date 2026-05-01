@@ -8,6 +8,7 @@ class ReLU : public Layer {
         Matrix input;
 
     public:
+        ReLU();
         Matrix forward(const Matrix& input) override;
         Matrix backward(const Matrix& grad, double lr) override;
 };
@@ -17,6 +18,7 @@ class Sigmoid : public Layer {
         Matrix output;
 
     public:
+        Sigmoid();
         Matrix forward(const Matrix& input) override;
         Matrix backward(const Matrix& grad, double lr) override;
 };
