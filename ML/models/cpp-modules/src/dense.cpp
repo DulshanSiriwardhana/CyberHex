@@ -5,9 +5,12 @@
 Dense::Dense(double in, double out)
     : weights(in, out, 0.0), bias(1, out, 0.0) {
 
+    double scale = power(2.0 / in, 0.5);
+
     for (int i = 0; i < in; i++)
         for (int j = 0; j < out; j++)
-            weights.matrix[i][j] = ((double)randd());
+            weights.matrix[i][j] =
+                ((double)rand() / RAND_MAX - 0.5) * scale;
 }
 
 Matrix Dense::forward(const Matrix& X) {
