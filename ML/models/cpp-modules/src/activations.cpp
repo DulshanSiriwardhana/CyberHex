@@ -10,6 +10,7 @@ double sigmoid_d(double x) { return x * (1 - x); }
 ReLU::ReLU() {}
 Sigmoid::Sigmoid() {}
 Softmax::Softmax() {}
+Identity::Identity() {}
 
 Matrix ReLU::forward(const Matrix& X) {
     input = X;
@@ -73,5 +74,13 @@ Matrix Softmax::forward(const Matrix& X) {
 }
 
 Matrix Softmax::backward(const Matrix& grad, double) {
+    return grad;
+}
+
+Matrix Identity::forward(const Matrix& input) {
+    return input;
+}
+
+Matrix Identity::backward(const Matrix& grad, double) {
     return grad;
 }

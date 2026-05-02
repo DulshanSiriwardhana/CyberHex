@@ -33,4 +33,14 @@ class Softmax : public Layer {
         Matrix backward(const Matrix& grad, double lr) override;
 };
 
+class Identity : public Layer {
+    private:
+        Matrix output;
+
+    public:
+        Bin();
+        Matrix forward(const Matrix& input) override;
+        Matrix backward(const Matrix& grad, double lr) override;
+};
+
 #endif
