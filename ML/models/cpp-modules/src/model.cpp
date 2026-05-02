@@ -7,7 +7,6 @@ void Model::add(Layer* layer) {
 }
 
 Matrix Model::forward(const Matrix& X) {
-    X.print();
     Matrix out = X;
     for (auto l : layers)
         out = l->forward(out);
@@ -20,6 +19,8 @@ void Model::backward(Matrix grad, double lr) {
 }
 
 void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr) {
+    double min_loss = 0;
+    int best_epoch = 0;
     for (int e = 0; e < epochs; e++) {
         Matrix pred = forward(X);
 
@@ -33,9 +34,16 @@ void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr) {
         std::cout << "Epoch :" << e+1 << " -> " << " loss = " << loss << std::endl;
         Matrix grad = pred - y;
 
-        backward(grad, lr);
+        if(e==0){
+            min_loss = loss;
+        }
 
-        if (e % 500 == 0)
-            std::cout << "Epoch " << e << " Loss: " << loss << std::endl;
+        if((min_loss > loss)){
+            best_epoch = e;
+            min_loss = loss;
+        }
+
+        backward(grad, lr);
     }
+    std::cout<< "Golden values: epoch -> " << best_epoch << ", loss = " << min_loss <<std::endl;
 }

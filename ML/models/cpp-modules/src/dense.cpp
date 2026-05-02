@@ -1,5 +1,6 @@
 #include "dense.h"
 #include "higher_maths.h"
+#include <iostream>
 
 Dense::Dense(double in, double out)
     : weights(in, out, 0.0), bias(1, out, 0.0) {
@@ -10,6 +11,7 @@ Dense::Dense(double in, double out)
 }
 
 Matrix Dense::forward(const Matrix& X) {
+    input = X;
     Matrix out = X.dot(weights);
 
     for (int i = 0; i < out.rows; i++)
@@ -20,6 +22,15 @@ Matrix Dense::forward(const Matrix& X) {
 }
 
 Matrix Dense::backward(const Matrix& grad, double lr) {
+
+    if (!input.matrix) { std::cout << "input NULL\n"; exit(1); }
+    if (!grad.matrix) { std::cout << "grad NULL\n"; exit(1); }
+
+    if (input.rows != grad.rows) {
+        std::cout << "BATCH SIZE MISMATCH\n";
+        exit(1);
+    }
+
     Matrix dW = input.transpose().dot(grad);
 
     Matrix dB(1, grad.cols, 0.0);
@@ -27,8 +38,15 @@ Matrix Dense::backward(const Matrix& grad, double lr) {
         for (int i = 0; i < grad.rows; i++)
             dB.matrix[0][j] += grad.matrix[i][j];
 
+    if (grad.cols != weights.cols) {
+        std::cout << "GRAD-WEIGHT DIM ERROR\n";
+        exit(1);
+    }
+
+    Matrix grad_input = grad.dot(weights.transpose());
+
     weights = weights - dW * lr;
     bias = bias - dB * lr;
 
-    return grad.dot(weights.transpose());
+    return grad_input;
 }

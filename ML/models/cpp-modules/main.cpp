@@ -10,8 +10,27 @@
 #include "model.h"
 #include "dense.h"
 #include "activations.h"
+#include "cmath"
 
 using namespace std;
+
+bool isPrime(int n){
+    if(n<2){
+        return false;
+    }
+
+    if(n==2){
+        return true;
+    }
+
+    for(int i=2;i<n;i++){
+        if(n%i==0){
+            return false;
+        }
+    }
+
+    return true;
+}
 
 int main() {
     // // // double arrayX[3] = {1,2,3};
@@ -118,38 +137,76 @@ int main() {
     //Matrix m(3, 3, 5.0);
     //m.print();
 
+    int N = 100;
 
-    
-    Matrix X(4, 2);
-    X.matrix[0][0] = 0; X.matrix[0][1] = 0;
-    X.matrix[1][0] = 0; X.matrix[1][1] = 1;
-    X.matrix[2][0] = 1; X.matrix[2][1] = 0;
-    X.matrix[3][0] = 1; X.matrix[3][1] = 1;
+    Matrix X(N, 2);
+    Matrix y(N, 1);
 
-    Matrix y(4, 1);
-    y.matrix[0][0] = 0;
-    y.matrix[1][0] = 1;
-    y.matrix[2][0] = 1;
-    y.matrix[3][0] = 0;
+    for (int i = 0; i < N; i++) {
+        double t = (double)i / N * 4 * 3.1415;
+        double r = (double)i / N;
+
+        double x1 = r * cos(t);
+        double x2 = r * sin(t);
+
+        if (i % 2 == 0) {
+            X.matrix[i][0] = x1;
+            X.matrix[i][1] = x2;
+            y.matrix[i][0] = 0;
+        } else {
+            X.matrix[i][0] = -x1;
+            X.matrix[i][1] = -x2;
+            y.matrix[i][0] = 1;
+        }
+    }
 
     Model model;
 
-    cout << "1" << endl;
-    model.add(new Dense(2, 8));
+    model.add(new Dense(2, 4));
     model.add(new ReLU());
 
-    cout << "2" << endl;
+    model.add(new Dense(4, 8));
+    model.add(new ReLU());
+
+    model.add(new Dense(8, 16));
+    model.add(new ReLU());
+
+    model.add(new Dense(16, 32));
+    model.add(new ReLU());
+
+    model.add(new Dense(32, 64));
+    model.add(new ReLU());
+
+    model.add(new Dense(64, 32));
+    model.add(new ReLU());
+
+    model.add(new Dense(32, 16));
+    model.add(new ReLU());
+
+    model.add(new Dense(16, 8));
+    model.add(new ReLU());
+
     model.add(new Dense(8, 4));
     model.add(new ReLU());
 
-    cout << "3" << endl;
-    model.add(new Dense(4, 1));
+    model.add(new Dense(4, 2));
+    model.add(new ReLU());
+
+    model.add(new Dense(2, 1));
     model.add(new Sigmoid());
 
-    cout << "4" << endl;
-    model.train(X, y, 50, 0.1);
+    model.train(X, y, 100000, 0.1);
 
-    cout << "5" << endl;
+    Matrix pred = model.forward(X);
+
+    for (int i = 0; i < 10; i++) {
+        std::cout << "Input: (" 
+                << X.matrix[i][0] << ", " 
+                << X.matrix[i][1] << ") ";
+
+        std::cout << "Pred: " << pred.matrix[i][0]
+                << " Label: " << y.matrix[i][0] << std::endl;
+    }
 
     return 0;
 }
