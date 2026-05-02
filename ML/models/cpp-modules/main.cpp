@@ -162,28 +162,22 @@ int main() {
 
     Model model;
 
-    model.add(new Dense(2, 4));
+    model.add(new Dense(2, 32));
     model.add(new ReLU());
 
-    model.add(new Dense(4, 8));
+    model.add(new Dense(32, 64));
     model.add(new ReLU());
 
-    model.add(new Dense(8, 16));
+    model.add(new Dense(64, 32));
     model.add(new ReLU());
 
-    model.add(new Dense(16, 8));
+    model.add(new Dense(32, 4));
     model.add(new ReLU());
 
-    model.add(new Dense(8, 4));
-    model.add(new ReLU());
-
-    model.add(new Dense(4, 2));
+    model.add(new Dense(4, 1));
     model.add(new Sigmoid());
 
-    model.add(new Dense(2, 1));
-    model.add(new ReLU());
-
-    model.train(X, y, 1000, 0.01);
+    model.train(X, y, 100000, 0.07071);
 
     Matrix pred = model.forward(X);
 
