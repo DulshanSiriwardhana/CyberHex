@@ -3,7 +3,7 @@ import type { LineChartType } from "../../types/charts";
 import { calcLeftPercent, calcTopPercent } from "../../utils/functions";
 import DataPoint from "./DataPoint";
 
-const LineChart=({info}:{info:LineChartType})=>{
+const LineChart=({info, factor=1}:{info:LineChartType, factor: number})=>{
     const {data, domain, range} = info;
     const chartRef = useRef(null);
     const leftPercent = calcLeftPercent(domain);
@@ -34,8 +34,8 @@ const LineChart=({info}:{info:LineChartType})=>{
                 </div>
                 <div className="absolute flex w-full items-center justify-between" style={{ top: `${topPercent}%`}}>
                     {
-                        Array.from({length: domain.end - domain.start + 1}, (_, i)=> i).map((i)=>(
-                            <div key={"three"+i.toString()} className="h-full mt-1 font-bold text-sm">{domain.start + i}</div>
+                        Array.from({length: (domain.end - domain.start + 1)/factor}, (_, i)=> i).map((i)=>(
+                            <div key={"three"+i.toString()} className="h-full mt-1 font-bold text-sm">{(domain.start + i)*factor}</div>
                         ))
                     }
                 </div>

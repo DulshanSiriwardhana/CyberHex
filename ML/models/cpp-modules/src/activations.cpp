@@ -9,6 +9,8 @@ double sigmoid_d(double x) { return x * (1 - x); }
 
 ReLU::ReLU() {}
 Sigmoid::Sigmoid() {}
+Softmax::Softmax() {}
+Identity::Identity() {}
 
 Matrix ReLU::forward(const Matrix& X) {
     input = X;
@@ -45,4 +47,40 @@ Matrix Sigmoid::backward(const Matrix& grad, double) {
             res.matrix[i][j] *= g.matrix[i][j];
 
     return res;
+}
+
+Matrix Softmax::forward(const Matrix& X) {
+    output = Matrix(X.rows, X.cols);
+
+    for (int i = 0; i < X.rows; i++) {
+        double maxVal = X.matrix[i][0];
+        for (int j = 1; j < X.cols; j++)
+            if (X.matrix[i][j] > maxVal)
+                maxVal = X.matrix[i][j];
+
+        double sum = 0.0;
+
+        for (int j = 0; j < X.cols; j++) {
+            output.matrix[i][j] = exp(X.matrix[i][j] - maxVal);
+            sum += output.matrix[i][j];
+        }
+
+        for (int j = 0; j < X.cols; j++) {
+            output.matrix[i][j] /= sum;
+        }
+    }
+
+    return output;
+}
+
+Matrix Softmax::backward(const Matrix& grad, double) {
+    return grad;
+}
+
+Matrix Identity::forward(const Matrix& input) {
+    return input;
+}
+
+Matrix Identity::backward(const Matrix& grad, double) {
+    return grad;
 }
