@@ -38,7 +38,7 @@ class Identity : public Layer {
         Matrix output;
 
     public:
-        Bin();
+        Identity();
         Matrix forward(const Matrix& input) override;
         Matrix backward(const Matrix& grad, double lr) override;
 };
