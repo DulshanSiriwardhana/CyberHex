@@ -2,6 +2,14 @@
 #include "higher_maths.h"
 #include <iostream>
 
+const Matrix& Dense::getWeights() const {
+    return weights;
+}
+
+const Matrix& Dense::getBias() const {
+    return bias;
+}
+
 Dense::Dense(double in, double out)
     : weights(in, out, 0.0), bias(1, out, 0.0) {
 
