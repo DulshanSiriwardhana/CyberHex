@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "layer.h"
+#include <string>
 
 class Model {
     private:
@@ -10,11 +11,10 @@ class Model {
 
     public:
         void add(Layer* layer);
-
         Matrix forward(const Matrix& X);
         void backward(Matrix grad, double lr);
-
         void train(const Matrix& X, const Matrix& y, int epochs, double lr);
+        void saveWeights(const std::string& prefix);
 };
 
 #endif
