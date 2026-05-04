@@ -110,3 +110,8 @@ This project is fully designed, developed, and maintained by:
 
 > I am the sole owner and author of CyberHex.  
 > All core systems — including the matrix engine, neural network architecture, training pipeline, and real-time visualization — are built from scratch as part of this project.
+
+# License
+
+This project is licensed under the Apache License 2.0.
+See the LICENSE file for details.
