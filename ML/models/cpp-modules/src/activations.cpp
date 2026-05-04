@@ -2,7 +2,8 @@
 #include <cmath>
 #include "higher_maths.h"
 
-int k = 3;
+int a = 1;
+int b = 3
 
 double relu(double x) { return x > 0 ? x : 0; }
 double relu_d(double x) { return x > 0 ? 1 : 0; }
@@ -10,8 +11,8 @@ double relu_d(double x) { return x > 0 ? 1 : 0; }
 double sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
 double sigmoid_d(double x) { return x * (1 - x); }
 
-double generalized_sigmoid(double x) { return 1.0 / (1.0 + exp(-1.0 * pow(x, k)));}
-double generalized_sigmoid_d(double x) { return -k * x * (1-x) * pow(log(x/(1-x)), ((k-1)/k));}
+double generalized_sigmoid(double x) { return 1.0 / (1.0 + exp(a-b * pow(x, k)));}
+double generalized_sigmoid_d(double x) { return -b * x * (1-x);}
 
 ReLU::ReLU() {}
 Sigmoid::Sigmoid() {}
