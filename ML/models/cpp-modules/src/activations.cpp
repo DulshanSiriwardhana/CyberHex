@@ -1,5 +1,9 @@
 #include "activations.h"
 #include <cmath>
+#include "higher_maths.h"
+
+int a = 1;
+int b = 3
 
 double relu(double x) { return x > 0 ? x : 0; }
 double relu_d(double x) { return x > 0 ? 1 : 0; }
@@ -7,10 +11,14 @@ double relu_d(double x) { return x > 0 ? 1 : 0; }
 double sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
 double sigmoid_d(double x) { return x * (1 - x); }
 
+double generalized_sigmoid(double x) { return 1.0 / (1.0 + exp(a-b * pow(x, k)));}
+double generalized_sigmoid_d(double x) { return -b * x * (1-x);}
+
 ReLU::ReLU() {}
 Sigmoid::Sigmoid() {}
 Softmax::Softmax() {}
 Identity::Identity() {}
+Generalized_Sigmoid::Generalized_Sigmoid() {}
 
 Matrix ReLU::forward(const Matrix& X) {
     input = X;
@@ -83,4 +91,22 @@ Matrix Identity::forward(const Matrix& input) {
 
 Matrix Identity::backward(const Matrix& grad, double) {
     return grad;
+}
+
+Matrix Generalized_Sigmoid::forward(const Matrix& X) {
+    output = X;
+    output.apply(generalized_sigmoid);
+    return output;
+}
+
+Matrix Generalized_Sigmoid::backward(const Matrix& grad, double) {
+    Matrix g = output;
+    g.apply(generalized_sigmoid_d);
+
+    Matrix res = grad;
+    for (int i = 0; i < grad.rows; i++)
+        for (int j = 0; j < grad.cols; j++)
+            res.matrix[i][j] *= g.matrix[i][j];
+
+    return res;
 }

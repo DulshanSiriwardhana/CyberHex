@@ -43,4 +43,14 @@ class Identity : public Layer {
         Matrix backward(const Matrix& grad, double lr) override;
 };
 
+class Generalized_Sigmoid : public Layer {
+    private:
+        Matrix output;
+
+    public:
+        Generalized_Sigmoid();
+        Matrix forward(const Matrix& input) override;
+        Matrix backward(const Matrix& grad, double lr) override;
+};
+
 #endif

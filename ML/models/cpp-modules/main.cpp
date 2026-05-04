@@ -162,23 +162,23 @@ int main() {
 
     Model model;
 
-    model.add(new Dense(2, 32));
+    model.add(new Dense(2, 2048));
     model.add(new ReLU());
 
-    model.add(new Dense(32, 16));
+    model.add(new Dense(2048, 4));
     model.add(new ReLU());
 
-    model.add(new Dense(16, 4));
+    model.add(new Dense(4, 2));
     model.add(new ReLU());
 
-    model.add(new Dense(4, 1));
+    model.add(new Dense(2, 1));
     model.add(new Sigmoid());
 
-    model.train(X, y, 10000, 0.07071);
+    model.train(X, y, 100000, 0.07071);
 
     Matrix pred = model.forward(X);
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 20; i++) {
         std::cout << "Input: (" 
                 << X.matrix[i][0] << ", " 
                 << X.matrix[i][1] << ") ";
