@@ -172,7 +172,7 @@ int main() {
     model.add(new ReLU());
 
     model.add(new Dense(2, 1));
-    model.add(new Sigmoid());
+    model.add(new Generalized_Sigmoid());
 
     model.train(X, y, 100000, 0.07071);
 
