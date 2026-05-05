@@ -162,17 +162,17 @@ int main() {
 
     Model model;
 
-    model.add(new Dense(2, 2048));
+    model.add(new Dense(2, 1024));
     model.add(new ReLU());
 
-    model.add(new Dense(2048, 4));
+    model.add(new Dense(1024, 8));
     model.add(new ReLU());
 
-    model.add(new Dense(4, 2));
+    model.add(new Dense(8, 2));
     model.add(new ReLU());
 
     model.add(new Dense(2, 1));
-    model.add(new Generalized_Sigmoid());
+    model.add(new Sigmoid());
 
     model.train(X, y, 100000, 0.07071);
 
