@@ -14,7 +14,7 @@ double f(double x1, double x2) {
 
 int main() {
 
-    int N = 2000;
+    int N = 100;
 
     Matrix X(N, 2);
     Matrix y(N, 1);
@@ -51,19 +51,16 @@ int main() {
 
     Model model;
 
-    model.add(new Dense(2, 512));
+    model.add(new Dense(2, 1024));
     model.add(new ReLU());
 
-    model.add(new Dense(512, 64));
+    model.add(new Dense(1024, 32));
     model.add(new ReLU());
 
-    model.add(new Dense(64, 8));
-    model.add(new ReLU());
-
-    model.add(new Dense(8, 1));
+    model.add(new Dense(32, 1));
     model.add(new Sigmoid());
 
-    model.train(X_train, y_train, 100000, 0.01);
+    model.train(X_train, y_train, 2000, 0.3);
 
     Matrix pred = model.forward(X_test);
 
