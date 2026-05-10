@@ -2,6 +2,7 @@
 #define MODEL_H
 
 #include <vector>
+#include <mutex>
 #include "layer.h"
 #include <string>
 
@@ -14,6 +15,7 @@ enum class LossType {
 class Model {
     private:
         std::vector<Layer*> layers;
+        mutable std::mutex mtx;
 
     public:
         void add(Layer* layer);

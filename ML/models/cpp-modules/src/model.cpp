@@ -11,6 +11,7 @@ void Model::add(Layer* layer) {
 }
 
 Matrix<double> Model::forward(const Matrix<double>& X) {
+    std::lock_guard<std::mutex> lock(mtx);
     Matrix<double> out = X;
     for (auto l : layers)
         out = l->forward(out);
@@ -111,44 +112,55 @@ void Model::train(const Matrix<double>& X, const Matrix<double>& y, int epochs, 
 }
 
 void Model::saveWeights(const std::string& folder) {
+    std::lock_guard<std::mutex> lock(mtx);
     namespace fs = std::filesystem;
-
     fs::create_directories(folder);
-
     int idx = 0;
-
     for (auto l : layers) {
         Dense* d = dynamic_cast<Dense*>(l);
-
         if (d) {
-            std::stringstream w, b;
-
-            w << folder << "/layer_" << idx << "_weights.txt";
-            b << folder << "/layer_" << idx << "_bias.txt";
-
-            std::ofstream wf(w.str());
-            std::ofstream bf(b.str());
-
+            std::string path = folder + "/layer_" + std::to_string(idx) + ".json";
+            std::ofstream f(path);
             const Matrix<double>& W = d->getWeights();
             const Matrix<double>& B = d->getBias();
-
-            for (int i = 0; i < W.rows; i++) {
-                for (int j = 0; j < W.cols; j++)
-                    wf << W(i, j) << " ";
-                wf << "\n";
+            
+            f << "{
+";
+            f << "  \"layerType\": \"Dense\",
+";
+            f << "  \"inputShape\": " << W.rows << ",
+";
+            f << "  \"outputShape\": " << W.cols << ",
+";
+            f << "  \"weights\": [
+";
+            for (size_t i = 0; i < W.rows; i++) {
+                f << "    [";
+                for (size_t j = 0; j < W.cols; j++) {
+                    f << W(i, j) << (j == W.cols - 1 ? "" : ", ");
+                }
+                f << "]" << (i == W.rows - 1 ? "" : ",") << "
+";
             }
-
-            for (int j = 0; j < B.cols; j++)
-                bf << B(0, j) << " ";
-
-            wf.close();
-            bf.close();
-
+            f << "  ],
+";
+            f << "  \"bias\": [
+    ";
+            for (size_t j = 0; j < B.cols; j++) {
+                f << B(0, j) << (j == B.cols - 1 ? "" : ", ");
+            }
+            f << "
+  ]
+";
+            f << "}
+";
+            f.close();
             idx++;
         }
     }
 }
 void Model::saveWeightsBinary(const std::string& folder) {
+    std::lock_guard<std::mutex> lock(mtx);
     namespace fs = std::filesystem;
     fs::create_directories(folder);
     int idx = 0;
