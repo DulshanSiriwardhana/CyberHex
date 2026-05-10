@@ -11,15 +11,17 @@ const Matrix& Dense::getBias() const {
     return bias;
 }
 
-Dense::Dense(double in, double out)
+Dense::Dense(double in, double out, InitType init_type)
     : weights(in, out, 0.0), bias(1, out, 0.0) {
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::normal_distribution<double> d(0.0, std::sqrt(2.0 / in));
+    
+    double variance = (init_type == InitType::HE) ? (2.0 / in) : (1.0 / in); // Xavier limit
+    std::normal_distribution<double> d(0.0, std::sqrt(variance));
 
-    for (int i = 0; i < in; i++)
-        for (int j = 0; j < out; j++)
+    for (size_t i = 0; i < in; i++)
+        for (size_t j = 0; j < out; j++)
             weights.matrix[i][j] = d(gen);
 }
 
