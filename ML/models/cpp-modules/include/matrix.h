@@ -1,19 +1,34 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-
-
 #include <vector>
+#include <stdexcept>
+#include <string>
+
+class CyberHexException : public std::runtime_error {
+public:
+    explicit CyberHexException(const std::string& msg) : std::runtime_error(msg) {}
+};
+
+class DimensionMismatchException : public CyberHexException {
+public:
+    explicit DimensionMismatchException(const std::string& msg) : CyberHexException(msg) {}
+};
 
 class Matrix {
     public:
-        int rows;
-        int cols;
+        size_t rows;
+        size_t cols;
         std::vector<std::vector<double>> matrix;
 
         Matrix();
-        Matrix(int r, int c, double val = 0.0);
-        
+        Matrix(size_t r, size_t c, double val = 0.0);
+
+        Matrix(const Matrix& other);
+        Matrix(Matrix&& other) noexcept;
+        Matrix& operator=(Matrix other);
+        void swap(Matrix& other) noexcept;
+
         Matrix dot(const Matrix& other) const;
         Matrix transpose() const;
 
@@ -25,12 +40,11 @@ class Matrix {
         void print() const;
 };
 
-void removeRowColumn(double** &A, int row, int column, int size, double** &ret);
-double det2x2(double** &A);
-double det(double** &A, int size);
-void replaceRow(double** &A, int row, int size, double*  replacingRow, double** &ret);
-void replaceColumn(double** &A, int column, int size, double*  replacingColumn, double** &ret);
-void solve_AX_eq_B(double** &A, double* X, double* B, int size);
-void multiply_matrices(double** &A, double** &B, int* dimensions, double** &ret);
+void removeRowColumn(const std::vector<std::vector<double>>& A, size_t row, size_t column, std::vector<std::vector<double>>& ret);
+double det(std::vector<std::vector<double>> A); // Pass by value to allow mutation for LU
+void replaceRow(const std::vector<std::vector<double>>& A, size_t row, const std::vector<double>& replacingRow, std::vector<std::vector<double>>& ret);
+void replaceColumn(const std::vector<std::vector<double>>& A, size_t column, const std::vector<double>& replacingColumn, std::vector<std::vector<double>>& ret);
+std::vector<double> solve_AX_eq_B(std::vector<std::vector<double>> A, std::vector<double> B); // Pass by value
+std::vector<std::vector<double>> multiply_matrices(const std::vector<std::vector<double>>& A, const std::vector<std::vector<double>>& B);
 
 #endif
