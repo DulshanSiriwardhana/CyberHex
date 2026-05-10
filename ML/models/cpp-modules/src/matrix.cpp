@@ -3,71 +3,14 @@
 
 using namespace std;
 
-Matrix::Matrix() {
-    rows = 0;
-    cols = 0;
-    matrix = nullptr;
-}
+Matrix::Matrix() : rows(0), cols(0), matrix(0, std::vector<double>(0, 0.0)) {}
 
-Matrix::Matrix(int r, int c, double val) {
-    rows = r;
-    cols = c;
-    matrix = new double*[rows];
-
-    for (int i = 0; i < rows; i++) {
-        matrix[i] = new double[cols];
-
-        for (int j = 0; j < cols; j++)
-            matrix[i][j] = val;
-    }
-}
-
-Matrix::Matrix(const Matrix& other) {
-    rows = other.rows;
-    cols = other.cols;
-    matrix = new double*[rows];
-
-    for (int i = 0; i < rows; i++) {
-        matrix[i] = new double[cols];
-
-        for (int j = 0; j < cols; j++)
-            matrix[i][j] = other.matrix[i][j];
-    }
-}
-
-Matrix& Matrix::operator=(const Matrix& other) {
-    if (this == &other) return *this;
-
-    if (matrix) {
-        for (int i = 0; i < rows; i++)
-            delete[] matrix[i];
-        delete[] matrix;
-    }
-
-    rows = other.rows;
-    cols = other.cols;
-
-    matrix = new double*[rows];
-
-    for (int i = 0; i < rows; i++) {
-        matrix[i] = new double[cols];
-        for (int j = 0; j < cols; j++)
-            matrix[i][j] = other.matrix[i][j];
-    }
-
-    return *this;
-}
-
-Matrix::~Matrix() {
-    if (!matrix) return;
-
-    for (int i = 0; i < rows; i++) {
-        delete[] matrix[i];
-    }
-    delete[] matrix;
-}
+Matrix::Matrix(int r, int c, double val) : rows(r), cols(c), matrix(r, std::vector<double>(c, val)) {}
 
 Matrix Matrix::dot(const Matrix& other) const {
+    if (cols != other.rows) {
+        throw std::invalid_argument("Matrix dot product dimension mismatch");
+    }
     Matrix result(rows, other.cols, 0.0);
 
     for (int i = 0; i < rows; i++)
@@ -89,6 +32,9 @@ Matrix Matrix::transpose() const {
 }
 
 Matrix Matrix::operator+(const Matrix& other) const {
+    if (rows != other.rows || cols != other.cols) {
+        throw std::invalid_argument("Matrix addition dimension mismatch");
+    }
     Matrix r(rows, cols);
 
     for (int i = 0; i < rows; i++)
@@ -99,6 +45,9 @@ Matrix Matrix::operator+(const Matrix& other) const {
 }
 
 Matrix Matrix::operator-(const Matrix& other) const {
+    if (rows != other.rows || cols != other.cols) {
+        throw std::invalid_argument("Matrix subtraction dimension mismatch");
+    }
     Matrix r(rows, cols);
 
     for (int i = 0; i < rows; i++)

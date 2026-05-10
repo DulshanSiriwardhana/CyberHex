@@ -3,18 +3,17 @@
 
 
 
+#include <vector>
+
 class Matrix {
     public:
         int rows;
         int cols;
-        double** matrix;
+        std::vector<std::vector<double>> matrix;
 
         Matrix();
         Matrix(int r, int c, double val = 0.0);
-        Matrix(const Matrix& other);
-        Matrix& operator=(const Matrix& other);
-        ~Matrix();
-
+        
         Matrix dot(const Matrix& other) const;
         Matrix transpose() const;
 
