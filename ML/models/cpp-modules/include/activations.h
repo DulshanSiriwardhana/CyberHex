@@ -10,7 +10,7 @@ class ReLU : public Layer {
     public:
         ReLU();
         Matrix forward(const Matrix& input) override;
-        Matrix backward(const Matrix& grad, double lr) override;
+        Matrix backward(const Matrix& grad, double lr, OptimizerType opt = OptimizerType::SGD, int t = 1) override;
 };
 
 class Sigmoid : public Layer {
@@ -20,7 +20,7 @@ class Sigmoid : public Layer {
     public:
         Sigmoid();
         Matrix forward(const Matrix& input) override;
-        Matrix backward(const Matrix& grad, double lr) override;
+        Matrix backward(const Matrix& grad, double lr, OptimizerType opt = OptimizerType::SGD, int t = 1) override;
 };
 
 class Softmax : public Layer {
@@ -30,7 +30,7 @@ class Softmax : public Layer {
     public:
         Softmax();
         Matrix forward(const Matrix& input) override;
-        Matrix backward(const Matrix& grad, double lr) override;
+        Matrix backward(const Matrix& grad, double lr, OptimizerType opt = OptimizerType::SGD, int t = 1) override;
 };
 
 class Identity : public Layer {
@@ -40,7 +40,7 @@ class Identity : public Layer {
     public:
         Identity();
         Matrix forward(const Matrix& input) override;
-        Matrix backward(const Matrix& grad, double lr) override;
+        Matrix backward(const Matrix& grad, double lr, OptimizerType opt = OptimizerType::SGD, int t = 1) override;
 };
 
 class Generalized_Sigmoid : public Layer {
@@ -50,7 +50,7 @@ class Generalized_Sigmoid : public Layer {
     public:
         Generalized_Sigmoid();
         Matrix forward(const Matrix& input) override;
-        Matrix backward(const Matrix& grad, double lr) override;
+        Matrix backward(const Matrix& grad, double lr, OptimizerType opt = OptimizerType::SGD, int t = 1) override;
 };
 
 class Tanh : public Layer {
@@ -60,7 +60,7 @@ class Tanh : public Layer {
     public:
         Tanh();
         Matrix forward(const Matrix& input) override;
-        Matrix backward(const Matrix& grad, double lr) override;
+        Matrix backward(const Matrix& grad, double lr, OptimizerType opt = OptimizerType::SGD, int t = 1) override;
 };
 
 class LeakyReLU : public Layer {
@@ -70,7 +70,7 @@ class LeakyReLU : public Layer {
     public:
         LeakyReLU();
         Matrix forward(const Matrix& input) override;
-        Matrix backward(const Matrix& grad, double lr) override;
+        Matrix backward(const Matrix& grad, double lr, OptimizerType opt = OptimizerType::SGD, int t = 1) override;
 };
 
 #endif
