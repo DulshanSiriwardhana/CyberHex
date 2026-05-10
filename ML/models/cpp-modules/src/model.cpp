@@ -22,7 +22,7 @@ void Model::backward(Matrix grad, double lr, OptimizerType opt, int t) {
         grad = layers[i]->backward(grad, lr, opt, t);
 }
 
-void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr, LossType loss_type, int early_stopping_patience, OptimizerType opt) {
+void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr, LossType loss_type, int early_stopping_patience, OptimizerType opt, double lr_decay) {
     namespace fs = std::filesystem;
 
     std::string folder = "../../ui/visualizations/public/";
@@ -76,6 +76,14 @@ void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr, LossT
         }
 
         Matrix grad = pred - y;
+        
+        // Gradient Clipping bounds [-1.0, 1.0]
+        for (size_t i = 0; i < grad.rows; i++) {
+            for (size_t j = 0; j < grad.cols; j++) {
+                grad.matrix[i][j] = std::max(-1.0, std::min(1.0, grad.matrix[i][j]));
+            }
+        }
+
 
         if (loss < min_loss) {
             min_loss = loss;
@@ -85,6 +93,8 @@ void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr, LossT
             saveWeightsBinary(folder);
         } else {
             patience_counter++;
+            lr *= lr_decay; // LR Decay on patience failure
+            std::cout << "Patience increased to " << patience_counter << ", LR decayed to " << lr << std::endl;
             if (early_stopping_patience > 0 && patience_counter >= early_stopping_patience) {
                 std::cout << "Early stopping triggered at epoch " << e + 1 << "\n";
                 break;
