@@ -110,3 +110,39 @@ Matrix Generalized_Sigmoid::backward(const Matrix& grad, double) {
 
     return res;
 }
+double tanh_act(double x) { return std::tanh(x); }
+double tanh_deriv(double x) { return 1.0 - x * x; }
+double leaky_relu(double x) { return x > 0 ? x : 0.01 * x; }
+double leaky_relu_deriv(double x) { return x > 0 ? 1.0 : 0.01; }
+
+Tanh::Tanh() {}
+Matrix Tanh::forward(const Matrix& X) {
+    output = X;
+    output.apply(tanh_act);
+    return output;
+}
+Matrix Tanh::backward(const Matrix& grad, double) {
+    Matrix g = output;
+    g.apply(tanh_deriv);
+    Matrix res = grad;
+    for (int i = 0; i < grad.rows; i++)
+        for (int j = 0; j < grad.cols; j++)
+            res.matrix[i][j] *= g.matrix[i][j];
+    return res;
+}
+
+LeakyReLU::LeakyReLU() {}
+Matrix LeakyReLU::forward(const Matrix& X) {
+    output = X;
+    output.apply(leaky_relu);
+    return output;
+}
+Matrix LeakyReLU::backward(const Matrix& grad, double) {
+    Matrix g = output;
+    g.apply(leaky_relu_deriv);
+    Matrix res = grad;
+    for (int i = 0; i < grad.rows; i++)
+        for (int j = 0; j < grad.cols; j++)
+            res.matrix[i][j] *= g.matrix[i][j];
+    return res;
+}

@@ -1,6 +1,7 @@
 #include "dense.h"
-#include "higher_maths.h"
+#include <cmath>
 #include <iostream>
+#include <random>
 
 const Matrix& Dense::getWeights() const {
     return weights;
@@ -13,12 +14,13 @@ const Matrix& Dense::getBias() const {
 Dense::Dense(double in, double out)
     : weights(in, out, 0.0), bias(1, out, 0.0) {
 
-    double scale = power(2.0 / in, 0.5);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<double> d(0.0, std::sqrt(2.0 / in));
 
     for (int i = 0; i < in; i++)
         for (int j = 0; j < out; j++)
-            weights.matrix[i][j] =
-                ((double)rand() / RAND_MAX - 0.5) * scale;
+            weights.matrix[i][j] = d(gen);
 }
 
 Matrix Dense::forward(const Matrix& X) {
