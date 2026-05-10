@@ -17,12 +17,12 @@ Matrix Model::forward(const Matrix& X) {
     return out;
 }
 
-void Model::backward(Matrix grad, double lr) {
+void Model::backward(Matrix grad, double lr, OptimizerType opt, int t) {
     for (int i = (int)layers.size() - 1; i >= 0; i--)
-        grad = layers[i]->backward(grad, lr);
+        grad = layers[i]->backward(grad, lr, opt, t);
 }
 
-void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr, LossType loss_type, int early_stopping_patience) {
+void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr, LossType loss_type, int early_stopping_patience, OptimizerType opt) {
     namespace fs = std::filesystem;
 
     std::string folder = "../../ui/visualizations/public/";
@@ -91,7 +91,7 @@ void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr, LossT
             }
         }
 
-        backward(grad, lr);
+        backward(grad, lr, opt, e + 1);
     }
 
     lossFile.close();
