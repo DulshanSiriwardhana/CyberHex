@@ -11,6 +11,13 @@ enum class LossType {
     CCE
 };
 
+enum class OptimizerType {
+    SGD,
+    MOMENTUM,
+    RMSPROP,
+    ADAM
+};
+
 class Model {
     private:
         std::vector<Layer*> layers;
@@ -18,8 +25,8 @@ class Model {
     public:
         void add(Layer* layer);
         Matrix forward(const Matrix& X);
-        void backward(Matrix grad, double lr);
-        void train(const Matrix& X, const Matrix& y, int epochs, double lr, LossType loss_type = LossType::MSE, int early_stopping_patience = 0);
+        void backward(Matrix grad, double lr, OptimizerType opt = OptimizerType::SGD, int t = 1);
+        void train(const Matrix& X, const Matrix& y, int epochs, double lr, LossType loss_type = LossType::MSE, int early_stopping_patience = 0, OptimizerType opt = OptimizerType::SGD);
         void saveWeights(const std::string& prefix);
         void saveWeightsBinary(const std::string& prefix);
 };
