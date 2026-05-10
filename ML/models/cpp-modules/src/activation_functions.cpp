@@ -1,5 +1,6 @@
 #include "activation_functions.h"
 #include "basic_maths.h"
+#include <cmath>
 
 void full_linear_filter(double& value){
     value = value;
@@ -37,4 +38,18 @@ void full_sign_filter(double& value){
 
 void inverse_square_normalize_filter(double& value){
     value = 1/(1+pow(value,2));
+}
+
+void tanh_filter(double& value){
+    value = std::tanh(value);
+}
+
+void leaky_relu_filter(double& value){
+    if (value < 0) {
+        value = 0.01 * value;
+    }
+}
+
+void softplus_filter(double& value){
+    value = std::log(1.0 + std::exp(value));
 }
