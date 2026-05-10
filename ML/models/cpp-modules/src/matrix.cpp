@@ -110,26 +110,45 @@ double det2x2(double** &A){
 }
 
 double det(double** &A, int size){
-    if(size==2){
-        return det2x2(A);
+    if(size == 0) return 0;
+    if(size == 1) return A[0][0];
+
+    double** temp = new double*[size];
+    for (int i = 0; i < size; i++) {
+        temp[i] = new double[size];
+        for (int j = 0; j < size; j++) temp[i][j] = A[i][j];
     }
 
-    int k=1;
-    double sum =0;
-    for(int i =0;i<size;i++){
-
-        double** y = new double*[size-1];
-
-        for(int k=0;k<size;k++){
-            y[k] = new double[size-1];
+    double d = 1.0;
+    for (int i = 0; i < size; i++) {
+        int pivot = i;
+        for (int j = i + 1; j < size; j++) {
+            if (std::abs(temp[j][i]) > std::abs(temp[pivot][i])) {
+                pivot = j;
+            }
+        }
+        if (pivot != i) {
+            std::swap(temp[i], temp[pivot]);
+            d = -d;
+        }
+        if (temp[i][i] == 0) {
+            d = 0;
+            break;
         }
 
-        removeRowColumn(A, 0, i, size, y);
-        sum += k*A[0][i]* det(y, size-1);
-        k *= -1;
+        d *= temp[i][i];
+        for (int j = i + 1; j < size; j++) {
+            double factor = temp[j][i] / temp[i][i];
+            for (int k = i + 1; k < size; k++) {
+                temp[j][k] -= factor * temp[i][k];
+            }
+        }
     }
 
-    return sum;
+    for (int i = 0; i < size; i++) delete[] temp[i];
+    delete[] temp;
+
+    return d;
 }
 
 void replaceRow(double** &A, int row, int size, double*  replacingRow, double** &ret){
@@ -159,18 +178,45 @@ void replaceColumn(double** &A, int column, int size, double*  replacingColumn, 
 }
 
 void solve_AX_eq_B(double** &A, double* X, double* B, int size){
-    double detA = det(A, size);
-    for(int i=0;i<size;i++){
-
-        double** newA = new double*[size];
-
-        for(int k=0;k<size;k++){
-            newA[k] = new double[size];
-        }
-        
-        replaceColumn(A, i, size, B, newA);
-        X[i] = det(newA, size)/detA;
+    double** M = new double*[size];
+    for (int i = 0; i < size; i++) {
+        M[i] = new double[size + 1];
+        for (int j = 0; j < size; j++) M[i][j] = A[i][j];
+        M[i][size] = B[i];
     }
+
+    for (int i = 0; i < size; i++) {
+        int pivot = i;
+        for (int j = i + 1; j < size; j++) {
+            if (std::abs(M[j][i]) > std::abs(M[pivot][i])) {
+                pivot = j;
+            }
+        }
+        if (pivot != i) std::swap(M[i], M[pivot]);
+        
+        if (M[i][i] == 0) {
+            std::cerr << "Singular matrix detected in solve_AX_eq_B\n";
+            for(int k=0; k<size; k++) X[k] = 0;
+            break;
+        }
+
+        double diag = M[i][i];
+        for (int j = i; j <= size; j++) M[i][j] /= diag;
+
+        for (int j = 0; j < size; j++) {
+            if (i != j) {
+                double factor = M[j][i];
+                for (int k = i; k <= size; k++) {
+                    M[j][k] -= factor * M[i][k];
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < size; i++) X[i] = M[i][size];
+
+    for (int i = 0; i < size; i++) delete[] M[i];
+    delete[] M;
 }
 
 void multiply_matrices(double** &A, double** &B, int* dimensions, double** &ret){

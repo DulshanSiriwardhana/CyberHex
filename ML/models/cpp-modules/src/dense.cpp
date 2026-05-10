@@ -34,8 +34,8 @@ Matrix Dense::forward(const Matrix& X) {
 
 Matrix Dense::backward(const Matrix& grad, double lr) {
 
-    if (!input.matrix) { std::cout << "input NULL\n"; exit(1); }
-    if (!grad.matrix) { std::cout << "grad NULL\n"; exit(1); }
+    if (input.matrix.empty()) { std::cout << "input empty\n"; exit(1); }
+    if (grad.matrix.empty()) { std::cout << "grad empty\n"; exit(1); }
 
     if (input.rows != grad.rows) {
         std::cout << "BATCH SIZE MISMATCH\n";
