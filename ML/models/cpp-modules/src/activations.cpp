@@ -27,7 +27,7 @@ Matrix ReLU::forward(const Matrix& X) {
     return out;
 }
 
-Matrix ReLU::backward(const Matrix& grad, double) {
+Matrix ReLU::backward(const Matrix& grad, double lr, OptimizerType opt, int t) {
     Matrix g = input;
     g.apply(relu_d);
 
@@ -45,7 +45,7 @@ Matrix Sigmoid::forward(const Matrix& X) {
     return output;
 }
 
-Matrix Sigmoid::backward(const Matrix& grad, double) {
+Matrix Sigmoid::backward(const Matrix& grad, double lr, OptimizerType opt, int t) {
     Matrix g = output;
     g.apply(sigmoid_d);
 
@@ -81,7 +81,7 @@ Matrix Softmax::forward(const Matrix& X) {
     return output;
 }
 
-Matrix Softmax::backward(const Matrix& grad, double) {
+Matrix Softmax::backward(const Matrix& grad, double lr, OptimizerType opt, int t) {
     return grad;
 }
 
@@ -89,7 +89,7 @@ Matrix Identity::forward(const Matrix& input) {
     return input;
 }
 
-Matrix Identity::backward(const Matrix& grad, double) {
+Matrix Identity::backward(const Matrix& grad, double lr, OptimizerType opt, int t) {
     return grad;
 }
 
@@ -99,7 +99,7 @@ Matrix Generalized_Sigmoid::forward(const Matrix& X) {
     return output;
 }
 
-Matrix Generalized_Sigmoid::backward(const Matrix& grad, double) {
+Matrix Generalized_Sigmoid::backward(const Matrix& grad, double lr, OptimizerType opt, int t) {
     Matrix g = output;
     g.apply(generalized_sigmoid_d);
 
@@ -121,7 +121,7 @@ Matrix Tanh::forward(const Matrix& X) {
     output.apply(tanh_act);
     return output;
 }
-Matrix Tanh::backward(const Matrix& grad, double) {
+Matrix Tanh::backward(const Matrix& grad, double lr, OptimizerType opt, int t) {
     Matrix g = output;
     g.apply(tanh_deriv);
     Matrix res = grad;
@@ -137,7 +137,7 @@ Matrix LeakyReLU::forward(const Matrix& X) {
     output.apply(leaky_relu);
     return output;
 }
-Matrix LeakyReLU::backward(const Matrix& grad, double) {
+Matrix LeakyReLU::backward(const Matrix& grad, double lr, OptimizerType opt, int t) {
     Matrix g = output;
     g.apply(leaky_relu_deriv);
     Matrix res = grad;
