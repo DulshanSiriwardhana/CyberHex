@@ -49,11 +49,5 @@ class Matrix {
         void print() const;
 };
 
-void removeRowColumn(const std::vector<std::vector<double>>& A, size_t row, size_t column, std::vector<std::vector<double>>& ret);
-double det(std::vector<std::vector<double>> A); // Pass by value to allow mutation for LU
-void replaceRow(const std::vector<std::vector<double>>& A, size_t row, const std::vector<double>& replacingRow, std::vector<std::vector<double>>& ret);
-void replaceColumn(const std::vector<std::vector<double>>& A, size_t column, const std::vector<double>& replacingColumn, std::vector<std::vector<double>>& ret);
-std::vector<double> solve_AX_eq_B(std::vector<std::vector<double>> A, std::vector<double> B); // Pass by value
-std::vector<std::vector<double>> multiply_matrices(const std::vector<std::vector<double>>& A, const std::vector<std::vector<double>>& B);
 
 #endif
