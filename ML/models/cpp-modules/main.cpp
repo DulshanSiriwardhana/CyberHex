@@ -16,37 +16,37 @@ int main() {
 
     int N = 100;
 
-    Matrix X(N, 2);
-    Matrix y(N, 1);
+    Matrix<double> X(N, 2);
+    Matrix<double> y(N, 1);
 
     for (int i = 0; i < N; i++) {
         double x1 = randd()*2 - 1;
         double x2 = randd()*2 - 1;
 
-        X.matrix[i][0] = x1;
-        X.matrix[i][1] = x2;
+        X(i, 0) = x1;
+        X(i, 1) = x2;
 
-        y.matrix[i][0] = f(x1, x2);
+        y(i, 0) = f(x1, x2);
     }
 
     int split = N * 0.8;
 
-    Matrix X_train(split, 2);
-    Matrix y_train(split, 1);
+    Matrix<double> X_train(split, 2);
+    Matrix<double> y_train(split, 1);
 
-    Matrix X_test(N - split, 2);
-    Matrix y_test(N - split, 1);
+    Matrix<double> X_test(N - split, 2);
+    Matrix<double> y_test(N - split, 1);
 
     for (int i = 0; i < split; i++) {
-        X_train.matrix[i][0] = X.matrix[i][0];
-        X_train.matrix[i][1] = X.matrix[i][1];
-        y_train.matrix[i][0] = y.matrix[i][0];
+        X_train(i, 0) = X(i, 0);
+        X_train(i, 1) = X(i, 1);
+        y_train(i, 0) = y(i, 0);
     }
 
     for (int i = split; i < N; i++) {
-        X_test.matrix[i - split][0] = X.matrix[i][0];
-        X_test.matrix[i - split][1] = X.matrix[i][1];
-        y_test.matrix[i - split][0] = y.matrix[i][0];
+        X_test(i - split, 0) = X(i, 0);
+        X_test(i - split, 1) = X(i, 1);
+        y_test(i - split, 0) = y(i, 0);
     }
 
     Model model;
@@ -62,12 +62,12 @@ int main() {
 
     model.train(X_train, y_train, 2000, 0.3);
 
-    Matrix pred = model.forward(X_test);
+    Matrix<double> pred = model.forward(X_test);
 
     double mse = 0;
 
     for (int i = 0; i < N - split; i++) {
-        double diff = pred.matrix[i][0] - y_test.matrix[i][0];
+        double diff = pred(i, 0) - y_test(i, 0);
         mse += diff * diff;
     }
 
@@ -76,10 +76,10 @@ int main() {
     cout << "Test MSE: " << mse << endl;
 
     for (int i = 0; i < 20; i++) {
-        cout << X_test.matrix[i][0] << " "
-             << X_test.matrix[i][1] << " "
-             << pred.matrix[i][0] << " "
-             << y_test.matrix[i][0] << endl;
+        cout << X_test(i, 0) << " "
+             << X_test(i, 1) << " "
+             << pred(i, 0) << " "
+             << y_test(i, 0) << endl;
     }
 
     return 0;

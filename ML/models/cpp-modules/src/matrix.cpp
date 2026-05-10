@@ -4,58 +4,86 @@
 
 using namespace std;
 
-Matrix::Matrix() : rows(0), cols(0), matrix(0, std::vector<double>(0, 0.0)) {}
+template <typename T>
+Matrix<T>::Matrix() : rows(0), cols(0), data(0) {}
 
-Matrix::Matrix(size_t r, size_t c, double val) : rows(r), cols(c), matrix(r, std::vector<double>(c, val)) {}
+template <typename T>
+Matrix<T>::Matrix(size_t r, size_t c, T val) : rows(r), cols(c), data(r * c, val) {}
 
 // Copy constructor
-Matrix::Matrix(const Matrix& other) : rows(other.rows), cols(other.cols), matrix(other.matrix) {}
+template <typename T>
+Matrix<T>::Matrix(const Matrix& other) : rows(other.rows), cols(other.cols), data(other.data) {}
 
 // Move constructor
-Matrix::Matrix(Matrix&& other) noexcept : rows(other.rows), cols(other.cols), matrix(std::move(other.matrix)) {
+template <typename T>
+Matrix<T>::Matrix(Matrix<T>&& other) noexcept : rows(other.rows), cols(other.cols), data(std::move(other.data)) {
     other.rows = 0;
     other.cols = 0;
 }
 
 // operator= using copy and swap
-Matrix& Matrix::operator=(Matrix other) {
+template <typename T>
+Matrix<T>& Matrix<T>::operator=(Matrix<T> other) {
     swap(other);
     return *this;
 }
 
 // swap
-void Matrix::swap(Matrix& other) noexcept {
+template <typename T>
+void Matrix<T>::swap(Matrix<T>& other) noexcept {
     std::swap(rows, other.rows);
     std::swap(cols, other.cols);
-    matrix.swap(other.matrix);
+    data.swap(other.data);
 }
 
-Matrix Matrix::dot(const Matrix& other) const {
+template <typename T>
+Matrix<T> Matrix<T>::dot(const Matrix<T>& other) const {
     if (cols != other.rows) {
         throw DimensionMismatchException("Matrix dot product dimension mismatch");
     }
     Matrix result(rows, other.cols, 0.0);
-
-    #pragma omp parallel for collapse(2)
-    for (size_t i = 0; i < rows; i++)
-        for (size_t j = 0; j < other.cols; j++)
-            for (size_t k = 0; k < cols; k++)
-                result.matrix[i][j] += matrix[i][k] * other.matrix[k][j];
+    #ifdef _OPENMP
+    #pragma omp parallel for
+    #endif
+    for (size_t i = 0; i < rows; i++) {
+        for (size_t k = 0; k < cols; k++) {
+            double temp = data[i * cols + k];
+            #pragma omp simd
+            for (size_t j = 0; j < other.cols; j++) {
+                result(i, j) += temp * other.data[k * other.cols + j];
+            }
+        }
+    }
 
     return result;
 }
 
-Matrix Matrix::transpose() const {
+template <typename T>
+Matrix<T> Matrix<T>::transpose() const {
     Matrix t(cols, rows);
+    size_t block_size = 64;
 
-    for (size_t i = 0; i < rows; i++)
-        for (size_t j = 0; j < cols; j++)
-            t.matrix[j][i] = matrix[i][j];
+    #ifdef _OPENMP
+    #pragma omp parallel for collapse(2)
+    #endif
+    for (size_t i = 0; i < rows; i += block_size) {
+        for (size_t j = 0; j < cols; j += block_size) {
+            size_t i_max = std::min(i + block_size, rows);
+            size_t j_max = std::min(j + block_size, cols);
+            for (size_t ii = i; ii < i_max; ii++) {
+                #pragma omp simd
+                for (size_t jj = j; jj < j_max; jj++) {
+                    t(jj, ii) = data[ii * cols + jj];
+                }
+            }
+        }
+    }
 
     return t;
 }
 
-Matrix Matrix::operator+(const Matrix& other) const {
+template <typename T>
+Matrix<T> Matrix<T>::operator+(const Matrix<T>& other) const {
     if (rows != other.rows || cols != other.cols) {
         throw DimensionMismatchException("Matrix addition dimension mismatch");
     }
@@ -63,12 +91,13 @@ Matrix Matrix::operator+(const Matrix& other) const {
 
     for (size_t i = 0; i < rows; i++)
         for (size_t j = 0; j < cols; j++)
-            r.matrix[i][j] = matrix[i][j] + other.matrix[i][j];
+            r(i, j) = data[(i) * cols + (j)] + other(i, j);
 
     return r;
 }
 
-Matrix Matrix::operator-(const Matrix& other) const {
+template <typename T>
+Matrix<T> Matrix<T>::operator-(const Matrix<T>& other) const {
     if (rows != other.rows || cols != other.cols) {
         throw DimensionMismatchException("Matrix subtraction dimension mismatch");
     }
@@ -76,31 +105,34 @@ Matrix Matrix::operator-(const Matrix& other) const {
 
     for (size_t i = 0; i < rows; i++)
         for (size_t j = 0; j < cols; j++)
-            r.matrix[i][j] = matrix[i][j] - other.matrix[i][j];
+            r(i, j) = data[(i) * cols + (j)] - other(i, j);
 
     return r;
 }
 
-Matrix Matrix::operator*(double scalar) const {
+template <typename T>
+Matrix<T> Matrix<T>::operator*(T scalar) const {
     Matrix r(rows, cols);
 
     for (size_t i = 0; i < rows; i++)
         for (size_t j = 0; j < cols; j++)
-            r.matrix[i][j] = matrix[i][j] * scalar;
+            r(i, j) = data[(i) * cols + (j)] * scalar;
 
     return r;
 }
 
-void Matrix::apply(double (*func)(double)) {
+template <typename T>
+void Matrix<T>::apply(double (*func)(double)) {
     for (size_t i = 0; i < rows; i++)
         for (size_t j = 0; j < cols; j++)
-            matrix[i][j] = func(matrix[i][j]);
+            data[(i) * cols + (j)] = func(data[(i) * cols + (j)]);
 }
 
-void Matrix::print() const {
+template <typename T>
+void Matrix<T>::print() const {
     for (size_t i = 0; i < rows; i++) {
         for (size_t j = 0; j < cols; j++) {
-            cout << matrix[i][j] << " ";
+            cout << data[(i) * cols + (j)] << " ";
         }
         cout << endl;
     }
@@ -241,3 +273,6 @@ std::vector<std::vector<double>> multiply_matrices(const std::vector<std::vector
     }
     return ret;
 }
+
+template class Matrix<double>;
+template class Matrix<float>;

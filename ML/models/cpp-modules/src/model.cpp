@@ -10,19 +10,19 @@ void Model::add(Layer* layer) {
     layers.push_back(layer);
 }
 
-Matrix Model::forward(const Matrix& X) {
-    Matrix out = X;
+Matrix<double> Model::forward(const Matrix<double>& X) {
+    Matrix<double> out = X;
     for (auto l : layers)
         out = l->forward(out);
     return out;
 }
 
-void Model::backward(Matrix grad, double lr, OptimizerType opt, int t) {
+void Model::backward(Matrix<double> grad, double lr, OptimizerType opt, int t) {
     for (int i = (int)layers.size() - 1; i >= 0; i--)
         grad = layers[i]->backward(grad, lr, opt, t);
 }
 
-void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr, LossType loss_type, int early_stopping_patience, OptimizerType opt, double lr_decay) {
+void Model::train(const Matrix<double>& X, const Matrix<double>& y, int epochs, double lr, LossType loss_type, int early_stopping_patience, OptimizerType opt, double lr_decay) {
     namespace fs = std::filesystem;
 
     std::string folder = "../../ui/visualizations/public/";
@@ -37,13 +37,13 @@ void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr, LossT
 
     for (int e = 0; e < epochs; e++) {
 
-        Matrix pred = forward(X);
+        Matrix<double> pred = forward(X);
 
         double loss = 0;
         if (loss_type == LossType::MSE) {
             for (int i = 0; i < y.rows; i++) {
                 for (int j = 0; j < y.cols; j++) {
-                    double diff = pred.matrix[i][j] - y.matrix[i][j];
+                    double diff = pred(i, j) - y(i, j);
                     loss += diff * diff;
                 }
             }
@@ -51,8 +51,8 @@ void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr, LossT
         } else if (loss_type == LossType::BCE) {
             for (int i = 0; i < y.rows; i++) {
                 for (int j = 0; j < y.cols; j++) {
-                    double y_true = y.matrix[i][j];
-                    double y_pred = std::max(1e-15, std::min(1.0 - 1e-15, pred.matrix[i][j]));
+                    double y_true = y(i, j);
+                    double y_pred = std::max(1e-15, std::min(1.0 - 1e-15, pred(i, j)));
                     loss -= y_true * std::log(y_pred) + (1.0 - y_true) * std::log(1.0 - y_pred);
                 }
             }
@@ -60,8 +60,8 @@ void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr, LossT
         } else if (loss_type == LossType::CCE) {
             for (int i = 0; i < y.rows; i++) {
                 for (int j = 0; j < y.cols; j++) {
-                    double y_true = y.matrix[i][j];
-                    double y_pred = std::max(1e-15, std::min(1.0 - 1e-15, pred.matrix[i][j]));
+                    double y_true = y(i, j);
+                    double y_pred = std::max(1e-15, std::min(1.0 - 1e-15, pred(i, j)));
                     loss -= y_true * std::log(y_pred);
                 }
             }
@@ -75,12 +75,12 @@ void Model::train(const Matrix& X, const Matrix& y, int epochs, double lr, LossT
             lossFile.flush();
         }
 
-        Matrix grad = pred - y;
+        Matrix<double> grad = pred - y;
         
         // Gradient Clipping bounds [-1.0, 1.0]
         for (size_t i = 0; i < grad.rows; i++) {
             for (size_t j = 0; j < grad.cols; j++) {
-                grad.matrix[i][j] = std::max(-1.0, std::min(1.0, grad.matrix[i][j]));
+                grad(i, j) = std::max(-1.0, std::min(1.0, grad(i, j)));
             }
         }
 
@@ -129,17 +129,17 @@ void Model::saveWeights(const std::string& folder) {
             std::ofstream wf(w.str());
             std::ofstream bf(b.str());
 
-            const Matrix& W = d->getWeights();
-            const Matrix& B = d->getBias();
+            const Matrix<double>& W = d->getWeights();
+            const Matrix<double>& B = d->getBias();
 
             for (int i = 0; i < W.rows; i++) {
                 for (int j = 0; j < W.cols; j++)
-                    wf << W.matrix[i][j] << " ";
+                    wf << W(i, j) << " ";
                 wf << "\n";
             }
 
             for (int j = 0; j < B.cols; j++)
-                bf << B.matrix[0][j] << " ";
+                bf << B(0, j) << " ";
 
             wf.close();
             bf.close();
@@ -159,22 +159,18 @@ void Model::saveWeightsBinary(const std::string& folder) {
             std::string b_path = folder + "/layer_" + std::to_string(idx) + "_bias.bin";
             std::ofstream wf(w_path, std::ios::binary);
             std::ofstream bf(b_path, std::ios::binary);
-            const Matrix& W = d->getWeights();
-            const Matrix& B = d->getBias();
+            const Matrix<double>& W = d->getWeights();
+            const Matrix<double>& B = d->getBias();
             
             int rows = W.rows, cols = W.cols;
             wf.write(reinterpret_cast<const char*>(&rows), sizeof(int));
             wf.write(reinterpret_cast<const char*>(&cols), sizeof(int));
-            for (int i = 0; i < rows; i++) {
-                wf.write(reinterpret_cast<const char*>(W.matrix[i].data()), cols * sizeof(double));
-            }
+            wf.write(reinterpret_cast<const char*>(W.data.data()), rows * cols * sizeof(double));
             
             rows = B.rows; cols = B.cols;
             bf.write(reinterpret_cast<const char*>(&rows), sizeof(int));
             bf.write(reinterpret_cast<const char*>(&cols), sizeof(int));
-            for (int i = 0; i < rows; i++) {
-                bf.write(reinterpret_cast<const char*>(B.matrix[i].data()), cols * sizeof(double));
-            }
+            bf.write(reinterpret_cast<const char*>(B.data.data()), rows * cols * sizeof(double));
             
             wf.close();
             bf.close();

@@ -14,8 +14,8 @@ enum class OptimizerType {
 
 class Layer {
     public:
-        virtual Matrix forward(const Matrix& input) = 0;
-        virtual Matrix backward(const Matrix& grad, double lr, OptimizerType opt = OptimizerType::SGD, int t = 1) = 0;
+        virtual Matrix<double> forward(const Matrix<double>& input) = 0;
+        virtual Matrix<double> backward(const Matrix<double>& grad, double lr, OptimizerType opt = OptimizerType::SGD, int t = 1) = 0;
         virtual ~Layer() = default;
 };
 

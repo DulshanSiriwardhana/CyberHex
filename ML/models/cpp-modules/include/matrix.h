@@ -15,14 +15,23 @@ public:
     explicit DimensionMismatchException(const std::string& msg) : CyberHexException(msg) {}
 };
 
+template <typename T=double>
 class Matrix {
     public:
         size_t rows;
         size_t cols;
-        std::vector<std::vector<double>> matrix;
+        std::vector<T> data;
+
+        inline T& operator()(size_t r, size_t c) {
+            return data[r * cols + c];
+        }
+
+        inline const T& operator()(size_t r, size_t c) const {
+            return data[r * cols + c];
+        }
 
         Matrix();
-        Matrix(size_t r, size_t c, double val = 0.0);
+        Matrix(size_t r, size_t c, T val = 0.0);
 
         Matrix(const Matrix& other);
         Matrix(Matrix&& other) noexcept;
@@ -34,7 +43,7 @@ class Matrix {
 
         Matrix operator+(const Matrix& other) const;
         Matrix operator-(const Matrix& other) const;
-        Matrix operator*(double scalar) const;
+        Matrix operator*(T scalar) const;
 
         void apply(double (*func)(double));
         void print() const;
