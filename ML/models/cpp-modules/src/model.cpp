@@ -124,36 +124,25 @@ void Model::saveWeights(const std::string& folder) {
             const Matrix<double>& W = d->getWeights();
             const Matrix<double>& B = d->getBias();
             
-            f << "{
-";
-            f << "  \"layerType\": \"Dense\",
-";
-            f << "  \"inputShape\": " << W.rows << ",
-";
-            f << "  \"outputShape\": " << W.cols << ",
-";
-            f << "  \"weights\": [
-";
+            f << "{\n";
+            f << "  \"layerType\": \"Dense\",\n";
+            f << "  \"inputShape\": " << W.rows << ",\n";
+            f << "  \"outputShape\": " << W.cols << ",\n";
+            f << "  \"weights\": [\n";
             for (size_t i = 0; i < W.rows; i++) {
                 f << "    [";
                 for (size_t j = 0; j < W.cols; j++) {
                     f << W(i, j) << (j == W.cols - 1 ? "" : ", ");
                 }
-                f << "]" << (i == W.rows - 1 ? "" : ",") << "
-";
+                f << "]" << (i == W.rows - 1 ? "" : ",") << "\n";
             }
-            f << "  ],
-";
-            f << "  \"bias\": [
-    ";
+            f << "  ],\n";
+            f << "  \"bias\": [\n    ";
             for (size_t j = 0; j < B.cols; j++) {
                 f << B(0, j) << (j == B.cols - 1 ? "" : ", ");
             }
-            f << "
-  ]
-";
-            f << "}
-";
+            f << "\n  ]\n";
+            f << "}\n";
             f.close();
             idx++;
         }
