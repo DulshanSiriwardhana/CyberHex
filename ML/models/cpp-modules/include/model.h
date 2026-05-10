@@ -11,13 +11,6 @@ enum class LossType {
     CCE
 };
 
-enum class OptimizerType {
-    SGD,
-    MOMENTUM,
-    RMSPROP,
-    ADAM
-};
-
 class Model {
     private:
         std::vector<Layer*> layers;
