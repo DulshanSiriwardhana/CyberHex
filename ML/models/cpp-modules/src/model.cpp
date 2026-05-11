@@ -11,6 +11,7 @@ void Model::add(Layer* layer) {
 }
 
 Matrix<double> Model::forward(const Matrix<double>& X) {
+    // Item 50: Thread-safe forward pass
     std::lock_guard<std::mutex> lock(mtx);
     Matrix<double> out = X;
     for (auto l : layers)
