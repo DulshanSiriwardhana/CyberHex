@@ -8,6 +8,7 @@ import { rateLimiter } from './middleware/rateLimiter.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import experimentRoutes from './routes/experimentRoutes.js';
 import logger from './utils/logger.js';
 
 dotenv.config();
