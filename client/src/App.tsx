@@ -1,11 +1,12 @@
 import './App.css';
-import Layer from './Layer';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import LandingPage from './pages/LandingPage';
-import { PopupProvider } from './contexts/popups';
-import { StoreProvider } from './contexts/store';
-import CyberGames from './pages/CyberGames';
-import TestPage from './pages/TestPage';
+import Layer from '@/Layer';
+import { Suspense } from 'react';
+import LandingPage from '@/pages/LandingPage';
+import { PopupProvider } from '@/contexts/popups';
+import { StoreProvider } from '@/contexts/store';
+import CyberGames from '@/pages/CyberGames';
+import { items } from '@/const/data';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 function App() {
 
@@ -15,13 +16,15 @@ function App() {
         <StoreProvider>
           <PopupProvider>
             <Layer>
-                <Routes>
-                  <Route path="/" element={<LandingPage/>} />
-                  <Route path='/cyber-games' element={<CyberGames/>}/>
-                  <Route path="/about" element={<div>About Page</div>} />
-                  <Route path="/contact" element={<div>Contact Page</div>} />
-                  <Route path="/test" element={<TestPage />} />
-                </Routes>
+                <ErrorBoundary>
+                  <Routes>
+                    <Route path={items[0].path} element={<LandingPage/>} />
+                    <Route path={items[2].path} element={<CyberGames/>}/>
+                    <Route path={items[1].path} element={<div>About Page</div>} />
+                    <Route path={items[3].path} element={<div>Contact Page</div>} />
+                    <Route path="/test" element={<TestPage />} />
+                  </Routes>
+                </ErrorBoundary>
             </Layer>
           </PopupProvider>
         </StoreProvider>
