@@ -49,5 +49,6 @@ app.get('/health', (_req, res) => res.json({ status: 'ok', version: '1.0.0' }));
 
 // Item 65: Global async error handler (must be last)
 app.use(errorHandler);
+app.use(errorHandler);
 
 export default app;
