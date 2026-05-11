@@ -1,24 +1,30 @@
-import cors from 'cors';
-import express from 'express';
+// Item 61: Entry point - delegates to app.js
+// Keeps server startup logic separate from application logic
+import { createServer } from 'http';
 import dotenv from 'dotenv';
+import app from './app.js';
 import DBinitialize from './utils/db_init.js';
-import bodyParser from 'body-parser';
+import logger from './utils/logger.js';
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true })); 
 DBinitialize();
 
+const server = createServer(app);
 
-app.get('/', (_req, res) => {
-  res.send('Hello World!');
+server.listen(PORT, () => {
+  logger.info(`CyberHex backend running on port ${PORT}`);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Item 145/136: Graceful shutdown
+process.on('SIGTERM', () => {
+  logger.warn('SIGTERM received, shutting down gracefully');
+  server.close(() => process.exit(0));
+});
+
+process.on('unhandledRejection', (reason) => {
+  logger.error('Unhandled Rejection:', reason);
+  server.close(() => process.exit(1));
 });
