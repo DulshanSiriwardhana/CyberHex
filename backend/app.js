@@ -4,6 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 import { rateLimiter } from './middleware/rateLimiter.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import userRoutes from './routes/userRoutes.js';
@@ -31,6 +32,7 @@ app.use(cors({
 // Body parsers
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Item 64: Global rate limiter
 app.use(rateLimiter);
@@ -50,7 +52,6 @@ app.use('/api/v1/experiments', experimentRoutes);
 app.get('/health', (_req, res) => res.json({ status: 'ok', version: '1.0.0' }));
 
 // Item 65: Global async error handler (must be last)
-app.use(errorHandler);
 app.use(errorHandler);
 
 export default app;

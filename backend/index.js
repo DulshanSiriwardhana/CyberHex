@@ -35,9 +35,10 @@ wss.on('connection', (ws) => {
 });
 
 // Function to broadcast to all clients
+// WebSocket.OPEN === 1 (ws.readyState constant)
 global.broadcast = (data) => {
   wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
+    if (client.readyState === 1) {
       client.send(JSON.stringify(data));
     }
   });
