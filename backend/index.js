@@ -18,13 +18,26 @@ server.listen(PORT, () => {
   logger.info(`CyberHex backend running on port ${PORT}`);
 });
 
-// Item 145/136: Graceful shutdown
-process.on('SIGTERM', () => {
-  logger.warn('SIGTERM received, shutting down gracefully');
-  server.close(() => process.exit(0));
+// Item 51: WebSocket server using ws library
+import { WebSocketServer } from 'ws';
+
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws) => {
+  logger.info('WebSocket client connected');
+  ws.on('message', (message) => {
+    logger.info('Received:', message.toString());
+  });
+  ws.on('close', () => {
+    logger.info('WebSocket client disconnected');
+  });
 });
 
-process.on('unhandledRejection', (reason) => {
-  logger.error('Unhandled Rejection:', reason);
-  server.close(() => process.exit(1));
-});
+// Function to broadcast to all clients
+global.broadcast = (data) => {
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(data));
+    }
+  });
+};

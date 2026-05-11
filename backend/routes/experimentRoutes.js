@@ -48,6 +48,10 @@ router.post('/:id/logs', authenticateToken, async (req, res, next) => {
       ...req.body
     });
     await log.save();
+    // Broadcast to WebSocket clients
+    if (global.broadcast) {
+      global.broadcast({ type: 'loss_update', experimentId: req.params.id, epoch: req.body.epoch, loss: req.body.loss });
+    }
     res.status(201).json({ log });
   } catch (error) {
     next(error);

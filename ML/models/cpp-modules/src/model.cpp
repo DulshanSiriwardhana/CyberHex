@@ -179,3 +179,39 @@ void Model::saveWeightsBinary(const std::string& folder) {
         }
     }
 }
+
+void Model::exportONNX(const std::string& filename) {
+    // Simple ONNX-like export (placeholder for full ONNX integration)
+    std::ofstream f(filename);
+    f << "{\n";
+    f << "  \"ir_version\": 7,\n";
+    f << "  \"producer_name\": \"CyberHex\",\n";
+    f << "  \"graph\": {\n";
+    f << "    \"name\": \"CyberHexModel\",\n";
+    f << "    \"node\": [\n";
+    
+    int idx = 0;
+    for (auto l : layers) {
+        Dense* d = dynamic_cast<Dense*>(l);
+        if (d) {
+            f << "      {\n";
+            f << "        \"op_type\": \"Gemm\",\n";
+            f << "        \"name\": \"dense_" << idx << "\",\n";
+            f << "        \"attribute\": [\n";
+            f << "          {\"name\": \"transB\", \"i\": 1}\n";
+            f << "        ],\n";
+            f << "        \"input\": [\"input" << idx << "\"],\n";
+            f << "        \"output\": [\"output" << idx << "\"]\n";
+            f << "      }";
+            if (idx < layers.size() - 1) f << ",";
+            f << "\n";
+            idx++;
+        }
+    }
+    f << "    ],\n";
+    f << "    \"input\": [{\"name\": \"input0\", \"type\": {\"tensor_type\": {\"elem_type\": 1, \"shape\": {\"dim\": [{\"dim_value\": \"N\"}, {\"dim_value\": \"D\"}]}}}}}],\n";
+    f << "    \"output\": [{\"name\": \"output" << (idx-1) << "\", \"type\": {\"tensor_type\": {\"elem_type\": 1, \"shape\": {\"dim\": [{\"dim_value\": \"N\"}, {\"dim_value\": \"K\"}]}}}}}]\n";
+    f << "  }\n";
+    f << "}\n";
+    f.close();
+}

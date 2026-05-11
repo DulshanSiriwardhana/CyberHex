@@ -24,6 +24,7 @@ class Model {
         void train(const Matrix<double>& X, const Matrix<double>& y, int epochs, double lr, LossType loss_type = LossType::MSE, int early_stopping_patience = 0, OptimizerType opt = OptimizerType::SGD, double lr_decay = 1.0);
         void saveWeights(const std::string& prefix);
         void saveWeightsBinary(const std::string& prefix);
+        void exportONNX(const std::string& filename);
 };
 
 #endif
