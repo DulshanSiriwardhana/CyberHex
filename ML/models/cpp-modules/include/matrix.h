@@ -4,6 +4,8 @@
 #include <vector>
 #include <stdexcept>
 #include <string>
+#include <cassert>
+#include <type_traits>
 
 class CyberHexException : public std::runtime_error {
 public:
@@ -17,16 +19,22 @@ public:
 
 template <typename T=double>
 class Matrix {
+    static_assert(std::is_arithmetic<T>::value,
+        "Matrix<T>: T must be an arithmetic type (float, double, int, etc.).");
     public:
         size_t rows;
         size_t cols;
         std::vector<T> data;
 
         inline T& operator()(size_t r, size_t c) {
+            assert(r < rows && "Row index out of bounds");
+            assert(c < cols && "Col index out of bounds");
             return data[r * cols + c];
         }
 
         inline const T& operator()(size_t r, size_t c) const {
+            assert(r < rows && "Row index out of bounds");
+            assert(c < cols && "Col index out of bounds");
             return data[r * cols + c];
         }
 

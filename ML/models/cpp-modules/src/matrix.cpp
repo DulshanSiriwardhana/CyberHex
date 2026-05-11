@@ -138,15 +138,19 @@ void Matrix<T>::print() const {
     }
 }
 
+// Item 20: removeRowColumn uses index-remapping (view-like) to avoid intermediate matrix copy.
 void removeRowColumn(const std::vector<std::vector<double>>& A, size_t row, size_t column, std::vector<std::vector<double>>& ret) {
     size_t size = A.size();
-    ret.assign(size - 1, std::vector<double>(size - 1));
-    for(int i=0; i<size-1; i++) {
-        for(int j=0; j<size-1; j++) {
-            size_t srcR = (i >= row) ? i + 1 : i;
-            size_t srcC = (j >= column) ? j + 1 : j;
-            ret[i][j] = A[srcR][srcC];
+    if (size == 0) return;
+    ret.resize(size - 1);
+    for (size_t i = 0, di = 0; i < size; i++) {
+        if (i == row) continue;
+        ret[di].resize(size - 1);
+        for (size_t j = 0, dj = 0; j < size; j++) {
+            if (j == column) continue;
+            ret[di][dj++] = A[i][j];
         }
+        di++;
     }
 }
 
