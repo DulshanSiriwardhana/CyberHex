@@ -1,0 +1,31 @@
+# Item 122: Docker Compose for full stack
+version: '3.8'
+
+services:
+  db:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - DB_URI=mongodb://db:27017/cyberhex
+      - JWT_SECRET=secret
+      - JWT_REFRESH_SECRET=refresh_secret
+
+  frontend:
+    build: ./client
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:

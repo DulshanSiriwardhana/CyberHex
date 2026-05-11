@@ -1,0 +1,12 @@
+# Item 128: Pre-commit hooks with Husky
+{
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.js": ["eslint --fix", "prettier --write"]
+  }
+}
