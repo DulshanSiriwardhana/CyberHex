@@ -21,6 +21,7 @@ server.listen(PORT, () => {
 // Item 51: WebSocket server using ws library
 import { WebSocketServer } from 'ws';
 
+// Item 54: Secure WebSocket (use wss in production)
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws) => {

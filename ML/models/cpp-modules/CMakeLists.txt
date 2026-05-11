@@ -34,7 +34,19 @@ endif()
 
 include_directories(include)
 
+# Item 111: Unit Tests with Catch2
+include(FetchContent)
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v3.4.0
+)
+FetchContent_MakeAvailable(Catch2)
+
 file(GLOB SOURCES "src/*.cpp")
+
+# Exclude main.cpp from library
+list(REMOVE_ITEM SOURCES "src/main.cpp")
 
 # Item 58: Shared Library (.so)
 add_library(cyberhex SHARED ${SOURCES})
@@ -42,6 +54,10 @@ add_library(cyberhex SHARED ${SOURCES})
 if(OpenMP_CXX_FOUND)
     target_link_libraries(cyberhex PRIVATE OpenMP::OpenMP_CXX)
 endif()
+
+# Unit Tests
+add_executable(unit_tests src/main.cpp)
+target_link_libraries(unit_tests PRIVATE cyberhex Catch2::Catch2WithMain)
 
 # Item 57: Standardized version & install rules
 set_target_properties(cyberhex PROPERTIES
