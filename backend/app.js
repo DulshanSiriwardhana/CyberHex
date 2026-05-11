@@ -44,6 +44,7 @@ app.use((req, _res, next) => {
 // Item 72: API versioning
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/experiments', experimentRoutes);
 
 // Health check
 app.get('/health', (_req, res) => res.json({ status: 'ok', version: '1.0.0' }));
