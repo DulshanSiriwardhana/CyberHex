@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "setup": "npm install --prefix backend && npm install --prefix client",
+    "start:backend": "npm --prefix backend start",
+    "dev:backend": "npm --prefix backend run start",
+    "dev:frontend": "npm --prefix client run dev",
+    "build:frontend": "npm --prefix client run build",
+    "start:frontend": "npm --prefix client run preview",
+    "build": "npm --prefix client run build"
+  }
+}

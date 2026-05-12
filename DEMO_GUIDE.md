@@ -25,19 +25,27 @@ docker-compose up
 
 ### Local Development Setup
 
+#### Root setup
+```bash
+cd CyberHex
+npm run setup
+cp backend/.env.example backend/.env
+```
+
 #### Backend
 ```bash
-cd backend
-npm install
-cp ../.env.example .env
-npm run start
+npm run start:backend
 ```
 
 #### Frontend
 ```bash
-cd client
-npm install
-npm run dev
+npm run dev:frontend
+```
+
+#### Frontend build / preview
+```bash
+npm run build:frontend
+npm run start:frontend
 ```
 
 #### C++ ML Engine
