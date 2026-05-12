@@ -1,0 +1,4 @@
+{"level":"error","message":"DB_URI not set in environment - database connection skipped","timestamp":"2026-05-12 06:44:05"}
+{"level":"info","message":"CyberHex backend running on port 5000","timestamp":"2026-05-12 06:44:05"}
+{"level":"error","message":"DB_URI not set in environment - database connection skipped","timestamp":"2026-05-12 06:46:02"}
+{"level":"info","message":"CyberHex backend running on port 5000","timestamp":"2026-05-12 06:46:02"}
