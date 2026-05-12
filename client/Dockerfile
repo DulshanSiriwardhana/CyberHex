@@ -1,4 +1,3 @@
-# Item 124: Dockerfile for React Frontend
 FROM node:18-alpine as build
 
 WORKDIR /app

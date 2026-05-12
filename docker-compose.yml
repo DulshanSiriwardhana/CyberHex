@@ -1,4 +1,3 @@
-# Item 122: Docker Compose for full stack
 version: '3.8'
 
 services:

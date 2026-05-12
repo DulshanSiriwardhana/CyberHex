@@ -1,4 +1,3 @@
-# Item 123: Dockerfile for Node Backend
 FROM node:18-alpine
 
 WORKDIR /app
