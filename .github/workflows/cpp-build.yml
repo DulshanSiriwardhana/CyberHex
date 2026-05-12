@@ -1,0 +1,33 @@
+# GitHub Actions Pipeline for C++ Build
+name: C++ Build & Test
+
+on:
+  push:
+    branches: [ main, release ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake g++ libgomp1
+
+    - name: Build C++ Engine
+      run: |
+        cd ML/models/cpp-modules
+        mkdir build
+        cd build
+        cmake ..
+        make
+
+    - name: Run Unit Tests
+      run: |
+        cd ML/models/cpp-modules/build
+        ./unit_tests --test

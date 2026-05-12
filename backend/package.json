@@ -7,14 +7,31 @@
   "author": "T.D Rasindu Dulshan Siriwardhana",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "body-parser": "^2.2.2",
-    "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "mongoose": "^9.2.3",
-    "nodemon": "^3.1.14"
+    "bcrypt": "6.0.0",
+    "body-parser": "2.2.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "2.8.6",
+    "dotenv": "17.3.1",
+    "express": "5.2.1",
+    "express-rate-limit": "8.5.1",
+    "express-validator": "7.3.2",
+    "helmet": "8.1.0",
+    "jsonwebtoken": "9.0.3",
+    "mongoose": "9.2.3",
+    "nodemon": "3.1.14",
+    "winston": "3.17.0",
+    "ws": "8.18.0"
+  },
+  "devDependencies": {
+    "jest": "29.7.0",
+    "supertest": "7.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }

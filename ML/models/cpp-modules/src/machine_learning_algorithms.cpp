@@ -21,25 +21,20 @@ void linear_regression_data(double* dataX, double* dataY, int size, double* retu
 }
 
 void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size, int degree, double* return_data){
-    double* xy_means = new double[degree+1];
-
-    double** A = new double*[degree+1];
-    for(int i=0;i<=degree;i++){
-        A[i] = new double[degree+1];
-    }
+    std::vector<double> xy_means(degree + 2);
+    std::vector<std::vector<double>> A(degree + 1, std::vector<double>(degree + 1));
 
     xy_means[0] = calc_mean(dataY, size);
 
-    double* temp = new double[2*degree + 1];
-
+    std::vector<double> temp(2 * degree + 1);
     temp[0] = 1;
 
     for(int i =1; i<=2*degree;i++){
         temp[i] = calc_n_order_mean(dataX, size, i);
     }
 
-    for(int i =0; i<degree;i++){
-        for(int j=0; j<degree; j++){
+    for(int i =0; i<=degree;i++){ // fixed upper bound bug
+        for(int j=0; j<=degree; j++){
             A[i][j] = temp[i+j];
         }
     }
@@ -48,7 +43,12 @@ void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size,
         xy_means[i+1] = calc_n_order_multiplicative_mean(dataX, i+1, dataY, 1, size);
     }
 
-    solve_AX_eq_B(A, return_data, xy_means, degree);
+    std::vector<double> B(xy_means.begin(), xy_means.begin() + degree + 1);
+    std::vector<double> X = solve_AX_eq_B(A, B);
+    
+    for (int i = 0; i <= degree; i++) {
+        return_data[i] = X[i];
+    }
 }
 
 int knn(labeledDataPoint* data, int size, int dimension, int k, double* point, int distance_function){

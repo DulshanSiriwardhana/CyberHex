@@ -1,37 +1,61 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include <vector>
+#include <stdexcept>
+#include <string>
+#include <cassert>
+#include <type_traits>
 
+class CyberHexException : public std::runtime_error {
+public:
+    explicit CyberHexException(const std::string& msg) : std::runtime_error(msg) {}
+};
 
+class DimensionMismatchException : public CyberHexException {
+public:
+    explicit DimensionMismatchException(const std::string& msg) : CyberHexException(msg) {}
+};
+
+template <typename T=double>
 class Matrix {
+    static_assert(std::is_arithmetic<T>::value,
+        "Matrix<T>: T must be an arithmetic type (float, double, int, etc.).");
     public:
-        int rows;
-        int cols;
-        double** matrix;
+        size_t rows;
+        size_t cols;
+        std::vector<T> data;
+
+        inline T& operator()(size_t r, size_t c) {
+            assert(r < rows && "Row index out of bounds");
+            assert(c < cols && "Col index out of bounds");
+            return data[r * cols + c];
+        }
+
+        inline const T& operator()(size_t r, size_t c) const {
+            assert(r < rows && "Row index out of bounds");
+            assert(c < cols && "Col index out of bounds");
+            return data[r * cols + c];
+        }
 
         Matrix();
-        Matrix(int r, int c, double val = 0.0);
+        Matrix(size_t r, size_t c, T val = 0.0);
+
         Matrix(const Matrix& other);
-        Matrix& operator=(const Matrix& other);
-        ~Matrix();
+        Matrix(Matrix&& other) noexcept;
+        Matrix& operator=(Matrix other);
+        void swap(Matrix& other) noexcept;
 
         Matrix dot(const Matrix& other) const;
         Matrix transpose() const;
 
         Matrix operator+(const Matrix& other) const;
         Matrix operator-(const Matrix& other) const;
-        Matrix operator*(double scalar) const;
+        Matrix operator*(T scalar) const;
 
         void apply(double (*func)(double));
         void print() const;
 };
 
-void removeRowColumn(double** &A, int row, int column, int size, double** &ret);
-double det2x2(double** &A);
-double det(double** &A, int size);
-void replaceRow(double** &A, int row, int size, double*  replacingRow, double** &ret);
-void replaceColumn(double** &A, int column, int size, double*  replacingColumn, double** &ret);
-void solve_AX_eq_B(double** &A, double* X, double* B, int size);
-void multiply_matrices(double** &A, double** &B, int* dimensions, double** &ret);
 
 #endif
