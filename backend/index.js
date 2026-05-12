@@ -1,24 +1,50 @@
-import cors from 'cors';
-import express from 'express';
+// Item 61: Entry point - delegates to app.js
+// Keeps server startup logic separate from application logic
+import { createServer } from 'http';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import app from './app.js';
 import DBinitialize from './utils/db_init.js';
-import bodyParser from 'body-parser';
+import logger from './utils/logger.js';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const app = express();
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true })); 
 DBinitialize();
 
+const server = createServer(app);
 
-app.get('/', (_req, res) => {
-  res.send('Hello World!');
+server.listen(PORT, () => {
+  logger.info(`CyberHex backend running on port ${PORT}`);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Item 51: WebSocket server using ws library
+import { WebSocketServer } from 'ws';
+
+// Item 54: Secure WebSocket (use wss in production)
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws) => {
+  logger.info('WebSocket client connected');
+  ws.on('message', (message) => {
+    logger.info('Received:', message.toString());
+  });
+  ws.on('close', () => {
+    logger.info('WebSocket client disconnected');
+  });
 });
+
+// Function to broadcast to all clients
+// WebSocket.OPEN === 1 (ws.readyState constant)
+global.broadcast = (data) => {
+  wss.clients.forEach(client => {
+    if (client.readyState === 1) {
+      client.send(JSON.stringify(data));
+    }
+  });
+};

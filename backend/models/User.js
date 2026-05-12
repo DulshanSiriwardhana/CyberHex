@@ -1,26 +1,34 @@
 import mongoose, { Schema } from "mongoose";
 
-const UserSchema = new Schema.Types({
-    name:{
+const UserSchema = new Schema({
+    username: {
         type: String,
-        require: true,
+        required: true,
         unique: true
     },
-    profilePicture:{
+    profilePicture: {
         type: String,
-        require: false
+        required: false
     },
-    email:{
+    email: {
         type: String,
-        require: true,
+        required: true,
         unique: true
     },
-    password:{
+    password: {
         type: String,
-        require: true
+        required: true
+    },
+    role: {
+        type: String,
+        default: 'user'
     },
     resetPasswordToken: String,
-    resetPasswordExpires: Date
+    resetPasswordExpires: Date,
+    emailVerified: {
+        type: Boolean,
+        default: false
+    }
 });
 
-export const User = mongoose.model("User", UserSchema);
+export default mongoose.model("User", UserSchema);

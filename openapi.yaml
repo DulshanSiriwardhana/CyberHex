@@ -1,0 +1,94 @@
+# Item 142: Swagger API Documentation
+openapi: 3.0.0
+info:
+  title: CyberHex API
+  version: 1.0.0
+  description: ML model training and inference API
+
+servers:
+  - url: http://localhost:5000/api/v1
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+
+  /auth/login:
+    post:
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  accessToken:
+                    type: string
+
+  /experiments:
+    get:
+      summary: Get user experiments
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of experiments
+
+    post:
+      summary: Create new experiment
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                modelId:
+                  type: string
+      responses:
+        '201':
+          description: Experiment created
+
+  /experiments/{id}/logs:
+    get:
+      summary: Get training logs
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of training logs
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

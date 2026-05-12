@@ -1,0 +1,32 @@
+file(REMOVE_RECURSE
+  ".1"
+  "CMakeFiles/cyberhex.dir/src/activation_functions.cpp.o"
+  "CMakeFiles/cyberhex.dir/src/activation_functions.cpp.o.d"
+  "CMakeFiles/cyberhex.dir/src/activations.cpp.o"
+  "CMakeFiles/cyberhex.dir/src/activations.cpp.o.d"
+  "CMakeFiles/cyberhex.dir/src/basic_maths.cpp.o"
+  "CMakeFiles/cyberhex.dir/src/basic_maths.cpp.o.d"
+  "CMakeFiles/cyberhex.dir/src/data_structures.cpp.o"
+  "CMakeFiles/cyberhex.dir/src/data_structures.cpp.o.d"
+  "CMakeFiles/cyberhex.dir/src/dense.cpp.o"
+  "CMakeFiles/cyberhex.dir/src/dense.cpp.o.d"
+  "CMakeFiles/cyberhex.dir/src/higher_maths.cpp.o"
+  "CMakeFiles/cyberhex.dir/src/higher_maths.cpp.o.d"
+  "CMakeFiles/cyberhex.dir/src/machine_learning_algorithms.cpp.o"
+  "CMakeFiles/cyberhex.dir/src/machine_learning_algorithms.cpp.o.d"
+  "CMakeFiles/cyberhex.dir/src/matrix.cpp.o"
+  "CMakeFiles/cyberhex.dir/src/matrix.cpp.o.d"
+  "CMakeFiles/cyberhex.dir/src/model.cpp.o"
+  "CMakeFiles/cyberhex.dir/src/model.cpp.o.d"
+  "CMakeFiles/cyberhex.dir/src/stat.cpp.o"
+  "CMakeFiles/cyberhex.dir/src/stat.cpp.o.d"
+  "libcyberhex.pdb"
+  "libcyberhex.so"
+  "libcyberhex.so.1"
+  "libcyberhex.so.1.0"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/cyberhex.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

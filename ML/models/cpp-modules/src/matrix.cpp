@@ -1,241 +1,282 @@
 #include "matrix.h"
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
-Matrix::Matrix() {
-    rows = 0;
-    cols = 0;
-    matrix = nullptr;
+template <typename T>
+Matrix<T>::Matrix() : rows(0), cols(0), data(0) {}
+
+template <typename T>
+Matrix<T>::Matrix(size_t r, size_t c, T val) : rows(r), cols(c), data(r * c, val) {}
+
+// Copy constructor
+template <typename T>
+Matrix<T>::Matrix(const Matrix& other) : rows(other.rows), cols(other.cols), data(other.data) {}
+
+// Move constructor
+template <typename T>
+Matrix<T>::Matrix(Matrix<T>&& other) noexcept : rows(other.rows), cols(other.cols), data(std::move(other.data)) {
+    other.rows = 0;
+    other.cols = 0;
 }
 
-Matrix::Matrix(int r, int c, double val) {
-    rows = r;
-    cols = c;
-    matrix = new double*[rows];
-
-    for (int i = 0; i < rows; i++) {
-        matrix[i] = new double[cols];
-
-        for (int j = 0; j < cols; j++)
-            matrix[i][j] = val;
-    }
-}
-
-Matrix::Matrix(const Matrix& other) {
-    rows = other.rows;
-    cols = other.cols;
-    matrix = new double*[rows];
-
-    for (int i = 0; i < rows; i++) {
-        matrix[i] = new double[cols];
-
-        for (int j = 0; j < cols; j++)
-            matrix[i][j] = other.matrix[i][j];
-    }
-}
-
-Matrix& Matrix::operator=(const Matrix& other) {
-    if (this == &other) return *this;
-
-    if (matrix) {
-        for (int i = 0; i < rows; i++)
-            delete[] matrix[i];
-        delete[] matrix;
-    }
-
-    rows = other.rows;
-    cols = other.cols;
-
-    matrix = new double*[rows];
-
-    for (int i = 0; i < rows; i++) {
-        matrix[i] = new double[cols];
-        for (int j = 0; j < cols; j++)
-            matrix[i][j] = other.matrix[i][j];
-    }
-
+// operator= using copy and swap
+template <typename T>
+Matrix<T>& Matrix<T>::operator=(Matrix<T> other) {
+    swap(other);
     return *this;
 }
 
-Matrix::~Matrix() {
-    if (!matrix) return;
-
-    for (int i = 0; i < rows; i++) {
-        delete[] matrix[i];
-    }
-    delete[] matrix;
+// swap
+template <typename T>
+void Matrix<T>::swap(Matrix<T>& other) noexcept {
+    std::swap(rows, other.rows);
+    std::swap(cols, other.cols);
+    data.swap(other.data);
 }
 
-Matrix Matrix::dot(const Matrix& other) const {
+template <typename T>
+Matrix<T> Matrix<T>::dot(const Matrix<T>& other) const {
+    if (cols != other.rows) {
+        throw DimensionMismatchException("Matrix dot product dimension mismatch");
+    }
     Matrix result(rows, other.cols, 0.0);
-
-    for (int i = 0; i < rows; i++)
-        for (int j = 0; j < other.cols; j++)
-            for (int k = 0; k < cols; k++)
-                result.matrix[i][j] += matrix[i][k] * other.matrix[k][j];
+    #ifdef _OPENMP
+    #pragma omp parallel for
+    #endif
+    for (size_t i = 0; i < rows; i++) {
+        for (size_t k = 0; k < cols; k++) {
+            double temp = data[i * cols + k];
+            #pragma omp simd
+            for (size_t j = 0; j < other.cols; j++) {
+                result(i, j) += temp * other.data[k * other.cols + j];
+            }
+        }
+    }
 
     return result;
 }
 
-Matrix Matrix::transpose() const {
+template <typename T>
+Matrix<T> Matrix<T>::transpose() const {
     Matrix t(cols, rows);
+    size_t block_size = 64;
 
-    for (int i = 0; i < rows; i++)
-        for (int j = 0; j < cols; j++)
-            t.matrix[j][i] = matrix[i][j];
+    #ifdef _OPENMP
+    #pragma omp parallel for collapse(2)
+    #endif
+    for (size_t i = 0; i < rows; i += block_size) {
+        for (size_t j = 0; j < cols; j += block_size) {
+            size_t i_max = std::min(i + block_size, rows);
+            size_t j_max = std::min(j + block_size, cols);
+            for (size_t ii = i; ii < i_max; ii++) {
+                #pragma omp simd
+                for (size_t jj = j; jj < j_max; jj++) {
+                    t(jj, ii) = data[ii * cols + jj];
+                }
+            }
+        }
+    }
 
     return t;
 }
 
-Matrix Matrix::operator+(const Matrix& other) const {
+template <typename T>
+Matrix<T> Matrix<T>::operator+(const Matrix<T>& other) const {
+    if (rows != other.rows || cols != other.cols) {
+        throw DimensionMismatchException("Matrix addition dimension mismatch");
+    }
     Matrix r(rows, cols);
 
-    for (int i = 0; i < rows; i++)
-        for (int j = 0; j < cols; j++)
-            r.matrix[i][j] = matrix[i][j] + other.matrix[i][j];
+    for (size_t i = 0; i < rows; i++)
+        for (size_t j = 0; j < cols; j++)
+            r(i, j) = data[(i) * cols + (j)] + other(i, j);
 
     return r;
 }
 
-Matrix Matrix::operator-(const Matrix& other) const {
+template <typename T>
+Matrix<T> Matrix<T>::operator-(const Matrix<T>& other) const {
+    if (rows != other.rows || cols != other.cols) {
+        throw DimensionMismatchException("Matrix subtraction dimension mismatch");
+    }
     Matrix r(rows, cols);
 
-    for (int i = 0; i < rows; i++)
-        for (int j = 0; j < cols; j++)
-            r.matrix[i][j] = matrix[i][j] - other.matrix[i][j];
+    for (size_t i = 0; i < rows; i++)
+        for (size_t j = 0; j < cols; j++)
+            r(i, j) = data[(i) * cols + (j)] - other(i, j);
 
     return r;
 }
 
-Matrix Matrix::operator*(double scalar) const {
+template <typename T>
+Matrix<T> Matrix<T>::operator*(T scalar) const {
     Matrix r(rows, cols);
 
-    for (int i = 0; i < rows; i++)
-        for (int j = 0; j < cols; j++)
-            r.matrix[i][j] = matrix[i][j] * scalar;
+    for (size_t i = 0; i < rows; i++)
+        for (size_t j = 0; j < cols; j++)
+            r(i, j) = data[(i) * cols + (j)] * scalar;
 
     return r;
 }
 
-void Matrix::apply(double (*func)(double)) {
-    for (int i = 0; i < rows; i++)
-        for (int j = 0; j < cols; j++)
-            matrix[i][j] = func(matrix[i][j]);
+template <typename T>
+void Matrix<T>::apply(double (*func)(double)) {
+    for (size_t i = 0; i < rows; i++)
+        for (size_t j = 0; j < cols; j++)
+            data[(i) * cols + (j)] = func(data[(i) * cols + (j)]);
 }
 
-void Matrix::print() const {
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            cout << matrix[i][j] << " ";
+template <typename T>
+void Matrix<T>::print() const {
+    for (size_t i = 0; i < rows; i++) {
+        for (size_t j = 0; j < cols; j++) {
+            cout << data[(i) * cols + (j)] << " ";
         }
         cout << endl;
     }
 }
 
-void removeRowColumn(double** &A, int row, int column, int size, double** &ret){
-    for(int i=0;i<size-1;i++){
-        for(int j=0;j<size-1;j++){
-            if(j>=column){
-                if(i>=row){
-                    ret[i][j] = A[i+1][j+1];
-                }
-                else{
-                    ret[i][j] = A[i][j+1];
-                }
+// Item 20: removeRowColumn uses index-remapping (view-like) to avoid intermediate matrix copy.
+void removeRowColumn(const std::vector<std::vector<double>>& A, size_t row, size_t column, std::vector<std::vector<double>>& ret) {
+    size_t size = A.size();
+    if (size == 0) return;
+    ret.resize(size - 1);
+    for (size_t i = 0, di = 0; i < size; i++) {
+        if (i == row) continue;
+        ret[di].resize(size - 1);
+        for (size_t j = 0, dj = 0; j < size; j++) {
+            if (j == column) continue;
+            ret[di][dj++] = A[i][j];
+        }
+        di++;
+    }
+}
+
+double det(std::vector<std::vector<double>> A) {
+    if (A.empty()) return 0;
+    size_t size = A.size();
+    if (size == 1) return A[0][0];
+
+    // LU decomposition via Gaussian elimination
+    double d = 1.0;
+    for (size_t i = 0; i < size; i++) {
+        size_t pivot = i;
+        for (size_t j = i + 1; j < size; j++) {
+            if (std::abs(A[j][i]) > std::abs(A[pivot][i])) {
+                pivot = j;
             }
-            else{
-                if(i>=row){
-                    ret[i][j] = A[i+1][j];
-                }
-                else{
-                    ret[i][j] = A[i][j];
-                }
+        }
+        if (pivot != i) {
+            std::swap(A[i], A[pivot]);
+            d = -d;
+        }
+        if (A[i][i] == 0) {
+            return 0; // Singular matrix
+        }
+        d *= A[i][i];
+        for (size_t j = i + 1; j < size; j++) {
+            double factor = A[j][i] / A[i][i];
+            for (size_t k = i + 1; k < size; k++) {
+                A[j][k] -= factor * A[i][k];
             }
         }
     }
+    return d;
 }
 
-double det2x2(double** &A){
-    return A[0][0]*A[1][1] - A[0][1]*A[1][0];
-}
-
-double det(double** &A, int size){
-    if(size==2){
-        return det2x2(A);
-    }
-
-    int k=1;
-    double sum =0;
-    for(int i =0;i<size;i++){
-
-        double** y = new double*[size-1];
-
-        for(int k=0;k<size;k++){
-            y[k] = new double[size-1];
-        }
-
-        removeRowColumn(A, 0, i, size, y);
-        sum += k*A[0][i]* det(y, size-1);
-        k *= -1;
-    }
-
-    return sum;
-}
-
-void replaceRow(double** &A, int row, int size, double*  replacingRow, double** &ret){
-    for(int i=0;i<size;i++){
-        for(int j=0;j<size;j++){
-            if(i == row){
+void replaceRow(const std::vector<std::vector<double>>& A, size_t row, const std::vector<double>& replacingRow, std::vector<std::vector<double>>& ret) {
+    size_t size = A.size();
+    ret.assign(size, std::vector<double>(size));
+    for(int i=0; i<size; i++) {
+        for(int j=0; j<size; j++) {
+            if(i == row) {
                 ret[i][j] = replacingRow[j];
-            }
-            else{
+            } else {
                 ret[i][j] = A[i][j];
             }
         }
     }
 }
 
-void replaceColumn(double** &A, int column, int size, double*  replacingColumn, double** &ret){
-    for(int i=0;i<size;i++){
-        for(int j=0;j<size;j++){
-            if(j == column){
+void replaceColumn(const std::vector<std::vector<double>>& A, size_t column, const std::vector<double>& replacingColumn, std::vector<std::vector<double>>& ret) {
+    size_t size = A.size();
+    ret.assign(size, std::vector<double>(size));
+    for(int i=0; i<size; i++) {
+        for(int j=0; j<size; j++) {
+            if(j == column) {
                 ret[i][j] = replacingColumn[i];
-            }
-            else{
+            } else {
                 ret[i][j] = A[i][j];
             }
         }
     }
 }
 
-void solve_AX_eq_B(double** &A, double* X, double* B, int size){
-    double detA = det(A, size);
-    for(int i=0;i<size;i++){
-
-        double** newA = new double*[size];
-
-        for(int k=0;k<size;k++){
-            newA[k] = new double[size];
-        }
-        
-        replaceColumn(A, i, size, B, newA);
-        X[i] = det(newA, size)/detA;
+std::vector<double> solve_AX_eq_B(std::vector<std::vector<double>> A, std::vector<double> B) {
+    if (A.empty() || B.empty() || A.size() != B.size()) {
+        throw CyberHexException("solve_AX_eq_B: Invalid dimensions or empty matrices");
     }
-}
-
-void multiply_matrices(double** &A, double** &B, int* dimensions, double** &ret){
-    for(int i=0;i<dimensions[0];i++){
-        //int row = i;
-        for(int j=0;j<dimensions[3];j++){
-            //int column = j;
-            double value = 0;
-            for(int k=0;k<dimensions[1];k++){
-                //int posX = dimensions[1] * i + k;
-                //int posY = dimensions[2] * k + j;
-                value += A[i][k] * B[k][j];
+    size_t size = A.size();
+    
+    // Gaussian elimination
+    for (size_t i = 0; i < size; i++) {
+        size_t pivot = i;
+        for (size_t j = i + 1; j < size; j++) {
+            if (std::abs(A[j][i]) > std::abs(A[pivot][i])) {
+                pivot = j;
             }
-            ret[i][j] = value;
+        }
+        if (pivot != i) {
+            std::swap(A[i], A[pivot]);
+            std::swap(B[i], B[pivot]);
+        }
+        if (A[i][i] == 0) {
+            throw CyberHexException("Singular matrix detected in solve_AX_eq_B");
+        }
+        // Eliminate
+        for (size_t j = i + 1; j < size; j++) {
+            double factor = A[j][i] / A[i][i];
+            B[j] -= factor * B[i];
+            for (size_t k = i; k < size; k++) {
+                A[j][k] -= factor * A[i][k];
+            }
         }
     }
+
+    // Back substitution
+    std::vector<double> X(size, 0.0);
+    for (size_t i = size - 1; i >= 0; i--) {
+        double sum = B[i];
+        for (size_t j = i + 1; j < size; j++) {
+            sum -= A[i][j] * X[j];
+        }
+        X[i] = sum / A[i][i];
+    }
+    return X;
 }
+
+std::vector<std::vector<double>> multiply_matrices(const std::vector<std::vector<double>>& A, const std::vector<std::vector<double>>& B) {
+    if (A.empty() || B.empty() || A[0].size() != B.size()) {
+        throw CyberHexException("multiply_matrices: Invalid dimensions");
+    }
+    size_t rowsA = A.size();
+    size_t colsA = A[0].size();
+    size_t colsB = B[0].size();
+    
+    std::vector<std::vector<double>> ret(rowsA, std::vector<double>(colsB, 0.0));
+    for(int i=0; i<rowsA; i++) {
+        for(int j=0; j<colsB; j++) {
+            double val = 0;
+            for(int k=0; k<colsA; k++) {
+                val += A[i][k] * B[k][j];
+            }
+            ret[i][j] = val;
+        }
+    }
+    return ret;
+}
+
+template class Matrix<double>;
+template class Matrix<float>;
