@@ -7,6 +7,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Item 141: Build with full warning flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unused-parameter")
 
+set(BOOST_ROOT "/home/dulshan/boost_1_83_0")
+set(Boost_NO_SYSTEM_PATHS ON)
+find_package(Boost REQUIRED COMPONENTS system thread)
+include_directories(${Boost_INCLUDE_DIRS})
+
 # Item 14/15: Enable OpenMP with graceful fallback
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
@@ -54,10 +59,11 @@ add_library(cyberhex SHARED ${SOURCES})
 if(OpenMP_CXX_FOUND)
     target_link_libraries(cyberhex PRIVATE OpenMP::OpenMP_CXX)
 endif()
+target_link_libraries(cyberhex PRIVATE Boost::system Boost::thread)
 
 # Unit Tests
 add_executable(unit_tests src/main.cpp)
-target_link_libraries(unit_tests PRIVATE cyberhex Catch2::Catch2WithMain)
+target_link_libraries(unit_tests PRIVATE cyberhex Catch2::Catch2WithMain Boost::system Boost::thread)
 
 # Item 57: Standardized version & install rules
 set_target_properties(cyberhex PROPERTIES

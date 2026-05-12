@@ -15,6 +15,8 @@ class Dense : public Layer {
         Matrix<double> m_W, v_W;
         Matrix<double> m_B, v_B;
         Matrix<double> input;
+        double l1_lambda = 0.0;
+        double l2_lambda = 0.0;
     
     public:
         Dense(double in, double out, InitType init_type = InitType::HE);
@@ -24,6 +26,8 @@ class Dense : public Layer {
 
         const Matrix<double>& getWeights() const;
         const Matrix<double>& getBias() const;
+
+        void setRegularization(double l1, double l2) { l1_lambda = l1; l2_lambda = l2; }
 };
 
 #endif

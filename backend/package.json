@@ -7,7 +7,8 @@
   "author": "T.D Rasindu Dulshan Siriwardhana",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {

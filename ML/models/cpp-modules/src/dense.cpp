@@ -121,14 +121,11 @@ Matrix<double> Dense::backward(const Matrix<double>& grad, double lr, OptimizerT
     }
 
     // Apply L1/L2 regularization
-    double lambda_l1 = 0.0001; // Default
-    double lambda_l2 = 0.0001;
-    
     for (size_t i = 0; i < weights.rows; i++) {
         for (size_t j = 0; j < weights.cols; j++) {
             double w = weights(i, j);
-            double l1_penalty = (w > 0 ? 1.0 : (w < 0 ? -1.0 : 0.0)) * lambda_l1;
-            double l2_penalty = w * lambda_l2;
+            double l1_penalty = (w > 0 ? 1.0 : (w < 0 ? -1.0 : 0.0)) * l1_lambda;
+            double l2_penalty = w * l2_lambda;
             weights(i, j) -= lr * (l1_penalty + l2_penalty);
         }
     }

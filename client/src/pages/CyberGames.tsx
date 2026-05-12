@@ -16,7 +16,9 @@ const CyberGames = () => {
     }
   };
 
-  useWebSocket('ws://localhost:5000', handleWebSocketMessage);
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  const websocketUrl = `${wsProtocol}://${window.location.host}/ws`;
+  useWebSocket(websocketUrl, handleWebSocketMessage);
 
   return (
     <div>

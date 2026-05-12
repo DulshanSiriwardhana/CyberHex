@@ -2,8 +2,8 @@
 #include <cmath>
 #include "higher_maths.h"
 
-int p = -0.5;
-int q = 1.11111111111111111111111111111111;
+double p = -0.5;
+double q = 1.11111111111111111111111111111111;
 
 double relu(double x) { return x > 0 ? x : 0; }
 double relu_d(double x) { return x > 0 ? 1 : 0; }
@@ -82,7 +82,18 @@ Matrix<double> Softmax::forward(const Matrix<double>& X) {
 }
 
 Matrix<double> Softmax::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
-    return grad;
+    Matrix<double> res(grad.rows, grad.cols, 0.0);
+    for (size_t i = 0; i < grad.rows; i++) {
+        for (size_t j = 0; j < grad.cols; j++) {
+            double sum = 0.0;
+            for (size_t k = 0; k < grad.cols; k++) {
+                double jacobian = (j == k) ? output(i, j) * (1.0 - output(i, j)) : -output(i, j) * output(i, k);
+                sum += grad(i, k) * jacobian;
+            }
+            res(i, j) = sum;
+        }
+    }
+    return res;
 }
 
 Matrix<double> Identity::forward(const Matrix<double>& input) {
