@@ -247,9 +247,9 @@ std::vector<double> solve_AX_eq_B(std::vector<std::vector<double>> A, std::vecto
 
     
     std::vector<double> X(size, 0.0);
-    for (size_t i = size - 1; i >= 0; i--) {
+    for (int i = (int)size - 1; i >= 0; i--) {
         double sum = B[i];
-        for (size_t j = i + 1; j < size; j++) {
+        for (size_t j = (size_t)i + 1; j < size; j++) {
             sum -= A[i][j] * X[j];
         }
         X[i] = sum / A[i][i];
@@ -266,10 +266,10 @@ std::vector<std::vector<double>> multiply_matrices(const std::vector<std::vector
     size_t colsB = B[0].size();
     
     std::vector<std::vector<double>> ret(rowsA, std::vector<double>(colsB, 0.0));
-    for(int i=0; i<rowsA; i++) {
-        for(int j=0; j<colsB; j++) {
+    for(size_t i=0; i<rowsA; i++) {
+        for(size_t j=0; j<colsB; j++) {
             double val = 0;
-            for(int k=0; k<colsA; k++) {
+            for(size_t k=0; k<colsA; k++) {
                 val += A[i][k] * B[k][j];
             }
             ret[i][j] = val;
