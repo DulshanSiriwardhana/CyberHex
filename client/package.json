@@ -8,6 +8,9 @@
     "build": "tsc -b && vite build",
     "serve": "vite preview --host 0.0.0.0",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,json,css}\"",
     "preview": "vite preview",
     "test": "vitest"
   },

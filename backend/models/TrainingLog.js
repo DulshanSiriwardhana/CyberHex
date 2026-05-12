@@ -1,4 +1,3 @@
-
 import mongoose from 'mongoose';
 
 const TrainingLogSchema = new mongoose.Schema({
@@ -14,6 +13,15 @@ const TrainingLogSchema = new mongoose.Schema({
     loss: {
         type: Number,
         required: true
+    },
+    accuracy: {
+        type: Number
+    },
+    validationLoss: {
+        type: Number
+    },
+    metrics: {
+        type: mongoose.Schema.Types.Mixed
     },
     timestamp: {
         type: Date,

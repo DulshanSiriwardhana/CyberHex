@@ -1,5 +1,3 @@
-
-
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -12,6 +10,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import experimentRoutes from './routes/experimentRoutes.js';
+import mlTrainingRoutes from './routes/mlTrainingRoutes.js';
 import logger from './utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -52,9 +51,11 @@ app.use((req, _res, next) => {
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/experiments', experimentRoutes);
+app.use('/api/v1/training', mlTrainingRoutes);
 
 
-app.get('/health', (_req, res) => res.json({ status: 'ok', version: '1.0.0' }));
+app.get('/health', (_req, res) => res.json({ status: 'ok', version: '1.0.0', timestamp: new Date() }));
+app.get('/api/v1/health', (_req, res) => res.json({ status: 'ok', version: '1.0.0', timestamp: new Date() }));
 
 
 app.use(errorHandler);

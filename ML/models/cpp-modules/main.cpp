@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 
     model.setWSServer(&ws);
 
-    model.train(X_train, y_train, 2000, 0.3);
+    model.train(X_train, y_train, 1000, 0.3);
 
     Matrix<double> pred = model.forward(X_test);
 
