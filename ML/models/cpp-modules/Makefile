@@ -85,6 +85,51 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+.PHONY : list_install_components/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
 # The main all target
 all: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules//CMakeFiles/progress.marks
@@ -129,12 +174,89 @@ cyberhex/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/build
 .PHONY : cyberhex/fast
 
+#=============================================================================
+# Target rules for targets named unit_tests
+
+# Build rule for target.
+unit_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit_tests
+.PHONY : unit_tests
+
+# fast build rule for target.
+unit_tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/build
+.PHONY : unit_tests/fast
+
+#=============================================================================
+# Target rules for targets named app
+
+# Build rule for target.
+app: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app
+.PHONY : app
+
+# fast build rule for target.
+app/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/build
+.PHONY : app/fast
+
+#=============================================================================
+# Target rules for targets named Catch2
+
+# Build rule for target.
+Catch2: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Catch2
+.PHONY : Catch2
+
+# fast build rule for target.
+Catch2/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/catch2-build/src/CMakeFiles/Catch2.dir/build.make _deps/catch2-build/src/CMakeFiles/Catch2.dir/build
+.PHONY : Catch2/fast
+
+#=============================================================================
+# Target rules for targets named Catch2WithMain
+
+# Build rule for target.
+Catch2WithMain: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Catch2WithMain
+.PHONY : Catch2WithMain
+
+# fast build rule for target.
+Catch2WithMain/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/build.make _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/build
+.PHONY : Catch2WithMain/fast
+
+main.o: main.cpp.o
+.PHONY : main.o
+
+# target to build an object file
+main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/main.cpp.o
+.PHONY : main.cpp.o
+
+main.i: main.cpp.i
+.PHONY : main.i
+
+# target to preprocess a source file
+main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/main.cpp.i
+.PHONY : main.cpp.i
+
+main.s: main.cpp.s
+.PHONY : main.s
+
+# target to generate assembly for a file
+main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/main.cpp.s
+.PHONY : main.cpp.s
+
 src/activation_functions.o: src/activation_functions.cpp.o
 .PHONY : src/activation_functions.o
 
 # target to build an object file
 src/activation_functions.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/activation_functions.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/activation_functions.cpp.o
 .PHONY : src/activation_functions.cpp.o
 
 src/activation_functions.i: src/activation_functions.cpp.i
@@ -143,6 +265,7 @@ src/activation_functions.i: src/activation_functions.cpp.i
 # target to preprocess a source file
 src/activation_functions.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/activation_functions.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/activation_functions.cpp.i
 .PHONY : src/activation_functions.cpp.i
 
 src/activation_functions.s: src/activation_functions.cpp.s
@@ -151,6 +274,7 @@ src/activation_functions.s: src/activation_functions.cpp.s
 # target to generate assembly for a file
 src/activation_functions.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/activation_functions.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/activation_functions.cpp.s
 .PHONY : src/activation_functions.cpp.s
 
 src/activations.o: src/activations.cpp.o
@@ -159,6 +283,7 @@ src/activations.o: src/activations.cpp.o
 # target to build an object file
 src/activations.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/activations.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/activations.cpp.o
 .PHONY : src/activations.cpp.o
 
 src/activations.i: src/activations.cpp.i
@@ -167,6 +292,7 @@ src/activations.i: src/activations.cpp.i
 # target to preprocess a source file
 src/activations.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/activations.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/activations.cpp.i
 .PHONY : src/activations.cpp.i
 
 src/activations.s: src/activations.cpp.s
@@ -175,6 +301,7 @@ src/activations.s: src/activations.cpp.s
 # target to generate assembly for a file
 src/activations.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/activations.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/activations.cpp.s
 .PHONY : src/activations.cpp.s
 
 src/basic_maths.o: src/basic_maths.cpp.o
@@ -183,6 +310,7 @@ src/basic_maths.o: src/basic_maths.cpp.o
 # target to build an object file
 src/basic_maths.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/basic_maths.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/basic_maths.cpp.o
 .PHONY : src/basic_maths.cpp.o
 
 src/basic_maths.i: src/basic_maths.cpp.i
@@ -191,6 +319,7 @@ src/basic_maths.i: src/basic_maths.cpp.i
 # target to preprocess a source file
 src/basic_maths.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/basic_maths.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/basic_maths.cpp.i
 .PHONY : src/basic_maths.cpp.i
 
 src/basic_maths.s: src/basic_maths.cpp.s
@@ -199,7 +328,32 @@ src/basic_maths.s: src/basic_maths.cpp.s
 # target to generate assembly for a file
 src/basic_maths.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/basic_maths.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/basic_maths.cpp.s
 .PHONY : src/basic_maths.cpp.s
+
+src/cyberhex_c_api.o: src/cyberhex_c_api.cpp.o
+.PHONY : src/cyberhex_c_api.o
+
+# target to build an object file
+src/cyberhex_c_api.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/cyberhex_c_api.cpp.o
+.PHONY : src/cyberhex_c_api.cpp.o
+
+src/cyberhex_c_api.i: src/cyberhex_c_api.cpp.i
+.PHONY : src/cyberhex_c_api.i
+
+# target to preprocess a source file
+src/cyberhex_c_api.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/cyberhex_c_api.cpp.i
+.PHONY : src/cyberhex_c_api.cpp.i
+
+src/cyberhex_c_api.s: src/cyberhex_c_api.cpp.s
+.PHONY : src/cyberhex_c_api.s
+
+# target to generate assembly for a file
+src/cyberhex_c_api.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/cyberhex_c_api.cpp.s
+.PHONY : src/cyberhex_c_api.cpp.s
 
 src/data_structures.o: src/data_structures.cpp.o
 .PHONY : src/data_structures.o
@@ -207,6 +361,7 @@ src/data_structures.o: src/data_structures.cpp.o
 # target to build an object file
 src/data_structures.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/data_structures.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/data_structures.cpp.o
 .PHONY : src/data_structures.cpp.o
 
 src/data_structures.i: src/data_structures.cpp.i
@@ -215,6 +370,7 @@ src/data_structures.i: src/data_structures.cpp.i
 # target to preprocess a source file
 src/data_structures.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/data_structures.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/data_structures.cpp.i
 .PHONY : src/data_structures.cpp.i
 
 src/data_structures.s: src/data_structures.cpp.s
@@ -223,6 +379,7 @@ src/data_structures.s: src/data_structures.cpp.s
 # target to generate assembly for a file
 src/data_structures.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/data_structures.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/data_structures.cpp.s
 .PHONY : src/data_structures.cpp.s
 
 src/dense.o: src/dense.cpp.o
@@ -231,6 +388,7 @@ src/dense.o: src/dense.cpp.o
 # target to build an object file
 src/dense.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/dense.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/dense.cpp.o
 .PHONY : src/dense.cpp.o
 
 src/dense.i: src/dense.cpp.i
@@ -239,6 +397,7 @@ src/dense.i: src/dense.cpp.i
 # target to preprocess a source file
 src/dense.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/dense.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/dense.cpp.i
 .PHONY : src/dense.cpp.i
 
 src/dense.s: src/dense.cpp.s
@@ -247,6 +406,7 @@ src/dense.s: src/dense.cpp.s
 # target to generate assembly for a file
 src/dense.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/dense.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/dense.cpp.s
 .PHONY : src/dense.cpp.s
 
 src/higher_maths.o: src/higher_maths.cpp.o
@@ -255,6 +415,7 @@ src/higher_maths.o: src/higher_maths.cpp.o
 # target to build an object file
 src/higher_maths.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/higher_maths.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/higher_maths.cpp.o
 .PHONY : src/higher_maths.cpp.o
 
 src/higher_maths.i: src/higher_maths.cpp.i
@@ -263,6 +424,7 @@ src/higher_maths.i: src/higher_maths.cpp.i
 # target to preprocess a source file
 src/higher_maths.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/higher_maths.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/higher_maths.cpp.i
 .PHONY : src/higher_maths.cpp.i
 
 src/higher_maths.s: src/higher_maths.cpp.s
@@ -271,6 +433,7 @@ src/higher_maths.s: src/higher_maths.cpp.s
 # target to generate assembly for a file
 src/higher_maths.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/higher_maths.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/higher_maths.cpp.s
 .PHONY : src/higher_maths.cpp.s
 
 src/machine_learning_algorithms.o: src/machine_learning_algorithms.cpp.o
@@ -279,6 +442,7 @@ src/machine_learning_algorithms.o: src/machine_learning_algorithms.cpp.o
 # target to build an object file
 src/machine_learning_algorithms.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/machine_learning_algorithms.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/machine_learning_algorithms.cpp.o
 .PHONY : src/machine_learning_algorithms.cpp.o
 
 src/machine_learning_algorithms.i: src/machine_learning_algorithms.cpp.i
@@ -287,6 +451,7 @@ src/machine_learning_algorithms.i: src/machine_learning_algorithms.cpp.i
 # target to preprocess a source file
 src/machine_learning_algorithms.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/machine_learning_algorithms.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/machine_learning_algorithms.cpp.i
 .PHONY : src/machine_learning_algorithms.cpp.i
 
 src/machine_learning_algorithms.s: src/machine_learning_algorithms.cpp.s
@@ -295,6 +460,7 @@ src/machine_learning_algorithms.s: src/machine_learning_algorithms.cpp.s
 # target to generate assembly for a file
 src/machine_learning_algorithms.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/machine_learning_algorithms.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/machine_learning_algorithms.cpp.s
 .PHONY : src/machine_learning_algorithms.cpp.s
 
 src/matrix.o: src/matrix.cpp.o
@@ -303,6 +469,7 @@ src/matrix.o: src/matrix.cpp.o
 # target to build an object file
 src/matrix.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/matrix.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/matrix.cpp.o
 .PHONY : src/matrix.cpp.o
 
 src/matrix.i: src/matrix.cpp.i
@@ -311,6 +478,7 @@ src/matrix.i: src/matrix.cpp.i
 # target to preprocess a source file
 src/matrix.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/matrix.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/matrix.cpp.i
 .PHONY : src/matrix.cpp.i
 
 src/matrix.s: src/matrix.cpp.s
@@ -319,6 +487,7 @@ src/matrix.s: src/matrix.cpp.s
 # target to generate assembly for a file
 src/matrix.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/matrix.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/matrix.cpp.s
 .PHONY : src/matrix.cpp.s
 
 src/model.o: src/model.cpp.o
@@ -327,6 +496,7 @@ src/model.o: src/model.cpp.o
 # target to build an object file
 src/model.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/model.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/model.cpp.o
 .PHONY : src/model.cpp.o
 
 src/model.i: src/model.cpp.i
@@ -335,6 +505,7 @@ src/model.i: src/model.cpp.i
 # target to preprocess a source file
 src/model.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/model.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/model.cpp.i
 .PHONY : src/model.cpp.i
 
 src/model.s: src/model.cpp.s
@@ -343,6 +514,7 @@ src/model.s: src/model.cpp.s
 # target to generate assembly for a file
 src/model.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/model.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/model.cpp.s
 .PHONY : src/model.cpp.s
 
 src/stat.o: src/stat.cpp.o
@@ -351,6 +523,7 @@ src/stat.o: src/stat.cpp.o
 # target to build an object file
 src/stat.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/stat.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/stat.cpp.o
 .PHONY : src/stat.cpp.o
 
 src/stat.i: src/stat.cpp.i
@@ -359,6 +532,7 @@ src/stat.i: src/stat.cpp.i
 # target to preprocess a source file
 src/stat.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/stat.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/stat.cpp.i
 .PHONY : src/stat.cpp.i
 
 src/stat.s: src/stat.cpp.s
@@ -367,7 +541,59 @@ src/stat.s: src/stat.cpp.s
 # target to generate assembly for a file
 src/stat.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/stat.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/stat.cpp.s
 .PHONY : src/stat.cpp.s
+
+src/ws_server.o: src/ws_server.cpp.o
+.PHONY : src/ws_server.o
+
+# target to build an object file
+src/ws_server.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/ws_server.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/ws_server.cpp.o
+.PHONY : src/ws_server.cpp.o
+
+src/ws_server.i: src/ws_server.cpp.i
+.PHONY : src/ws_server.i
+
+# target to preprocess a source file
+src/ws_server.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/ws_server.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/ws_server.cpp.i
+.PHONY : src/ws_server.cpp.i
+
+src/ws_server.s: src/ws_server.cpp.s
+.PHONY : src/ws_server.s
+
+# target to generate assembly for a file
+src/ws_server.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/ws_server.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/ws_server.cpp.s
+.PHONY : src/ws_server.cpp.s
+
+tests.o: tests.cpp.o
+.PHONY : tests.o
+
+# target to build an object file
+tests.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/tests.cpp.o
+.PHONY : tests.cpp.o
+
+tests.i: tests.cpp.i
+.PHONY : tests.i
+
+# target to preprocess a source file
+tests.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/tests.cpp.i
+.PHONY : tests.cpp.i
+
+tests.s: tests.cpp.s
+.PHONY : tests.s
+
+# target to generate assembly for a file
+tests.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/tests.cpp.s
+.PHONY : tests.cpp.s
 
 # Help Target
 help:
@@ -376,8 +602,19 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... Catch2"
+	@echo "... Catch2WithMain"
+	@echo "... app"
 	@echo "... cyberhex"
+	@echo "... unit_tests"
+	@echo "... main.o"
+	@echo "... main.i"
+	@echo "... main.s"
 	@echo "... src/activation_functions.o"
 	@echo "... src/activation_functions.i"
 	@echo "... src/activation_functions.s"
@@ -387,6 +624,9 @@ help:
 	@echo "... src/basic_maths.o"
 	@echo "... src/basic_maths.i"
 	@echo "... src/basic_maths.s"
+	@echo "... src/cyberhex_c_api.o"
+	@echo "... src/cyberhex_c_api.i"
+	@echo "... src/cyberhex_c_api.s"
 	@echo "... src/data_structures.o"
 	@echo "... src/data_structures.i"
 	@echo "... src/data_structures.s"
@@ -408,6 +648,12 @@ help:
 	@echo "... src/stat.o"
 	@echo "... src/stat.i"
 	@echo "... src/stat.s"
+	@echo "... src/ws_server.o"
+	@echo "... src/ws_server.i"
+	@echo "... src/ws_server.s"
+	@echo "... tests.o"
+	@echo "... tests.i"
+	@echo "... tests.s"
 .PHONY : help
 
 

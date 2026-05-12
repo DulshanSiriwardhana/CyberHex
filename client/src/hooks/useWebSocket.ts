@@ -42,6 +42,4 @@ export const useWebSocket = (url: string, onMessage: (data: any) => void) => {
       if (ws.current) ws.current.close();
     };
   }, [url, stableOnMessage]);
-
-  return ws.current;
 };

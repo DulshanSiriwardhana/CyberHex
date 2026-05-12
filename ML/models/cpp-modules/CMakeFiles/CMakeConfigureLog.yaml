@@ -1087,3 +1087,80 @@ events:
         
       exitCode: 0
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "CMakeLists.txt:29 (check_cxx_compiler_flag)"
+    checks:
+      - "Performing Test COMPILER_HAS_AVX2"
+    directories:
+      source: "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-PSIaFw"
+      binary: "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-PSIaFw"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -Wall -Wextra -Wno-unused-parameter -fopenmp"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "COMPILER_HAS_AVX2"
+      cached: true
+      stdout: |
+        Change Dir: '/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-PSIaFw'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_f404f/fast
+        gmake[1]: Entering directory '/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-PSIaFw'
+        /usr/bin/gmake  -f CMakeFiles/cmTC_f404f.dir/build.make CMakeFiles/cmTC_f404f.dir/build
+        gmake[2]: Entering directory '/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-PSIaFw'
+        Building CXX object CMakeFiles/cmTC_f404f.dir/src.cxx.o
+        /usr/bin/c++ -DCOMPILER_HAS_AVX2  -Wall -Wextra -Wno-unused-parameter -fopenmp  -std=gnu++17   -mavx2 -o CMakeFiles/cmTC_f404f.dir/src.cxx.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-PSIaFw/src.cxx
+        Linking CXX executable cmTC_f404f
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f404f.dir/link.txt --verbose=1
+        /usr/bin/c++  -Wall -Wextra -Wno-unused-parameter -fopenmp  CMakeFiles/cmTC_f404f.dir/src.cxx.o -o cmTC_f404f
+        gmake[2]: Leaving directory '/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-PSIaFw'
+        gmake[1]: Leaving directory '/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-PSIaFw'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/usr/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "_deps/catch2-src/CMake/CatchMiscFunctions.cmake:12 (check_cxx_compiler_flag)"
+      - "_deps/catch2-src/CMake/CatchMiscFunctions.cmake:119 (add_cxx_flag_if_supported_to_targets)"
+      - "_deps/catch2-src/src/CMakeLists.txt:342 (add_build_reproducibility_settings)"
+    checks:
+      - "Performing Test HAVE_FLAG__ffile_prefix_map__home_dulshan_CyberHex_CyberHex_ML_models_cpp_modules__deps_catch2_src__"
+    directories:
+      source: "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-OXM6Qr"
+      binary: "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-OXM6Qr"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -Wall -Wextra -Wno-unused-parameter -fopenmp -mavx2"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/_deps/catch2-src/extras;/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/_deps/catch2-src/CMake"
+    buildResult:
+      variable: "HAVE_FLAG__ffile_prefix_map__home_dulshan_CyberHex_CyberHex_ML_models_cpp_modules__deps_catch2_src__"
+      cached: true
+      stdout: |
+        Change Dir: '/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-OXM6Qr'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_1bc79/fast
+        gmake[1]: Entering directory '/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-OXM6Qr'
+        /usr/bin/gmake  -f CMakeFiles/cmTC_1bc79.dir/build.make CMakeFiles/cmTC_1bc79.dir/build
+        gmake[2]: Entering directory '/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-OXM6Qr'
+        Building CXX object CMakeFiles/cmTC_1bc79.dir/src.cxx.o
+        /usr/bin/c++ -DHAVE_FLAG__ffile_prefix_map__home_dulshan_CyberHex_CyberHex_ML_models_cpp_modules__deps_catch2_src__  -Wall -Wextra -Wno-unused-parameter -fopenmp -mavx2  -std=gnu++17   -ffile-prefix-map=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/_deps/catch2-src/= -o CMakeFiles/cmTC_1bc79.dir/src.cxx.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-OXM6Qr/src.cxx
+        Linking CXX executable cmTC_1bc79
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_1bc79.dir/link.txt --verbose=1
+        /usr/bin/c++  -Wall -Wextra -Wno-unused-parameter -fopenmp -mavx2  CMakeFiles/cmTC_1bc79.dir/src.cxx.o -o cmTC_1bc79
+        gmake[2]: Leaving directory '/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-OXM6Qr'
+        gmake[1]: Leaving directory '/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/CMakeFiles/CMakeScratch/TryCompile-OXM6Qr'
+        
+      exitCode: 0
+...

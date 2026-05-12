@@ -1,11 +1,15 @@
+import { useMemo } from 'react';
+
 const Beam=()=>{
-    const randR = Math.floor(Math.random() * 256);
-    const randG = Math.floor(Math.random() * 256);
-    const randB = Math.floor(Math.random() * 256);
-    const moveR = Math.floor(Math.random() * 256);
-    const moveG = Math.floor(Math.random() * 256);
-    const moveB = Math.floor(Math.random() * 256);
-    const speed = (Math.random() + 0.001)%1;
+    const { randR, randG, randB, moveR, moveG, moveB, speed } = useMemo(() => ({
+        randR: Math.floor(Math.random() * 256),
+        randG: Math.floor(Math.random() * 256),
+        randB: Math.floor(Math.random() * 256),
+        moveR: Math.floor(Math.random() * 256),
+        moveG: Math.floor(Math.random() * 256),
+        moveB: Math.floor(Math.random() * 256),
+        speed: (Math.random() + 0.001)%1
+    }), []);
 
     return(
         <div className="bg-black w-full flex">

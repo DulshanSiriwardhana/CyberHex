@@ -5,7 +5,8 @@ const NavPopup = () => {
     const [delayed, setDelayed] = useState(false);
 
     useEffect(() => {
-        setDelayed(true);
+        const timer = setTimeout(() => setDelayed(true), 0);
+        return () => clearTimeout(timer);
     }, []);
 
     return (

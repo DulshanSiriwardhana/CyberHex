@@ -25,7 +25,7 @@ const app = express();
 app.use(helmet());
 
 
-const allowedOrigins = (process.env.CORS_ORIGINS || 'http:
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173').split(',');
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) return callback(null, true);

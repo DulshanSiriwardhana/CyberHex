@@ -109,9 +109,9 @@ double minkowski_distance(double* pointA, double* pointB, int dimension, int p){
 }
 
 void swap(double* array, int index1, int index2){
-    array[index1] = array[index1] - array[index2];
-    array[index2] = array[index1] + array[index2];
-    array[index1] = array[index2] - array[index1];
+    double temp = array[index1];
+    array[index1] = array[index2];
+    array[index2] = temp;
 }
 
 
@@ -148,37 +148,24 @@ void selection_sort(double* array, int size){
 }
 
 void insertion_sort(double* array, int size){
-    int sorted_end=0;
-    for(int i=sorted_end;i<size;i++){
-        
-    }
 }
 
 void merge_sort(double* array, int size){
-
 }
 
 void quick_sort(double* array, int size){
-
 }
 
 void heap_sort(double* array, int size){
-
 }
 
 
 
-int a = 1;
-int b = 2;
-int c = 3;
+#include <random>
+
 double randd() {
-    a = ((b+c) % (++a + b)) % 100;
-    b = ((a+c) % (++b + c)) % 100;
-    c = ((a+b) % (++c + a)) % 100;
-
-    double x = (double) ((a+b+c)%(a+2))/((double) (a+1));
-    double y = (double) ((a+b+c)%(b+2))/((double) (b+1));
-    double z = (double) ((a+b+c)%(c+2))/((double) (c+1));
-
-    return (x+y+z)/3.0;
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_real_distribution<> dis(0.0, 1.0);
+    return dis(gen);
 }

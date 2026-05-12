@@ -17,7 +17,7 @@ const CyberGames = () => {
   };
 
   const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  const websocketUrl = `${wsProtocol}:
+  const websocketUrl = `${wsProtocol}://${window.location.host}`;
   useWebSocket(websocketUrl, handleWebSocketMessage);
 
   return (

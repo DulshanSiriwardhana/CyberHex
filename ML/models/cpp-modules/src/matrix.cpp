@@ -189,8 +189,8 @@ double det(std::vector<std::vector<double>> A) {
 void replaceRow(const std::vector<std::vector<double>>& A, size_t row, const std::vector<double>& replacingRow, std::vector<std::vector<double>>& ret) {
     size_t size = A.size();
     ret.assign(size, std::vector<double>(size));
-    for(int i=0; i<size; i++) {
-        for(int j=0; j<size; j++) {
+    for(size_t i=0; i<size; i++) {
+        for(size_t j=0; j<size; j++) {
             if(i == row) {
                 ret[i][j] = replacingRow[j];
             } else {
