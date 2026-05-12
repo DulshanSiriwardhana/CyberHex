@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import NavBar from "./components/navbar/navbar";
 
 const Layer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -10,20 +10,20 @@ const Layer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       setNavHeight(navRef.current.offsetHeight);
     }
   }, []);
-  
+
   return (
     <div className={`p-2 bg-white min-h-screen h-full`}>
-        <div ref={navRef} className="w-full h-fit sticky top-2 z-50">
-            <div className="">
-              <NavBar />
-            </div>
+      <div ref={navRef} className="w-full h-fit sticky top-2 z-50">
+        <div className="">
+          <NavBar />
         </div>
-        <div
-          style={{ minHeight: `calc(100vh - ${navHeight+16}px)` }}
-          className="flex items-start justify-center"
-          >
-          {children}
-        </div>
+      </div>
+      <div
+        style={{ minHeight: `calc(100vh - ${navHeight + 16}px)` }}
+        className="flex items-start justify-center"
+      >
+        {children}
+      </div>
     </div>
   );
 };
