@@ -9,7 +9,7 @@ double factorial(int n){
     return n*factorial(n-1);
 }
 
-// This is only for n between -1 and +1
+
 double natural_log(double n, double error){
     int k = -1;
     int s = 1;
@@ -50,7 +50,7 @@ double get_e(double error){
     return exp(1, error);
 }
 
-// calculating power of double numbers
+
 double power(double number, double n){
     double ERROR = 0.000001;
     double e = get_e(ERROR);
@@ -114,7 +114,7 @@ void swap(double* array, int index1, int index2){
     array[index1] = array[index2] - array[index1];
 }
 
-// The Sorting is begun
+
 
 void bubble_sort(double* array, int size){
     for(int i=0;i<size-1;i++){
@@ -167,7 +167,7 @@ void heap_sort(double* array, int size){
 }
 
 
-// Here is an experiment
+
 int a = 1;
 int b = 2;
 int c = 3;

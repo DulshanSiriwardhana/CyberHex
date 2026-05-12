@@ -1,7 +1,7 @@
-// Item 68: Request/Response validation utility (using express-validator)
+
 import { body, validationResult } from 'express-validator';
 
-// Validation rule sets
+
 export const schemas = {
   register: [
     body('username').isAlphanumeric().isLength({ min: 3, max: 30 }).withMessage('Username must be 3-30 alphanumeric chars'),
@@ -25,7 +25,7 @@ export const schemas = {
   ],
 };
 
-// Middleware: collect express-validator errors and return 400 if any
+
 export const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

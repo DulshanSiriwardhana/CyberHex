@@ -1,5 +1,5 @@
-// Item 79: Authentication middleware
-// Item 80: Authorization middleware
+
+
 import jwt from 'jsonwebtoken';
 
 export const authenticateToken = (req, res, next) => {

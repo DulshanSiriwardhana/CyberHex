@@ -1,4 +1,4 @@
-// Item 105: Auth Context bindings
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
@@ -29,10 +29,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored token
+    
     const token = localStorage.getItem('accessToken');
     if (token) {
-      // Validate token and set user
+      
       fetch('/api/v1/auth/profile', {
         headers: { Authorization: `Bearer ${token}` }
       })

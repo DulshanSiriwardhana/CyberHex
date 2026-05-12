@@ -1,4 +1,4 @@
-// Item 74: Experiment schema mapping training run metadata
+
 import mongoose from 'mongoose';
 
 const ExperimentSchema = new mongoose.Schema({

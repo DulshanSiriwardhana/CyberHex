@@ -1,9 +1,9 @@
-// WebSocket hook for real-time updates
+
 import { useEffect, useRef, useCallback } from 'react';
 
 export const useWebSocket = (url: string, onMessage: (data: any) => void) => {
   const ws = useRef<WebSocket | null>(null);
-  // Keep a stable ref to the callback so the effect doesn't re-run on every render
+  
   const onMessageRef = useRef(onMessage);
 
   useEffect(() => {

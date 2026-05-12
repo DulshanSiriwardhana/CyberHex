@@ -9,6 +9,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unused-parameter")
 
 set(BOOST_ROOT "/home/dulshan/boost_1_83_0")
 set(Boost_NO_SYSTEM_PATHS ON)
+set(Boost_LIBRARY_DIRS 
+    "/home/dulshan/boost_1_83_0/bin.v2/libs/system/build/gcc-14/release/threading-multi/visibility-hidden"
+    "/home/dulshan/boost_1_83_0/bin.v2/libs/thread/build/gcc-14/release/threading-multi/visibility-hidden"
+)
+link_directories(${Boost_LIBRARY_DIRS})
 find_package(Boost REQUIRED COMPONENTS system thread)
 include_directories(${Boost_INCLUDE_DIRS})
 

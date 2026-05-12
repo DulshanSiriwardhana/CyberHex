@@ -33,7 +33,7 @@ void k_degree_polynomial_regression_data(double* dataX, double* dataY, int size,
         temp[i] = calc_n_order_mean(dataX, size, i);
     }
 
-    for(int i =0; i<=degree;i++){ // fixed upper bound bug
+    for(int i =0; i<=degree;i++){ 
         for(int j=0; j<=degree; j++){
             A[i][j] = temp[i+j];
         }

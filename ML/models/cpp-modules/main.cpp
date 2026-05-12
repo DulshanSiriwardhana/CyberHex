@@ -13,7 +13,7 @@ double f(double x1, double x2) {
     return sin(3*x1)*cos(5*x2) + 0.3*sin(10*(x1 + x2));
 }
 
-// Item 111: Unit Tests
+
 TEST_CASE("Matrix operations", "[matrix]") {
     Matrix<double> a(2, 2, 1.0);
     Matrix<double> b(2, 2, 2.0);
@@ -43,12 +43,12 @@ TEST_CASE("Model training", "[model]") {
 }
 
 int main(int argc, char* argv[]) {
-    // Run tests if --test flag
     if (argc > 1 && std::string(argv[1]) == "--test") {
         return Catch::Session().run(argc, argv);
     }
 
-    // Original main code
+    WSServer ws(8081);
+    ws.start();
 
     int N = 100;
 
@@ -96,6 +96,8 @@ int main(int argc, char* argv[]) {
     model.add(new Dense(32, 1));
     model.add(new Sigmoid());
 
+    model.setWSServer(&ws);
+
     model.train(X_train, y_train, 2000, 0.3);
 
     Matrix<double> pred = model.forward(X_test);
@@ -117,6 +119,8 @@ int main(int argc, char* argv[]) {
              << pred(i, 0) << " "
              << y_test(i, 0) << endl;
     }
+
+    ws.stop();
 
     return 0;
 }

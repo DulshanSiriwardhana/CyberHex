@@ -1,4 +1,4 @@
-// Experiment routes
+
 import express from 'express';
 import Experiment from '../models/Experiment.js';
 import TrainingLog from '../models/TrainingLog.js';
@@ -6,7 +6,7 @@ import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Get user's experiments
+
 router.get('/', authenticateToken, async (req, res, next) => {
   try {
     const experiments = await Experiment.find({ userId: req.user.userId }).populate('modelId');
@@ -16,7 +16,7 @@ router.get('/', authenticateToken, async (req, res, next) => {
   }
 });
 
-// Create experiment
+
 router.post('/', authenticateToken, async (req, res, next) => {
   try {
     const experiment = new Experiment({
@@ -30,7 +30,7 @@ router.post('/', authenticateToken, async (req, res, next) => {
   }
 });
 
-// Get training logs for experiment
+
 router.get('/:id/logs', authenticateToken, async (req, res, next) => {
   try {
     const logs = await TrainingLog.find({ experimentId: req.params.id }).sort({ timestamp: 1 });
@@ -40,7 +40,7 @@ router.get('/:id/logs', authenticateToken, async (req, res, next) => {
   }
 });
 
-// Add training log
+
 router.post('/:id/logs', authenticateToken, async (req, res, next) => {
   try {
     const log = new TrainingLog({
@@ -48,7 +48,7 @@ router.post('/:id/logs', authenticateToken, async (req, res, next) => {
       ...req.body
     });
     await log.save();
-    // Broadcast to WebSocket clients
+    
     if (global.broadcast) {
       global.broadcast({ type: 'loss_update', experimentId: req.params.id, epoch: req.body.epoch, loss: req.body.loss });
     }

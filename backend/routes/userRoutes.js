@@ -1,17 +1,17 @@
-// Item 66: Async controllers
-// Item 67: Connect to Mongoose User Models
+
+
 import express from 'express';
 import User from '../models/User.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Item 68: Structured HTTP responses
+
 const sendResponse = (res, status, data) => {
   res.status(status).json(data);
 };
 
-// Get user profile
+
 router.get('/profile', authenticateToken, async (req, res, next) => {
   try {
     const user = await User.findById(req.user.userId).select('-password');
@@ -22,7 +22,7 @@ router.get('/profile', authenticateToken, async (req, res, next) => {
   }
 });
 
-// Update user
+
 router.put('/profile', authenticateToken, async (req, res, next) => {
   try {
     const updates = req.body;

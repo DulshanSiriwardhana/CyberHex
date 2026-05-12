@@ -1,4 +1,4 @@
-// Item 65: Global async error handler middleware
+
 import logger from '../utils/logger.js';
 
 export const errorHandler = (err, req, res, _next) => {
@@ -7,7 +7,7 @@ export const errorHandler = (err, req, res, _next) => {
 
     logger.error(`${req.method} ${req.originalUrl} - ${err.message}`, { stack: err.stack });
 
-    // Item 68: JSend-style structured HTTP response
+    
     res.status(statusCode).json({
         status,
         message: statusCode < 500 ? err.message : 'Internal server error',
@@ -15,12 +15,12 @@ export const errorHandler = (err, req, res, _next) => {
     });
 };
 
-// Async wrapper to avoid try/catch in every controller
+
 export const asyncHandler = (fn) => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-// HTTP error factory
+
 export class AppError extends Error {
     constructor(message, statusCode) {
         super(message);

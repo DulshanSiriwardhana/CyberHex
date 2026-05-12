@@ -3,7 +3,7 @@ import re
 
 dir_path = "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules"
 
-# Modify activations.h
+
 hdr = os.path.join(dir_path, "include/activations.h")
 with open(hdr, "r") as f:
     text = f.read()
@@ -44,11 +44,11 @@ class BatchNormalization : public Layer {
 };
 
 """
-text = text.replace("#endif", new_classes + "\n#endif")
+text = text.replace("
 with open(hdr, "w") as f:
     f.write(text)
 
-# Modify activations.cpp
+
 cpp = os.path.join(dir_path, "src/activations.cpp")
 with open(cpp, "r") as f:
     text_cpp = f.read()
@@ -74,7 +74,7 @@ Matrix<double> Softplus::backward(const Matrix<double>& grad, double lr, Optimiz
     return res;
 }
 
-#include <random>
+
 
 Dropout::Dropout(double rate) : rate(rate) {}
 Matrix<double> Dropout::forward(const Matrix<double>& input) {

@@ -5,7 +5,7 @@
     --max-width-boundary: 1920px;
 }
 
-/* Spectral Font Faces */
+
 @font-face {
   font-family: 'Spectral';
   src: url('/fonts/Spectral/Spectral-Regular.ttf') format('truetype');
