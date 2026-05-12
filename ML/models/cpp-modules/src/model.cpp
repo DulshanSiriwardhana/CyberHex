@@ -75,6 +75,10 @@ void Model::train(const Matrix<double>& X, const Matrix<double>& y, int epochs, 
         if (e % 100 == 0) {
             lossFile << (e / 100 + 1) << "," << loss << "\n";
             lossFile.flush();
+            if (ws_server) {
+                std::string msg = "{\"epoch\": " + std::to_string(e) + ", \"loss\": " + std::to_string(loss) + "}";
+                ws_server->broadcast(msg);
+            }
         }
 
         Matrix<double> grad = pred - y;

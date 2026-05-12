@@ -85,6 +85,7 @@ add_executable(app main.cpp ${SOURCES})
 if(OpenMP_CXX_FOUND)
     target_link_libraries(app PRIVATE OpenMP::OpenMP_CXX)
 endif()
+target_link_libraries(app PRIVATE Boost::system Boost::thread)
 
 install(TARGETS cyberhex
     LIBRARY DESTINATION lib
