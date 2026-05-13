@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/master-components';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export const ExperimentBuilder = () => {
     const [modelName, setModelName] = useState('');
