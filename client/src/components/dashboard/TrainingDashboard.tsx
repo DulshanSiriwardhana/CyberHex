@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Card } from '../ui/Card';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip } from 'recharts';
 import { Activity, Zap } from 'lucide-react';
@@ -32,7 +32,7 @@ export const TrainingDashboard = () => {
             <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
                 <Card>
                     <div className="text-zinc-500 text-sm uppercase tracking-wider mb-2">Current Epoch</div>
-                    <div className="text-4xl font-bold">{data.length > 0 ? data[data.length-1].epoch : '...'}</div>
+                    <div className="text-4xl font-bold">{data.length > 0 ? data[data.length - 1].epoch : '...'}</div>
                 </Card>
                 <Card>
                     <div className="text-zinc-500 text-sm uppercase tracking-wider mb-2">System Status</div>

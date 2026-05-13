@@ -32,7 +32,7 @@ interface TrainingChartProps {
     isLoading?: boolean;
 }
 
-const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
+const CustomTooltip: React.FC<any> = ({ active, payload }) => {
     if (active && payload && payload.length) {
         return (
             <div className="bg-white p-3 border border-gray-300 rounded shadow-lg">
