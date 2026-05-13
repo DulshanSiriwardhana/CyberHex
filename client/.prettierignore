@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+coverage
+.next
+.git
+.env*
+package-lock.json
+yarn.lock

@@ -22,7 +22,7 @@ Dense::Dense(double in, double out, InitType init_type)
     double variance = 0.0;
     if (init_type == InitType::HE) {
         variance = 2.0 / in;
-    } else { // Xavier / Glorot
+    } else { 
         variance = 2.0 / (in + out);
     }
     
@@ -82,7 +82,7 @@ Matrix<double> Dense::backward(const Matrix<double>& grad, double lr, OptimizerT
         double beta = 0.999;
         double epsilon = 1e-8;
         
-        // Elementwise operations would need an apply() or custom loop. We will just use a loop.
+        
         for (size_t i=0; i<weights.rows; i++) {
             for(size_t j=0; j<weights.cols; j++){
                 v_W(i, j) = beta * v_W(i, j) + (1 - beta) * dW(i, j) * dW(i, j);
@@ -120,7 +120,7 @@ Matrix<double> Dense::backward(const Matrix<double>& grad, double lr, OptimizerT
         }
     }
 
-    // Apply L1/L2 regularization
+    
     for (size_t i = 0; i < weights.rows; i++) {
         for (size_t j = 0; j < weights.cols; j++) {
             double w = weights(i, j);

@@ -57,5 +57,8 @@ class Matrix {
         void print() const;
 };
 
+std::vector<double> solve_AX_eq_B(std::vector<std::vector<double>> A, std::vector<double> B);
+double det(std::vector<std::vector<double>> A);
+void removeRowColumn(const std::vector<std::vector<double>>& A, size_t row, size_t column, std::vector<std::vector<double>>& ret);
 
 #endif

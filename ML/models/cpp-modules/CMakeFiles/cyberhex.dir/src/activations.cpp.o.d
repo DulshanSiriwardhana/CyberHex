@@ -125,8 +125,9 @@ CMakeFiles/cyberhex.dir/src/activations.cpp.o: \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
  /usr/include/c++/14/bits/charconv.h \
- /usr/include/c++/14/bits/basic_string.tcc /usr/include/c++/14/cmath \
- /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+ /usr/include/c++/14/bits/basic_string.tcc /usr/include/c++/14/cassert \
+ /usr/include/assert.h /usr/include/c++/14/cmath /usr/include/math.h \
+ /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
@@ -156,6 +157,13 @@ CMakeFiles/cyberhex.dir/src/activations.cpp.o: \
  /usr/include/c++/14/bits/random.h \
  /usr/include/c++/14/bits/uniform_int_dist.h \
  /usr/include/x86_64-linux-gnu/c++/14/bits/opt_random.h \
+ /usr/lib/gcc/x86_64-linux-gnu/14/include/pmmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/14/include/emmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/14/include/xmmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/14/include/mmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/14/include/mm_malloc.h \
+ /usr/include/c++/14/stdlib.h \
+ /usr/lib/gcc/x86_64-linux-gnu/14/include/mwaitintrin.h \
  /usr/include/c++/14/bits/random.tcc /usr/include/c++/14/numeric \
  /usr/include/c++/14/bits/stl_numeric.h \
  /usr/include/c++/14/pstl/glue_numeric_defs.h \

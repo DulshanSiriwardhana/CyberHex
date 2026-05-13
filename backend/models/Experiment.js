@@ -1,4 +1,3 @@
-// Item 74: Experiment schema mapping training run metadata
 import mongoose from 'mongoose';
 
 const ExperimentSchema = new mongoose.Schema({
@@ -9,14 +8,25 @@ const ExperimentSchema = new mongoose.Schema({
     },
     modelId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Model',
-        required: true
+        ref: 'Model'
     },
     name: {
         type: String,
         required: true
     },
-    description: String,
+    description: {
+        type: String,
+        default: ''
+    },
+    config: {
+        modelType: {
+            type: String,
+            enum: ['neural_network', 'decision_tree', 'random_forest'],
+            default: 'neural_network'
+        },
+        parameters: mongoose.Schema.Types.Mixed,
+        dataPath: String
+    },
     hyperparameters: {
         learningRate: Number,
         epochs: Number,
@@ -26,17 +36,24 @@ const ExperimentSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['running', 'completed', 'failed'],
-        default: 'running'
+        enum: ['draft', 'running', 'completed', 'failed', 'stopped'],
+        default: 'draft'
     },
-    startTime: {
-        type: Date,
-        default: Date.now
+    startedAt: Date,
+    completedAt: Date,
+    lastMetrics: {
+        epoch: Number,
+        loss: Number,
+        accuracy: Number,
+        metrics: mongoose.Schema.Types.Mixed
     },
-    endTime: Date,
     bestLoss: Number,
     bestEpoch: Number,
     createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
         type: Date,
         default: Date.now
     }

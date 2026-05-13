@@ -123,7 +123,8 @@ CMakeFiles/cyberhex.dir/src/matrix.cpp.o: \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
  /usr/include/c++/14/bits/charconv.h \
- /usr/include/c++/14/bits/basic_string.tcc /usr/include/c++/14/iostream \
+ /usr/include/c++/14/bits/basic_string.tcc /usr/include/c++/14/cassert \
+ /usr/include/assert.h /usr/include/c++/14/iostream \
  /usr/include/c++/14/ostream /usr/include/c++/14/ios \
  /usr/include/c++/14/bits/ios_base.h /usr/include/c++/14/ext/atomicity.h \
  /usr/include/x86_64-linux-gnu/c++/14/bits/gthr.h \

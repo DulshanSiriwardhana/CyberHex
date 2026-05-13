@@ -1,4 +1,4 @@
-// Item 117: React Component tests
+
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import CyberGames from '../pages/CyberGames';

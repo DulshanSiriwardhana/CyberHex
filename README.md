@@ -9,7 +9,7 @@
 
 CyberHex is a **high-performance C++ machine learning framework** built from scratch, featuring:
 
-- A custom matrix engine (no STL vectors)
+- A custom matrix engine (using `std::vector` for optimized memory safety)
 - Dynamic multi-layer neural networks
 - Forward and backward propagation
 - Real-time training visualization via WebSockets
@@ -23,14 +23,14 @@ This project explores **low-level ML engineering and system design** — similar
 
 ### Core ML Engine
 
-- Custom `Matrix` implementation using raw `double**` pointers
+- Custom `Matrix` implementation using `std::vector` with OpenMP parallelism
 - Dense (fully connected) layers
 - Activation layers:
   - ReLU
   - Sigmoid
-  - Softmax *(in progress)*
+  - Softmax (fully implemented with Jacobian backprop)
 - Forward propagation
-- Backpropagation with manually derived gradients
+- Backpropagation with multiple optimizers (SGD, Momentum, RMSProp, ADAM)
 
 ---
 

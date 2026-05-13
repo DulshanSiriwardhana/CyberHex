@@ -1,4 +1,4 @@
-// Item 73: Model Schema to track User ML experiments
+
 import mongoose from 'mongoose';
 
 const ModelSchema = new mongoose.Schema({

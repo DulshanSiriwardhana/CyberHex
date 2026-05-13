@@ -1,4 +1,4 @@
-// Item 115: Node.js API Unit Tests
+
 import request from 'supertest';
 import app from '../app.js';
 
