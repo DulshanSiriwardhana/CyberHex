@@ -1,36 +1,32 @@
-// Item 66: Async controllers
-// Item 67: Connect to Mongoose User Models
 import express from 'express';
-import User from '../models/User.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+import { authenticateToken, authorizeRole } from '../middleware/authMiddleware.js';
+import { asyncHandler } from '../middleware/errorHandler.js';
+import {
+    getAllUsers,
+    getUserProfile,
+    getUserById,
+    updateUserProfile,
+    deleteUser,
+    changePassword,
+    verifyEmail
+} from '../controllers/userControllers.js';
 
 const router = express.Router();
 
-// Item 68: Structured HTTP responses
-const sendResponse = (res, status, data) => {
-  res.status(status).json(data);
-};
+router.use(authenticateToken);
 
-// Get user profile
-router.get('/profile', authenticateToken, async (req, res, next) => {
-  try {
-    const user = await User.findById(req.user.userId).select('-password');
-    if (!user) return sendResponse(res, 404, { error: 'User not found' });
-    sendResponse(res, 200, { user });
-  } catch (error) {
-    next(error);
-  }
-});
+router.get('/profile', asyncHandler(getUserProfile));
 
-// Update user
-router.put('/profile', authenticateToken, async (req, res, next) => {
-  try {
-    const updates = req.body;
-    const user = await User.findByIdAndUpdate(req.user.userId, updates, { new: true }).select('-password');
-    sendResponse(res, 200, { user });
-  } catch (error) {
-    next(error);
-  }
-});
+router.get('/', asyncHandler(authorizeRole('admin'), getAllUsers));
+
+router.get('/:id', asyncHandler(getUserById));
+
+router.put('/profile', asyncHandler(updateUserProfile));
+
+router.post('/change-password', asyncHandler(changePassword));
+
+router.post('/verify-email', asyncHandler(verifyEmail));
+
+router.delete('/:id', asyncHandler(deleteUser));
 
 export default router;

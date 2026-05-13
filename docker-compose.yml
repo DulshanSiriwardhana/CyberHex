@@ -1,35 +1,83 @@
-# Item 122: Docker Compose for full stack
 version: '3.8'
 
 services:
   db:
-    image: mongo:7
+    image: mongo:7-alpine
+    container_name: cyberhex-db
     ports:
       - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: cyberhex
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cyberhex-network
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cyberhex-backend
     ports:
       - "5000:5000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DB_URI=mongodb://db:27017/cyberhex
-      - JWT_SECRET=secret
-      - JWT_REFRESH_SECRET=refresh_secret
-      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET:-dev_jwt_secret_change_in_production}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dev_refresh_secret_change_in_production}
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=5000
+      - LOG_LEVEL=info
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    healthcheck:
+      test: curl --fail http://localhost:5000/api/v1/health || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - cyberhex-network
+    restart: unless-stopped
 
   frontend:
-    build: ./client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: cyberhex-frontend
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     environment:
-      - NODE_ENV=production
-      - VITE_API_BASE_URL=http://backend:5000/api/v1
+      - NODE_ENV=${NODE_ENV:-production}
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL:-/api/v1}
+    volumes:
+      - ./client/dist:/usr/share/nginx/html
+    healthcheck:
+      test: curl --fail http://localhost:80 || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - cyberhex-network
+    restart: unless-stopped
 
 volumes:
   mongo_data:
+    driver: local
+
+networks:
+  cyberhex-network:
+    driver: bridge

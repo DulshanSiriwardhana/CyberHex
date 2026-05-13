@@ -1,4 +1,4 @@
-// Item 87: MongoDB connection with reconnection strategies and timeout
+
 import mongoose from 'mongoose';
 import logger from './logger.js';
 
@@ -25,7 +25,7 @@ const DBinitialize = async () => {
         await mongoose.connect(uri, MONGO_OPTIONS);
     } catch (err) {
         logger.error('MongoDB initial connection failed:', err);
-        // Retry after 5s
+        
         setTimeout(() => DBinitialize(), 5000);
     }
 };

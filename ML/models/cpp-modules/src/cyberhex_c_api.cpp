@@ -1,5 +1,5 @@
-// CyberHex ML Engine - C API Implementation
-// Item 59: C API implementation for FFI compatibility
+
+
 #include "cyberhex_c_api.h"
 #include "model.h"
 #include "dense.h"
@@ -92,4 +92,4 @@ void cyberhex_model_save_binary(void* model, const char* folder) {
     static_cast<Model*>(model)->saveWeightsBinary(std::string(folder));
 }
 
-} // extern "C"
+} 

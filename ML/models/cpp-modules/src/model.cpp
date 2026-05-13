@@ -11,7 +11,7 @@ void Model::add(Layer* layer) {
 }
 
 Matrix<double> Model::forward(const Matrix<double>& X) {
-    // Item 50: Thread-safe forward pass
+    
     std::lock_guard<std::mutex> lock(mtx);
     Matrix<double> out = X;
     for (auto l : layers)
@@ -83,7 +83,7 @@ void Model::train(const Matrix<double>& X, const Matrix<double>& y, int epochs, 
 
         Matrix<double> grad = pred - y;
         
-        // Gradient Clipping bounds [-1.0, 1.0]
+        
         for (size_t i = 0; i < grad.rows; i++) {
             for (size_t j = 0; j < grad.cols; j++) {
                 grad(i, j) = std::max(-1.0, std::min(1.0, grad(i, j)));
@@ -99,7 +99,7 @@ void Model::train(const Matrix<double>& X, const Matrix<double>& y, int epochs, 
             saveWeightsBinary(folder);
         } else {
             patience_counter++;
-            lr *= lr_decay; // LR Decay on patience failure
+            lr *= lr_decay; 
             std::cout << "Patience increased to " << patience_counter << ", LR decayed to " << lr << std::endl;
             if (early_stopping_patience > 0 && patience_counter >= early_stopping_patience) {
                 std::cout << "Early stopping triggered at epoch " << e + 1 << "\n";
@@ -186,7 +186,7 @@ void Model::saveWeightsBinary(const std::string& folder) {
 }
 
 void Model::exportONNX(const std::string& filename) {
-    // Simple ONNX-like export (placeholder for full ONNX integration)
+    
     std::ofstream f(filename);
     f << "{\n";
     f << "  \"ir_version\": 7,\n";

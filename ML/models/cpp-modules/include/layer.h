@@ -14,7 +14,7 @@ enum class OptimizerType {
 
 class Layer {
     public:
-        // Item 50: Thread-safety locks for concurrent forward/serialization
+        
         virtual Matrix<double> forward(const Matrix<double>& input) = 0;
         virtual Matrix<double> backward(const Matrix<double>& grad, double lr, OptimizerType opt = OptimizerType::SGD, int t = 1) = 0;
         virtual ~Layer() = default;

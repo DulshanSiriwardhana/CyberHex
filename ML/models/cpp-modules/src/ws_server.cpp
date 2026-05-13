@@ -83,7 +83,13 @@ struct WSServer::Impl {
     std::set<std::shared_ptr<Session>> sessions;
     std::mutex sessions_mutex;
 
-    Impl(unsigned short port) : acceptor(ioc, {tcp::v4(), port}) {}
+    Impl(unsigned short port) : acceptor(ioc, tcp::endpoint(tcp::v4(), port)) {
+        beast::error_code ec;
+        acceptor.set_option(net::socket_base::reuse_address(true), ec);
+        if(ec) {
+            std::cerr << "Error setting reuse_address: " << ec.message() << std::endl;
+        }
+    }
 
     void do_accept() {
         acceptor.async_accept(net::make_strand(ioc), [this](beast::error_code ec, tcp::socket socket) {

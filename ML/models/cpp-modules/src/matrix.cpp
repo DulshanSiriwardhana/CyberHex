@@ -10,25 +10,25 @@ Matrix<T>::Matrix() : rows(0), cols(0), data(0) {}
 template <typename T>
 Matrix<T>::Matrix(size_t r, size_t c, T val) : rows(r), cols(c), data(r * c, val) {}
 
-// Copy constructor
+
 template <typename T>
 Matrix<T>::Matrix(const Matrix& other) : rows(other.rows), cols(other.cols), data(other.data) {}
 
-// Move constructor
+
 template <typename T>
 Matrix<T>::Matrix(Matrix<T>&& other) noexcept : rows(other.rows), cols(other.cols), data(std::move(other.data)) {
     other.rows = 0;
     other.cols = 0;
 }
 
-// operator= using copy and swap
+
 template <typename T>
 Matrix<T>& Matrix<T>::operator=(Matrix<T> other) {
     swap(other);
     return *this;
 }
 
-// swap
+
 template <typename T>
 void Matrix<T>::swap(Matrix<T>& other) noexcept {
     std::swap(rows, other.rows);
@@ -138,7 +138,7 @@ void Matrix<T>::print() const {
     }
 }
 
-// Item 20: removeRowColumn uses index-remapping (view-like) to avoid intermediate matrix copy.
+
 void removeRowColumn(const std::vector<std::vector<double>>& A, size_t row, size_t column, std::vector<std::vector<double>>& ret) {
     size_t size = A.size();
     if (size == 0) return;
@@ -159,7 +159,7 @@ double det(std::vector<std::vector<double>> A) {
     size_t size = A.size();
     if (size == 1) return A[0][0];
 
-    // LU decomposition via Gaussian elimination
+    
     double d = 1.0;
     for (size_t i = 0; i < size; i++) {
         size_t pivot = i;
@@ -173,7 +173,7 @@ double det(std::vector<std::vector<double>> A) {
             d = -d;
         }
         if (A[i][i] == 0) {
-            return 0; // Singular matrix
+            return 0; 
         }
         d *= A[i][i];
         for (size_t j = i + 1; j < size; j++) {
@@ -189,8 +189,8 @@ double det(std::vector<std::vector<double>> A) {
 void replaceRow(const std::vector<std::vector<double>>& A, size_t row, const std::vector<double>& replacingRow, std::vector<std::vector<double>>& ret) {
     size_t size = A.size();
     ret.assign(size, std::vector<double>(size));
-    for(int i=0; i<size; i++) {
-        for(int j=0; j<size; j++) {
+    for(size_t i=0; i<size; i++) {
+        for(size_t j=0; j<size; j++) {
             if(i == row) {
                 ret[i][j] = replacingRow[j];
             } else {
@@ -203,8 +203,8 @@ void replaceRow(const std::vector<std::vector<double>>& A, size_t row, const std
 void replaceColumn(const std::vector<std::vector<double>>& A, size_t column, const std::vector<double>& replacingColumn, std::vector<std::vector<double>>& ret) {
     size_t size = A.size();
     ret.assign(size, std::vector<double>(size));
-    for(int i=0; i<size; i++) {
-        for(int j=0; j<size; j++) {
+    for(size_t i=0; i<size; i++) {
+        for(size_t j=0; j<size; j++) {
             if(j == column) {
                 ret[i][j] = replacingColumn[i];
             } else {
@@ -220,7 +220,7 @@ std::vector<double> solve_AX_eq_B(std::vector<std::vector<double>> A, std::vecto
     }
     size_t size = A.size();
     
-    // Gaussian elimination
+    
     for (size_t i = 0; i < size; i++) {
         size_t pivot = i;
         for (size_t j = i + 1; j < size; j++) {
@@ -235,7 +235,7 @@ std::vector<double> solve_AX_eq_B(std::vector<std::vector<double>> A, std::vecto
         if (A[i][i] == 0) {
             throw CyberHexException("Singular matrix detected in solve_AX_eq_B");
         }
-        // Eliminate
+        
         for (size_t j = i + 1; j < size; j++) {
             double factor = A[j][i] / A[i][i];
             B[j] -= factor * B[i];
@@ -245,11 +245,11 @@ std::vector<double> solve_AX_eq_B(std::vector<std::vector<double>> A, std::vecto
         }
     }
 
-    // Back substitution
+    
     std::vector<double> X(size, 0.0);
-    for (size_t i = size - 1; i >= 0; i--) {
+    for (int i = (int)size - 1; i >= 0; i--) {
         double sum = B[i];
-        for (size_t j = i + 1; j < size; j++) {
+        for (size_t j = (size_t)i + 1; j < size; j++) {
             sum -= A[i][j] * X[j];
         }
         X[i] = sum / A[i][i];
@@ -266,10 +266,10 @@ std::vector<std::vector<double>> multiply_matrices(const std::vector<std::vector
     size_t colsB = B[0].size();
     
     std::vector<std::vector<double>> ret(rowsA, std::vector<double>(colsB, 0.0));
-    for(int i=0; i<rowsA; i++) {
-        for(int j=0; j<colsB; j++) {
+    for(size_t i=0; i<rowsA; i++) {
+        for(size_t j=0; j<colsB; j++) {
             double val = 0;
-            for(int k=0; k<colsA; k++) {
+            for(size_t k=0; k<colsA; k++) {
                 val += A[i][k] * B[k][j];
             }
             ret[i][j] = val;

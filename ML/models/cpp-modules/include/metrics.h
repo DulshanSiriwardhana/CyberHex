@@ -1,5 +1,5 @@
-// CyberHex ML Engine - Metrics Interface
-// Item 49: Abstract custom Metrics interface (Accuracy, Recall, Precision, F1)
+
+
 #ifndef METRICS_H
 #define METRICS_H
 
@@ -7,14 +7,14 @@
 #include <cmath>
 #include <stdexcept>
 
-// Abstract base metric
+
 class Metric {
 public:
     virtual double compute(const Matrix<double>& y_true, const Matrix<double>& y_pred) const = 0;
     virtual ~Metric() = default;
 };
 
-// Binary Accuracy (y_pred > 0.5 treated as 1)
+
 class Accuracy : public Metric {
 public:
     double compute(const Matrix<double>& y_true, const Matrix<double>& y_pred) const override {
@@ -28,7 +28,7 @@ public:
     }
 };
 
-// Precision (TP / (TP + FP))
+
 class Precision : public Metric {
 public:
     double compute(const Matrix<double>& y_true, const Matrix<double>& y_pred) const override {
@@ -46,7 +46,7 @@ public:
     }
 };
 
-// Recall (TP / (TP + FN))
+
 class Recall : public Metric {
 public:
     double compute(const Matrix<double>& y_true, const Matrix<double>& y_pred) const override {
@@ -64,7 +64,7 @@ public:
     }
 };
 
-// F1 Score = 2 * (Precision * Recall) / (Precision + Recall)
+
 class F1Score : public Metric {
 public:
     double compute(const Matrix<double>& y_true, const Matrix<double>& y_pred) const override {
@@ -76,4 +76,4 @@ public:
     }
 };
 
-#endif // METRICS_H
+#endif 

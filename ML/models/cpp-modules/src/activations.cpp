@@ -32,8 +32,8 @@ Matrix<double> ReLU::backward(const Matrix<double>& grad, double lr, OptimizerTy
     g.apply(relu_d);
 
     Matrix<double> res = grad;
-    for (int i = 0; i < grad.rows; i++)
-        for (int j = 0; j < grad.cols; j++)
+    for (size_t i = 0; i < grad.rows; i++)
+        for (size_t j = 0; j < grad.cols; j++)
             res(i, j) *= g(i, j);
 
     return res;
@@ -50,8 +50,8 @@ Matrix<double> Sigmoid::backward(const Matrix<double>& grad, double lr, Optimize
     g.apply(sigmoid_d);
 
     Matrix<double> res = grad;
-    for (int i = 0; i < grad.rows; i++)
-        for (int j = 0; j < grad.cols; j++)
+    for (size_t i = 0; i < grad.rows; i++)
+        for (size_t j = 0; j < grad.cols; j++)
             res(i, j) *= g(i, j);
 
     return res;
@@ -60,20 +60,20 @@ Matrix<double> Sigmoid::backward(const Matrix<double>& grad, double lr, Optimize
 Matrix<double> Softmax::forward(const Matrix<double>& X) {
     output = Matrix<double>(X.rows, X.cols);
 
-    for (int i = 0; i < X.rows; i++) {
+    for (size_t i = 0; i < X.rows; i++) {
         double maxVal = X(i, 0);
-        for (int j = 1; j < X.cols; j++)
+        for (size_t j = 1; j < X.cols; j++)
             if (X(i, j) > maxVal)
                 maxVal = X(i, j);
 
         double sum = 0.0;
 
-        for (int j = 0; j < X.cols; j++) {
+        for (size_t j = 0; j < X.cols; j++) {
             output(i, j) = exp(X(i, j) - maxVal);
             sum += output(i, j);
         }
 
-        for (int j = 0; j < X.cols; j++) {
+        for (size_t j = 0; j < X.cols; j++) {
             output(i, j) /= sum;
         }
     }
@@ -115,8 +115,8 @@ Matrix<double> Generalized_Sigmoid::backward(const Matrix<double>& grad, double 
     g.apply(generalized_sigmoid_d);
 
     Matrix<double> res = grad;
-    for (int i = 0; i < grad.rows; i++)
-        for (int j = 0; j < grad.cols; j++)
+    for (size_t i = 0; i < grad.rows; i++)
+        for (size_t j = 0; j < grad.cols; j++)
             res(i, j) *= g(i, j);
 
     return res;
@@ -136,8 +136,8 @@ Matrix<double> Tanh::backward(const Matrix<double>& grad, double lr, OptimizerTy
     Matrix<double> g = output;
     g.apply(tanh_deriv);
     Matrix<double> res = grad;
-    for (int i = 0; i < grad.rows; i++)
-        for (int j = 0; j < grad.cols; j++)
+    for (size_t i = 0; i < grad.rows; i++)
+        for (size_t j = 0; j < grad.cols; j++)
             res(i, j) *= g(i, j);
     return res;
 }
@@ -152,8 +152,8 @@ Matrix<double> LeakyReLU::backward(const Matrix<double>& grad, double lr, Optimi
     Matrix<double> g = output;
     g.apply(leaky_relu_deriv);
     Matrix<double> res = grad;
-    for (int i = 0; i < grad.rows; i++)
-        for (int j = 0; j < grad.cols; j++)
+    for (size_t i = 0; i < grad.rows; i++)
+        for (size_t j = 0; j < grad.cols; j++)
             res(i, j) *= g(i, j);
     return res;
 }

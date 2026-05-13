@@ -3,18 +3,18 @@ import os
 
 dir_path = "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules"
 
-# 1. Update model.h
+
 hdr = os.path.join(dir_path, "include/model.h")
 with open(hdr, "r") as f:
     text = f.read()
 
-text = text.replace("#include <vector>", "#include <vector>\n#include <mutex>")
+text = text.replace("
 text = text.replace("private:\n        std::vector<Layer*> layers;", "private:\n        std::vector<Layer*> layers;\n        mutable std::mutex mtx;")
 
 with open(hdr, "w") as f:
     f.write(text)
 
-# 2. Update model.cpp for mutex locks and JSON output in saveWeights
+
 cpp = os.path.join(dir_path, "src/model.cpp")
 with open(cpp, "r") as f:
     text = f.read()
@@ -22,7 +22,7 @@ with open(cpp, "r") as f:
 text = text.replace("Matrix<double> Model::forward(const Matrix<double>& X) {", "Matrix<double> Model::forward(const Matrix<double>& X) {\n    std::lock_guard<std::mutex> lock(mtx);")
 text = text.replace("void Model::saveWeightsBinary(const std::string& folder) {", "void Model::saveWeightsBinary(const std::string& folder) {\n    std::lock_guard<std::mutex> lock(mtx);")
 
-# Rewrite saveWeights for JSON
+
 old_saveWeights = """void Model::saveWeights(const std::string& folder) {
     namespace fs = std::filesystem;
 
@@ -100,8 +100,8 @@ new_saveWeights = """void Model::saveWeights(const std::string& folder) {
     }
 }"""
 
-# A quick substitution mechanism
-# We just find the method and replace it.
+
+
 import ast
 text = re.sub(r"void Model::saveWeights\(const std::string& folder\) \{.*?\n\}\nvoid", new_saveWeights + "\nvoid", text, flags=re.DOTALL)
 

@@ -1,31 +1,34 @@
-import React, { useEffect, useRef, useState } from "react";
-import NavBar from "./components/navbar/navbar";
+import NavBar from "@/components/navbar/navbar"
+import { useLocation } from "react-router-dom"
+import { useEffect } from "react"
+import { AnimatePresence, motion } from "framer-motion"
 
 const Layer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const navRef = useRef<HTMLDivElement>(null);
-  const [navHeight, setNavHeight] = useState(900);
+  const location = useLocation()
 
+  // Scroll to top on route change
   useEffect(() => {
-    if (navRef.current) {
-      setNavHeight(navRef.current.offsetHeight);
-    }
-  }, []);
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [location.pathname])
 
   return (
-    <div className={`p-2 bg-white min-h-screen h-full`}>
-      <div ref={navRef} className="w-full h-fit sticky top-2 z-50">
-        <div className="">
-          <NavBar />
-        </div>
-      </div>
-      <div
-        style={{ minHeight: `calc(100vh - ${navHeight + 16}px)` }}
-        className="flex items-start justify-center"
-      >
-        {children}
+    <div className="min-h-screen bg-neutral-950 text-white antialiased">
+      <NavBar />
+      <div className="pt-16">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Layer;
+export default Layer

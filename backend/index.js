@@ -1,5 +1,5 @@
-// Item 61: Entry point - delegates to app.js
-// Keeps server startup logic separate from application logic
+
+
 import { createServer } from 'http';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -23,10 +23,10 @@ server.listen(PORT, () => {
   logger.info(`CyberHex backend running on port ${PORT}`);
 });
 
-// Item 51: WebSocket server using ws library
+
 import { WebSocketServer } from 'ws';
 
-// Item 54: Secure WebSocket (use wss in production)
+
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws) => {
@@ -39,8 +39,8 @@ wss.on('connection', (ws) => {
   });
 });
 
-// Function to broadcast to all clients
-// WebSocket.OPEN === 1 (ws.readyState constant)
+
+
 global.broadcast = (data) => {
   wss.clients.forEach(client => {
     if (client.readyState === 1) {

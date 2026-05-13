@@ -1,5 +1,4 @@
-# Item 124: Dockerfile for React Frontend
-FROM node:18-alpine as build
+FROM node:18-alpine as builder
 
 WORKDIR /app
 
@@ -11,9 +10,13 @@ RUN npm run build
 
 FROM nginx:alpine
 
-COPY --from=build /app/dist /usr/share/nginx/html
+RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
+
+HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
+  CMD wget --quiet --tries=1 --spider http://localhost:80/ || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]
