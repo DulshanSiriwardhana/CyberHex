@@ -1,140 +1,87 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..400&display=swap');
+
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral/Spectral-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral/Spectral-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral/Spectral-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral/Spectral-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Spectral';
+  src: url('/fonts/Spectral/Spectral-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono/JetBrainsMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
 
 @theme {
-    --font-spectral: "Spectral", serif;
-    --font-inter: "Inter", system-ui, -apple-system, sans-serif;
-    --font-mono: "JetBrains Mono", "Fira Code", monospace;
-    --max-width-boundary: 1280px;
-    --color-cyber-red: #dc2626;
-    --color-cyber-dark: #0a0a0a;
-    --color-cyber-light: #fafafa;
-    --color-cyber-muted: #737373;
-    --color-cyber-border: #262626;
-    --color-cyber-glow: rgba(220, 38, 38, 0.3);
+  --font-spectral: 'Spectral', Georgia, serif;
+  --font-inter: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --max-width-boundary: 1280px;
+
+  --color-brand: #dc2626;
+  --color-brand-hover: #b91c1c;
+  --color-brand-dim: rgba(220, 38, 38, 0.12);
+  --color-brand-glow: rgba(220, 38, 38, 0.25);
+
+  --color-surface: #0c0c0c;
+  --color-surface-raised: #141414;
+  --color-surface-overlay: #1a1a1a;
+
+  --color-border: rgba(255, 255, 255, 0.07);
+  --color-border-strong: rgba(255, 255, 255, 0.12);
+
+  --color-text-primary: #f2f2f2;
+  --color-text-secondary: #8a8a8a;
+  --color-text-tertiary: #555;
 }
 
-@font-face {
-    font-family: 'Spectral';
-    src: url('/fonts/Spectral/Spectral-Regular.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-@font-face {
-    font-family: 'Spectral';
-    src: url('/fonts/Spectral/Spectral-Bold.ttf') format('truetype');
-    font-weight: 700;
-    font-style: normal;
-    font-display: swap;
-}
-@font-face {
-    font-family: 'Spectral';
-    src: url('/fonts/Spectral/Spectral-ExtraBold.ttf') format('truetype');
-    font-weight: 800;
-    font-style: normal;
-    font-display: swap;
-}
-@font-face {
-    font-family: 'Spectral';
-    src: url('/fonts/Spectral/Spectral-ExtraLight.ttf') format('truetype');
-    font-weight: 200;
-    font-style: normal;
-    font-display: swap;
-}
-@font-face {
-    font-family: 'Spectral';
-    src: url('/fonts/Spectral/Spectral-Medium.ttf') format('truetype');
-    font-weight: 500;
-    font-style: normal;
-    font-display: swap;
-}
-@font-face {
-    font-family: 'Spectral';
-    src: url('/fonts/Spectral/Spectral-SemiBold.ttf') format('truetype');
-    font-weight: 600;
-    font-style: normal;
-    font-display: swap;
-}
-@font-face {
-    font-family: 'Spectral';
-    src: url('/fonts/Spectral/Spectral-Light.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
-    font-display: swap;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
-/* Smooth scrolling */
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
+body {
+  background-color: #0c0c0c;
+  color: #f2f2f2;
+  font-family: var(--font-inter);
 }
 
-::-webkit-scrollbar-track {
-    background: #171717;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #404040;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #525252;
-}
-
-/* Selection styling */
 ::selection {
-    background-color: rgba(220, 38, 38, 0.3);
-    color: #fafafa;
+  background: rgba(220, 38, 38, 0.25);
+  color: #fff;
 }
 
-/* Focus styles for accessibility */
-*:focus-visible {
-    outline: 2px solid #dc2626;
-    outline-offset: 2px;
-    border-radius: 4px;
-}
-
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes glow {
-    0%, 100% { box-shadow: 0 0 20px rgba(220, 38, 38, 0.1); }
-    50% { box-shadow: 0 0 40px rgba(220, 38, 38, 0.3); }
-}
-
-.animate-fade-in {
-    animation: fadeIn 0.5s ease-out;
-}
-
-.animate-slide-down {
-    animation: slideDown 0.3s ease-out;
-}
-
-.animate-glow {
-    animation: glow 3s ease-in-out infinite;
-}
-
-/* Ensure proper contrast for all interactive elements */
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }

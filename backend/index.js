@@ -1,4 +1,4 @@
-
+import './utils/env.js';
 
 import { createServer } from 'http';
 import dotenv from 'dotenv';
@@ -19,27 +19,30 @@ DBinitialize();
 
 const server = createServer(app);
 
-server.listen(PORT, () => {
-  logger.info(`CyberHex backend running on port ${PORT}`);
-});
-
-
 import { WebSocketServer } from 'ws';
 
+const clients = new Map();
 
 const wss = new WebSocketServer({ server });
 
-wss.on('connection', (ws) => {
-  logger.info('WebSocket client connected');
-  ws.on('message', (message) => {
-    logger.info('Received:', message.toString());
-  });
+wss.on('connection', (ws, req) => {
+  const url = new URL(req.url, `http://localhost`);
+  const experimentId = url.searchParams.get('experimentId');
+  const clientId = url.searchParams.get('clientId') || `client-${Date.now()}`;
+
+  if (experimentId) {
+    if (!clients.has(experimentId)) clients.set(experimentId, new Set());
+    clients.get(experimentId).add(ws);
+    logger.info(`WebSocket client ${clientId} joined experiment ${experimentId}`);
+  } else {
+    logger.info(`WebSocket client connected: ${clientId}`);
+  }
+
   ws.on('close', () => {
-    logger.info('WebSocket client disconnected');
+    if (experimentId) clients.get(experimentId)?.delete(ws);
+    logger.info(`WebSocket client disconnected: ${clientId}`);
   });
 });
-
-
 
 global.broadcast = (data) => {
   wss.clients.forEach(client => {
@@ -48,3 +51,16 @@ global.broadcast = (data) => {
     }
   });
 };
+
+global.broadcastToExperiment = (experimentId, data) => {
+  const room = clients.get(experimentId);
+  if (!room) return;
+  const payload = JSON.stringify(data);
+  room.forEach(client => {
+    if (client.readyState === 1) client.send(payload);
+  });
+};
+
+server.listen(PORT, () => {
+  logger.info(`CyberHex backend running on port ${PORT}`);
+});

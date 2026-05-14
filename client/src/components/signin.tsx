@@ -3,6 +3,7 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react"
+import { useAuth } from "@/contexts/auth"
 
 interface SignInProps {
   onSuccess?: () => void
@@ -10,6 +11,7 @@ interface SignInProps {
 }
 
 const SignIn = ({ onSuccess, onSignUpClick }: SignInProps) => {
+  const { login, loading: authLoading, error: authError } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -37,10 +39,13 @@ const SignIn = ({ onSuccess, onSignUpClick }: SignInProps) => {
     if (!validate()) return
 
     setIsLoading(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    setIsLoading(false)
-    onSuccess?.()
+    try {
+      await login(email, password)
+      onSuccess?.()
+    } catch {
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -146,15 +151,26 @@ const SignIn = ({ onSuccess, onSignUpClick }: SignInProps) => {
           )}
         </div>
 
+        {authError && (
+          <motion.p
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-xs text-red-400 text-center"
+            role="alert"
+          >
+            {authError}
+          </motion.p>
+        )}
+
         <Button
           type="submit"
           variant="cyber"
           className="w-full"
           size="lg"
-          isLoading={isLoading}
+          isLoading={isLoading || authLoading}
           aria-label="Sign in"
         >
-          {!isLoading && <LogIn className="w-4 h-4 mr-2" />}
+          {!isLoading && !authLoading && <LogIn className="w-4 h-4 mr-2" />}
           Sign In
         </Button>
       </form>
