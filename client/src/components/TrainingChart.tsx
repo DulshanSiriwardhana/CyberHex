@@ -50,7 +50,7 @@ const CustomTooltip: React.FC<any> = ({ active, payload }) => {
     return null;
 };
 
-export const TrainingChart: React.FC<TrainingChartProps> = ({
+export const TrainingChart: React.FC<TrainingChartProps> = React.memo(({
     data,
     title = 'Training Progress',
     showLoss = true,
@@ -191,6 +191,6 @@ export const TrainingChart: React.FC<TrainingChartProps> = ({
             )}
         </div>
     );
-};
+});
 
 export default TrainingChart;

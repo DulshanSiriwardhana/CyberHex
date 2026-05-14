@@ -8,7 +8,6 @@ import { useWebSocket } from "@/hooks/useWebSocket"
 import { PageLayout } from "@/components/ui/layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Activity, Play, Square, RefreshCw, Cpu, TrendingDown } from "lucide-react"
 
 interface LossData {
