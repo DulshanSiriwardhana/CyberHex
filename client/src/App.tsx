@@ -4,15 +4,17 @@ import Layer from "@/Layer"
 import { AuthProvider } from "@/contexts/auth"
 import ErrorBoundary from "@/components/ErrorBoundary"
 import ProtectedRoute from "@/components/ProtectedRoute"
-import { items } from "@/const/data"
 import { Skeleton } from "@/components/ui/skeleton"
 
 const LandingPage = lazy(() => import("@/pages/LandingPage"))
 const CyberGames = lazy(() => import("@/pages/CyberGames"))
-const TestPage = lazy(() => import("@/pages/TestPage"))
+const DashboardPage = lazy(() => import("@/pages/DashboardPage"))
+const ModelsPage = lazy(() => import("@/pages/ModelsPage"))
+const SettingsPage = lazy(() => import("@/pages/SettingsPage"))
+const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"))
 
 const LoadingFallback = () => (
-  <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-8 pt-24">
+  <div className="min-h-screen bg-[#0c0c0c] flex items-center justify-center p-8 pt-24">
     <div className="w-full max-w-4xl space-y-6">
       <Skeleton className="h-12 w-3/4 mx-auto" />
       <Skeleton className="h-64 w-full" />
@@ -33,18 +35,16 @@ function App() {
           <ErrorBoundary>
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
-                <Route path={items[0].path} element={<LandingPage />} />
-                <Route
-                  path={items[2].path}
-                  element={
-                    <ProtectedRoute>
-                      <CyberGames />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path={items[1].path} element={<LandingPage />} />
-                <Route path={items[3].path} element={<LandingPage />} />
-                <Route path="/test" element={<TestPage />} />
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/about" element={<LandingPage />} />
+                <Route path="/contact" element={<LandingPage />} />
+                <Route path="/machine-learning" element={<LandingPage />} />
+                <Route path="/cyber-games" element={<ProtectedRoute><CyberGames /></ProtectedRoute>} />
+                <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+                <Route path="/experiments" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+                <Route path="/models" element={<ProtectedRoute><ModelsPage /></ProtectedRoute>} />
+                <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </Suspense>
           </ErrorBoundary>

@@ -145,11 +145,11 @@ Matrix<double> Tanh::forward(const Matrix<double>& X) {
     return output;
 }
 
-Matrix<double> Tanh::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+Matrix<double> Tanh::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int timestep) {
     Matrix<double> res(grad.rows(), grad.cols());
     for (size_t i = 0; i < grad.size(); i++) {
-        double t = output.at(i);
-        res.at(i) = grad.at(i) * (1.0 - t * t);
+        double tanh_val = output.at(i);
+        res.at(i) = grad.at(i) * (1.0 - tanh_val * tanh_val);
     }
     return res;
 }

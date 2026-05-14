@@ -6,5 +6,5 @@ CXX_DEFINES = -DCYBERHEX_VERSION_MAJOR=2 -DCYBERHEX_VERSION_MINOR=0 -DCYBERHEX_V
 
 CXX_INCLUDES = -I/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/include
 
-CXX_FLAGS =  -Wall -Wextra -Wno-unused-parameter -O3 -march=native -ffast-math -fopenmp -mavx2 -O3 -DNDEBUG -std=gnu++17 -fPIC -fopenmp
+CXX_FLAGS =  -Wall -Wextra -Wpedantic -Wshadow -Wno-unused-parameter -fopenmp -mavx2 -O3 -DNDEBUG -O3 -march=native -ffast-math -DNDEBUG -std=gnu++17 -fPIC -fopenmp
 

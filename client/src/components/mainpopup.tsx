@@ -1,4 +1,4 @@
-import Terminal from "./terminal/ctrl+t"
+import Terminal from "./terminal/Terminal"
 
 const MainPopup = () => {
   return (
