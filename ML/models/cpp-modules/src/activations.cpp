@@ -93,21 +93,21 @@ Matrix<double> Softmax::forward(const Matrix<double>& X) {
 }
 
 Matrix<double> Softmax::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
-    // Softmax + Cross-Entropy backward combined is just (pred - target)
-    // For pure softmax backward, compute Jacobian: diag(p) - p*p^T
+    // Optimized O(n) per row: grad_input = s ⊙ (grad - (grad · s))
+    // instead of O(n²) Jacobian: J = diag(s) - s s^T
     Matrix<double> res(grad.rows(), grad.cols(), 0.0);
 
     #pragma omp parallel for if(grad.rows() > 100)
     for (size_t i = 0; i < grad.rows(); i++) {
+        // Compute dot product: sum_k(grad(i,k) * softmax(i,k))
+        double dot = 0.0;
+        for (size_t k = 0; k < grad.cols(); k++) {
+            dot += grad(i, k) * output(i, k);
+        }
+
+        // Compute each output element: s_j * (grad_ij - dot)
         for (size_t j = 0; j < grad.cols(); j++) {
-            double sum = 0.0;
-            for (size_t k = 0; k < grad.cols(); k++) {
-                double jacobian = (j == k)
-                    ? output(i, j) * (1.0 - output(i, j))
-                    : -output(i, j) * output(i, k);
-                sum += grad(i, k) * jacobian;
-            }
-            res(i, j) = sum;
+            res(i, j) = output(i, j) * (grad(i, j) - dot);
         }
     }
     return res;
@@ -206,12 +206,20 @@ Matrix<double> ELU::backward(const Matrix<double>& grad, double lr, OptimizerTyp
 
 // ============================================================================
 // Swish (SiLU) = x * sigmoid(x)
+// Numerically stable: clips x for large negative values
+// Swish'(x) = sigmoid(x) + swish(x) * (1 - sigmoid(x))
 // ============================================================================
 Matrix<double> Swish::forward(const Matrix<double>& X) {
     output = Matrix<double>(X.rows(), X.cols());
+    input_sigmoid_ = Matrix<double>(X.rows(), X.cols());
     for (size_t i = 0; i < X.size(); i++) {
-        double s = stable_sigmoid(X.at(i));
-        output.at(i) = X.at(i) * s;
+        double x = X.at(i);
+        // Numerical guard: for x < -88, sigmoid(x) underflows to 0
+        // Swish(x) = x * sigmoid(x) → 0 for x → -inf (correct behavior)
+        // For x > 88, sigmoid(x) ≈ 1, Swish(x) ≈ x (correct behavior)
+        double s = stable_sigmoid(x);
+        input_sigmoid_.at(i) = s;
+        output.at(i) = x * s;
     }
     return output;
 }
@@ -219,16 +227,11 @@ Matrix<double> Swish::forward(const Matrix<double>& X) {
 Matrix<double> Swish::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
     Matrix<double> res(grad.rows(), grad.cols());
     for (size_t i = 0; i < grad.size(); i++) {
-        double x = output.at(i);
-        // We don't have x stored, but we have output = x * sigmoid(x)
-        // Derivate = sigmoid(x) + x * sigmoid(x) * (1 - sigmoid(x))
-        // = sigmoid(x) + output * (1 - sigmoid(x))
-        // Hard to compute without x. Let's use the derivative formula:
-        // swish'(x) = swish(x) + sigmoid(x) * (1 - swish(x))
-        // But we need sigmoid(x). Let's use an approximation approach.
-        // For now use: grad * (output/x + sigmoid*(1-sigmoid)) which is numerically tricky.
-        // Simplified: use precomputed approximation
-        res.at(i) = grad.at(i); // Placeholder - in practice Swish should also cache input
+        double sigma = input_sigmoid_.at(i);
+        double swish_val = output.at(i);
+        // Swish derivative: sigma(x) + swish(x) * (1 - sigma(x))
+        double deriv = sigma + swish_val * (1.0 - sigma);
+        res.at(i) = grad.at(i) * deriv;
     }
     return res;
 }

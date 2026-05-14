@@ -102,10 +102,14 @@ public:
 
 // ============================================================================
 // Swish / SiLU Activation (x * sigmoid(x))
+// Numerically stable: uses sigmoid output cache for fast backward
+// Swish'(x) = sigmoid(x) + x * sigmoid(x) * (1 - sigmoid(x))
+//           = sigmoid(x) + output(x) * (1 - sigmoid(x))
 // ============================================================================
 class Swish : public Layer {
 private:
     Matrix<double> output;
+    Matrix<double> input_sigmoid_;  // cached sigmoid(x) for backward
 public:
     Swish() = default;
     Matrix<double> forward(const Matrix<double>& X) override;

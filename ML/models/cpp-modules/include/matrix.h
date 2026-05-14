@@ -117,38 +117,38 @@ public:
     T* data() noexcept { return data_; }
     const T* data() const noexcept { return data_; }
 
-    // Element access with bounds checking (debug)
+    // Element access with bounds checking (always active, not just debug)
     inline T& operator()(size_t r, size_t c) {
-        assert(r < rows_ && "Row index out of bounds");
-        assert(c < cols_ && "Col index out of bounds");
+        if (r >= rows_) throw std::out_of_range("Row index " + std::to_string(r) + " >= " + std::to_string(rows_));
+        if (c >= cols_) throw std::out_of_range("Col index " + std::to_string(c) + " >= " + std::to_string(cols_));
         return data_[r * cols_ + c];
     }
 
     inline const T& operator()(size_t r, size_t c) const {
-        assert(r < rows_ && "Row index out of bounds");
-        assert(c < cols_ && "Col index out of bounds");
+        if (r >= rows_) throw std::out_of_range("Row index " + std::to_string(r) + " >= " + std::to_string(rows_));
+        if (c >= cols_) throw std::out_of_range("Col index " + std::to_string(c) + " >= " + std::to_string(cols_));
         return data_[r * cols_ + c];
     }
 
     // Flat indexing
     inline T& at(size_t i) {
-        assert(i < size_ && "Flat index out of bounds");
+        if (i >= size_) throw std::out_of_range("Flat index " + std::to_string(i) + " >= " + std::to_string(size_));
         return data_[i];
     }
 
     inline const T& at(size_t i) const {
-        assert(i < size_ && "Flat index out of bounds");
+        if (i >= size_) throw std::out_of_range("Flat index " + std::to_string(i) + " >= " + std::to_string(size_));
         return data_[i];
     }
 
     // Row access
     T* row(size_t r) {
-        assert(r < rows_ && "Row index out of bounds");
+        if (r >= rows_) throw std::out_of_range("Row index " + std::to_string(r) + " >= " + std::to_string(rows_));
         return data_ + r * cols_;
     }
 
     const T* row(size_t r) const {
-        assert(r < rows_ && "Row index out of bounds");
+        if (r >= rows_) throw std::out_of_range("Row index " + std::to_string(r) + " >= " + std::to_string(rows_));
         return data_ + r * cols_;
     }
 

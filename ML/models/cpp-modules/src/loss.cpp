@@ -103,7 +103,11 @@ Matrix<double> BinaryCrossEntropyLoss::backward(const Matrix<double>& pred,
     for (size_t i = 0; i < pred.size(); i++) {
         double p = std::max(eps, std::min(1.0 - eps, pred.at(i)));
         double t = target.at(i);
-        grad.at(i) = scale * (p - t) / (p * (1.0 - p));
+        // BCE derivative: dL/dp = (p - t) / (p * (1 - p))
+        // Guard denominator against underflow near 0 or 1
+        double denom = p * (1.0 - p);
+        if (denom < eps) denom = eps;
+        grad.at(i) = scale * (p - t) / denom;
     }
     return grad;
 }
