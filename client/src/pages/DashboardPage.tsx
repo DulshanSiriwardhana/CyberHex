@@ -27,7 +27,19 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#0c0c0c] p-8">
       <div className="max-w-[1280px] mx-auto">
-        <h1 className="font-spectral font-extrabold text-3xl text-text-primary mb-8">Dashboard</h1>
+        <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
+          <h1 className="font-spectral font-extrabold text-3xl text-text-primary">Dashboard</h1>
+          <Link
+            to="/experiments/new"
+            className="px-5 py-2.5 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-500 transition-colors inline-flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            New Experiment
+          </Link>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
@@ -69,8 +81,12 @@ export default function DashboardPage() {
               </thead>
               <tbody className="divide-y divide-[rgba(255,255,255,0.05)]">
                 {experiments.slice(0, 10).map((exp) => (
-                  <tr key={exp._id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors">
-                    <td className="px-6 py-4 text-sm text-text-primary font-medium">{exp.name}</td>
+                  <tr key={exp._id} className="hover:bg-[rgba(255,255,255,0.02)] transition-colors group">
+                    <td className="px-6 py-4 text-sm text-text-primary font-medium">
+                      <Link to={`/experiments/${exp._id}`} className="hover:text-red-400 transition-colors">
+                        {exp.name}
+                      </Link>
+                    </td>
                     <td className="px-6 py-4">
                       <Badge variant={statusVariant(exp.status)}>{exp.status}</Badge>
                     </td>

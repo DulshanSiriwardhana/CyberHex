@@ -7,8 +7,12 @@ import ProtectedRoute from "@/components/ProtectedRoute"
 import { Skeleton } from "@/components/ui/skeleton"
 
 const LandingPage = lazy(() => import("@/pages/LandingPage"))
+const SignUpPage = lazy(() => import("@/pages/SignUpPage"))
+const AboutPage = lazy(() => import("@/pages/AboutPage"))
 const CyberGames = lazy(() => import("@/pages/CyberGames"))
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"))
+const ExperimentBuilderPage = lazy(() => import("@/pages/ExperimentBuilderPage"))
+const ExperimentDetailPage = lazy(() => import("@/pages/ExperimentDetailPage"))
 const ModelsPage = lazy(() => import("@/pages/ModelsPage"))
 const SettingsPage = lazy(() => import("@/pages/SettingsPage"))
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"))
@@ -35,15 +39,23 @@ function App() {
           <ErrorBoundary>
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
+                {/* Public routes */}
                 <Route path="/" element={<LandingPage />} />
-                <Route path="/about" element={<LandingPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/about" element={<AboutPage />} />
                 <Route path="/contact" element={<LandingPage />} />
                 <Route path="/machine-learning" element={<LandingPage />} />
+
+                {/* Protected routes */}
                 <Route path="/cyber-games" element={<ProtectedRoute><CyberGames /></ProtectedRoute>} />
                 <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
                 <Route path="/experiments" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+                <Route path="/experiments/new" element={<ProtectedRoute><ExperimentBuilderPage /></ProtectedRoute>} />
+                <Route path="/experiments/:id" element={<ProtectedRoute><ExperimentDetailPage /></ProtectedRoute>} />
                 <Route path="/models" element={<ProtectedRoute><ModelsPage /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+
+                {/* 404 */}
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </Suspense>
