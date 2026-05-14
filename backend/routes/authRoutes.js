@@ -1,14 +1,13 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import RevokedToken from '../models/RevokedToken.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { asyncHandler, ValidationError, ConflictError, AuthenticationError, NotFoundError } from '../middleware/errorHandler.js';
 import { validateData, registerSchema, loginSchema, changePasswordSchema } from '../utils/validators.js';
 import logger from '../utils/logger.js';
 
 const router = express.Router();
-
-const tokenBlacklist = new Set();
 
 router.post('/register', asyncHandler(async (req, res) => {
     const validation = validateData(registerSchema, req.body);
@@ -94,7 +93,7 @@ router.post('/login', asyncHandler(async (req, res) => {
     });
 }));
 
-router.post('/refresh', (req, res, next) => {
+router.post('/refresh', async (req, res, next) => {
     try {
         const refreshToken = req.cookies.refreshToken;
 
@@ -105,7 +104,8 @@ router.post('/refresh', (req, res, next) => {
             });
         }
 
-        if (tokenBlacklist.has(refreshToken)) {
+        const revoked = await RevokedToken.findOne({ token: refreshToken });
+        if (revoked) {
             return res.status(403).json({
                 error: 'Refresh token has been revoked',
                 code: 'TOKEN_REVOKED'
@@ -137,11 +137,11 @@ router.post('/refresh', (req, res, next) => {
     }
 });
 
-router.post('/logout', authenticateToken, (req, res) => {
+router.post('/logout', authenticateToken, async (req, res) => {
     try {
         const refreshToken = req.cookies.refreshToken;
         if (refreshToken) {
-            tokenBlacklist.add(refreshToken);
+            await RevokedToken.create({ token: refreshToken });
         }
 
         res.clearCookie('refreshToken');
