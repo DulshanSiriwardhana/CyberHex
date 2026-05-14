@@ -13,6 +13,7 @@
 #include <cstring>
 #include <cmath>
 #include <random>
+#include <functional>
 
 namespace cyberhex {
 
@@ -184,7 +185,8 @@ public:
     // --- Matrix Operations ---
     Matrix dot(const Matrix& other) const;
     Matrix transpose() const;
-    Matrix T() const { return transpose(); }
+    // Transpose alias (used sparingly to avoid shadowing template param)
+    Matrix transposed() const { return transpose(); }
 
     // Element-wise operations
     Matrix operator+(const Matrix& other) const;

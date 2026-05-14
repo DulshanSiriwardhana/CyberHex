@@ -146,7 +146,8 @@ Matrix<double> Dense::backward(const Matrix<double>& grad, double lr, OptimizerT
         double beta1 = 0.9;
         double beta2 = 0.999;
         double epsilon = 1e-8;
-        double weight_decay = 0.0; // AdamW uses separate weight decay
+        // AdamW uses separate weight decay (hardcoded as 0.01 here)
+        const double adamw_decay = 0.01;
 
         for (size_t i = 0; i < weights.size(); i++) {
             m_W.at(i) = beta1 * m_W.at(i) + (1.0 - beta1) * dW.at(i);
@@ -162,7 +163,7 @@ Matrix<double> Dense::backward(const Matrix<double>& grad, double lr, OptimizerT
                 weights.at(i) -= lr * m_bar / (std::sqrt(v_hat) + epsilon);
             } else if (opt == OptimizerType::ADAMW) {
                 // AdamW: decoupled weight decay
-                weights.at(i) -= lr * (m_hat / (std::sqrt(v_hat) + epsilon) + 0.01 * weights.at(i));
+                weights.at(i) -= lr * (m_hat / (std::sqrt(v_hat) + epsilon) + adamw_decay * weights.at(i));
             } else {
                 weights.at(i) -= lr * m_hat / (std::sqrt(v_hat) + epsilon);
             }
