@@ -8,22 +8,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activation_functions.cpp" "CMakeFiles/unit_tests.dir/src/activation_functions.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/activation_functions.cpp.o.d"
   "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activations.cpp" "CMakeFiles/unit_tests.dir/src/activations.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/activations.cpp.o.d"
-  "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/basic_maths.cpp" "CMakeFiles/unit_tests.dir/src/basic_maths.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/basic_maths.cpp.o.d"
-  "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/cyberhex_c_api.cpp" "CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.o.d"
-  "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/data_structures.cpp" "CMakeFiles/unit_tests.dir/src/data_structures.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/data_structures.cpp.o.d"
   "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/dense.cpp" "CMakeFiles/unit_tests.dir/src/dense.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/dense.cpp.o.d"
-  "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/higher_maths.cpp" "CMakeFiles/unit_tests.dir/src/higher_maths.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/higher_maths.cpp.o.d"
   "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/loss.cpp" "CMakeFiles/unit_tests.dir/src/loss.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/loss.cpp.o.d"
-  "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/machine_learning_algorithms.cpp" "CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.o.d"
-  "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/main.cpp" "CMakeFiles/unit_tests.dir/src/main.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/main.cpp.o.d"
-  "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/matrix.cpp" "CMakeFiles/unit_tests.dir/src/matrix.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/matrix.cpp.o.d"
   "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/model.cpp" "CMakeFiles/unit_tests.dir/src/model.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/model.cpp.o.d"
   "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/optimizer.cpp" "CMakeFiles/unit_tests.dir/src/optimizer.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/optimizer.cpp.o.d"
-  "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/stat.cpp" "CMakeFiles/unit_tests.dir/src/stat.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/stat.cpp.o.d"
   "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/tests.cpp" "CMakeFiles/unit_tests.dir/src/tests.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/tests.cpp.o.d"
-  "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/ws_server.cpp" "CMakeFiles/unit_tests.dir/src/ws_server.cpp.o" "gcc" "CMakeFiles/unit_tests.dir/src/ws_server.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

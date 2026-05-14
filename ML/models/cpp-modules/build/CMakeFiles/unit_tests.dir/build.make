@@ -83,24 +83,10 @@ CMakeFiles/unit_tests.dir/src/tests.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/tests.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/tests.cpp -o CMakeFiles/unit_tests.dir/src/tests.cpp.s
 
-CMakeFiles/unit_tests.dir/src/activation_functions.cpp.o: CMakeFiles/unit_tests.dir/flags.make
-CMakeFiles/unit_tests.dir/src/activation_functions.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activation_functions.cpp
-CMakeFiles/unit_tests.dir/src/activation_functions.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/unit_tests.dir/src/activation_functions.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/activation_functions.cpp.o -MF CMakeFiles/unit_tests.dir/src/activation_functions.cpp.o.d -o CMakeFiles/unit_tests.dir/src/activation_functions.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activation_functions.cpp
-
-CMakeFiles/unit_tests.dir/src/activation_functions.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/unit_tests.dir/src/activation_functions.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activation_functions.cpp > CMakeFiles/unit_tests.dir/src/activation_functions.cpp.i
-
-CMakeFiles/unit_tests.dir/src/activation_functions.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/activation_functions.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activation_functions.cpp -o CMakeFiles/unit_tests.dir/src/activation_functions.cpp.s
-
 CMakeFiles/unit_tests.dir/src/activations.cpp.o: CMakeFiles/unit_tests.dir/flags.make
 CMakeFiles/unit_tests.dir/src/activations.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activations.cpp
 CMakeFiles/unit_tests.dir/src/activations.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/unit_tests.dir/src/activations.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/unit_tests.dir/src/activations.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/activations.cpp.o -MF CMakeFiles/unit_tests.dir/src/activations.cpp.o.d -o CMakeFiles/unit_tests.dir/src/activations.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activations.cpp
 
 CMakeFiles/unit_tests.dir/src/activations.cpp.i: cmake_force
@@ -111,52 +97,10 @@ CMakeFiles/unit_tests.dir/src/activations.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/activations.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activations.cpp -o CMakeFiles/unit_tests.dir/src/activations.cpp.s
 
-CMakeFiles/unit_tests.dir/src/basic_maths.cpp.o: CMakeFiles/unit_tests.dir/flags.make
-CMakeFiles/unit_tests.dir/src/basic_maths.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/basic_maths.cpp
-CMakeFiles/unit_tests.dir/src/basic_maths.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/unit_tests.dir/src/basic_maths.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/basic_maths.cpp.o -MF CMakeFiles/unit_tests.dir/src/basic_maths.cpp.o.d -o CMakeFiles/unit_tests.dir/src/basic_maths.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/basic_maths.cpp
-
-CMakeFiles/unit_tests.dir/src/basic_maths.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/unit_tests.dir/src/basic_maths.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/basic_maths.cpp > CMakeFiles/unit_tests.dir/src/basic_maths.cpp.i
-
-CMakeFiles/unit_tests.dir/src/basic_maths.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/basic_maths.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/basic_maths.cpp -o CMakeFiles/unit_tests.dir/src/basic_maths.cpp.s
-
-CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.o: CMakeFiles/unit_tests.dir/flags.make
-CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/cyberhex_c_api.cpp
-CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.o -MF CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.o.d -o CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/cyberhex_c_api.cpp
-
-CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/cyberhex_c_api.cpp > CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.i
-
-CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/cyberhex_c_api.cpp -o CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.s
-
-CMakeFiles/unit_tests.dir/src/data_structures.cpp.o: CMakeFiles/unit_tests.dir/flags.make
-CMakeFiles/unit_tests.dir/src/data_structures.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/data_structures.cpp
-CMakeFiles/unit_tests.dir/src/data_structures.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/unit_tests.dir/src/data_structures.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/data_structures.cpp.o -MF CMakeFiles/unit_tests.dir/src/data_structures.cpp.o.d -o CMakeFiles/unit_tests.dir/src/data_structures.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/data_structures.cpp
-
-CMakeFiles/unit_tests.dir/src/data_structures.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/unit_tests.dir/src/data_structures.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/data_structures.cpp > CMakeFiles/unit_tests.dir/src/data_structures.cpp.i
-
-CMakeFiles/unit_tests.dir/src/data_structures.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/data_structures.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/data_structures.cpp -o CMakeFiles/unit_tests.dir/src/data_structures.cpp.s
-
 CMakeFiles/unit_tests.dir/src/dense.cpp.o: CMakeFiles/unit_tests.dir/flags.make
 CMakeFiles/unit_tests.dir/src/dense.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/dense.cpp
 CMakeFiles/unit_tests.dir/src/dense.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/unit_tests.dir/src/dense.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/unit_tests.dir/src/dense.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/dense.cpp.o -MF CMakeFiles/unit_tests.dir/src/dense.cpp.o.d -o CMakeFiles/unit_tests.dir/src/dense.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/dense.cpp
 
 CMakeFiles/unit_tests.dir/src/dense.cpp.i: cmake_force
@@ -167,24 +111,10 @@ CMakeFiles/unit_tests.dir/src/dense.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/dense.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/dense.cpp -o CMakeFiles/unit_tests.dir/src/dense.cpp.s
 
-CMakeFiles/unit_tests.dir/src/higher_maths.cpp.o: CMakeFiles/unit_tests.dir/flags.make
-CMakeFiles/unit_tests.dir/src/higher_maths.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/higher_maths.cpp
-CMakeFiles/unit_tests.dir/src/higher_maths.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/unit_tests.dir/src/higher_maths.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/higher_maths.cpp.o -MF CMakeFiles/unit_tests.dir/src/higher_maths.cpp.o.d -o CMakeFiles/unit_tests.dir/src/higher_maths.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/higher_maths.cpp
-
-CMakeFiles/unit_tests.dir/src/higher_maths.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/unit_tests.dir/src/higher_maths.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/higher_maths.cpp > CMakeFiles/unit_tests.dir/src/higher_maths.cpp.i
-
-CMakeFiles/unit_tests.dir/src/higher_maths.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/higher_maths.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/higher_maths.cpp -o CMakeFiles/unit_tests.dir/src/higher_maths.cpp.s
-
 CMakeFiles/unit_tests.dir/src/loss.cpp.o: CMakeFiles/unit_tests.dir/flags.make
 CMakeFiles/unit_tests.dir/src/loss.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/loss.cpp
 CMakeFiles/unit_tests.dir/src/loss.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/unit_tests.dir/src/loss.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/unit_tests.dir/src/loss.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/loss.cpp.o -MF CMakeFiles/unit_tests.dir/src/loss.cpp.o.d -o CMakeFiles/unit_tests.dir/src/loss.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/loss.cpp
 
 CMakeFiles/unit_tests.dir/src/loss.cpp.i: cmake_force
@@ -195,52 +125,10 @@ CMakeFiles/unit_tests.dir/src/loss.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/loss.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/loss.cpp -o CMakeFiles/unit_tests.dir/src/loss.cpp.s
 
-CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.o: CMakeFiles/unit_tests.dir/flags.make
-CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/machine_learning_algorithms.cpp
-CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.o -MF CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.o.d -o CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/machine_learning_algorithms.cpp
-
-CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/machine_learning_algorithms.cpp > CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.i
-
-CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/machine_learning_algorithms.cpp -o CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.s
-
-CMakeFiles/unit_tests.dir/src/main.cpp.o: CMakeFiles/unit_tests.dir/flags.make
-CMakeFiles/unit_tests.dir/src/main.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/main.cpp
-CMakeFiles/unit_tests.dir/src/main.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/unit_tests.dir/src/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/main.cpp.o -MF CMakeFiles/unit_tests.dir/src/main.cpp.o.d -o CMakeFiles/unit_tests.dir/src/main.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/main.cpp
-
-CMakeFiles/unit_tests.dir/src/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/unit_tests.dir/src/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/main.cpp > CMakeFiles/unit_tests.dir/src/main.cpp.i
-
-CMakeFiles/unit_tests.dir/src/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/main.cpp -o CMakeFiles/unit_tests.dir/src/main.cpp.s
-
-CMakeFiles/unit_tests.dir/src/matrix.cpp.o: CMakeFiles/unit_tests.dir/flags.make
-CMakeFiles/unit_tests.dir/src/matrix.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/matrix.cpp
-CMakeFiles/unit_tests.dir/src/matrix.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/unit_tests.dir/src/matrix.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/matrix.cpp.o -MF CMakeFiles/unit_tests.dir/src/matrix.cpp.o.d -o CMakeFiles/unit_tests.dir/src/matrix.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/matrix.cpp
-
-CMakeFiles/unit_tests.dir/src/matrix.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/unit_tests.dir/src/matrix.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/matrix.cpp > CMakeFiles/unit_tests.dir/src/matrix.cpp.i
-
-CMakeFiles/unit_tests.dir/src/matrix.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/matrix.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/matrix.cpp -o CMakeFiles/unit_tests.dir/src/matrix.cpp.s
-
 CMakeFiles/unit_tests.dir/src/model.cpp.o: CMakeFiles/unit_tests.dir/flags.make
 CMakeFiles/unit_tests.dir/src/model.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/model.cpp
 CMakeFiles/unit_tests.dir/src/model.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/unit_tests.dir/src/model.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/unit_tests.dir/src/model.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/model.cpp.o -MF CMakeFiles/unit_tests.dir/src/model.cpp.o.d -o CMakeFiles/unit_tests.dir/src/model.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/model.cpp
 
 CMakeFiles/unit_tests.dir/src/model.cpp.i: cmake_force
@@ -254,7 +142,7 @@ CMakeFiles/unit_tests.dir/src/model.cpp.s: cmake_force
 CMakeFiles/unit_tests.dir/src/optimizer.cpp.o: CMakeFiles/unit_tests.dir/flags.make
 CMakeFiles/unit_tests.dir/src/optimizer.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/optimizer.cpp
 CMakeFiles/unit_tests.dir/src/optimizer.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/unit_tests.dir/src/optimizer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/unit_tests.dir/src/optimizer.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/optimizer.cpp.o -MF CMakeFiles/unit_tests.dir/src/optimizer.cpp.o.d -o CMakeFiles/unit_tests.dir/src/optimizer.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/optimizer.cpp
 
 CMakeFiles/unit_tests.dir/src/optimizer.cpp.i: cmake_force
@@ -265,79 +153,31 @@ CMakeFiles/unit_tests.dir/src/optimizer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/optimizer.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/optimizer.cpp -o CMakeFiles/unit_tests.dir/src/optimizer.cpp.s
 
-CMakeFiles/unit_tests.dir/src/stat.cpp.o: CMakeFiles/unit_tests.dir/flags.make
-CMakeFiles/unit_tests.dir/src/stat.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/stat.cpp
-CMakeFiles/unit_tests.dir/src/stat.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/unit_tests.dir/src/stat.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/stat.cpp.o -MF CMakeFiles/unit_tests.dir/src/stat.cpp.o.d -o CMakeFiles/unit_tests.dir/src/stat.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/stat.cpp
-
-CMakeFiles/unit_tests.dir/src/stat.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/unit_tests.dir/src/stat.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/stat.cpp > CMakeFiles/unit_tests.dir/src/stat.cpp.i
-
-CMakeFiles/unit_tests.dir/src/stat.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/stat.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/stat.cpp -o CMakeFiles/unit_tests.dir/src/stat.cpp.s
-
-CMakeFiles/unit_tests.dir/src/ws_server.cpp.o: CMakeFiles/unit_tests.dir/flags.make
-CMakeFiles/unit_tests.dir/src/ws_server.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/ws_server.cpp
-CMakeFiles/unit_tests.dir/src/ws_server.cpp.o: CMakeFiles/unit_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/unit_tests.dir/src/ws_server.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/unit_tests.dir/src/ws_server.cpp.o -MF CMakeFiles/unit_tests.dir/src/ws_server.cpp.o.d -o CMakeFiles/unit_tests.dir/src/ws_server.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/ws_server.cpp
-
-CMakeFiles/unit_tests.dir/src/ws_server.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/unit_tests.dir/src/ws_server.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/ws_server.cpp > CMakeFiles/unit_tests.dir/src/ws_server.cpp.i
-
-CMakeFiles/unit_tests.dir/src/ws_server.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/unit_tests.dir/src/ws_server.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/ws_server.cpp -o CMakeFiles/unit_tests.dir/src/ws_server.cpp.s
-
 # Object files for target unit_tests
 unit_tests_OBJECTS = \
 "CMakeFiles/unit_tests.dir/src/tests.cpp.o" \
-"CMakeFiles/unit_tests.dir/src/activation_functions.cpp.o" \
 "CMakeFiles/unit_tests.dir/src/activations.cpp.o" \
-"CMakeFiles/unit_tests.dir/src/basic_maths.cpp.o" \
-"CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.o" \
-"CMakeFiles/unit_tests.dir/src/data_structures.cpp.o" \
 "CMakeFiles/unit_tests.dir/src/dense.cpp.o" \
-"CMakeFiles/unit_tests.dir/src/higher_maths.cpp.o" \
 "CMakeFiles/unit_tests.dir/src/loss.cpp.o" \
-"CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.o" \
-"CMakeFiles/unit_tests.dir/src/main.cpp.o" \
-"CMakeFiles/unit_tests.dir/src/matrix.cpp.o" \
 "CMakeFiles/unit_tests.dir/src/model.cpp.o" \
-"CMakeFiles/unit_tests.dir/src/optimizer.cpp.o" \
-"CMakeFiles/unit_tests.dir/src/stat.cpp.o" \
-"CMakeFiles/unit_tests.dir/src/ws_server.cpp.o"
+"CMakeFiles/unit_tests.dir/src/optimizer.cpp.o"
 
 # External object files for target unit_tests
 unit_tests_EXTERNAL_OBJECTS =
 
 unit_tests: CMakeFiles/unit_tests.dir/src/tests.cpp.o
-unit_tests: CMakeFiles/unit_tests.dir/src/activation_functions.cpp.o
 unit_tests: CMakeFiles/unit_tests.dir/src/activations.cpp.o
-unit_tests: CMakeFiles/unit_tests.dir/src/basic_maths.cpp.o
-unit_tests: CMakeFiles/unit_tests.dir/src/cyberhex_c_api.cpp.o
-unit_tests: CMakeFiles/unit_tests.dir/src/data_structures.cpp.o
 unit_tests: CMakeFiles/unit_tests.dir/src/dense.cpp.o
-unit_tests: CMakeFiles/unit_tests.dir/src/higher_maths.cpp.o
 unit_tests: CMakeFiles/unit_tests.dir/src/loss.cpp.o
-unit_tests: CMakeFiles/unit_tests.dir/src/machine_learning_algorithms.cpp.o
-unit_tests: CMakeFiles/unit_tests.dir/src/main.cpp.o
-unit_tests: CMakeFiles/unit_tests.dir/src/matrix.cpp.o
 unit_tests: CMakeFiles/unit_tests.dir/src/model.cpp.o
 unit_tests: CMakeFiles/unit_tests.dir/src/optimizer.cpp.o
-unit_tests: CMakeFiles/unit_tests.dir/src/stat.cpp.o
-unit_tests: CMakeFiles/unit_tests.dir/src/ws_server.cpp.o
 unit_tests: CMakeFiles/unit_tests.dir/build.make
 unit_tests: _deps/catch2-build/src/libCatch2Main.a
 unit_tests: /usr/lib/gcc/x86_64-linux-gnu/14/libgomp.so
 unit_tests: /usr/lib/x86_64-linux-gnu/libpthread.a
 unit_tests: _deps/catch2-build/src/libCatch2.a
 unit_tests: CMakeFiles/unit_tests.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Linking CXX executable unit_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable unit_tests"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/unit_tests.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

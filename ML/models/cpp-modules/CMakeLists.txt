@@ -56,8 +56,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 # Source files
-file(GLOB SOURCES "src/*.cpp")
-list(REMOVE_ITEM SOURCES "src/main.cpp")
+file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+list(FILTER SOURCES EXCLUDE REGEX ".*/(main|tests)\\.cpp$")
 
 # Shared library
 add_library(cyberhex SHARED ${SOURCES})
@@ -85,6 +85,7 @@ target_link_libraries(app PRIVATE pthread)
 
 # Unit tests
 add_executable(unit_tests src/tests.cpp ${SOURCES})
+target_include_directories(unit_tests PRIVATE ${catch2_SOURCE_DIR}/src)
 if(OpenMP_CXX_FOUND)
     target_link_libraries(unit_tests PRIVATE OpenMP::OpenMP_CXX)
 endif()

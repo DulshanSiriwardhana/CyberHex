@@ -92,7 +92,7 @@ public:
     void reset();
     bool has_next() const;
     std::pair<Matrix<double>, Matrix<double>> next_batch();
-    void shuffle();
+    void shuffle_indices();
 };
 
 // ============================================================================
