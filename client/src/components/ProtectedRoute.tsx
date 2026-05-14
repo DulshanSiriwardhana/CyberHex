@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { AlertTriangle, ArrowLeft } from "lucide-react"
+import { useAuth } from "@/contexts/auth"
 
 interface ProtectedRouteProps {
   children: ReactNode
@@ -9,7 +10,17 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const navigate = useNavigate()
-  const isAuthenticated = false // Replace with actual auth check
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="min-h-[calc(100vh-80px)] flex items-center justify-center p-8">
+        <div className="animate-spin w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full" />
+      </div>
+    )
+  }
+
+  const isAuthenticated = !!user
 
   if (!isAuthenticated) {
     return (

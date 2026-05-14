@@ -1,5 +1,5 @@
 import { motion } from "framer-motion"
-import { Cpu, Code2, Layers, Zap, Github, Globe, Linkedin } from "lucide-react"
+import { Cpu, Code2, Layers, Zap, ExternalLink, Globe } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 const AboutPage = () => {
@@ -135,14 +135,17 @@ const AboutPage = () => {
                 <p className="text-white text-xl font-semibold mb-1">Dulshan Siriwardhana</p>
                 <p className="text-neutral-400 text-sm mb-6">Full-Stack Developer & ML Engineer</p>
                 <div className="flex items-center justify-center gap-4">
-                  <a href="https://github.com/DulshanSiriwardhana" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-neutral-800 hover:border-neutral-600 text-neutral-400 hover:text-white transition-all">
-                    <Github className="w-5 h-5" />
+                  <a href="https://github.com/DulshanSiriwardhana" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-neutral-800 hover:border-neutral-600 text-neutral-400 hover:text-white transition-all flex items-center gap-2">
+                    <ExternalLink className="w-5 h-5" />
+                    <span className="text-sm hidden sm:inline">GitHub</span>
                   </a>
-                  <a href="http://dulshansiriwardhana.live" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-neutral-800 hover:border-neutral-600 text-neutral-400 hover:text-white transition-all">
+                  <a href="http://dulshansiriwardhana.live" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-neutral-800 hover:border-neutral-600 text-neutral-400 hover:text-white transition-all flex items-center gap-2">
                     <Globe className="w-5 h-5" />
+                    <span className="text-sm hidden sm:inline">Portfolio</span>
                   </a>
-                  <a href="https://www.linkedin.com/in/dulshansiriwardhana" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-neutral-800 hover:border-neutral-600 text-neutral-400 hover:text-white transition-all">
-                    <Linkedin className="w-5 h-5" />
+                  <a href="https://www.linkedin.com/in/dulshansiriwardhana" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-neutral-800 hover:border-neutral-600 text-neutral-400 hover:text-white transition-all flex items-center gap-2">
+                    <ExternalLink className="w-5 h-5" />
+                    <span className="text-sm hidden sm:inline">LinkedIn</span>
                   </a>
                 </div>
               </CardContent>
