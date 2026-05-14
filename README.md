@@ -1,4 +1,8 @@
-# CyberHex — C++ Machine Learning Engine + Real-Time Visualization
+# CyberHex — Full-Stack Machine Learning Platform
+
+<p align="center">
+  <img src="doc/images/landing-page.png" alt="CyberHex Landing Page" width="800" />
+</p>
 
 > **Project Status: Actively Under Development**
 >
@@ -7,102 +11,416 @@
 
 ---
 
-CyberHex is a **high-performance C++ machine learning framework** built from scratch, featuring:
-
-- A custom matrix engine (using `std::vector` for optimized memory safety)
-- Dynamic multi-layer neural networks
-- Forward and backward propagation
-- Real-time training visualization via WebSockets
-- A React-based live dashboard
-
-This project explores **low-level ML engineering and system design** — similar in spirit to a lightweight, C++-native **TensorFlow + TensorBoard**.
+CyberHex is a **full-stack machine learning platform** that combines a custom C++ neural network engine, a Python ML module suite, a Node.js/Express backend, and a modern React dashboard — all containerized with Docker.
 
 ---
 
-## Current Features
+## Table of Contents
 
-### Core ML Engine
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [Screenshots](#screenshots)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Docker Setup (Recommended)](#docker-setup-recommended)
+  - [Local Development Setup](#local-development-setup)
+- [API Documentation](#api-documentation)
+- [ML Engine](#ml-engine)
+  - [C++ Modules](#c-modules)
+  - [Python Modules](#python-modules)
+  - [Visualization UI](#visualization-ui)
+- [Testing](#testing)
+- [Author & Ownership](#author--ownership)
+- [License](#license)
 
+---
+
+## Features
+
+### Core ML Engine (C++)
 - Custom `Matrix` implementation using `std::vector` with OpenMP parallelism
-- Dense (fully connected) layers
-- Activation layers:
-  - ReLU
-  - Sigmoid
-  - Softmax (fully implemented with Jacobian backprop)
-- Forward propagation
-- Backpropagation with multiple optimizers (SGD, Momentum, RMSProp, ADAM)
+- Dense (fully connected) layers with forward/backward propagation
+- Activation functions: **ReLU**, **Sigmoid**, **Softmax** (with Jacobian backprop)
+- Multiple optimizers: **SGD**, **Momentum**, **RMSProp**, **ADAM**
+- MSE loss function with epoch-based training loop
+- Best-model tracking with automatic checkpoint saving
+- Native C++ WebSocket server for real-time training data streaming
+
+### Python ML Suite
+- Linear regression and additional algorithm implementations
+- Modular commons library for statistical functions (mean, variance, etc.)
+
+### Backend (Node.js/Express)
+- RESTful API with **JWT-based authentication** (access + refresh tokens)
+- User registration, login, email verification, and password management
+- Experiment management and training log persistence via **MongoDB + Mongoose**
+- Real-time WebSocket endpoints for live ML training data
+- Rate limiting, CORS, Helmet security, input validation (express-validator + Zod)
+- Structured logging with Winston
+
+### Frontend (React + TypeScript)
+- **Landing page** with animated hero, feature showcases, and CTAs
+- **Dashboard** with experiment builder, model overview, and training charts
+- **CyberGames** — interactive ML educational games
+- **Model visualization** — real-time training loss and metrics via Recharts
+- Authentication flows: sign-up (multi-step), sign-in, protected routes
+- State management with **Zustand**, animations with **Framer Motion**
+- Responsive UI built with **Tailwind CSS** and **shadcn/ui** (Radix primitives)
+
+### DevOps & Infrastructure
+- Full **Docker Compose** setup (MongoDB, backend, frontend via nginx)
+- Health checks, restart policies, and bridged networking
+- Environment-based configuration with `.env` support
+- Build scripts and pre-commit hooks with Husky
 
 ---
 
-### Neural Network System
+## Tech Stack
 
-- Dynamic layer stacking
-- Multi-layer deep networks
-- Modular `Layer` abstraction
-
----
-
-### Training Pipeline
-
-- MSE loss function
-- Epoch-based training loop
-- Best-model tracking
-- Optional loss logging to CSV
-
----
-
-### Real-Time Visualization *(Experimental)*
-
-- Native C++ WebSocket server
-- Live training data streaming
-- React + TypeScript frontend
+| Layer          | Technology                                                                 |
+| -------------- | -------------------------------------------------------------------------- |
+| **ML Engine**  | C++17, OpenMP, custom linear algebra                                      |
+| **Python ML**  | Python 3, NumPy                                                            |
+| **Backend**    | Node.js, Express 5, MongoDB/Mongoose, WebSockets (ws), JWT                 |
+| **Frontend**   | React 19, TypeScript, Vite, Tailwind CSS, shadcn/ui, Recharts, Zustand    |
+| **ML Viz UI**  | React, TypeScript, Vite, Recharts                                          |
+| **Testing**    | Jest (backend), Vitest (frontend), Catch2 (C++)                           |
+| **Infra**      | Docker, Docker Compose, Nginx, MongoDB 7                                  |
 
 ---
 
 ## Architecture
 
+<p align="center">
+  <img src="doc/images/architecture-diagram.png" alt="CyberHex Architecture" width="800" />
+</p>
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                      CLIENT LAYER                         │
+│  ┌──────────────────┐  ┌───────────────────────────────┐ │
+│  │  React Dashboard  │  │  ML Visualization UI (React)  │ │
+│  │  (Port 80/443)    │  │  (Vite Dev Server)            │ │
+│  └────────┬─────────┘  └──────────────┬────────────────┘ │
+└───────────┼───────────────────────────┼──────────────────┘
+            │ HTTP/WS                   │ WebSocket
+┌───────────┼───────────────────────────┼──────────────────┐
+│           ▼                           ▼                   │
+│  ┌─────────────────────────────────────────────────────┐ │
+│  │              BACKEND LAYER (Node.js)                │ │
+│  │  • Auth (JWT)  • REST API  • WebSocket Gateway      │ │
+│  │  • Rate Limiting  • Validation  • Logging           │ │
+│  └──────────┬──────────────────────────┬───────────────┘ │
+└─────────────┼──────────────────────────┼─────────────────┘
+              │ MongoDB Driver           │ WebSocket/CLI
+┌─────────────┼──────────────────────────┼─────────────────┐
+│             ▼                          ▼                  │
+│  ┌──────────────────┐  ┌──────────────────────────────┐ │
+│  │  MongoDB 7       │  │  C++ ML Engine                │ │
+│  │  (Users, Exps,   │  │  • Matrix Ops  • Neural Nets  │ │
+│  │   Training Logs)  │  │  • Optimizers  • WS Server    │ │
+│  └──────────────────┘  └──────────────┬───────────────┘ │
+│                                       │                   │
+│                          ┌────────────┴───────────────┐  │
+│                          │  Python ML Modules          │  │
+│                          │  • Linear Regression  • ... │  │
+│                          └────────────────────────────┘  │
+│                             DATA / ML LAYER              │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Project Structure
+
 ```
 CyberHex/
+├── backend/                          # Express.js API server
+│   ├── controllers/                  # Route handlers (auth, users, experiments)
+│   ├── middleware/                    # Auth, error handling, rate limiting, validation
+│   ├── models/                       # Mongoose schemas (User, Experiment, Model, TrainingLog)
+│   ├── routes/                       # API route definitions
+│   ├── tests/                        # Jest test suites
+│   ├── utils/                        # Logger, DB init, env config, validators
+│   ├── Dockerfile
+│   └── app.js / index.js             # Express app bootstrap & server entry
 │
-├── include/                          # Core interfaces & headers
-│   ├── matrix.h                      # Custom Matrix (double**)
-│   ├── layer.h                       # Base Layer (virtual forward/backward)
-│   ├── dense.h                       # Dense (fully connected) layer
-│   ├── activations.h                 # ReLU, Sigmoid, Softmax (partial)
-│   └── model.h                       # Model (layer container + training loop)
+├── client/                           # React dashboard (Vite + TypeScript)
+│   ├── src/
+│   │   ├── assets/                   # Images, fonts, videos
+│   │   ├── components/               # UI components (ui/, dashboard/, signup/, navbar/, etc.)
+│   │   ├── contexts/                 # Auth context provider
+│   │   ├── hooks/                    # Custom hooks (useWebSocket)
+│   │   ├── lib/                      # API client, design tokens, utilities
+│   │   ├── pages/                    # Landing, Dashboard, CyberGames, Models, Settings, 404
+│   │   ├── stores/                   # Zustand state stores
+│   │   └── tests/                    # Vitest unit & E2E tests
+│   ├── Dockerfile
+│   ├── nginx.conf                    # Production nginx configuration
+│   └── vite.config.ts
 │
-├── src/                              # Implementations
-│   ├── matrix.cpp                    # Memory management + ops (dot, transpose, apply)
-│   ├── dense.cpp                     # Forward pass + backpropagation (weights, bias)
-│   ├── activations.cpp               # Activation forward/backward
-│   └── model.cpp                     # Training loop + loss + model saving
+├── ML/
+│   ├── models/
+│   │   ├── cpp-modules/              # C++ ML engine
+│   │   │   ├── include/              # Headers (matrix, layer, dense, activations, model, etc.)
+│   │   │   ├── src/                  # Implementations
+│   │   │   ├── models/best_model/    # Saved weights, biases, and loss history
+│   │   │   └── CMakeLists.txt
+│   │   └── python-modules/           # Python ML algorithms
+│   │       ├── main.py
+│   │       ├── linear-regression.py
+│   │       └── commons/              # Shared statistical utilities
+│   ├── ui/visualizations/            # Standalone ML visualization dashboard
+│   │   └── src/                      # React components for training viz
+│   └── scripts/                      # Benchmarking and analysis scripts
 │
-├── core_math/                        # Supporting math utilities
-│   ├── basic_maths.cpp
-│   ├── higher_maths.cpp
-│   ├── stat.cpp
-│   └── machine_learning_algorithms.cpp
-│
-├── data_structures/                  # Custom data structures
-│   └── data_structures.cpp
-│
-├── main.cpp                          # Entry point (training experiments)
-│
-├── server.cpp                        # C++ WebSocket server (real-time streaming, optional)
-│
-├── models/
-│   └── best_model/                   # Saved weights, biases, and loss history
-│       ├── layer_0_weights.txt
-│       ├── layer_0_bias.txt
-│       ├── ...
-│       └── epoch_losses.csv
-│
-└── frontend/                         # React dashboard
-    ├── components/
-    │   └── LineChart.tsx             # Loss visualization component
-    ├── App.tsx                       # Loads CSV / WebSocket data
-    └── types/                        # TypeScript type definitions
+├── scripts/                          # Build and utility scripts
+├── logs/                             # Application logs
+├── docker-compose.yml                # Multi-service orchestration
+├── openapi.yaml                      # API specification (OpenAPI 3.0)
+├── .env.example                      # Environment variable template
+├── package.json                      # Root workspace scripts
+├── LICENSE
+└── NOTICE
 ```
+
+---
+
+## Screenshots
+
+### Landing Page
+<p align="center">
+  <img src="doc/images/landing-page.png" alt="Landing Page" width="800" />
+</p>
+
+### Dashboard & Experiment Builder
+<p align="center">
+  <img src="doc/images/dashboard.png" alt="Dashboard" width="800" />
+</p>
+<p align="center">
+  <img src="doc/images/experiment-builder.png" alt="Experiment Builder" width="800" />
+</p>
+
+### Model Training & Visualization
+<p align="center">
+  <img src="doc/images/model-training.png" alt="Model Training Visualization" width="800" />
+</p>
+<p align="center">
+  <img src="doc/images/model-visualization-ui.png" alt="ML Visualization UI" width="800" />
+</p>
+
+### Authentication
+<p align="center">
+  <img src="doc/images/signup-flow.png" alt="Sign Up Flow" width="400" />
+  <img src="doc/images/signin-page.png" alt="Sign In Page" width="400" />
+</p>
+
+### CyberGames
+<p align="center">
+  <img src="doc/images/cyber-games.png" alt="CyberGames" width="800" />
+</p>
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- **Docker** & **Docker Compose** (recommended)
+- **Node.js 18+** & **npm** or **yarn** (for local dev)
+- **MongoDB 7** (if running locally without Docker)
+- **CMake 3.14+** and a C++17 compiler (for the C++ ML engine)
+- **Python 3.8+** (for Python ML modules)
+
+### Docker Setup (Recommended)
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/DulshanSiriwardhana/CyberHex.git
+   cd CyberHex
+   ```
+
+2. **Configure environment variables**
+
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration (or use defaults for development)
+   ```
+
+3. **Build and start all services**
+
+   ```bash
+   docker compose up --build -d
+   ```
+
+4. **Access the application**
+
+   | Service    | URL                     |
+   | ---------- | ----------------------- |
+   | Frontend   | http://localhost:80     |
+   | Backend    | http://localhost:5000   |
+   | MongoDB    | localhost:27017         |
+
+5. **Stop services**
+
+   ```bash
+   docker compose down
+   ```
+
+### Local Development Setup
+
+<details>
+<summary>Click to expand local development instructions</summary>
+
+#### 1. Install root dependencies and sub-project dependencies
+
+```bash
+npm run setup
+```
+
+#### 2. Start MongoDB (local or Docker)
+
+```bash
+docker run -d -p 27017:27017 --name cyberhex-mongo mongo:7-alpine
+```
+
+#### 3. Configure backend environment
+
+```bash
+cp .env.example backend/.env
+```
+
+#### 4. Start the backend (development mode)
+
+```bash
+npm run dev:backend
+```
+
+The backend runs at `http://localhost:5000`.
+
+#### 5. Start the frontend (development mode)
+
+```bash
+npm run dev:frontend
+```
+
+The frontend runs at `http://localhost:5173`.
+
+#### 6. Build the C++ ML engine
+
+```bash
+cd ML/models/cpp-modules
+mkdir build && cd build
+cmake ..
+make -j$(nproc)
+```
+
+#### 7. Run Python ML modules
+
+```bash
+cd ML/models/python-modules
+python main.py
+```
+
+</details>
+
+---
+
+## API Documentation
+
+The full API specification is available in [openapi.yaml](./openapi.yaml) (OpenAPI 3.0 format).
+
+### Quick Reference
+
+| Method   | Endpoint                  | Description              | Auth |
+| -------- | ------------------------- | ------------------------ | ---- |
+| `POST`   | `/api/v1/auth/register`   | Register a new user      | No   |
+| `POST`   | `/api/v1/auth/login`      | Login user               | No   |
+| `POST`   | `/api/v1/auth/refresh`    | Refresh access token     | No   |
+| `POST`   | `/api/v1/auth/logout`     | Logout user              | Yes  |
+| `GET`    | `/api/v1/users/me`        | Get current user profile | Yes  |
+| `PUT`    | `/api/v1/users/me`        | Update profile           | Yes  |
+| `GET`    | `/api/v1/experiments`     | List experiments         | Yes  |
+| `POST`   | `/api/v1/experiments`     | Create experiment        | Yes  |
+| `GET`    | `/api/v1/experiments/:id` | Get experiment by ID     | Yes  |
+| `DELETE` | `/api/v1/experiments/:id` | Delete experiment        | Yes  |
+| `GET`    | `/api/v1/health`          | Health check             | No   |
+| `WS`     | `/api/v1/ws`              | WebSocket training feed  | Yes  |
+
+---
+
+## ML Engine
+
+### C++ Modules
+
+The core ML engine is a custom C++17 framework built from scratch:
+
+| Component          | Description                                                      |
+| ------------------ | ---------------------------------------------------------------- |
+| `Matrix`           | Generic 2D matrix with vectorized operations and OpenMP support  |
+| `Layer` (base)     | Abstract base class for all neural network layers                |
+| `Dense`            | Fully connected layer with configurable input/output dimensions  |
+| `Activations`      | ReLU, Sigmoid, and Softmax with full forward/backward passes     |
+| `Model`            | Layer container with training loop, loss tracking, and saving    |
+| `Optimizers`       | SGD, Momentum, RMSProp, ADAM implementations                     |
+| `Loss`             | Mean Squared Error (MSE) loss function                           |
+| `Metrics`          | Accuracy, precision, and other evaluation metrics                |
+| `WS Server`        | Native WebSocket server for streaming training data in real-time |
+
+**Build & Run:**
+
+```bash
+cd ML/models/cpp-modules
+mkdir -p build && cd build
+cmake .. && make -j$(nproc)
+./cyberhex_ml
+```
+
+**Run Tests:**
+
+```bash
+cd ML/models/cpp-modules/build
+ctest --output-on-failure
+```
+
+### Python Modules
+
+Additional ML algorithms implemented in Python:
+
+- **Linear Regression** — gradient descent from scratch
+- **Commons** — shared statistical utilities (mean, variance, standard deviation)
+
+```bash
+cd ML/models/python-modules
+python main.py
+```
+
+### Visualization UI
+
+A standalone React dashboard for real-time ML training visualization, with WebSocket data streaming and interactive loss/accuracy charts.
+
+```bash
+cd ML/ui/visualizations
+yarn install
+yarn dev
+```
+
+<p align="center">
+  <img src="doc/images/model-visualization-ui.png" alt="ML Visualization UI" width="800" />
+</p>
+
+---
+
+## Testing
+
+| Layer       | Framework | Command                          |
+| ----------- | --------- | -------------------------------- |
+| Backend     | Jest      | `npm test` (in `backend/`)       |
+| Frontend    | Vitest    | `npm test` (in `client/`)        |
+| C++ Engine  | Catch2    | `ctest` (in `ML/.../build/`)     |
 
 ---
 
@@ -117,12 +435,11 @@ This project is fully designed, developed, and maintained by:
 - LinkedIn: [linkedin.com/in/dulshansiriwardhana](https://www.linkedin.com/in/dulshansiriwardhana)
 
 > I am the sole owner and author of CyberHex. All core systems — including the matrix engine,
-> neural network architecture, training pipeline, and real-time visualization — are built
-> entirely from scratch as part of this project.
+> neural network architecture, training pipeline, backend services, frontend dashboard,
+> and real-time visualization — are built entirely from scratch as part of this project.
 
 ---
 
 ## License
 
-This project is licensed under the **Apache License 2.0**.
-See the [LICENSE](./LICENSE) file for details.
+This project is licensed under the **Apache License 2.0**. See the [LICENSE](./LICENSE) file for details.
