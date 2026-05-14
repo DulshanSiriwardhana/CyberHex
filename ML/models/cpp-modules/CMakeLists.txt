@@ -5,8 +5,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Build flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unused-parameter -O3 -march=native -ffast-math")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -DDEBUG")
+# Base flags for all build types (warnings only; optimizations per-config)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wshadow -Wno-unused-parameter")
+
+# Release flags: aggressive optimization, keep denormals-flush for performance
+# Note: -ffast-math disables NaN checking — only enable if you don't need IEEE compliance
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native -ffast-math -DNDEBUG")
+
+# Debug flags: no optimization, frame pointers for profiling, debug symbols
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g3 -fno-omit-frame-pointer -DDEBUG -DCYBERHEX_DEBUG")
+# RelWithDebInfo: optimized but with debug symbols for profiling
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O2 -march=native -g -DNDEBUG")
 
 # Boost (optional - only for WebSocket server)
 # Comment out if Boost not available, WebSocket will be disabled

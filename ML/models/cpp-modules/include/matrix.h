@@ -287,7 +287,7 @@ Matrix<T> Matrix<T>::dot(const Matrix<T>& other) const {
     const size_t BLOCK_N = 64;
     const size_t BLOCK_K = 256;
 
-    #pragma omp parallel for collapse(2) if(M * N * K > 100000)
+    #pragma omp parallel for collapse(2) schedule(guided) if(M * N * K > 100000)
     for (size_t i0 = 0; i0 < M; i0 += BLOCK_M) {
         for (size_t j0 = 0; j0 < N; j0 += BLOCK_N) {
             size_t imax = std::min(i0 + BLOCK_M, M);
