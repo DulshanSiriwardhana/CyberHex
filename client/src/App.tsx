@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 const LandingPage = lazy(() => import("@/pages/LandingPage"))
 const SignUpPage = lazy(() => import("@/pages/SignUpPage"))
 const AboutPage = lazy(() => import("@/pages/AboutPage"))
+const ContactPage = lazy(() => import("@/pages/ContactPage"))
 const CyberGames = lazy(() => import("@/pages/CyberGames"))
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"))
 const ExperimentBuilderPage = lazy(() => import("@/pages/ExperimentBuilderPage"))
@@ -43,8 +44,7 @@ function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route path="/about" element={<AboutPage />} />
-                <Route path="/contact" element={<LandingPage />} />
-                <Route path="/machine-learning" element={<LandingPage />} />
+                <Route path="/contact" element={<ContactPage />} />
 
                 {/* Protected routes */}
                 <Route path="/cyber-games" element={<ProtectedRoute><CyberGames /></ProtectedRoute>} />

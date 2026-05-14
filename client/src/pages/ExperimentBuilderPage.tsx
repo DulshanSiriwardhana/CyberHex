@@ -1,267 +1,282 @@
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { motion } from "framer-motion"
-import { ArrowLeft, Plus, Trash2, FlaskConical, Play, Layers } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { useExperimentsStore } from "@/stores/experiments"
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useExperimentsStore } from '../stores/experiments';
+import type { ExperimentConfig } from '../lib/api';
 
-interface LayerConfig {
-  units: number
-  activation: string
-}
+const defaultConfig: ExperimentConfig = {
+  task: 'regression',
+  modelType: 'neural_network',
+  layers: [64, 32, 1],
+  activations: ['relu', 'relu', 'linear'],
+  loss: 'mse',
+  batchSize: 32,
+  epochs: 100,
+  learningRate: 0.001,
+  optimizer: 'adam',
+  validationSplit: 0.2,
+  earlyStopping: true,
+  patience: 10,
+  dataPath: null,
+  seed: 42,
+};
 
-const ACTIVATIONS = ["ReLU", "Sigmoid", "Softmax", "Tanh"]
+export default function ExperimentBuilderPage() {
+  const navigate = useNavigate();
+  const { createExperiment, loading, error, clearError } = useExperimentsStore();
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [config, setConfig] = useState<ExperimentConfig>({ ...defaultConfig });
+  const [localError, setLocalError] = useState<string | null>(null);
 
-const ExperimentBuilderPage = () => {
-  const navigate = useNavigate()
-  const { create } = useExperimentsStore()
-  const [name, setName] = useState("")
-  const [layers, setLayers] = useState<LayerConfig[]>([
-    { units: 64, activation: "ReLU" },
-    { units: 32, activation: "ReLU" },
-  ])
-  const [batchSize, setBatchSize] = useState(32)
-  const [epochs, setEpochs] = useState(50)
-  const [learningRate, setLearningRate] = useState(0.001)
-  const [optimizer, setOptimizer] = useState("adam")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState("")
+  const updateConfig = (key: keyof ExperimentConfig, value: unknown) => {
+    setConfig((prev) => ({ ...prev, [key]: value }));
+  };
 
-  const addLayer = () => {
-    setLayers([...layers, { units: 32, activation: "ReLU" }])
-  }
-
-  const removeLayer = (index: number) => {
-    if (layers.length <= 1) return
-    setLayers(layers.filter((_, i) => i !== index))
-  }
-
-  const updateLayer = (index: number, field: keyof LayerConfig, value: string | number) => {
-    const next = [...layers]
-    next[index] = { ...next[index], [field]: field === "units" ? Number(value) : value }
-    setLayers(next)
-  }
+  const handleLayersChange = (value: string) => {
+    const layers = value
+      .split(',')
+      .map((v) => parseInt(v.trim()))
+      .filter((v) => !isNaN(v) && v > 0);
+    updateConfig('layers', layers.length > 0 ? layers : [1]);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setLocalError(null);
 
     if (!name.trim()) {
-      setError("Experiment name is required")
-      return
+      setLocalError('Experiment name is required');
+      return;
     }
 
-    setIsSubmitting(true)
     try {
-      create({
+      const experiment = await createExperiment({
         name: name.trim(),
-        config: {
-          layers: layers.map((l) => ({ units: l.units, activation: l.activation })),
-          batchSize,
-          epochs,
-          learningRate,
-          optimizer,
-        },
-      })
-      navigate("/experiments")
-    } catch {
-      setError("Failed to create experiment. Please try again.")
-    } finally {
-      setIsSubmitting(false)
+        description: description.trim(),
+        config,
+      });
+      navigate(`/experiments/${experiment._id}`);
+    } catch (err: any) {
+      setLocalError(err.message || 'Failed to create experiment');
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-[#0c0c0c] p-8">
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-          <Link
-            to="/experiments"
-            className="inline-flex items-center gap-2 text-neutral-400 hover:text-white transition-colors mb-6 text-sm"
+    <div className="min-h-screen bg-gray-950 text-gray-100">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="flex items-center gap-4 mb-8">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="text-gray-400 hover:text-white transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to experiments
-          </Link>
+            ← Back
+          </button>
+          <h1 className="text-3xl font-bold text-white">New Experiment</h1>
+        </div>
 
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-red-600/10 flex items-center justify-center">
-              <FlaskConical className="w-5 h-5 text-red-500" />
-            </div>
-            <div>
-              <h1 className="font-spectral text-3xl font-extrabold text-white">New Experiment</h1>
-              <p className="text-neutral-400 text-sm">Configure your neural network and start training</p>
-            </div>
+        {(error || localError) && (
+          <div className="bg-red-900/50 border border-red-700 rounded-lg p-4 mb-6 flex justify-between items-center">
+            <span className="text-red-200">{error || localError}</span>
+            <button
+              onClick={() => {
+                clearError();
+                setLocalError(null);
+              }}
+              className="text-red-300 hover:text-red-100 text-sm"
+            >
+              Dismiss
+            </button>
           </div>
-        </motion.div>
+        )}
 
-        <motion.form
-          onSubmit={handleSubmit}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className="space-y-6"
-        >
-          {/* Name */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-white text-lg">Experiment Name</CardTitle>
-              <CardDescription>Give your experiment a descriptive name</CardDescription>
-            </CardHeader>
-            <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-5 space-y-4">
+            <h2 className="text-lg font-semibold text-white">Basic Info</h2>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Name *</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., MNIST Classifier v2"
-                className="w-full px-4 py-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white text-sm placeholder-neutral-600 focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-all"
+                placeholder="My Experiment"
+                maxLength={100}
+                className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500"
               />
-            </CardContent>
-          </Card>
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Description</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Optional description..."
+                maxLength={500}
+                rows={2}
+                className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 resize-none"
+              />
+            </div>
+          </div>
 
-          {/* Layers */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-white text-lg flex items-center gap-2">
-                    <Layers className="w-5 h-5 text-neutral-400" />
-                    Network Layers
-                  </CardTitle>
-                  <CardDescription>Add dense layers to your neural network</CardDescription>
-                </div>
-                <Badge variant="neutral">{layers.length} layers</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {layers.map((layer, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-neutral-900 border border-neutral-800">
-                    <span className="text-neutral-500 text-xs font-mono w-6">{i + 1}</span>
-                    <div className="flex-1 flex items-center gap-3">
-                      <div className="flex-1">
-                        <label className="text-xs text-neutral-500 mb-1 block">Units</label>
-                        <input
-                          type="number"
-                          min={1}
-                          max={2048}
-                          value={layer.units}
-                          onChange={(e) => updateLayer(i, "units", e.target.value)}
-                          className="w-full px-3 py-1.5 rounded-md border border-neutral-700 bg-neutral-800 text-white text-sm focus:border-red-600 outline-none transition-all"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <label className="text-xs text-neutral-500 mb-1 block">Activation</label>
-                        <select
-                          value={layer.activation}
-                          onChange={(e) => updateLayer(i, "activation", e.target.value)}
-                          className="w-full px-3 py-1.5 rounded-md border border-neutral-700 bg-neutral-800 text-white text-sm focus:border-red-600 outline-none transition-all"
-                        >
-                          {ACTIVATIONS.map((act) => (
-                            <option key={act} value={act}>{act}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeLayer(i)}
-                      disabled={layers.length <= 1}
-                      className="p-2 text-neutral-500 hover:text-red-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                      aria-label="Remove layer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <Button type="button" variant="outline" onClick={addLayer} className="mt-4 w-full">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Layer
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-5 space-y-4">
+            <h2 className="text-lg font-semibold text-white">Model Configuration</h2>
 
-          {/* Training Config */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-white text-lg">Training Configuration</CardTitle>
-              <CardDescription>Set hyperparameters for training</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Model Type</label>
+                <select
+                  value={config.modelType}
+                  onChange={(e) => updateConfig('modelType', e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="neural_network">Neural Network</option>
+                  <option value="linear_regression">Linear Regression</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Task</label>
+                <select
+                  value={config.task}
+                  onChange={(e) => updateConfig('task', e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="regression">Regression</option>
+                  <option value="classification">Classification</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">
+                Layers (comma-separated, e.g. 64,32,1)
+              </label>
+              <input
+                type="text"
+                value={config.layers.join(',')}
+                onChange={(e) => handleLayersChange(e.target.value)}
+                className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Epochs</label>
+                <input
+                  type="number"
+                  value={config.epochs}
+                  onChange={(e) => updateConfig('epochs', parseInt(e.target.value) || 1)}
+                  min={1}
+                  max={10000}
+                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Batch Size</label>
+                <input
+                  type="number"
+                  value={config.batchSize}
+                  onChange={(e) => updateConfig('batchSize', parseInt(e.target.value) || 1)}
+                  min={1}
+                  max={1024}
+                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Learning Rate</label>
+                <input
+                  type="number"
+                  value={config.learningRate}
+                  onChange={(e) => updateConfig('learningRate', parseFloat(e.target.value) || 0)}
+                  step={0.0001}
+                  min={0.00001}
+                  max={1}
+                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Optimizer</label>
+                <select
+                  value={config.optimizer}
+                  onChange={(e) => updateConfig('optimizer', e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="adam">Adam</option>
+                  <option value="sgd">SGD</option>
+                  <option value="rmsprop">RMSprop</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Loss</label>
+                <select
+                  value={config.loss}
+                  onChange={(e) => updateConfig('loss', e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="mse">MSE</option>
+                  <option value="mae">MAE</option>
+                  <option value="binary_crossentropy">Binary Crossentropy</option>
+                  <option value="categorical_crossentropy">Categorical Crossentropy</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Validation Split</label>
+                <input
+                  type="number"
+                  value={config.validationSplit}
+                  onChange={(e) => updateConfig('validationSplit', parseFloat(e.target.value) || 0)}
+                  step={0.05}
+                  min={0}
+                  max={0.5}
+                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={config.earlyStopping}
+                  onChange={(e) => updateConfig('earlyStopping', e.target.checked)}
+                  className="w-4 h-4 bg-gray-800 border-gray-700 rounded"
+                />
+                <label className="text-sm text-gray-400">Early Stopping</label>
+              </div>
+              {config.earlyStopping && (
                 <div>
-                  <label className="text-sm text-neutral-400 mb-1.5 block">Batch Size</label>
+                  <label className="block text-sm text-gray-400 mb-1">Patience</label>
                   <input
                     type="number"
+                    value={config.patience}
+                    onChange={(e) => updateConfig('patience', parseInt(e.target.value) || 1)}
                     min={1}
-                    max={1024}
-                    value={batchSize}
-                    onChange={(e) => setBatchSize(Number(e.target.value))}
-                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white text-sm focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-all"
+                    max={100}
+                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
-                <div>
-                  <label className="text-sm text-neutral-400 mb-1.5 block">Epochs</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={10000}
-                    value={epochs}
-                    onChange={(e) => setEpochs(Number(e.target.value))}
-                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white text-sm focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm text-neutral-400 mb-1.5 block">Learning Rate</label>
-                  <input
-                    type="number"
-                    min={0.00001}
-                    max={1}
-                    step={0.0001}
-                    value={learningRate}
-                    onChange={(e) => setLearningRate(Number(e.target.value))}
-                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white text-sm focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm text-neutral-400 mb-1.5 block">Optimizer</label>
-                  <select
-                    value={optimizer}
-                    onChange={(e) => setOptimizer(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white text-sm focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-all"
-                  >
-                    <option value="adam">ADAM</option>
-                    <option value="sgd">SGD</option>
-                    <option value="momentum">Momentum</option>
-                    <option value="rmsprop">RMSProp</option>
-                  </select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {error && (
-            <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-sm text-red-400 text-center">
-              {error}
-            </motion.p>
-          )}
+              )}
+            </div>
+          </div>
 
           <div className="flex gap-3">
-            <Button type="button" variant="outline" onClick={() => navigate("/experiments")} className="flex-1">
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
+            >
+              {loading ? 'Creating...' : 'Create Experiment'}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/dashboard')}
+              className="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg font-medium transition-colors"
+            >
               Cancel
-            </Button>
-            <Button type="submit" variant="cyber" size="lg" className="flex-1" isLoading={isSubmitting}>
-              <Play className="w-4 h-4 mr-2" />
-              Create Experiment
-            </Button>
+            </button>
           </div>
-        </motion.form>
+        </form>
       </div>
     </div>
-  )
+  );
 }
-
-export default ExperimentBuilderPage

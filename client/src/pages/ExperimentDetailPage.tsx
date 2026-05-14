@@ -1,257 +1,336 @@
-import { useEffect, useState } from "react"
-import { useParams, Link, useNavigate } from "react-router-dom"
-import { motion } from "framer-motion"
-import { ArrowLeft, Activity, TrendingDown, RefreshCw, Clock, Cpu, Trash2 } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { useExperimentsStore } from "@/stores/experiments"
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from "recharts"
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useExperimentsStore } from '../stores/experiments';
+import TrainingChart from '../components/TrainingChart';
+import type { Experiment } from '../lib/api';
 
-interface Experiment {
-  _id: string
-  name: string
-  status: string
-  createdAt: string
-  config?: {
-    modelType?: string
-    layers?: Array<{ units: number; activation: string }>
-    batchSize?: number
-    epochs?: number
-    learningRate?: number
-    optimizer?: string
-  }
-  metrics?: {
-    loss?: number[]
-    accuracy?: number[]
-    epochs?: number[]
-  }
-}
+export default function ExperimentDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const {
+    currentExperiment,
+    trainingStatus,
+    loading,
+    error,
+    fetchExperiment,
+    fetchTrainingStatus,
+    startTraining,
+    stopTraining,
+    clearError,
+  } = useExperimentsStore();
 
-const statusVariant = (status: string): "default" | "success" | "warning" | "danger" | "neutral" => {
-  switch (status) {
-    case "running": return "success"
-    case "completed": return "neutral"
-    case "failed": return "danger"
-    case "queued": return "warning"
-    default: return "default"
-  }
-}
-
-const ExperimentDetailPage = () => {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const { experiments, fetch, remove, loading, error } = useExperimentsStore()
-  const [experiment, setExperiment] = useState<Experiment | null>(null)
+  const [wsConnected, setWsConnected] = useState(false);
+  const [liveMetrics, setLiveMetrics] = useState<{
+    epochs: number[];
+    trainLoss: number[];
+    valLoss: number[];
+  }>({ epochs: [], trainLoss: [], valLoss: [] });
 
   useEffect(() => {
-    fetch()
-  }, [fetch])
-
-  useEffect(() => {
-    const found = experiments.find((e) => e._id === id)
-    setExperiment(found || null)
-  }, [experiments, id])
-
-  const handleDelete = async () => {
-    if (!id || !confirm("Are you sure you want to delete this experiment?")) return
-    try {
-      await remove(id)
-      navigate("/experiments")
-    } catch {
-      // error handled by store
+    if (id) {
+      fetchExperiment(id);
+      fetchTrainingStatus(id);
     }
+  }, [id, fetchExperiment, fetchTrainingStatus]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const host = window.location.hostname;
+    const ws = new WebSocket(`${protocol}://${host}:5000?experimentId=${id}`);
+
+    ws.onopen = () => setWsConnected(true);
+    ws.onclose = () => setWsConnected(false);
+    ws.onerror = () => setWsConnected(false);
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'training_metric' && data.experimentId === id) {
+          setLiveMetrics((prev) => ({
+            epochs: [...prev.epochs, data.epoch],
+            trainLoss: [...prev.trainLoss, data.train_loss],
+            valLoss: data.val_loss
+              ? [...prev.valLoss, data.val_loss]
+              : prev.valLoss,
+          }));
+        }
+        if (data.type === 'training_complete' && data.experimentId === id) {
+          fetchExperiment(id);
+          fetchTrainingStatus(id);
+          setLiveMetrics({ epochs: [], trainLoss: [], valLoss: [] });
+        }
+      } catch {}
+    };
+
+    return () => ws.close();
+  }, [id, fetchExperiment, fetchTrainingStatus]);
+
+  useEffect(() => {
+    if (!id) return;
+    const poll = setInterval(() => fetchTrainingStatus(id), 3000);
+    return () => clearInterval(poll);
+  }, [id, fetchTrainingStatus]);
+
+  const handleStartTraining = useCallback(async () => {
+    if (!id) return;
+    try {
+      await startTraining(id);
+      fetchTrainingStatus(id);
+    } catch (err: any) {
+      alert(err.message);
+    }
+  }, [id, startTraining, fetchTrainingStatus]);
+
+  const handleStopTraining = useCallback(async () => {
+    if (!id) return;
+    await stopTraining(id);
+    fetchTrainingStatus(id);
+    fetchExperiment(id);
+    setLiveMetrics({ epochs: [], trainLoss: [], valLoss: [] });
+  }, [id, stopTraining, fetchTrainingStatus, fetchExperiment]);
+
+  const exp = currentExperiment as Experiment | null;
+
+  if (loading && !exp) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <p className="text-gray-400">Loading experiment...</p>
+      </div>
+    );
   }
 
-  const lossData = experiment?.metrics?.epochs?.map((epoch, i) => ({
-    epoch,
-    loss: experiment.metrics?.loss?.[i] ?? 0,
-  })) || []
-
-  if (loading && !experiment) {
+  if (!exp) {
     return (
-      <div className="min-h-screen bg-[#0c0c0c] flex items-center justify-center">
-        <div className="text-neutral-400 flex items-center gap-2">
-          <RefreshCw className="w-4 h-4 animate-spin" />
-          Loading experiment...
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-400 text-lg mb-4">Experiment not found</p>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg"
+          >
+            Back to Dashboard
+          </button>
         </div>
       </div>
-    )
+    );
   }
 
-  if (!experiment && !loading) {
-    return (
-      <div className="min-h-screen bg-[#0c0c0c] flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-[rgba(220,38,38,0.1)] border border-[rgba(220,38,38,0.2)] flex items-center justify-center">
-            <Activity className="w-8 h-8 text-red-500" />
-          </div>
-          <h1 className="font-spectral font-extrabold text-2xl text-white mb-3">Experiment Not Found</h1>
-          <p className="text-neutral-400 text-sm mb-6">The experiment you're looking for doesn't exist or has been deleted.</p>
-          <Link to="/experiments" className="px-6 py-2.5 rounded-lg bg-red-600 text-white font-medium hover:bg-red-500 transition-colors">
-            Back to experiments
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  const isRunning =
+    trainingStatus?.status === 'running' || exp.status === 'training';
+  const hasResults =
+    exp.results?.trainLoss?.length || liveMetrics.trainLoss.length > 0;
+
+  const displayMetrics =
+    liveMetrics.epochs.length > 0
+      ? liveMetrics
+      : {
+          epochs: exp.results?.epochs || [],
+          trainLoss: exp.results?.trainLoss || [],
+          valLoss: exp.results?.valLoss || [],
+        };
 
   return (
-    <div className="min-h-screen bg-[#0c0c0c] p-8">
-      <div className="max-w-5xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-          <Link
-            to="/experiments"
-            className="inline-flex items-center gap-2 text-neutral-400 hover:text-white transition-colors mb-6 text-sm"
+    <div className="min-h-screen bg-gray-950 text-gray-100">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex items-center gap-4 mb-8">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="text-gray-400 hover:text-white transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to experiments
-          </Link>
+            ← Back
+          </button>
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold text-white">{exp.name}</h1>
+            <p className="text-gray-400 mt-1">
+              {exp.description || 'No description'}
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span
+              className={`inline-block w-2 h-2 rounded-full ${
+                wsConnected && isRunning
+                  ? 'bg-green-400 animate-pulse'
+                  : 'bg-gray-600'
+              }`}
+            />
+            <span className="text-xs text-gray-500">
+              {wsConnected && isRunning ? 'Live' : 'Disconnected'}
+            </span>
+          </div>
+        </div>
 
-          <div className="flex items-start justify-between mb-8 flex-wrap gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-red-600/10 flex items-center justify-center">
-                <Cpu className="w-5 h-5 text-red-500" />
-              </div>
-              <div>
-                <h1 className="font-spectral text-3xl font-extrabold text-white">{experiment!.name}</h1>
-                <p className="text-neutral-400 text-sm mt-1">
-                  <Clock className="w-3.5 h-3.5 inline mr-1" />
-                  Created {new Date(experiment!.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric", month: "long", day: "numeric",
-                  })}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Badge variant={statusVariant(experiment!.status)} className="text-sm px-3 py-1">
-                {experiment!.status}
-              </Badge>
-              <Button variant="outline" size="sm" onClick={handleDelete} className="text-red-400 hover:text-red-300">
-                <Trash2 className="w-4 h-4" />
-              </Button>
+        {error && (
+          <div className="bg-red-900/50 border border-red-700 rounded-lg p-4 mb-6 flex justify-between items-center">
+            <span className="text-red-200">{error}</span>
+            <button
+              onClick={clearError}
+              className="text-red-300 hover:text-red-100 text-sm"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-5">
+            <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">
+              Status
+            </h3>
+            <span
+              className={`px-3 py-1 rounded text-sm font-medium ${
+                isRunning
+                  ? 'bg-blue-700 text-blue-200 animate-pulse'
+                  : exp.status === 'completed'
+                    ? 'bg-green-700 text-green-200'
+                    : exp.status === 'failed'
+                      ? 'bg-red-700 text-red-200'
+                      : exp.status === 'stopped'
+                        ? 'bg-yellow-700 text-yellow-200'
+                        : 'bg-gray-700 text-gray-300'
+              }`}
+            >
+              {isRunning ? 'Training' : exp.status}
+            </span>
+
+            <div className="mt-6 space-y-2">
+              {isRunning ? (
+                <button
+                  onClick={handleStopTraining}
+                  className="w-full py-2 bg-red-600 hover:bg-red-500 text-white rounded font-medium transition-colors"
+                >
+                  Stop Training
+                </button>
+              ) : (
+                <button
+                  onClick={handleStartTraining}
+                  disabled={loading}
+                  className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded font-medium transition-colors"
+                >
+                  {loading ? 'Starting...' : 'Start Training'}
+                </button>
+              )}
+              <button
+                onClick={() => navigate('/experiments/new')}
+                className="w-full py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded font-medium transition-colors"
+              >
+                Clone Config
+              </button>
             </div>
           </div>
-        </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Loss Chart */}
-          <motion.div
-            className="lg:col-span-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-white text-lg flex items-center gap-2">
-                  <TrendingDown className="w-5 h-5 text-neutral-400" />
-                  Training Loss
-                </CardTitle>
-                <CardDescription>Loss progression across epochs</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {lossData.length === 0 ? (
-                  <div className="h-[300px] flex items-center justify-center">
-                    <p className="text-neutral-500">No training data available yet</p>
-                  </div>
-                ) : (
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={lossData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#262626" />
-                        <XAxis dataKey="epoch" stroke="#525252" tick={{ fill: "#a3a3a3", fontSize: 12 }} />
-                        <YAxis stroke="#525252" tick={{ fill: "#a3a3a3", fontSize: 12 }} />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: "#171717",
-                            border: "1px solid #262626",
-                            borderRadius: "8px",
-                            color: "#fafafa",
-                          }}
-                        />
-                        <Line type="monotone" dataKey="loss" stroke="#dc2626" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: "#dc2626" }} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-5">
+            <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">
+              Configuration
+            </h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Model Type</span>
+                <span className="text-gray-200">{exp.config?.modelType}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Task</span>
+                <span className="text-gray-200">{exp.config?.task}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Layers</span>
+                <span className="text-gray-200">
+                  [{exp.config?.layers?.join(', ')}]
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Epochs</span>
+                <span className="text-gray-200">{exp.config?.epochs}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Batch Size</span>
+                <span className="text-gray-200">{exp.config?.batchSize}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Learning Rate</span>
+                <span className="text-gray-200">
+                  {exp.config?.learningRate}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Optimizer</span>
+                <span className="text-gray-200">{exp.config?.optimizer}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Loss</span>
+                <span className="text-gray-200">{exp.config?.loss}</span>
+              </div>
+            </div>
+          </div>
 
-          {/* Config Summary */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="space-y-6"
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-white text-lg">Architecture</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {experiment!.config?.layers ? (
-                  <div className="space-y-2">
-                    {experiment!.config.layers.map((layer, i) => (
-                      <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg bg-neutral-900">
-                        <span className="text-sm text-neutral-300">
-                          Layer {i + 1}
-                          {i === 0 ? " (Input)" : i === experiment!.config!.layers!.length - 1 ? " (Output)" : ""}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-neutral-500">{layer.units} units</span>
-                          <Badge variant="default">{layer.activation}</Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-neutral-500 text-sm">No architecture config</p>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-white text-lg">Hyperparameters</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {experiment!.config?.batchSize && (
-                    <div className="flex justify-between py-2">
-                      <span className="text-neutral-400 text-sm">Batch Size</span>
-                      <span className="text-white text-sm font-medium">{experiment!.config.batchSize}</span>
-                    </div>
-                  )}
-                  {experiment!.config?.epochs && (
-                    <div className="flex justify-between py-2">
-                      <span className="text-neutral-400 text-sm">Epochs</span>
-                      <span className="text-white text-sm font-medium">{experiment!.config.epochs}</span>
-                    </div>
-                  )}
-                  {experiment!.config?.learningRate && (
-                    <div className="flex justify-between py-2">
-                      <span className="text-neutral-400 text-sm">Learning Rate</span>
-                      <span className="text-white text-sm font-medium">{experiment!.config.learningRate}</span>
-                    </div>
-                  )}
-                  {experiment!.config?.optimizer && (
-                    <div className="flex justify-between py-2">
-                      <span className="text-neutral-400 text-sm">Optimizer</span>
-                      <Badge>{experiment!.config.optimizer.toUpperCase()}</Badge>
-                    </div>
-                  )}
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-5">
+            <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">
+              Results
+            </h3>
+            {exp.results?.finalTrainLoss !== undefined ? (
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Final Train Loss</span>
+                  <span className="text-green-300">
+                    {exp.results.finalTrainLoss.toFixed(4)}
+                  </span>
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+                {exp.results.finalValLoss !== undefined && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Final Val Loss</span>
+                    <span className="text-blue-300">
+                      {exp.results.finalValLoss.toFixed(4)}
+                    </span>
+                  </div>
+                )}
+                {exp.results.bestValLoss !== undefined && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Best Val Loss</span>
+                    <span className="text-yellow-300">
+                      {exp.results.bestValLoss.toFixed(4)}
+                    </span>
+                  </div>
+                )}
+                {exp.results.epochs && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Epochs Run</span>
+                    <span className="text-gray-200">
+                      {exp.results.epochs.length}
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-sm">No results yet</p>
+            )}
+          </div>
+        </div>
+
+        {hasResults && (
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-5">
+            <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">
+              Training Progress
+            </h3>
+            <TrainingChart
+              epochs={displayMetrics.epochs}
+              trainLoss={displayMetrics.trainLoss}
+              valLoss={
+                displayMetrics.valLoss.length > 0
+                  ? displayMetrics.valLoss
+                  : undefined
+              }
+              height={350}
+            />
+          </div>
+        )}
+
+        <div className="mt-8 text-xs text-gray-600 space-y-1">
+          <p>ID: {exp._id}</p>
+          <p>Created: {new Date(exp.createdAt).toLocaleString()}</p>
+          <p>Updated: {new Date(exp.updatedAt).toLocaleString()}</p>
         </div>
       </div>
     </div>
-  )
+  );
 }
-
-export default ExperimentDetailPage
