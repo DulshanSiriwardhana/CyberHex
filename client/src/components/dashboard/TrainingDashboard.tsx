@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Card } from '../ui/Card';
+import { Card } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip } from 'recharts';
 import { Activity, Zap } from 'lucide-react';
 import { useWebSocket } from '../../hooks/useWebSocket';

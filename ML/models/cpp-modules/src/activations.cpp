@@ -1,80 +1,91 @@
 #include "activations.h"
 #include <cmath>
-#include "higher_maths.h"
 
-double p = -0.5;
-double q = 1.11111111111111111111111111111111;
+namespace cyberhex {
 
-double relu(double x) { return x > 0 ? x : 0; }
-double relu_d(double x) { return x > 0 ? 1 : 0; }
+// ============================================================================
+// Numerical helpers
+// ============================================================================
+static inline double stable_sigmoid(double x) {
+    if (x >= 0) {
+        return 1.0 / (1.0 + std::exp(-x));
+    } else {
+        double e = std::exp(x);
+        return e / (1.0 + e);
+    }
+}
 
-double sigmoid(double x) { return 1.0 / (1.0 + exp(-x)); }
-double sigmoid_d(double x) { return x * (1 - x); }
+static inline double stable_sigmoid_deriv(double x) {
+    // x here is sigmoid output
+    return x * (1.0 - x);
+}
 
-double generalized_sigmoid(double x) { return 1.0 / (1.0 + exp(p-q * x));}
-double generalized_sigmoid_d(double x) { return q * x * (1-x);}
-
-ReLU::ReLU() {}
-Sigmoid::Sigmoid() {}
-Softmax::Softmax() {}
-Identity::Identity() {}
-Generalized_Sigmoid::Generalized_Sigmoid() {}
-
+// ============================================================================
+// ReLU
+// ============================================================================
 Matrix<double> ReLU::forward(const Matrix<double>& X) {
     input = X;
-    Matrix<double> out = X;
-    out.apply(relu);
+    Matrix<double> out(X.rows(), X.cols());
+    for (size_t i = 0; i < X.size(); i++) {
+        out.at(i) = X.at(i) > 0 ? X.at(i) : 0.0;
+    }
     return out;
 }
 
 Matrix<double> ReLU::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
-    Matrix<double> g = input;
-    g.apply(relu_d);
-
-    Matrix<double> res = grad;
-    for (size_t i = 0; i < grad.rows; i++)
-        for (size_t j = 0; j < grad.cols; j++)
-            res(i, j) *= g(i, j);
-
+    Matrix<double> res(grad.rows(), grad.cols());
+    for (size_t i = 0; i < grad.size(); i++) {
+        res.at(i) = input.at(i) > 0 ? grad.at(i) : 0.0;
+    }
     return res;
 }
 
+// ============================================================================
+// Sigmoid (numerically stable)
+// ============================================================================
 Matrix<double> Sigmoid::forward(const Matrix<double>& X) {
-    output = X;
-    output.apply(sigmoid);
+    output = Matrix<double>(X.rows(), X.cols());
+    for (size_t i = 0; i < X.size(); i++) {
+        output.at(i) = stable_sigmoid(X.at(i));
+    }
     return output;
 }
 
 Matrix<double> Sigmoid::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
-    Matrix<double> g = output;
-    g.apply(sigmoid_d);
-
-    Matrix<double> res = grad;
-    for (size_t i = 0; i < grad.rows; i++)
-        for (size_t j = 0; j < grad.cols; j++)
-            res(i, j) *= g(i, j);
-
+    Matrix<double> res(grad.rows(), grad.cols());
+    for (size_t i = 0; i < grad.size(); i++) {
+        double s = output.at(i);
+        res.at(i) = grad.at(i) * s * (1.0 - s);
+    }
     return res;
 }
 
+// ============================================================================
+// Softmax (numerically stable — subtracts max per row)
+// ============================================================================
 Matrix<double> Softmax::forward(const Matrix<double>& X) {
-    output = Matrix<double>(X.rows, X.cols);
+    output = Matrix<double>(X.rows(), X.cols());
 
-    for (size_t i = 0; i < X.rows; i++) {
+    #pragma omp parallel for if(X.rows() > 100)
+    for (size_t i = 0; i < X.rows(); i++) {
+        // Find max for numerical stability
         double maxVal = X(i, 0);
-        for (size_t j = 1; j < X.cols; j++)
-            if (X(i, j) > maxVal)
-                maxVal = X(i, j);
-
-        double sum = 0.0;
-
-        for (size_t j = 0; j < X.cols; j++) {
-            output(i, j) = exp(X(i, j) - maxVal);
-            sum += output(i, j);
+        for (size_t j = 1; j < X.cols(); j++) {
+            if (X(i, j) > maxVal) maxVal = X(i, j);
         }
 
-        for (size_t j = 0; j < X.cols; j++) {
-            output(i, j) /= sum;
+        // Compute exp(x - max) and sum
+        double sum = 0.0;
+        for (size_t j = 0; j < X.cols(); j++) {
+            double v = std::exp(X(i, j) - maxVal);
+            output(i, j) = v;
+            sum += v;
+        }
+
+        // Normalize
+        double inv_sum = 1.0 / sum;
+        for (size_t j = 0; j < X.cols(); j++) {
+            output(i, j) *= inv_sum;
         }
     }
 
@@ -82,191 +93,345 @@ Matrix<double> Softmax::forward(const Matrix<double>& X) {
 }
 
 Matrix<double> Softmax::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
-    Matrix<double> res(grad.rows, grad.cols, 0.0);
-    for (size_t i = 0; i < grad.rows; i++) {
-        for (size_t j = 0; j < grad.cols; j++) {
-            double sum = 0.0;
-            for (size_t k = 0; k < grad.cols; k++) {
-                double jacobian = (j == k) ? output(i, j) * (1.0 - output(i, j)) : -output(i, j) * output(i, k);
-                sum += grad(i, k) * jacobian;
-            }
-            res(i, j) = sum;
+    // Optimized O(n) per row: grad_input = s ⊙ (grad - (grad · s))
+    // instead of O(n²) Jacobian: J = diag(s) - s s^T
+    Matrix<double> res(grad.rows(), grad.cols(), 0.0);
+
+    #pragma omp parallel for if(grad.rows() > 100)
+    for (size_t i = 0; i < grad.rows(); i++) {
+        // Compute dot product: sum_k(grad(i,k) * softmax(i,k))
+        double dot = 0.0;
+        for (size_t k = 0; k < grad.cols(); k++) {
+            dot += grad(i, k) * output(i, k);
+        }
+
+        // Compute each output element: s_j * (grad_ij - dot)
+        for (size_t j = 0; j < grad.cols(); j++) {
+            res(i, j) = output(i, j) * (grad(i, j) - dot);
         }
     }
     return res;
 }
 
-Matrix<double> Identity::forward(const Matrix<double>& input) {
-    return input;
+Matrix<double> Softmax::log_softmax() const {
+    // log(softmax(x)) = x - max(x) - log(sum(exp(x - max(x))))
+    Matrix<double> result = output;
+    for (size_t i = 0; i < result.rows(); i++) {
+        double maxVal = output(i, 0);
+        for (size_t j = 1; j < output.cols(); j++) {
+            if (output(i, j) > maxVal) maxVal = output(i, j);
+        }
+        double sum = 0.0;
+        for (size_t j = 0; j < output.cols(); j++) {
+            sum += output(i, j);
+        }
+        // result(i, j) = log(softmax) = log(p_j)
+        // We stored probabilities in output, so log(p_j) = log(output(i,j))
+        for (size_t j = 0; j < output.cols(); j++) {
+            result(i, j) = std::log(std::max(output(i, j), 1e-15));
+        }
+    }
+    return result;
+}
+
+// ============================================================================
+// Tanh
+// ============================================================================
+Matrix<double> Tanh::forward(const Matrix<double>& X) {
+    output = Matrix<double>(X.rows(), X.cols());
+    for (size_t i = 0; i < X.size(); i++) {
+        output.at(i) = std::tanh(X.at(i));
+    }
+    return output;
+}
+
+Matrix<double> Tanh::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+    Matrix<double> res(grad.rows(), grad.cols());
+    for (size_t i = 0; i < grad.size(); i++) {
+        double t = output.at(i);
+        res.at(i) = grad.at(i) * (1.0 - t * t);
+    }
+    return res;
+}
+
+// ============================================================================
+// Leaky ReLU
+// ============================================================================
+LeakyReLU::LeakyReLU(double alpha) : alpha_(alpha) {}
+
+Matrix<double> LeakyReLU::forward(const Matrix<double>& X) {
+    output = Matrix<double>(X.rows(), X.cols());
+    for (size_t i = 0; i < X.size(); i++) {
+        output.at(i) = X.at(i) > 0 ? X.at(i) : alpha_ * X.at(i);
+    }
+    return output;
+}
+
+Matrix<double> LeakyReLU::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+    Matrix<double> res(grad.rows(), grad.cols());
+    for (size_t i = 0; i < grad.size(); i++) {
+        res.at(i) = output.at(i) > 0 ? grad.at(i) : alpha_ * grad.at(i);
+    }
+    return res;
+}
+
+// ============================================================================
+// ELU
+// ============================================================================
+ELU::ELU(double alpha) : alpha_(alpha) {}
+
+Matrix<double> ELU::forward(const Matrix<double>& X) {
+    output = Matrix<double>(X.rows(), X.cols());
+    for (size_t i = 0; i < X.size(); i++) {
+        if (X.at(i) > 0) {
+            output.at(i) = X.at(i);
+        } else {
+            output.at(i) = alpha_ * (std::exp(X.at(i)) - 1.0);
+        }
+    }
+    return output;
+}
+
+Matrix<double> ELU::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+    Matrix<double> res(grad.rows(), grad.cols());
+    for (size_t i = 0; i < grad.size(); i++) {
+        if (output.at(i) > 0) {
+            res.at(i) = grad.at(i);
+        } else {
+            res.at(i) = grad.at(i) * (output.at(i) + alpha_);
+        }
+    }
+    return res;
+}
+
+// ============================================================================
+// Swish (SiLU) = x * sigmoid(x)
+// Numerically stable: clips x for large negative values
+// Swish'(x) = sigmoid(x) + swish(x) * (1 - sigmoid(x))
+// ============================================================================
+Matrix<double> Swish::forward(const Matrix<double>& X) {
+    output = Matrix<double>(X.rows(), X.cols());
+    input_sigmoid_ = Matrix<double>(X.rows(), X.cols());
+    for (size_t i = 0; i < X.size(); i++) {
+        double x = X.at(i);
+        // Numerical guard: for x < -88, sigmoid(x) underflows to 0
+        // Swish(x) = x * sigmoid(x) → 0 for x → -inf (correct behavior)
+        // For x > 88, sigmoid(x) ≈ 1, Swish(x) ≈ x (correct behavior)
+        double s = stable_sigmoid(x);
+        input_sigmoid_.at(i) = s;
+        output.at(i) = x * s;
+    }
+    return output;
+}
+
+Matrix<double> Swish::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+    Matrix<double> res(grad.rows(), grad.cols());
+    for (size_t i = 0; i < grad.size(); i++) {
+        double sigma = input_sigmoid_.at(i);
+        double swish_val = output.at(i);
+        // Swish derivative: sigma(x) + swish(x) * (1 - sigma(x))
+        double deriv = sigma + swish_val * (1.0 - sigma);
+        res.at(i) = grad.at(i) * deriv;
+    }
+    return res;
+}
+
+// ============================================================================
+// GELU
+// ============================================================================
+Matrix<double> GELU::forward(const Matrix<double>& X) {
+    input = X;
+    Matrix<double> out(X.rows(), X.cols());
+    for (size_t i = 0; i < X.size(); i++) {
+        double x = X.at(i);
+        // GELU approximation: 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3)))
+        double c = std::sqrt(2.0 / M_PI) * (x + 0.044715 * x * x * x);
+        out.at(i) = 0.5 * x * (1.0 + std::tanh(c));
+    }
+    return out;
+}
+
+Matrix<double> GELU::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+    Matrix<double> res(grad.rows(), grad.cols());
+    for (size_t i = 0; i < grad.size(); i++) {
+        double x = input.at(i);
+        double c = std::sqrt(2.0 / M_PI) * (x + 0.044715 * x * x * x);
+        double tanh_c = std::tanh(c);
+        double sech2_c = 1.0 - tanh_c * tanh_c;
+        double dgelu = 0.5 * (1.0 + tanh_c) +
+                       0.5 * x * sech2_c * std::sqrt(2.0 / M_PI) *
+                       (1.0 + 3.0 * 0.044715 * x * x);
+        res.at(i) = grad.at(i) * dgelu;
+    }
+    return res;
+}
+
+// ============================================================================
+// Softplus
+// ============================================================================
+Matrix<double> Softplus::forward(const Matrix<double>& X) {
+    input = X;
+    Matrix<double> out(X.rows(), X.cols());
+    for (size_t i = 0; i < X.size(); i++) {
+        // log1p(exp(x)) is more stable for small x
+        if (X.at(i) > 20.0) {
+            out.at(i) = X.at(i); // linear for large x
+        } else {
+            out.at(i) = std::log1p(std::exp(X.at(i)));
+        }
+    }
+    return out;
+}
+
+Matrix<double> Softplus::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+    Matrix<double> res(grad.rows(), grad.cols());
+    for (size_t i = 0; i < grad.size(); i++) {
+        // derivative = sigmoid(x)
+        res.at(i) = grad.at(i) * stable_sigmoid(input.at(i));
+    }
+    return res;
+}
+
+// ============================================================================
+// Identity
+// ============================================================================
+Matrix<double> Identity::forward(const Matrix<double>& X) {
+    return X;
 }
 
 Matrix<double> Identity::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
     return grad;
 }
 
-Matrix<double> Generalized_Sigmoid::forward(const Matrix<double>& X) {
-    output = X;
-    output.apply(generalized_sigmoid);
-    return output;
-}
+// ============================================================================
+// Dropout
+// ============================================================================
+Dropout::Dropout(double rate) : rate_(rate) {}
 
-Matrix<double> Generalized_Sigmoid::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
-    Matrix<double> g = output;
-    g.apply(generalized_sigmoid_d);
+Matrix<double> Dropout::forward(const Matrix<double>& X) {
+    if (!training_) return X;
 
-    Matrix<double> res = grad;
-    for (size_t i = 0; i < grad.rows; i++)
-        for (size_t j = 0; j < grad.cols; j++)
-            res(i, j) *= g(i, j);
+    mask = Matrix<double>(X.rows(), X.cols(), 0.0);
+    Matrix<double> output(X.rows(), X.cols());
 
-    return res;
-}
-double tanh_act(double x) { return std::tanh(x); }
-double tanh_deriv(double x) { return 1.0 - x * x; }
-double leaky_relu(double x) { return x > 0 ? x : 0.01 * x; }
-double leaky_relu_deriv(double x) { return x > 0 ? 1.0 : 0.01; }
-
-Tanh::Tanh() {}
-Matrix<double> Tanh::forward(const Matrix<double>& X) {
-    output = X;
-    output.apply(tanh_act);
-    return output;
-}
-Matrix<double> Tanh::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
-    Matrix<double> g = output;
-    g.apply(tanh_deriv);
-    Matrix<double> res = grad;
-    for (size_t i = 0; i < grad.rows; i++)
-        for (size_t j = 0; j < grad.cols; j++)
-            res(i, j) *= g(i, j);
-    return res;
-}
-
-LeakyReLU::LeakyReLU() {}
-Matrix<double> LeakyReLU::forward(const Matrix<double>& X) {
-    output = X;
-    output.apply(leaky_relu);
-    return output;
-}
-Matrix<double> LeakyReLU::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
-    Matrix<double> g = output;
-    g.apply(leaky_relu_deriv);
-    Matrix<double> res = grad;
-    for (size_t i = 0; i < grad.rows; i++)
-        for (size_t j = 0; j < grad.cols; j++)
-            res(i, j) *= g(i, j);
-    return res;
-}
-
-double softplus_act(double x) { return std::log1p(std::exp(x)); }
-double softplus_deriv(double x) { return 1.0 / (1.0 + std::exp(-x)); }
-
-Softplus::Softplus() {}
-Matrix<double> Softplus::forward(const Matrix<double>& X) {
-    input = X;
-    Matrix<double> output = X;
-    output.apply(softplus_act);
-    return output;
-}
-Matrix<double> Softplus::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
-    Matrix<double> g = input;
-    g.apply(softplus_deriv);
-    Matrix<double> res = grad;
-    for (size_t i = 0; i < grad.rows; i++)
-        for (size_t j = 0; j < grad.cols; j++)
-            res(i, j) *= g(i, j);
-    return res;
-}
-
-#include <random>
-
-Dropout::Dropout(double rate) : rate(rate) {}
-Matrix<double> Dropout::forward(const Matrix<double>& input) {
-    mask = Matrix<double>(input.rows, input.cols, 0.0);
-    Matrix<double> output = input;
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(0.0, 1.0);
-    double scale = 1.0 / (1.0 - rate);
-    
-    for(size_t i=0; i<input.rows; i++) {
-        for(size_t j=0; j<input.cols; j++) {
-            if (dis(gen) > rate) {
-                mask(i, j) = scale;
-                output(i, j) *= scale;
-            } else {
-                mask(i, j) = 0.0;
-                output(i, j) = 0.0;
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+    double scale = 1.0 / (1.0 - rate_);
+
+    for (size_t i = 0; i < X.size(); i++) {
+        if (dis(gen) > rate_) {
+            mask.at(i) = scale;
+            output.at(i) = X.at(i) * scale;
+        } else {
+            mask.at(i) = 0.0;
+            output.at(i) = 0.0;
+        }
+    }
+    return output;
+}
+
+Matrix<double> Dropout::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+    if (!training_) return grad;
+    Matrix<double> res(grad.rows(), grad.cols());
+    for (size_t i = 0; i < grad.size(); i++) {
+        res.at(i) = grad.at(i) * mask.at(i);
+    }
+    return res;
+}
+
+// ============================================================================
+// Batch Normalization
+// ============================================================================
+BatchNormalization::BatchNormalization(size_t input_size, double epsilon, double momentum)
+    : gamma(1, input_size, 1.0), beta(1, input_size, 0.0),
+      running_mean(1, input_size, 0.0), running_var(1, input_size, 1.0),
+      epsilon_(epsilon), momentum_(momentum) {}
+
+void BatchNormalization::reset_state() {
+    gamma.fill(1.0);
+    beta.fill(0.0);
+    running_mean.fill(0.0);
+    running_var.fill(1.0);
+}
+
+Matrix<double> BatchNormalization::forward(const Matrix<double>& X) {
+    input_cache = X;
+    Matrix<double> output(X.rows(), X.cols(), 0.0);
+
+    if (training_) {
+        // Compute batch mean and variance
+        for (size_t j = 0; j < X.cols(); j++) {
+            double mean = 0.0;
+            for (size_t i = 0; i < X.rows(); i++) {
+                mean += X(i, j);
+            }
+            mean /= X.rows();
+
+            double var = 0.0;
+            for (size_t i = 0; i < X.rows(); i++) {
+                double diff = X(i, j) - mean;
+                var += diff * diff;
+            }
+            var /= X.rows();
+
+            // Update running statistics
+            running_mean(0, j) = momentum_ * running_mean(0, j) + (1.0 - momentum_) * mean;
+            running_var(0, j) = momentum_ * running_var(0, j) + (1.0 - momentum_) * var;
+
+            // Normalize
+            ivar(0, j) = 1.0 / std::sqrt(var + epsilon_);
+            for (size_t i = 0; i < X.rows(); i++) {
+                x_hat(i, j) = (X(i, j) - mean) * ivar(0, j);
+                output(i, j) = gamma(0, j) * x_hat(i, j) + beta(0, j);
+            }
+        }
+    } else {
+        // Inference mode: use running statistics
+        for (size_t j = 0; j < X.cols(); j++) {
+            double inv_std = 1.0 / std::sqrt(running_var(0, j) + epsilon_);
+            for (size_t i = 0; i < X.rows(); i++) {
+                double normalized = (X(i, j) - running_mean(0, j)) * inv_std;
+                output(i, j) = gamma(0, j) * normalized + beta(0, j);
             }
         }
     }
-    return output;
-}
-Matrix<double> Dropout::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
-    Matrix<double> res = grad;
-    for (size_t i = 0; i < grad.rows; i++)
-        for (size_t j = 0; j < grad.cols; j++)
-            res(i, j) *= mask(i, j);
-    return res;
-}
 
-BatchNormalization::BatchNormalization(size_t input_size) 
-    : gamma(1, input_size, 1.0), beta(1, input_size, 0.0), 
-      running_mean(1, input_size, 0.0), running_var(1, input_size, 1.0), epsilon(1e-5) {}
-
-Matrix<double> BatchNormalization::forward(const Matrix<double>& input) {
-    Matrix<double> output(input.rows, input.cols, 0.0);
-    x_hat = Matrix<double>(input.rows, input.cols, 0.0);
-    ivar = Matrix<double>(1, input.cols, 0.0);
-    
-    for (size_t j = 0; j < input.cols; j++) {
-        double mean = 0.0;
-        for (size_t i = 0; i < input.rows; i++) mean += input(i, j);
-        mean /= input.rows;
-        
-        double var = 0.0;
-        for (size_t i = 0; i < input.rows; i++) {
-            double diff = input(i, j) - mean;
-            var += diff * diff;
-        }
-        var /= input.rows;
-        running_mean(0, j) = 0.9 * running_mean(0, j) + 0.1 * mean;
-        running_var(0, j) = 0.9 * running_var(0, j) + 0.1 * var;
-        
-        ivar(0, j) = 1.0 / std::sqrt(var + epsilon);
-        for (size_t i = 0; i < input.rows; i++) {
-            x_hat(i, j) = (input(i, j) - mean) * ivar(0, j);
-            output(i, j) = gamma(0, j) * x_hat(i, j) + beta(0, j);
-        }
-    }
     return output;
 }
 
 Matrix<double> BatchNormalization::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
-    Matrix<double> dX(grad.rows, grad.cols, 0.0);
-    
-    for (size_t j = 0; j < grad.cols; j++) {
+    Matrix<double> dX(grad.rows(), grad.cols(), 0.0);
+    size_t N = grad.rows();
+
+    for (size_t j = 0; j < grad.cols(); j++) {
         double dGamma = 0.0, dBeta = 0.0;
-        for (size_t i = 0; i < grad.rows; i++) {
+        for (size_t i = 0; i < N; i++) {
             dGamma += grad(i, j) * x_hat(i, j);
             dBeta += grad(i, j);
         }
-        gamma(0, j) -= lr * dGamma;
-        beta(0, j) -= lr * dBeta;
-        
+
+        // Simple SGD update for gamma/beta (user's responsibility to pass correct lr)
+        gamma(0, j) -= lr * dGamma / N;
+        beta(0, j) -= lr * dBeta / N;
+
+        // Gradient w.r.t. input
         double dxhat_sum = 0.0, dxhat_xhat_sum = 0.0;
-        for (size_t i = 0; i < grad.rows; i++) {
+        for (size_t i = 0; i < N; i++) {
             double dxhat = grad(i, j) * gamma(0, j);
             dxhat_sum += dxhat;
             dxhat_xhat_sum += dxhat * x_hat(i, j);
         }
-        
-        for (size_t i = 0; i < grad.rows; i++) {
+
+        for (size_t i = 0; i < N; i++) {
             double dxhat = grad(i, j) * gamma(0, j);
-            dX(i, j) = (1.0 / grad.rows) * ivar(0, j) * (
-                grad.rows * dxhat - dxhat_sum - x_hat(i, j) * dxhat_xhat_sum
+            dX(i, j) = (1.0 / N) * ivar(0, j) * (
+                N * dxhat - dxhat_sum - x_hat(i, j) * dxhat_xhat_sum
             );
         }
     }
+
     return dX;
 }
+
+} // namespace cyberhex
