@@ -13,6 +13,7 @@ import LandingPage from "@/pages/LandingPage";
 const AboutPage = lazy(() => import("@/pages/AboutPage"));
 const ContactPage = lazy(() => import("@/pages/ContactPage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
+const SignInPage = lazy(() => import("@/pages/SignInPage"));
 const SignUpPage = lazy(() => import("@/pages/SignUpPage"));
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 const ExperimentBuilderPage = lazy(() => import("@/pages/ExperimentBuilderPage"));
@@ -42,6 +43,7 @@ export default function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/contact" element={<ContactPage />} />
+                <Route path="/signin" element={<SignInPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
 
                 {/* Protected */}

@@ -10,14 +10,22 @@ export const colors = {
     50: "#ecfeff",
     100: "#cffafe",
     200: "#a5f3fc",
-    300: "#67e8f9",
-    400: "#22d3ee",
-    500: "#06b6d4",
-    600: "#0891b2",
-    700: "#0e7490",
-    800: "#155e75",
-    900: "#164e63",
-    950: "#083344",
+    300: "#86efac",
+    400: "#4ade80",
+    500: "#22c55e",
+    600: "#16a34a",
+    700: "#15803d",
+    800: "#166534",
+    900: "#14532d",
+    950: "#052e16",
+  },
+  green: {
+    300: "#86efac",
+    400: "#4ade80",
+    500: "#22c55e",
+    600: "#16a34a",
+    700: "#15803d",
+    800: "#166534",
   },
   violet: {
     50: "#f5f3ff",
@@ -256,4 +264,4 @@ export const cx = (...classes: (string | undefined | false | null)[]) =>
 
 // ---- CYBERHEX_BRAND_TOKEN (primary accent) ----------------------------------
 
-export const CYBERHEX_BRAND_TOKEN = "cyan" as const;
+export const CYBERHEX_BRAND_TOKEN = "green" as const;

@@ -5,11 +5,18 @@
 /* ========================================================================== */
 
 @theme {
-  /* Brand */
-  --color-cyan-400: #22d3ee;
-  --color-cyan-500: #06b6d4;
-  --color-cyan-600: #0891b2;
-  --color-cyan-700: #0e7490;
+  /* Brand — green primary */
+  --color-green-300: #86efac;
+  --color-green-400: #4ade80;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+  --color-green-800: #166534;
+  /* Cyan kept as alias to green for back-compat in class names */
+  --color-cyan-400: #4ade80;
+  --color-cyan-500: #22c55e;
+  --color-cyan-600: #16a34a;
+  --color-cyan-700: #15803d;
   --color-violet-400: #a78bfa;
   --color-violet-500: #8b5cf6;
   --color-violet-600: #7c3aed;
@@ -56,9 +63,12 @@
 
 :root {
   /* CSS variable aliases for non-tailwind usage */
-  --color-cyan-400: #22d3ee;
-  --color-cyan-500: #06b6d4;
-  --color-cyan-600: #0891b2;
+  --color-green-400: #4ade80;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-cyan-400: #4ade80;
+  --color-cyan-500: #22c55e;
+  --color-cyan-600: #16a34a;
   --color-violet-400: #a78bfa;
   --color-violet-500: #8b5cf6;
   --color-violet-600: #7c3aed;
@@ -325,8 +335,8 @@ body {
 /* ---- Neon Text Effects ---------------------------------------------------- */
 
 .neon-text-cyan {
-  text-shadow: 0 0 7px rgba(34, 211, 238, 0.5), 0 0 20px rgba(6, 182, 212, 0.25),
-    0 0 40px rgba(8, 145, 178, 0.15);
+  text-shadow: 0 0 7px rgba(74, 222, 128, 0.5), 0 0 20px rgba(34, 197, 94, 0.25),
+    0 0 40px rgba(22, 163, 74, 0.15);
 }
 
 .neon-text-violet {
@@ -376,13 +386,89 @@ body {
   );
 }
 
+/* ---- Terminal styles ------------------------------------------------------ */
+
+.terminal-window {
+  background-color: color-mix(in srgb, var(--color-neutral-950) 95%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-neutral-700) 50%, transparent);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.08), 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: color-mix(in srgb, var(--color-neutral-900) 80%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-neutral-750) 50%, transparent);
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+}
+.terminal-dot.red { background: #ef4444; }
+.terminal-dot.amber { background: #f59e0b; }
+.terminal-dot.green { background: #22c55e; }
+
+.terminal-body {
+  padding: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  max-height: 320px;
+  overflow-y: auto;
+  color: var(--color-green-400);
+}
+
+.terminal-line {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.terminal-prompt {
+  color: var(--color-green-500);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.terminal-output {
+  color: var(--color-neutral-300);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.terminal-input-line {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-neutral-0);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  caret-color: var(--color-green-400);
+}
+
+.terminal-input::placeholder {
+  color: var(--color-neutral-600);
+}
+
 /* ---- Hexagon decorative elements ------------------------------------------ */
 
 .hex-decoration {
   position: absolute;
   width: 400px;
   height: 400px;
-  border: 1px solid rgba(6, 182, 212, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.08);
   border-radius: 50%;
   transform: rotate(30deg) skew(-20deg);
 }

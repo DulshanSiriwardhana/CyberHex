@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
-import { DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 const steps = [
@@ -59,12 +58,12 @@ export default function SignUp() {
 
   return (
     <div className="p-1">
-      <DialogTitle className="text-2xl font-bold text-white mb-1">
+      <h2 className="text-2xl font-bold text-white mb-1">
         Create account
-      </DialogTitle>
-      <DialogDescription className="mb-6">
+      </h2>
+      <p className="text-sm text-neutral-400 mb-6">
         Step {step} of {steps.length} — {steps[step - 1].label}
-      </DialogDescription>
+      </p>
 
       {/* Progress bar */}
       <div className="flex gap-1.5 mb-8">

@@ -12,14 +12,11 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import SignIn from "@/components/signin";
 import { useAuth } from "@/contexts/auth";
 
 const NavBar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [signInDialogOpen, setSignInDialogOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
@@ -47,12 +44,6 @@ const NavBar = () => {
   useEffect(() => {
     closeMobile();
   }, [location.pathname, closeMobile]);
-
-  const handleSignInSuccess = () => {
-    setSignInDialogOpen(false);
-  };
-
-  const isLanding = location.pathname === "/";
 
   return (
     <motion.nav
@@ -182,14 +173,11 @@ const NavBar = () => {
             </>
           ) : (
             <>
-              <Dialog open={signInDialogOpen} onOpenChange={setSignInDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    Sign in
-                  </Button>
-                </DialogTrigger>
-                <SignIn onSuccess={handleSignInSuccess} />
-              </Dialog>
+              <Link to="/signin">
+                <Button variant="ghost" size="sm">
+                  Sign in
+                </Button>
+              </Link>
               <Link to="/signup">
                 <Button size="sm">
                   <Sparkles className="h-3.5 w-3.5 mr-1.5" />
@@ -283,17 +271,13 @@ const NavBar = () => {
                   </>
                 ) : (
                   <>
-                    <Dialog open={signInDialogOpen} onOpenChange={setSignInDialogOpen}>
-                      <DialogTrigger asChild>
-                        <button
-                          className="block w-full rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-300 hover:text-white hover:bg-neutral-800/50"
-                          onClick={closeMobile}
-                        >
-                          Sign in
-                        </button>
-                      </DialogTrigger>
-                      <SignIn onSuccess={handleSignInSuccess} />
-                    </Dialog>
+                    <Link
+                      to="/signin"
+                      onClick={closeMobile}
+                      className="block w-full rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-300 hover:text-white hover:bg-neutral-800/50"
+                    >
+                      Sign in
+                    </Link>
                     <Link
                       to="/signup"
                       onClick={closeMobile}
