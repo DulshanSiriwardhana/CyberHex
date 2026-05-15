@@ -1,75 +1,76 @@
-import React, { Component, type ReactNode } from "react"
-import { Button } from "@/components/ui/button"
-import { AlertTriangle, RefreshCw } from "lucide-react"
+import { Component, ErrorInfo, ReactNode } from "react";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface Props {
-  children: ReactNode
-  fallback?: ReactNode
+  children: ReactNode;
+  fallback?: ReactNode;
 }
 
 interface State {
-  hasError: boolean
-  error?: Error
+  hasError: boolean;
+  error: Error | null;
 }
 
-class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props)
-    this.state = { hasError: false }
+export default class ErrorBoundary extends Component<Props, State> {
+  public state: State = {
+    hasError: false,
+    error: null,
+  };
+
+  public static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
   }
 
-  static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error }
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("CyberHex Error Boundary:", error, errorInfo);
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo)
-  }
+  private handleReset = () => {
+    this.setState({ hasError: false, error: null });
+  };
 
-  handleReset = () => {
-    this.setState({ hasError: false, error: undefined })
-  }
-
-  render() {
+  public render() {
     if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback
-      }
+      if (this.props.fallback) return this.props.fallback;
 
       return (
-        <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-8" role="alert">
-          <div className="text-center space-y-6 max-w-md">
-            <div className="w-16 h-16 rounded-2xl bg-red-600/10 flex items-center justify-center mx-auto">
-              <AlertTriangle className="w-8 h-8 text-red-500" />
+        <div className="min-h-screen bg-neutral-950 bg-cyber-grid flex flex-col items-center justify-center px-4 relative">
+          <div className="pointer-events-none fixed inset-0 bg-cyber-radial" />
+          <div className="relative z-10 max-w-md text-center">
+            <div className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20 mb-6">
+              <AlertTriangle className="h-10 w-10 text-rose-400" />
             </div>
-            <div>
-              <h2 className="font-spectral text-2xl font-extrabold text-white mb-2">
-                Something went wrong
-              </h2>
-              <p className="text-neutral-400 text-sm">
-                An unexpected error occurred. Please try again.
+            <h1 className="text-2xl font-extrabold text-white">
+              Something went wrong
+            </h1>
+            <p className="mt-3 text-neutral-400 leading-relaxed">
+              An unexpected error occurred. This has been logged — try refreshing
+              or head back to home.
+            </p>
+            {this.state.error && (
+              <p className="mt-4 font-mono text-xs text-neutral-600 bg-neutral-900 rounded-xl p-3 max-h-24 overflow-auto">
+                {this.state.error.message}
               </p>
-              {this.state.error && (
-                <p className="text-neutral-600 text-xs mt-3 font-mono bg-neutral-900 rounded-lg p-3 text-left break-all">
-                  {this.state.error.message}
-                </p>
-              )}
+            )}
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Button onClick={this.handleReset}>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Try Again
+              </Button>
+              <Link to="/">
+                <Button variant="outline">
+                  <Home className="h-4 w-4 mr-2" />
+                  Back to Home
+                </Button>
+              </Link>
             </div>
-            <Button
-              variant="cyber"
-              onClick={this.handleReset}
-              aria-label="Try again"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Try Again
-            </Button>
           </div>
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }
-
-export default ErrorBoundary

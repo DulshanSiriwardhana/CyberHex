@@ -8,9 +8,9 @@ const MONGO_OPTIONS = {
 };
 
 const DBinitialize = async () => {
-    const uri = process.env.DB_URI;
+    const uri = process.env.MONGODB_URI;
     if (!uri) {
-        logger.error('DB_URI not set in environment - database connection skipped');
+        logger.error('MONGODB_URI not set in environment - database connection skipped');
         return;
     }
 

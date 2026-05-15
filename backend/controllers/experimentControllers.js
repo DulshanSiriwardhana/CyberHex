@@ -1,175 +1,100 @@
 import Experiment from '../models/Experiment.js';
-import { asyncHandler, NotFoundError, ValidationError, AuthorizationError } from '../middleware/errorHandler.js';
-import { validateData, experimentSchema, updateExperimentSchema } from '../utils/validators.js';
-import logger from '../utils/logger.js';
+import { asyncHandler, NotFoundError } from '../middleware/errorHandler.js';
 
 export const createExperiment = asyncHandler(async (req, res) => {
-    const validation = validateData(experimentSchema, req.body);
-    if (!validation.valid) {
-        throw new ValidationError('Experiment validation failed', validation.errors);
-    }
+  const experiment = await Experiment.create({
+    ...req.body,
+    userId: req.user.userId,
+    status: 'draft',
+  });
 
-    const { name, description, config } = validation.data;
-    const experiment = new Experiment({
-        name,
-        description,
-        config,
-        userId: req.user.userId,
-        status: 'draft'
-    });
-
-    await experiment.save();
-    logger.info(`Experiment created: ${experiment._id} by user ${req.user.userId}`);
-
-    res.status(201).json({
-        message: 'Experiment created successfully',
-        experiment
-    });
+  res.status(201).json({
+    message: 'Experiment created',
+    experiment,
+  });
 });
 
-export const listExperiments = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, status, sort = '-createdAt' } = req.query;
-    const skip = (page - 1) * limit;
+export const getExperiments = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const skip = (page - 1) * limit;
+  const filter = { userId: req.user.userId };
 
-    let query = { userId: req.user.userId };
-    if (status) query.status = status;
+  if (req.query.status) {
+    filter.status = req.query.status;
+  }
 
-    const total = await Experiment.countDocuments(query);
-    const experiments = await Experiment.find(query)
-        .skip(skip)
-        .limit(parseInt(limit))
-        .sort(sort);
+  const [experiments, total] = await Promise.all([
+    Experiment.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select('-config -results')
+      .lean(),
+    Experiment.countDocuments(filter),
+  ]);
 
-    res.json({
-        message: 'Experiments retrieved successfully',
-        data: experiments,
-        pagination: {
-            total,
-            page: parseInt(page),
-            limit: parseInt(limit),
-            pages: Math.ceil(total / limit)
-        }
-    });
+  res.json({
+    experiments,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  });
 });
 
-export const getExperimentById = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const experiment = await Experiment.findById(id);
+export const getExperiment = asyncHandler(async (req, res) => {
+  const experiment = await Experiment.findById(req.params.id).lean();
+  if (!experiment) throw new NotFoundError('Experiment not found');
+  if (experiment.userId.toString() !== req.user.userId) {
+    throw new NotFoundError('Experiment not found');
+  }
 
-    if (!experiment) {
-        throw new NotFoundError('Experiment not found');
-    }
-
-    if (experiment.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
-        throw new AuthorizationError('Cannot access this experiment');
-    }
-
-    res.json({
-        message: 'Experiment retrieved successfully',
-        experiment
-    });
+  res.json({ experiment });
 });
 
 export const updateExperiment = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const validation = validateData(updateExperimentSchema, req.body);
+  const experiment = await Experiment.findById(req.params.id);
+  if (!experiment) throw new NotFoundError('Experiment not found');
+  if (experiment.userId.toString() !== req.user.userId) {
+    throw new NotFoundError('Experiment not found');
+  }
 
-    if (!validation.valid) {
-        throw new ValidationError('Experiment update validation failed', validation.errors);
+  const allowedFields = ['name', 'description', 'config'];
+  for (const field of allowedFields) {
+    if (req.body[field] !== undefined) {
+      experiment[field] = req.body[field];
     }
+  }
 
-    const experiment = await Experiment.findById(id);
-    if (!experiment) {
-        throw new NotFoundError('Experiment not found');
-    }
-
-    if (experiment.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
-        throw new AuthorizationError('Cannot update this experiment');
-    }
-
-    const { name, description, config } = validation.data;
-    if (name) experiment.name = name;
-    if (description !== undefined) experiment.description = description;
-    if (config) experiment.config = { ...experiment.config, ...config };
-
-    experiment.updatedAt = new Date();
-    await experiment.save();
-    logger.info(`Experiment updated: ${id} by user ${req.user.userId}`);
-
-    res.json({
-        message: 'Experiment updated successfully',
-        experiment
-    });
+  await experiment.save();
+  res.json({ message: 'Experiment updated', experiment });
 });
 
 export const deleteExperiment = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const experiment = await Experiment.findById(id);
+  const experiment = await Experiment.findById(req.params.id);
+  if (!experiment) throw new NotFoundError('Experiment not found');
+  if (experiment.userId.toString() !== req.user.userId) {
+    throw new NotFoundError('Experiment not found');
+  }
 
-    if (!experiment) {
-        throw new NotFoundError('Experiment not found');
-    }
+  if (experiment.status === 'training') {
+    return res.status(400).json({ error: 'Cannot delete experiment while training' });
+  }
 
-    if (experiment.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
-        throw new AuthorizationError('Cannot delete this experiment');
-    }
-
-    await Experiment.findByIdAndDelete(id);
-    logger.info(`Experiment deleted: ${id} by user ${req.user.userId}`);
-
-    res.json({ message: 'Experiment deleted successfully' });
+  await experiment.deleteOne();
+  res.json({ message: 'Experiment deleted' });
 });
 
-export const runExperiment = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const experiment = await Experiment.findById(id);
+export const updateExperimentResults = asyncHandler(async (req, res) => {
+  const experiment = await Experiment.findById(req.params.id);
+  if (!experiment) throw new NotFoundError('Experiment not found');
 
-    if (!experiment) {
-        throw new NotFoundError('Experiment not found');
-    }
+  experiment.results = req.body.results;
+  experiment.status = req.body.status || experiment.status;
+  await experiment.save();
 
-    if (experiment.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
-        throw new AuthorizationError('Cannot run this experiment');
-    }
-
-    if (!experiment.config) {
-        throw new ValidationError('Experiment must have configuration before running');
-    }
-
-    experiment.status = 'running';
-    experiment.startedAt = new Date();
-    await experiment.save();
-    logger.info(`Experiment started: ${id} by user ${req.user.userId}`);
-
-    res.json({
-        message: 'Experiment started successfully',
-        experiment
-    });
-});
-
-export const stopExperiment = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const experiment = await Experiment.findById(id);
-
-    if (!experiment) {
-        throw new NotFoundError('Experiment not found');
-    }
-
-    if (experiment.userId.toString() !== req.user.userId && req.user.role !== 'admin') {
-        throw new AuthorizationError('Cannot stop this experiment');
-    }
-
-    if (experiment.status !== 'running') {
-        throw new ValidationError('Experiment is not running');
-    }
-
-    experiment.status = 'stopped';
-    experiment.completedAt = new Date();
-    await experiment.save();
-    logger.info(`Experiment stopped: ${id} by user ${req.user.userId}`);
-
-    res.json({
-        message: 'Experiment stopped successfully',
-        experiment
-    });
+  res.json({ message: 'Results updated', experiment });
 });

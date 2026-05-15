@@ -16,7 +16,7 @@ import logger from './utils/logger.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config();
 
 const app = express();
 
@@ -25,6 +25,7 @@ app.use(helmet());
 
 
 const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173').split(',');
+
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
@@ -51,7 +52,7 @@ app.use((req, _res, next) => {
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/experiments', experimentRoutes);
-app.use('/api/v1/training', mlTrainingRoutes);
+app.use('/api/v1/ml', mlTrainingRoutes);
 
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', version: '1.0.0', timestamp: new Date() }));

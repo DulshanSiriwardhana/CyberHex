@@ -66,7 +66,7 @@ export const validateData = (schema, data) => {
         if (error instanceof z.ZodError) {
             return {
                 valid: false,
-                errors: error.errors.map(err => ({
+                errors: error.issues.map(err => ({
                     field: err.path.join('.'),
                     message: err.message
                 }))

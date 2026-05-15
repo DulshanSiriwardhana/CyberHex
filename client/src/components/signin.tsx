@@ -1,192 +1,140 @@
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react"
-import { useAuth } from "@/contexts/auth"
+import { useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Eye, EyeOff, LogIn, Loader2, AlertCircle } from "lucide-react";
+import {
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/auth";
 
 interface SignInProps {
-  onSuccess?: () => void
-  onSignUpClick?: () => void
+  onSuccess?: () => void;
 }
 
-const SignIn = ({ onSuccess, onSignUpClick }: SignInProps) => {
-  const { login, loading: authLoading, error: authError } = useAuth()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
+export default function SignIn({ onSuccess }: SignInProps) {
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const validate = () => {
-    const newErrors: { email?: string; password?: string } = {}
-    if (!email) {
-      newErrors.email = "Email is required"
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Invalid email format"
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setError("Fill in both fields.");
+      return;
     }
-    if (!password) {
-      newErrors.password = "Password is required"
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters"
-    }
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validate()) return
-
-    setIsLoading(true)
+    setError("");
+    setLoading(true);
     try {
-      await login(email, password)
-      onSuccess?.()
-    } catch {
+      await login(email, password);
+      onSuccess?.();
+    } catch (err: any) {
+      setError(err?.message || "Sign in failed. Check your credentials.");
     } finally {
-      setIsLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="p-2">
-      <DialogTitle className="text-2xl font-spectral font-extrabold text-white mb-2">
-        Welcome back
-      </DialogTitle>
-      <DialogDescription className="text-neutral-400 mb-6">
-        Sign in to your CyberHex account to continue.
-      </DialogDescription>
+    <DialogContent className="sm:max-w-md">
+      <DialogHeader>
+        <DialogTitle className="text-center">Welcome back</DialogTitle>
+        <DialogDescription className="text-center">
+          Sign in to your CyberHex account
+        </DialogDescription>
+      </DialogHeader>
 
-      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-        {/* Email */}
-        <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium text-neutral-300">
-            Email address
+      <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/5 px-4 py-2.5 text-sm text-rose-400"
+          >
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            {error}
+          </motion.div>
+        )}
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-neutral-400">
+            Email
           </label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-                if (errors.email) setErrors(prev => ({ ...prev, email: undefined }))
-              }}
-              placeholder="you@example.com"
-              className={`w-full pl-10 pr-4 py-2.5 rounded-lg border bg-neutral-900 text-white text-sm placeholder-neutral-600 transition-all
-                ${errors.email 
-                  ? "border-red-500 focus:ring-red-500" 
-                  : "border-neutral-800 focus:border-red-600 focus:ring-1 focus:ring-red-600"
-                } outline-none`}
-              aria-invalid={!!errors.email}
-              aria-describedby={errors.email ? "email-error" : undefined}
-            />
-          </div>
-          {errors.email && (
-            <motion.p
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              id="email-error"
-              className="text-xs text-red-400"
-              role="alert"
-            >
-              {errors.email}
-            </motion.p>
-          )}
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="input-cyber"
+            autoComplete="email"
+          />
         </div>
 
-        {/* Password */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label htmlFor="password" className="text-sm font-medium text-neutral-300">
-              Password
-            </label>
-            <button
-              type="button"
-              className="text-xs text-red-400 hover:text-red-300 transition-colors"
-              aria-label="Forgot password"
-            >
-              Forgot password?
-            </button>
-          </div>
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-neutral-400">
+            Password
+          </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
             <input
-              id="password"
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value)
-                if (errors.password) setErrors(prev => ({ ...prev, password: undefined }))
-              }}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className={`w-full pl-10 pr-10 py-2.5 rounded-lg border bg-neutral-900 text-white text-sm placeholder-neutral-600 transition-all
-                ${errors.password 
-                  ? "border-red-500 focus:ring-red-500" 
-                  : "border-neutral-800 focus:border-red-600 focus:ring-1 focus:ring-red-600"
-                } outline-none`}
-              aria-invalid={!!errors.password}
-              aria-describedby={errors.password ? "password-error" : undefined}
+              className="input-cyber pr-10"
+              autoComplete="current-password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-300 transition-colors"
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              tabIndex={-1}
             >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
             </button>
           </div>
-          {errors.password && (
-            <motion.p
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              id="password-error"
-              className="text-xs text-red-400"
-              role="alert"
-            >
-              {errors.password}
-            </motion.p>
-          )}
         </div>
-
-        {authError && (
-          <motion.p
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-xs text-red-400 text-center"
-            role="alert"
-          >
-            {authError}
-          </motion.p>
-        )}
 
         <Button
           type="submit"
-          variant="cyber"
           className="w-full"
           size="lg"
-          isLoading={isLoading || authLoading}
-          aria-label="Sign in"
+          disabled={loading}
         >
-          {!isLoading && !authLoading && <LogIn className="w-4 h-4 mr-2" />}
-          Sign In
+          {loading ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            <>
+              <LogIn className="h-4 w-4 mr-2" />
+              Sign in
+            </>
+          )}
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-neutral-500">
-        Don't have an account?{" "}
-        <button
-          type="button"
-          onClick={onSignUpClick}
-          className="text-red-400 hover:text-red-300 font-medium transition-colors"
-        >
-          Create one
-        </button>
-      </p>
-    </div>
-  )
+      <div className="mt-6 text-center">
+        <p className="text-sm text-neutral-500">
+          Don't have an account?{" "}
+          <Link
+            to="/signup"
+            className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+          >
+            Create one
+          </Link>
+        </p>
+      </div>
+    </DialogContent>
+  );
 }
-
-export default SignIn
