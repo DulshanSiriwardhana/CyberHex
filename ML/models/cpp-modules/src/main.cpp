@@ -16,9 +16,6 @@
 
 using namespace cyberhex;
 
-// ============================================================================
-// Helper: synthetic data functions
-// ============================================================================
 double xor_function(const double* x, size_t n) {
     return (x[0] > 0.5) != (x[1] > 0.5) ? 1.0 : 0.0;
 }
