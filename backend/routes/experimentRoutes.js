@@ -6,6 +6,7 @@ import {
   getExperiments,
   getExperiment,
   updateExperiment,
+  updateExperimentResults,
   deleteExperiment,
 } from '../controllers/experimentControllers.js';
 
@@ -20,6 +21,8 @@ router.post('/', asyncHandler(createExperiment));
 router.get('/:id', asyncHandler(getExperiment));
 
 router.put('/:id', asyncHandler(updateExperiment));
+
+router.patch('/:id/results', asyncHandler(updateExperimentResults));
 
 router.delete('/:id', asyncHandler(deleteExperiment));
 

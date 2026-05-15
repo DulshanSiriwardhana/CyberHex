@@ -108,6 +108,14 @@ export const api = {
     request<T>(endpoint, { method: 'DELETE' }),
 };
 
+export const otpApi = {
+  sendOtp: (email: string) =>
+    api.post<{ message: string; expiresIn: number; preview?: boolean }>('/api/v1/otp/send', { email }),
+
+  verifyOtp: (email: string, code: string) =>
+    api.post<{ message: string; verified: boolean }>('/api/v1/otp/verify', { email, code }),
+};
+
 export { ApiError };
 export default api;
 
