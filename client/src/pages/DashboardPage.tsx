@@ -1,224 +1,199 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/auth';
-import { useExperimentsStore } from '../stores/experiments';
-import type { Experiment } from '../lib/api';
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Brain,
+  FlaskConical,
+  PlusCircle,
+  TrendingUp,
+  Clock,
+  Cpu,
+  Zap,
+  ArrowRight,
+  BarChart3,
+  Activity,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, StatCard } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { SkeletonPage } from "@/components/ui/skeleton";
+import { Container, Grid, Stack, Flex, SectionHeading } from "@/components/ui/layout";
+import { useAuth } from "@/contexts/auth";
+
+const recentExperiments = [
+  { id: 1, name: "MNIST Classifier v3", status: "completed", accuracy: 98.7, date: "2h ago" },
+  { id: 2, name: "Sentiment LSTM", status: "running", accuracy: 87.2, date: "5h ago" },
+  { id: 3, name: "Image GAN", status: "failed", accuracy: 0, date: "1d ago" },
+  { id: 4, name: "Price Predictor", status: "completed", accuracy: 94.1, date: "2d ago" },
+];
+
+const statusColors: Record<string, string> = {
+  completed: "success",
+  running: "default",
+  failed: "destructive",
+  queued: "warning",
+};
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const {
-    experiments,
-    activeJobs,
-    pagination,
-    loading,
-    error,
-    fetchExperiments,
-    deleteExperiment,
-    startTraining,
-    stopTraining,
-    fetchActiveJobs,
-    clearError,
-  } = useExperimentsStore();
 
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-
-  useEffect(() => {
-    const params: Record<string, string> = {};
-    if (statusFilter !== 'all') params.status = statusFilter;
-    fetchExperiments(params);
-    fetchActiveJobs();
-  }, [statusFilter, fetchExperiments, fetchActiveJobs]);
-
-  useEffect(() => {
-    const poll = setInterval(() => fetchActiveJobs(), 5000);
-    return () => clearInterval(poll);
-  }, [fetchActiveJobs]);
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this experiment?')) return;
-    await deleteExperiment(id);
-  };
-
-  const handleStartTraining = async (id: string) => {
-    try {
-      await startTraining(id);
-      fetchActiveJobs();
-    } catch (err: any) {
-      alert(err.message);
-    }
-  };
-
-  const handleStopTraining = async (id: string) => {
-    await stopTraining(id);
-    fetchActiveJobs();
-  };
-
-  const isTraining = (experimentId: string) =>
-    activeJobs.some((j) => j.experimentId === experimentId && j.status === 'running');
-
-  const statusBadge = (status: string) => {
-    const colors: Record<string, string> = {
-      draft: 'bg-gray-700 text-gray-300',
-      training: 'bg-blue-700 text-blue-200 animate-pulse',
-      completed: 'bg-green-700 text-green-200',
-      failed: 'bg-red-700 text-red-200',
-      stopped: 'bg-yellow-700 text-yellow-200',
-    };
-    return (
-      <span className={`px-2 py-0.5 rounded text-xs font-medium ${colors[status] || 'bg-gray-700'}`}>
-        {status}
-      </span>
-    );
-  };
+  if (!user) {
+    return <SkeletonPage rows={4} />;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
+    <Container className="py-8 pt-24">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="mb-8"
+      >
+        <Flex justify="between" wrap>
           <div>
-            <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-            <p className="text-gray-400 mt-1">Welcome back, {user?.username}</p>
+            <h1 className="text-3xl font-extrabold tracking-tight text-white">
+              Welcome back,{" "}
+              <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">
+                {user.username}
+              </span>
+            </h1>
+            <p className="mt-1 text-neutral-400">Your ML command center</p>
           </div>
-          <button
-            onClick={() => navigate('/experiments/new')}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors"
+          <div className="flex gap-3 mt-4 sm:mt-0">
+            <Link to="/experiments/new">
+              <Button>
+                <PlusCircle className="h-4 w-4 mr-2" />
+                New Experiment
+              </Button>
+            </Link>
+            <Link to="/models">
+              <Button variant="outline">
+                <Brain className="h-4 w-4 mr-2" />
+                View Models
+              </Button>
+            </Link>
+          </div>
+        </Flex>
+      </motion.div>
+
+      {/* Stats */}
+      <Grid cols={4} gap="md" className="mb-8">
+        {[
+          { icon: Brain, label: "Total Models", value: "12", change: "+3 this week" },
+          { icon: FlaskConical, label: "Experiments", value: "47", change: "+8 today" },
+          { icon: TrendingUp, label: "Avg Accuracy", value: "94.2%", change: "+2.1%" },
+          { icon: Clock, label: "Training Hours", value: "128h", change: "12h active" },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.08, duration: 0.4 }}
           >
-            + New Experiment
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          {(['draft', 'training', 'completed', 'failed'] as const).map((s) => {
-            const count = experiments.filter((e) => e.status === s).length;
-            return (
-              <div
-                key={s}
-                className="bg-gray-900 border border-gray-800 rounded-lg p-4"
-              >
-                <p className="text-sm text-gray-400 capitalize">{s}</p>
-                <p className="text-2xl font-bold text-white mt-1">{count}</p>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="flex gap-2 mb-4">
-          {['all', 'draft', 'training', 'completed', 'failed', 'stopped'].map((s) => (
-            <button
-              key={s}
-              onClick={() => setStatusFilter(s)}
-              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                statusFilter === s
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-              }`}
-            >
-              {s.charAt(0).toUpperCase() + s.slice(1)}
-            </button>
-          ))}
-        </div>
-
-        {loading && experiments.length === 0 && (
-          <div className="text-center py-12 text-gray-400">Loading experiments...</div>
-        )}
-
-        {error && (
-          <div className="bg-red-900/50 border border-red-700 rounded-lg p-4 mb-4 flex justify-between items-center">
-            <span className="text-red-200">{error}</span>
-            <button onClick={clearError} className="text-red-300 hover:text-red-100 text-sm">
-              Dismiss
-            </button>
-          </div>
-        )}
-
-        {!loading && experiments.length === 0 && (
-          <div className="text-center py-16">
-            <div className="text-4xl mb-4">🧪</div>
-            <p className="text-gray-400 text-lg mb-4">No experiments yet</p>
-            <button
-              onClick={() => navigate('/experiments/new')}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors"
-            >
-              Create your first experiment
-            </button>
-          </div>
-        )}
-
-        <div className="space-y-3">
-          {experiments.map((exp: Experiment) => (
-            <div
-              key={exp._id}
-              className="bg-gray-900 border border-gray-800 rounded-lg p-4 hover:border-gray-700 transition-colors cursor-pointer"
-              onClick={() => navigate(`/experiments/${exp._id}`)}
-            >
+            <StatCard>
               <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-lg font-semibold text-white">{exp.name}</h3>
-                    {statusBadge(exp.status)}
-                  </div>
-                  <p className="text-sm text-gray-400 mt-1">
-                    {exp.description || 'No description'} &middot;{' '}
-                    {exp.config?.modelType || 'neural_network'} &middot;{' '}
-                    {exp.config?.epochs || 0} epochs &middot;{' '}
-                    {exp.config?.layers ? `${exp.config.layers.length} layers` : 'N/A'}
-                  </p>
-                  {exp.results?.finalTrainLoss !== undefined && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      Final loss: {exp.results.finalTrainLoss.toFixed(4)}
-                      {exp.results.finalValLoss !== undefined
-                        ? ` | Val loss: ${exp.results.finalValLoss.toFixed(4)}`
-                        : ''}
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                  {exp.status === 'training' || isTraining(exp._id) ? (
-                    <button
-                      onClick={() => handleStopTraining(exp._id)}
-                      className="px-3 py-1.5 bg-red-700 hover:bg-red-600 text-white rounded text-sm font-medium transition-colors"
-                    >
-                      Stop
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleStartTraining(exp._id)}
-                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-sm font-medium transition-colors"
-                    >
-                      Train
-                    </button>
-                  )}
-                  <button
-                    onClick={() => handleDelete(exp._id)}
-                    className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-red-400 rounded text-sm transition-colors"
-                  >
-                    Delete
-                  </button>
-                </div>
+                <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
+                  {stat.label}
+                </span>
+                <stat.icon className="h-4 w-4 text-cyan-400" />
               </div>
-            </div>
-          ))}
-        </div>
+              <div className="text-2xl font-extrabold text-white font-mono">
+                {stat.value}
+              </div>
+              <span className="text-xs text-cyan-400">{stat.change}</span>
+            </StatCard>
+          </motion.div>
+        ))}
+      </Grid>
 
-        {pagination.pages > 1 && (
-          <div className="flex justify-center gap-2 mt-6">
-            {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => fetchExperiments({ page: String(page) })}
-                className={`px-3 py-1 rounded text-sm ${
-                  page === pagination.page
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+      {/* Recent experiments */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.4 }}
+      >
+        <Card>
+          <CardHeader>
+            <Flex justify="between">
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-cyan-400" />
+                Recent Experiments
+              </CardTitle>
+              <Link to="/experiments">
+                <Button variant="ghost" size="sm">
+                  View all
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </Link>
+            </Flex>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-1">
+              {recentExperiments.map((exp, i) => (
+                <Link
+                  key={exp.id}
+                  to={`/experiments/${exp.id}`}
+                  className="flex items-center justify-between rounded-xl px-4 py-3 hover:bg-neutral-800/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${
+                      exp.status === "running" ? "bg-cyan-500/10 text-cyan-400" :
+                      exp.status === "completed" ? "bg-emerald-500/10 text-emerald-400" :
+                      "bg-neutral-800 text-neutral-500"
+                    }`}>
+                      <FlaskConical className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-white truncate">{exp.name}</p>
+                      <p className="text-xs text-neutral-500">{exp.date}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 shrink-0">
+                    {exp.status !== "failed" && (
+                      <span className="text-sm font-mono text-neutral-300">
+                        {exp.accuracy.toFixed(1)}%
+                      </span>
+                    )}
+                    <Badge variant={statusColors[exp.status] as any} size="sm">
+                      {exp.status}
+                    </Badge>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Quick actions */}
+      <Grid cols={2} gap="md" className="mt-8">
+        <Link to="/experiments/new">
+          <Card className="group border-cyan-500/10 hover:border-cyan-500/30 hover:shadow-[0_0_25px_rgba(6,182,212,0.1)] cursor-pointer transition-all duration-300">
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-cyan-600/5 border border-cyan-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Zap className="h-6 w-6 text-cyan-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Quick Experiment</h3>
+                <p className="text-sm text-neutral-400">Launch a pre-configured training run in 2 clicks</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link to="/models">
+          <Card className="group border-violet-500/10 hover:border-violet-500/30 hover:shadow-[0_0_25px_rgba(139,92,246,0.1)] cursor-pointer transition-all duration-300">
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-violet-500/20 to-violet-600/5 border border-violet-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Cpu className="h-6 w-6 text-violet-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">C++ Inference</h3>
+                <p className="text-sm text-neutral-400">Deploy a trained model to the native inference engine</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+      </Grid>
+    </Container>
   );
 }

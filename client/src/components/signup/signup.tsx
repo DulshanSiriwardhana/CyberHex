@@ -1,187 +1,248 @@
-import { useState } from "react"
-import { DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, ArrowRight, Check } from "lucide-react"
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
+import { DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
-const SignUp = () => {
-  const [step, setStep] = useState(1)
-  const [fullname, setFullname] = useState("")
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [otp, setOtp] = useState("")
+const steps = [
+  { id: 1, label: "Profile", fields: ["fullname", "username"] },
+  { id: 2, label: "Email", fields: ["email"] },
+  { id: 3, label: "Password", fields: ["password", "confirmPassword"] },
+  { id: 4, label: "Verify", fields: ["otp"] },
+];
 
-  const steps = ["Profile", "Email", "Password", "Verify"]
+export default function SignUp() {
+  const [step, setStep] = useState(1);
+  const [fullname, setFullname] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const canProceed = () => {
     switch (step) {
-      case 1: return fullname.length > 0 && username.length > 0
-      case 2: return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-      case 3: return password.length >= 6 && password === confirmPassword
-      case 4: return otp.length >= 4
-      default: return true
+      case 1:
+        return fullname.length > 0 && username.length > 0;
+      case 2:
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      case 3:
+        return password.length >= 6 && password === confirmPassword;
+      case 4:
+        return otp.length >= 4;
+      default:
+        return false;
     }
-  }
+  };
+
+  const handleNext = () => {
+    if (step < 4) setStep(step + 1);
+  };
+
+  const handleBack = () => {
+    if (step > 1) setStep(step - 1);
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    // Simulate API call
+    await new Promise((r) => setTimeout(r, 1500));
+    setLoading(false);
+  };
+
+  const slideVariants = {
+    enter: { x: 40, opacity: 0 },
+    center: { x: 0, opacity: 1 },
+    exit: { x: -40, opacity: 0 },
+  };
 
   return (
-    <div className="p-2">
-      <DialogTitle className="text-2xl font-spectral font-extrabold text-white mb-2">
+    <div className="p-1">
+      <DialogTitle className="text-2xl font-bold text-white mb-1">
         Create account
       </DialogTitle>
-      <DialogDescription className="text-neutral-400 mb-6">
-        Join CyberHex to start building with AI.
+      <DialogDescription className="mb-6">
+        Step {step} of {steps.length} — {steps[step - 1].label}
       </DialogDescription>
 
-      {/* Progress Steps */}
-      <div className="flex items-center gap-2 mb-8">
-        {steps.map((s, i) => (
-          <div key={i} className="flex items-center gap-2 flex-1">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-              step > i + 1
-                ? "bg-green-600 text-white"
-                : step === i + 1
-                ? "bg-red-600 text-white ring-2 ring-red-500/30"
-                : "bg-neutral-800 text-neutral-500"
-            }`}>
-              {step > i + 1 ? <Check className="w-4 h-4" /> : i + 1}
-            </div>
-            <span className="text-xs text-neutral-500 hidden sm:block">{s}</span>
-            {i < steps.length - 1 && <div className="flex-1 h-px bg-neutral-800" />}
-          </div>
+      {/* Progress bar */}
+      <div className="flex gap-1.5 mb-8">
+        {steps.map((s) => (
+          <div
+            key={s.id}
+            className={`h-1 flex-1 rounded-full transition-all duration-500 ${
+              s.id < step
+                ? "bg-gradient-to-r from-cyan-500 to-cyan-400 shadow-[0_0_6px_rgba(6,182,212,0.4)]"
+                : s.id === step
+                  ? "bg-cyan-500/60"
+                  : "bg-neutral-800"
+            }`}
+          />
         ))}
       </div>
 
-      {/* Step Content */}
-      {step === 1 && (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-neutral-300">Full name</label>
-            <input
-              type="text"
-              value={fullname}
-              onChange={(e) => setFullname(e.target.value)}
-              placeholder="John Doe"
-              className="w-full px-4 py-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white text-sm placeholder-neutral-600 focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-all"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-neutral-300">Username</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="johndoe"
-              className="w-full px-4 py-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white text-sm placeholder-neutral-600 focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-all"
-            />
-          </div>
-        </div>
-      )}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="space-y-4 min-h-[180px]"
+        >
+          {/* Step 1: Profile */}
+          {step === 1 && (
+            <>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-neutral-400">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  value={fullname}
+                  onChange={(e) => setFullname(e.target.value)}
+                  placeholder="Ada Lovelace"
+                  className="input-cyber"
+                  autoFocus
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-neutral-400">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="ada_hacks"
+                  className="input-cyber"
+                />
+              </div>
+            </>
+          )}
 
-      {step === 2 && (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-neutral-300">Email address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full px-4 py-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white text-sm placeholder-neutral-600 focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-all"
-            />
-          </div>
-        </div>
-      )}
+          {/* Step 2: Email */}
+          {step === 2 && (
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-neutral-400">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="ada@cyberhex.dev"
+                className="input-cyber"
+                autoFocus
+              />
+              <p className="text-[11px] text-neutral-600 mt-2">
+                We'll send a verification code to this address.
+              </p>
+            </div>
+          )}
 
-      {step === 3 && (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-neutral-300">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Min. 6 characters"
-              className="w-full px-4 py-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white text-sm placeholder-neutral-600 focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-all"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-neutral-300">Confirm password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Repeat password"
-              className="w-full px-4 py-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white text-sm placeholder-neutral-600 focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-all"
-            />
-          </div>
-        </div>
-      )}
+          {/* Step 3: Password */}
+          {step === 3 && (
+            <>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-neutral-400">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Min. 6 characters"
+                  className="input-cyber"
+                  autoFocus
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-neutral-400">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter password"
+                  className={
+                    confirmPassword && password !== confirmPassword
+                      ? "input-cyber-error"
+                      : "input-cyber"
+                  }
+                />
+                {confirmPassword && password !== confirmPassword && (
+                  <p className="text-[11px] text-rose-400 mt-1">
+                    Passwords don't match
+                  </p>
+                )}
+              </div>
+            </>
+          )}
 
-      {step === 4 && (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-neutral-300">
-              Verification code
-            </label>
-            <p className="text-xs text-neutral-500">
-              Enter the 6-digit code sent to {email}
-            </p>
-            <input
-              type="text"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              placeholder="000000"
-              maxLength={6}
-              className="w-full px-4 py-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-white text-sm placeholder-neutral-600 text-center text-2xl tracking-[0.5em] focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-all"
-            />
-          </div>
-        </div>
-      )}
-
-      {step === 5 && (
-        <div className="text-center py-8 space-y-3">
-          <div className="w-16 h-16 rounded-2xl bg-green-600/10 flex items-center justify-center mx-auto">
-            <Check className="w-8 h-8 text-green-500" />
-          </div>
-          <p className="text-white font-semibold text-lg">Account created!</p>
-          <p className="text-neutral-400 text-sm">Welcome to CyberHex.</p>
-        </div>
-      )}
+          {/* Step 4: OTP */}
+          {step === 4 && (
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-neutral-400">
+                Verification Code
+              </label>
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                placeholder="000000"
+                maxLength={6}
+                className="input-cyber text-center text-lg tracking-[0.3em] font-mono"
+                autoFocus
+              />
+              <p className="text-[11px] text-neutral-600 mt-2">
+                We sent a 6-digit code to {email || "your email"}
+              </p>
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
 
       {/* Navigation */}
-      {step < 5 && (
-        <div className="flex gap-3 mt-6">
-          {step > 1 && (
-            <Button
-              variant="outline"
-              onClick={() => setStep(step - 1)}
-              className="flex-1"
-              aria-label="Previous step"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-          )}
+      <div className="flex items-center justify-between mt-8">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleBack}
+          disabled={step === 1}
+        >
+          <ArrowLeft className="h-4 w-4 mr-1.5" />
+          Back
+        </Button>
+
+        {step < 4 ? (
+          <Button onClick={handleNext} disabled={!canProceed()} size="lg">
+            Next
+            <ArrowRight className="h-4 w-4 ml-1.5" />
+          </Button>
+        ) : (
           <Button
-            variant="cyber"
-            onClick={() => setStep(step + 1)}
-            disabled={!canProceed()}
-            className="flex-1"
-            aria-label={step === 4 ? "Create account" : "Next step"}
+            onClick={handleSubmit}
+            disabled={!canProceed() || loading}
+            size="lg"
           >
-            {step === 4 ? (
-              <>Create Account</>
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Creating...
+              </>
             ) : (
               <>
-                Next
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <Check className="h-4 w-4 mr-1.5" />
+                Complete Setup
               </>
             )}
           </Button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
-  )
+  );
 }
-
-export default SignUp

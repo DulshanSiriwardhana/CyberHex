@@ -1,169 +1,142 @@
-import { motion } from "framer-motion"
-import { Cpu, Code2, Layers, Zap, ExternalLink, Globe } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Cpu,
+  Zap,
+  Shield,
+  Terminal,
+  Code2,
+  Heart,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 
-const AboutPage = () => {
+function GithubIcon({ className }: { className?: string }) {
   return (
-    <div className="min-h-screen bg-[#0c0c0c]">
-      {/* Hero */}
-      <section className="py-16 sm:py-24 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-red-950/20 to-transparent pointer-events-none" />
-        <div className="relative mx-auto max-w-boundary px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center max-w-3xl mx-auto"
-          >
-            <div className="w-16 h-16 rounded-2xl bg-red-600/10 border border-red-500/20 flex items-center justify-center mx-auto mb-6">
-              <Cpu className="w-8 h-8 text-red-500" />
-            </div>
-            <h1 className="font-spectral text-4xl sm:text-5xl font-extrabold text-white mb-4">
-              About <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-300">CyberHex</span>
-            </h1>
-            <p className="text-neutral-400 text-lg leading-relaxed">
-              CyberHex is a full-stack machine learning platform built from the ground up — combining a custom C++ neural network engine, a Python ML suite, a Node.js backend, and a modern React dashboard.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+    </svg>
+  );
+}
+import { Button } from "@/components/ui/button";
+import { Container, SectionHeading, Grid, Flex, Stack } from "@/components/ui/layout";
 
-      {/* Mission */}
-      <section className="py-16 relative">
-        <div className="mx-auto max-w-boundary px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="grid md:grid-cols-3 gap-6"
-          >
-            <Card glow className="text-center">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mx-auto mb-3">
-                  <Code2 className="w-6 h-6 text-blue-400" />
-                </div>
-                <CardTitle className="text-white">Built from Scratch</CardTitle>
-                <CardDescription>
-                  Every component — from matrix operations to the neural network engine — is written in pure C++17 without external ML libraries.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+const values = [
+  {
+    icon: Zap,
+    title: "Speed First",
+    description:
+      "We built the inference engine in C++ because Python is too slow. Every millisecond counts.",
+  },
+  {
+    icon: Terminal,
+    title: "Hacker Ethos",
+    description:
+      "This is a platform built by engineers, for engineers. No hand-holding, no bloat — just power.",
+  },
+  {
+    icon: Shield,
+    title: "Open Core",
+    description:
+      "The core engine is open source. You can inspect, fork, and contribute to the heart of CyberHex.",
+  },
+  {
+    icon: Cpu,
+    title: "Edge Ready",
+    description:
+      "Export models to pure C++ binaries that run on embedded devices, browsers via WASM, or bare metal.",
+  },
+];
 
-            <Card glow className="text-center">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center mx-auto mb-3">
-                  <Layers className="w-6 h-6 text-green-400" />
-                </div>
-                <CardTitle className="text-white">Full-Stack Integration</CardTitle>
-                <CardDescription>
-                  Seamlessly connects C++ ML engine, Python algorithms, Node.js API, and React dashboard via WebSockets and REST.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+export default function AboutPage() {
+  return (
+    <Container className="py-8 pt-24">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <SectionHeading
+          title="About CyberHex"
+          description="We're building the machine learning platform that hackers deserve."
+          align="center"
+        />
+      </motion.div>
 
-            <Card glow className="text-center">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mx-auto mb-3">
-                  <Zap className="w-6 h-6 text-purple-400" />
-                </div>
-                <CardTitle className="text-white">Real-Time Visualization</CardTitle>
-                <CardDescription>
-                  Watch your models train in real-time with live loss curves, weight visualizations, and interactive dashboards.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Tech Stack */}
-      <section className="py-16 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent pointer-events-none" />
-        <div className="relative mx-auto max-w-boundary px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="font-spectral text-3xl font-extrabold text-white mb-4">Technology Stack</h2>
-            <p className="text-neutral-400 max-w-2xl mx-auto">
-              CyberHex leverages a diverse set of technologies across its stack.
-            </p>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { title: "ML Engine", items: ["C++17", "OpenMP", "Custom Linear Algebra"] },
-              { title: "Python ML", items: ["Python 3", "NumPy", "Statistical Analysis"] },
-              { title: "Backend", items: ["Node.js", "Express 5", "MongoDB", "JWT", "WebSockets"] },
-              { title: "Frontend", items: ["React 19", "TypeScript", "Tailwind CSS", "Recharts", "Zustand"] },
-            ].map((group) => (
-              <Card key={group.title}>
-                <CardHeader>
-                  <CardTitle className="text-white text-lg">{group.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {group.items.map((item) => (
-                      <li key={item} className="text-neutral-400 text-sm flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Author */}
-      <section className="py-16 relative">
-        <div className="mx-auto max-w-boundary px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center max-w-2xl mx-auto"
-          >
-            <h2 className="font-spectral text-3xl font-extrabold text-white mb-6">Created By</h2>
-            <Card>
-              <CardContent className="pt-8 pb-8 text-center">
-                <p className="text-white text-xl font-semibold mb-1">Dulshan Siriwardhana</p>
-                <p className="text-neutral-400 text-sm mb-6">Full-Stack Developer & ML Engineer</p>
-                <div className="flex items-center justify-center gap-4">
-                  <a href="https://github.com/DulshanSiriwardhana" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-neutral-800 hover:border-neutral-600 text-neutral-400 hover:text-white transition-all flex items-center gap-2">
-                    <ExternalLink className="w-5 h-5" />
-                    <span className="text-sm hidden sm:inline">GitHub</span>
-                  </a>
-                  <a href="http://dulshansiriwardhana.live" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-neutral-800 hover:border-neutral-600 text-neutral-400 hover:text-white transition-all flex items-center gap-2">
-                    <Globe className="w-5 h-5" />
-                    <span className="text-sm hidden sm:inline">Portfolio</span>
-                  </a>
-                  <a href="https://www.linkedin.com/in/dulshansiriwardhana" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg border border-neutral-800 hover:border-neutral-600 text-neutral-400 hover:text-white transition-all flex items-center gap-2">
-                    <ExternalLink className="w-5 h-5" />
-                    <span className="text-sm hidden sm:inline">LinkedIn</span>
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-neutral-800 py-8">
-        <div className="mx-auto max-w-boundary px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-neutral-500 text-sm">
-            &copy; {new Date().getFullYear()} CyberHex. Built with passion for ML engineering.
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="max-w-3xl mx-auto mb-16"
+      >
+        <div className="rounded-2xl border border-neutral-800/60 bg-neutral-900/40 p-8 backdrop-blur-lg">
+          <p className="text-lg text-neutral-300 leading-relaxed">
+            CyberHex started with a simple question:{" "}
+            <span className="text-cyan-400 font-semibold">
+              why do you need a PhD to train a neural network?
+            </span>
+          </p>
+          <p className="mt-4 text-neutral-400 leading-relaxed">
+            We stripped away the Jupyter notebooks, the cloud dependencies, and
+            the Python overhead. What remains is a visual editor backed by a
+            custom C++ inference engine that runs at native speed — in your
+            browser or on bare metal.
+          </p>
+          <p className="mt-4 text-neutral-400 leading-relaxed">
+            Whether you're a student learning the fundamentals or an engineer
+            shipping production models, CyberHex gives you the tools you need
+            without the cruft you don't.
           </p>
         </div>
-      </footer>
-    </div>
-  )
-}
+      </motion.div>
 
-export default AboutPage
+      <SectionHeading title="Our Principles" align="center" />
+
+      <Grid cols={4} gap="md" className="mb-16">
+        {values.map((value, i) => (
+          <motion.div
+            key={value.title}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.08, duration: 0.4 }}
+          >
+            <div className="rounded-2xl border border-neutral-800/60 bg-neutral-900/40 p-6 text-center backdrop-blur-lg hover:border-cyan-500/20 transition-all duration-300 h-full">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500/20 to-cyan-600/5 border border-cyan-500/10 mb-4">
+                <value.icon className="h-6 w-6 text-cyan-400" />
+              </div>
+              <h3 className="text-lg font-bold text-white mb-2">{value.title}</h3>
+              <p className="text-sm text-neutral-400 leading-relaxed">{value.description}</p>
+            </div>
+          </motion.div>
+        ))}
+      </Grid>
+
+      {/* CTA */}
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-extrabold text-white mb-4">
+          Ready to <span className="text-cyan-400">build</span>?
+        </h2>
+        <Flex justify="center" gap="md">
+          <Link to="/signup">
+            <Button size="lg">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Get Started Free
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          </Link>
+          <a
+            href="https://github.com/dulshansiriwardhana/cyberhex"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant="outline" size="lg">
+              <GithubIcon className="h-4 w-4 mr-2" />
+              View on GitHub
+            </Button>
+          </a>
+        </Flex>
+      </div>
+    </Container>
+  );
+}

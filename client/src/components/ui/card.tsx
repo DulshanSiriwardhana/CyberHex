@@ -1,41 +1,33 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { motion } from "framer-motion"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { glow?: boolean }
->(({ className, glow, ...props }, ref) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-50px" }}
-    transition={{ duration: 0.4, ease: "easeOut" }}
-  >
+const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border border-neutral-800 bg-neutral-900/50 backdrop-blur-sm text-neutral-50 shadow-lg",
-        glow && "shadow-[0_0_30px_rgba(220,38,38,0.1)]",
-        className
+        "rounded-2xl border border-neutral-800/60 bg-neutral-900/60 backdrop-blur-lg",
+        "shadow-[0_4px_24px_rgba(0,0,0,0.4)]",
+        "hover:border-neutral-700/60 hover:shadow-[0_4px_24px_rgba(0,0,0,0.4),0_0_20px_rgba(6,182,212,0.06)]",
+        "transition-all duration-300",
+        className,
       )}
       {...props}
     />
-  </motion.div>
-))
-Card.displayName = "Card"
+  ),
+);
+Card.displayName = "Card";
 
-const CardHeader = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
-    {...props}
-  />
-))
-CardHeader.displayName = "CardHeader"
+const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex flex-col space-y-1.5 p-6", className)}
+      {...props}
+    />
+  ),
+);
+CardHeader.displayName = "CardHeader";
 
 const CardTitle = React.forwardRef<
   HTMLParagraphElement,
@@ -44,13 +36,13 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "text-2xl font-semibold leading-none tracking-tight",
-      className
+      "text-xl font-bold leading-tight tracking-tight text-white",
+      className,
     )}
     {...props}
   />
-))
-CardTitle.displayName = "CardTitle"
+));
+CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -58,30 +50,71 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-neutral-400", className)}
+    className={cn("text-sm text-neutral-400 leading-relaxed", className)}
     {...props}
   />
-))
-CardDescription.displayName = "CardDescription"
+));
+CardDescription.displayName = "CardDescription";
 
-const CardContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
-))
-CardContent.displayName = "CardContent"
+const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+  ),
+);
+CardContent.displayName = "CardContent";
 
-const CardFooter = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
-    {...props}
-  />
-))
-CardFooter.displayName = "CardFooter"
+const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex items-center p-6 pt-0", className)}
+      {...props}
+    />
+  ),
+);
+CardFooter.displayName = "CardFooter";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+// ---- Glow Card: card with a subtle neon border glow -------------------------
+const GlowCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        "rounded-2xl border border-cyan-500/20 bg-neutral-900/60 backdrop-blur-lg",
+        "shadow-[0_0_15px_rgba(6,182,212,0.1)]",
+        "hover:border-cyan-500/30 hover:shadow-[0_0_25px_rgba(6,182,212,0.15)]",
+        "transition-all duration-300",
+        className,
+      )}
+      {...props}
+    />
+  ),
+);
+GlowCard.displayName = "GlowCard";
+
+// ---- Stat Card: for metric displays ----------------------------------------
+const StatCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        "flex flex-col gap-2 rounded-2xl border border-neutral-800/60 bg-neutral-900/50 backdrop-blur-lg p-5",
+        "transition-all duration-300 hover:border-neutral-700/60",
+        className,
+      )}
+      {...props}
+    />
+  ),
+);
+StatCard.displayName = "StatCard";
+
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  GlowCard,
+  StatCard,
+};

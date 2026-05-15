@@ -1,103 +1,137 @@
-import { useState } from 'react';
-import { useAuth } from '@/contexts/auth';
-import { Button } from '@/components/ui/button';
+import { motion } from "framer-motion";
+import {
+  Settings,
+  User,
+  Bell,
+  Shield,
+  Terminal,
+  Eye,
+  EyeOff,
+  Save,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Container, Grid, Stack, Flex } from "@/components/ui/layout";
+import { useAuth } from "@/contexts/auth";
+import { SkeletonPage } from "@/components/ui/skeleton";
 
 export default function SettingsPage() {
-  const { user, changePassword, loading, error } = useAuth();
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
+  const { user } = useAuth();
 
-  const handlePasswordChange = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSuccessMsg('');
-    try {
-      await changePassword(currentPassword, newPassword, confirmPassword);
-      setSuccessMsg('Password changed successfully.');
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch {}
-  };
+  if (!user) return <SkeletonPage rows={3} />;
 
   return (
-    <div className="min-h-screen bg-[#0c0c0c] p-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="font-spectral font-extrabold text-3xl text-text-primary mb-8">Settings</h1>
+    <Container className="py-8 pt-24" narrow>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="mb-8"
+      >
+        <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+          <Settings className="h-7 w-7 text-cyan-400" />
+          Settings
+        </h1>
+        <p className="mt-1 text-neutral-400">Manage your account and preferences</p>
+      </motion.div>
 
-        <div className="bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-2xl p-8 mb-6">
-          <h2 className="font-spectral font-semibold text-xl text-text-primary mb-6">Profile</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-text-tertiary mb-1">Username</label>
-              <p className="text-text-primary">{user?.username || '—'}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-text-tertiary mb-1">Email</label>
-              <p className="text-text-primary">{user?.email || '—'}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-text-tertiary mb-1">Role</label>
-              <p className="text-text-secondary text-sm capitalize">{user?.role || 'user'}</p>
-            </div>
-          </div>
-        </div>
+      <Grid cols={2} gap="md">
+        {/* Profile */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5 text-cyan-400" />
+                Profile
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Stack gap="md">
+                <div className="flex items-center gap-4">
+                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-500 flex items-center justify-center text-2xl font-extrabold text-white shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+                    {user.username?.[0]?.toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold text-white">{user.username}</p>
+                    <p className="text-sm text-neutral-500">{user.email}</p>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-neutral-400">Username</label>
+                  <input
+                    type="text"
+                    defaultValue={user.username}
+                    className="input-cyber"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-neutral-400">Email</label>
+                  <input
+                    type="email"
+                    defaultValue={user.email}
+                    className="input-cyber"
+                  />
+                </div>
+                <Button>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Changes
+                </Button>
+              </Stack>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <div className="bg-[#141414] border border-[rgba(255,255,255,0.07)] rounded-2xl p-8">
-          <h2 className="font-spectral font-semibold text-xl text-text-primary mb-6">Change Password</h2>
-          <form onSubmit={handlePasswordChange} className="space-y-4">
-            <div>
-              <label htmlFor="currentPassword" className="block text-sm font-medium text-text-tertiary mb-1">
-                Current password
-              </label>
-              <input
-                id="currentPassword"
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                required
-                className="w-full h-10 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#0c0c0c] text-text-primary text-sm px-3 outline-none focus:border-[rgba(220,38,38,0.5)] focus:ring-1 focus:ring-[rgba(220,38,38,0.25)] transition-all"
-              />
-            </div>
-            <div>
-              <label htmlFor="newPassword" className="block text-sm font-medium text-text-tertiary mb-1">
-                New password
-              </label>
-              <input
-                id="newPassword"
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full h-10 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#0c0c0c] text-text-primary text-sm px-3 outline-none focus:border-[rgba(220,38,38,0.5)] focus:ring-1 focus:ring-[rgba(220,38,38,0.25)] transition-all"
-              />
-            </div>
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-tertiary mb-1">
-                Confirm new password
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full h-10 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#0c0c0c] text-text-primary text-sm px-3 outline-none focus:border-[rgba(220,38,38,0.5)] focus:ring-1 focus:ring-[rgba(220,38,38,0.25)] transition-all"
-              />
-            </div>
+        {/* Preferences */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="space-y-6"
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="h-5 w-5 text-violet-400" />
+                Notifications
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Stack gap="sm">
+                {["Training completions", "Experiment failures", "Model deployment status", "Weekly digests"].map((item) => (
+                  <label key={item} className="flex items-center justify-between py-2 cursor-pointer">
+                    <span className="text-sm text-neutral-300">{item}</span>
+                    <input type="checkbox" defaultChecked className="rounded border-neutral-700 bg-neutral-800 text-cyan-500 focus:ring-cyan-500/50" />
+                  </label>
+                ))}
+              </Stack>
+            </CardContent>
+          </Card>
 
-            {error && <p className="text-sm text-red-400">{error}</p>}
-            {successMsg && <p className="text-sm text-green-400">{successMsg}</p>}
-
-            <Button type="submit" variant="cyber" isLoading={loading}>
-              Update password
-            </Button>
-          </form>
-        </div>
-      </div>
-    </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-emerald-400" />
+                Security
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Stack gap="sm">
+                <Button variant="outline" className="w-full justify-start">
+                  <Terminal className="h-4 w-4 mr-2" />
+                  Change Password
+                </Button>
+                <Button variant="outline" className="w-full justify-start text-rose-400 hover:text-rose-300 border-rose-500/20 hover:border-rose-500/40">
+                  Delete Account
+                </Button>
+              </Stack>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </Grid>
+    </Container>
   );
 }

@@ -1,282 +1,242 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useExperimentsStore } from '../stores/experiments';
-import type { ExperimentConfig } from '../lib/api';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  FlaskConical,
+  Play,
+  Save,
+  Plus,
+  Trash2,
+  Layers,
+  Brain,
+  Settings2,
+  BarChart3,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Container, Grid, Stack, Flex } from "@/components/ui/layout";
 
-const defaultConfig: ExperimentConfig = {
-  task: 'regression',
-  modelType: 'neural_network',
-  layers: [64, 32, 1],
-  activations: ['relu', 'relu', 'linear'],
-  loss: 'mse',
-  batchSize: 32,
-  epochs: 100,
-  learningRate: 0.001,
-  optimizer: 'adam',
-  validationSplit: 0.2,
-  earlyStopping: true,
-  patience: 10,
-  dataPath: null,
-  seed: 42,
-};
+interface Layer {
+  id: string;
+  type: string;
+  units: number;
+  activation: string;
+}
 
 export default function ExperimentBuilderPage() {
-  const navigate = useNavigate();
-  const { createExperiment, loading, error, clearError } = useExperimentsStore();
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [config, setConfig] = useState<ExperimentConfig>({ ...defaultConfig });
-  const [localError, setLocalError] = useState<string | null>(null);
+  const [name, setName] = useState("Untitled Experiment");
+  const [layers, setLayers] = useState<Layer[]>([
+    { id: "1", type: "Dense", units: 128, activation: "relu" },
+    { id: "2", type: "Dense", units: 64, activation: "relu" },
+    { id: "3", type: "Dense", units: 10, activation: "softmax" },
+  ]);
+  const [epochs, setEpochs] = useState(50);
+  const [learningRate, setLearningRate] = useState(0.001);
+  const [batchSize, setBatchSize] = useState(32);
 
-  const updateConfig = (key: keyof ExperimentConfig, value: unknown) => {
-    setConfig((prev) => ({ ...prev, [key]: value }));
+  const addLayer = () => {
+    const newLayer: Layer = {
+      id: crypto.randomUUID(),
+      type: "Dense",
+      units: 32,
+      activation: "relu",
+    };
+    setLayers([...layers, newLayer]);
   };
 
-  const handleLayersChange = (value: string) => {
-    const layers = value
-      .split(',')
-      .map((v) => parseInt(v.trim()))
-      .filter((v) => !isNaN(v) && v > 0);
-    updateConfig('layers', layers.length > 0 ? layers : [1]);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLocalError(null);
-
-    if (!name.trim()) {
-      setLocalError('Experiment name is required');
-      return;
-    }
-
-    try {
-      const experiment = await createExperiment({
-        name: name.trim(),
-        description: description.trim(),
-        config,
-      });
-      navigate(`/experiments/${experiment._id}`);
-    } catch (err: any) {
-      setLocalError(err.message || 'Failed to create experiment');
-    }
+  const removeLayer = (id: string) => {
+    setLayers(layers.filter((l) => l.id !== id));
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-8">
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            ← Back
-          </button>
-          <h1 className="text-3xl font-bold text-white">New Experiment</h1>
-        </div>
-
-        {(error || localError) && (
-          <div className="bg-red-900/50 border border-red-700 rounded-lg p-4 mb-6 flex justify-between items-center">
-            <span className="text-red-200">{error || localError}</span>
-            <button
-              onClick={() => {
-                clearError();
-                setLocalError(null);
-              }}
-              className="text-red-300 hover:text-red-100 text-sm"
+    <Container className="py-8 pt-24">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="mb-8"
+      >
+        <Flex justify="between" wrap>
+          <div>
+            <Link
+              to="/experiments"
+              className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-300 transition-colors mb-2"
             >
-              Dismiss
-            </button>
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Back to experiments
+            </Link>
+            <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+              <FlaskConical className="h-7 w-7 text-cyan-400" />
+              {name}
+            </h1>
           </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-5 space-y-4">
-            <h2 className="text-lg font-semibold text-white">Basic Info</h2>
-            <div>
-              <label className="block text-sm text-gray-400 mb-1">Name *</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="My Experiment"
-                maxLength={100}
-                className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-400 mb-1">Description</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Optional description..."
-                maxLength={500}
-                rows={2}
-                className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 resize-none"
-              />
-            </div>
+          <div className="flex gap-3 mt-4 sm:mt-0">
+            <Button variant="outline" size="lg">
+              <Save className="h-4 w-4 mr-2" />
+              Save Draft
+            </Button>
+            <Button size="lg">
+              <Play className="h-4 w-4 mr-2" />
+              Start Training
+            </Button>
           </div>
+        </Flex>
+      </motion.div>
 
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-5 space-y-4">
-            <h2 className="text-lg font-semibold text-white">Model Configuration</h2>
+      <Grid cols={2} gap="md">
+        {/* Layer builder */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card className="h-full">
+            <CardHeader>
+              <Flex justify="between">
+                <CardTitle className="flex items-center gap-2">
+                  <Layers className="h-5 w-5 text-cyan-400" />
+                  Layers
+                </CardTitle>
+                <Button variant="ghost" size="sm" onClick={addLayer}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Layer
+                </Button>
+              </Flex>
+            </CardHeader>
+            <CardContent>
+              <Stack gap="sm">
+                {layers.map((layer, i) => (
+                  <div
+                    key={layer.id}
+                    className="flex items-center gap-3 rounded-xl border border-neutral-800/60 bg-neutral-850/50 px-4 py-3"
+                  >
+                    <div className="h-8 w-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-xs font-bold text-cyan-400 font-mono">
+                      {i + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-white">
+                        {layer.type}
+                      </p>
+                      <p className="text-xs text-neutral-400">
+                        {layer.units} units · {layer.activation}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => removeLayer(layer.id)}
+                      className="p-1.5 rounded-lg text-neutral-600 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </Stack>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Model Type</label>
-                <select
-                  value={config.modelType}
-                  onChange={(e) => updateConfig('modelType', e.target.value)}
-                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
-                >
-                  <option value="neural_network">Neural Network</option>
-                  <option value="linear_regression">Linear Regression</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Task</label>
-                <select
-                  value={config.task}
-                  onChange={(e) => updateConfig('task', e.target.value)}
-                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
-                >
-                  <option value="regression">Regression</option>
-                  <option value="classification">Classification</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-400 mb-1">
-                Layers (comma-separated, e.g. 64,32,1)
-              </label>
-              <input
-                type="text"
-                value={config.layers.join(',')}
-                onChange={(e) => handleLayersChange(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Epochs</label>
-                <input
-                  type="number"
-                  value={config.epochs}
-                  onChange={(e) => updateConfig('epochs', parseInt(e.target.value) || 1)}
-                  min={1}
-                  max={10000}
-                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Batch Size</label>
-                <input
-                  type="number"
-                  value={config.batchSize}
-                  onChange={(e) => updateConfig('batchSize', parseInt(e.target.value) || 1)}
-                  min={1}
-                  max={1024}
-                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Learning Rate</label>
-                <input
-                  type="number"
-                  value={config.learningRate}
-                  onChange={(e) => updateConfig('learningRate', parseFloat(e.target.value) || 0)}
-                  step={0.0001}
-                  min={0.00001}
-                  max={1}
-                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Optimizer</label>
-                <select
-                  value={config.optimizer}
-                  onChange={(e) => updateConfig('optimizer', e.target.value)}
-                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
-                >
-                  <option value="adam">Adam</option>
-                  <option value="sgd">SGD</option>
-                  <option value="rmsprop">RMSprop</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Loss</label>
-                <select
-                  value={config.loss}
-                  onChange={(e) => updateConfig('loss', e.target.value)}
-                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
-                >
-                  <option value="mse">MSE</option>
-                  <option value="mae">MAE</option>
-                  <option value="binary_crossentropy">Binary Crossentropy</option>
-                  <option value="categorical_crossentropy">Categorical Crossentropy</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Validation Split</label>
-                <input
-                  type="number"
-                  value={config.validationSplit}
-                  onChange={(e) => updateConfig('validationSplit', parseFloat(e.target.value) || 0)}
-                  step={0.05}
-                  min={0}
-                  max={0.5}
-                  className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={config.earlyStopping}
-                  onChange={(e) => updateConfig('earlyStopping', e.target.checked)}
-                  className="w-4 h-4 bg-gray-800 border-gray-700 rounded"
-                />
-                <label className="text-sm text-gray-400">Early Stopping</label>
-              </div>
-              {config.earlyStopping && (
-                <div>
-                  <label className="block text-sm text-gray-400 mb-1">Patience</label>
+        {/* Settings */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="space-y-6"
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings2 className="h-5 w-5 text-violet-400" />
+                Hyperparameters
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Stack gap="md">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-neutral-400">
+                    Experiment Name
+                  </label>
                   <input
-                    type="number"
-                    value={config.patience}
-                    onChange={(e) => updateConfig('patience', parseInt(e.target.value) || 1)}
-                    min={1}
-                    max={100}
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="input-cyber"
                   />
                 </div>
-              )}
-            </div>
-          </div>
+                <Grid cols={3} gap="sm">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-neutral-400">
+                      Epochs
+                    </label>
+                    <input
+                      type="number"
+                      value={epochs}
+                      onChange={(e) => setEpochs(Number(e.target.value))}
+                      className="input-cyber"
+                      min={1}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-neutral-400">
+                      LR
+                    </label>
+                    <input
+                      type="number"
+                      value={learningRate}
+                      onChange={(e) => setLearningRate(Number(e.target.value))}
+                      className="input-cyber"
+                      step={0.0001}
+                      min={0.0001}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-neutral-400">
+                      Batch Size
+                    </label>
+                    <input
+                      type="number"
+                      value={batchSize}
+                      onChange={(e) => setBatchSize(Number(e.target.value))}
+                      className="input-cyber"
+                      min={1}
+                    />
+                  </div>
+                </Grid>
+              </Stack>
+            </CardContent>
+          </Card>
 
-          <div className="flex gap-3">
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
-            >
-              {loading ? 'Creating...' : 'Create Experiment'}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/dashboard')}
-              className="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg font-medium transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-cyan-400" />
+                Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Stack gap="sm">
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-400">Total layers</span>
+                  <span className="text-white font-mono">{layers.length}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-400">Total params</span>
+                  <span className="text-white font-mono">
+                    {(layers.reduce((sum, l) => sum + l.units * (layers.indexOf(l) > 0 ? layers[layers.indexOf(l) - 1].units : 784), 0)).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-neutral-400">Estimated time</span>
+                  <span className="text-white font-mono">
+                    ~{Math.round(epochs * 0.6)}s
+                  </span>
+                </div>
+              </Stack>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </Grid>
+    </Container>
   );
 }
