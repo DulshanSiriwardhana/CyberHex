@@ -17,7 +17,7 @@ router.use(authenticateToken);
 
 router.get('/profile', asyncHandler(getUserProfile));
 
-router.get('/', asyncHandler(authorizeRole('admin'), getAllUsers));
+router.get('/', authorizeRole('admin'), asyncHandler(getAllUsers));
 
 router.get('/:id', asyncHandler(getUserById));
 

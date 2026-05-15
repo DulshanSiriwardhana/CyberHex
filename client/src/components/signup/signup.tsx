@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/auth";
+import { otpApi } from "@/lib/api";
 
 const steps = [
   { id: 1, label: "Profile", fields: ["fullname", "username"] },
@@ -11,6 +13,7 @@ const steps = [
 ];
 
 export default function SignUp() {
+  const { register } = useAuth();
   const [step, setStep] = useState(1);
   const [fullname, setFullname] = useState("");
   const [username, setUsername] = useState("");
@@ -19,6 +22,11 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCooldown, setOtpCooldown] = useState(0);
+
+  const clearError = () => setError("");
 
   const canProceed = () => {
     switch (step) {
@@ -29,25 +37,85 @@ export default function SignUp() {
       case 3:
         return password.length >= 6 && password === confirmPassword;
       case 4:
-        return otp.length >= 4;
+        return otp.length === 6;
       default:
         return false;
     }
   };
 
-  const handleNext = () => {
-    if (step < 4) setStep(step + 1);
+  const sendOtpCode = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      await otpApi.sendOtp(email);
+      setOtpSent(true);
+      setOtp("");
+      setOtpCooldown(30);
+      const interval = setInterval(() => {
+        setOtpCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (err: any) {
+      setError(err?.message || "Failed to send verification code.");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+    return true;
+  };
+
+  const verifyOtpCode = async () => {
+    try {
+      await otpApi.verifyOtp(email, otp);
+      return true;
+    } catch (err: any) {
+      setError(err?.message || "Invalid verification code.");
+      return false;
+    }
+  };
+
+  const handleNext = async () => {
+    clearError();
+    if (step === 2) {
+      setStep(3);
+    } else if (step === 3) {
+      const sent = await sendOtpCode();
+      if (!sent) return;
+      setStep(4);
+    }
   };
 
   const handleBack = () => {
+    clearError();
+    if (step === 4) setOtpSent(false);
     if (step > 1) setStep(step - 1);
   };
 
   const handleSubmit = async () => {
+    setError("");
     setLoading(true);
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
+    try {
+      const verified = await verifyOtpCode();
+      if (!verified) {
+        setLoading(false);
+        return;
+      }
+    } catch {
+      setLoading(false);
+      return;
+    }
+    try {
+      await register(username, email, password);
+    } catch (err: any) {
+      setError(err?.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const slideVariants = {
@@ -58,9 +126,7 @@ export default function SignUp() {
 
   return (
     <div className="p-1">
-      <h2 className="text-2xl font-bold text-white mb-1">
-        Create account
-      </h2>
+      <h2 className="text-2xl font-bold text-white mb-1">Create account</h2>
       <p className="text-sm text-neutral-400 mb-6">
         Step {step} of {steps.length} — {steps[step - 1].label}
       </p>
@@ -81,6 +147,17 @@ export default function SignUp() {
         ))}
       </div>
 
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/5 px-4 py-2.5 text-sm text-rose-400 mb-4"
+        >
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          {error}
+        </motion.div>
+      )}
+
       <AnimatePresence mode="wait">
         <motion.div
           key={step}
@@ -95,9 +172,7 @@ export default function SignUp() {
           {step === 1 && (
             <>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-neutral-400">
-                  Full Name
-                </label>
+                <label className="text-xs font-medium text-neutral-400">Full Name</label>
                 <input
                   type="text"
                   value={fullname}
@@ -108,9 +183,7 @@ export default function SignUp() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-neutral-400">
-                  Username
-                </label>
+                <label className="text-xs font-medium text-neutral-400">Username</label>
                 <input
                   type="text"
                   value={username}
@@ -125,19 +198,21 @@ export default function SignUp() {
           {/* Step 2: Email */}
           {step === 2 && (
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-neutral-400">
-                Email
-              </label>
+              <label className="text-xs font-medium text-neutral-400">Email</label>
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setOtpSent(false);
+                  clearError();
+                }}
                 placeholder="ada@cyberhex.dev"
                 className="input-cyber"
                 autoFocus
               />
               <p className="text-[11px] text-neutral-600 mt-2">
-                We'll send a verification code to this address.
+                We'll send a 6-digit verification code to this address.
               </p>
             </div>
           )}
@@ -146,9 +221,7 @@ export default function SignUp() {
           {step === 3 && (
             <>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-neutral-400">
-                  Password
-                </label>
+                <label className="text-xs font-medium text-neutral-400">Password</label>
                 <input
                   type="password"
                   value={password}
@@ -182,7 +255,7 @@ export default function SignUp() {
             </>
           )}
 
-          {/* Step 4: OTP */}
+          {/* Step 4: Verify OTP */}
           {step === 4 && (
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-neutral-400">
@@ -198,8 +271,20 @@ export default function SignUp() {
                 autoFocus
               />
               <p className="text-[11px] text-neutral-600 mt-2">
-                We sent a 6-digit code to {email || "your email"}
+                A 6-digit code was sent to{" "}
+                <span className="text-neutral-400">{email}</span>
               </p>
+              <button
+                type="button"
+                disabled={otpCooldown > 0}
+                onClick={sendOtpCode}
+                className="inline-flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 disabled:text-neutral-600 disabled:cursor-not-allowed mt-1 transition-colors"
+              >
+                <RefreshCw
+                  className={`h-3 w-3 ${otpCooldown > 0 ? "animate-spin" : ""}`}
+                />
+                {otpCooldown > 0 ? `Resend in ${otpCooldown}s` : "Resend code"}
+              </button>
             </div>
           )}
         </motion.div>
@@ -218,9 +303,22 @@ export default function SignUp() {
         </Button>
 
         {step < 4 ? (
-          <Button onClick={handleNext} disabled={!canProceed()} size="lg">
-            Next
-            <ArrowRight className="h-4 w-4 ml-1.5" />
+          <Button
+            onClick={handleNext}
+            disabled={!canProceed() || loading}
+            size="lg"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Sending...
+              </>
+            ) : (
+              <>
+                {step === 3 ? "Send Code" : "Next"}
+                <ArrowRight className="h-4 w-4 ml-1.5" />
+              </>
+            )}
           </Button>
         ) : (
           <Button
@@ -231,7 +329,7 @@ export default function SignUp() {
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Creating...
+                Creating account...
               </>
             ) : (
               <>

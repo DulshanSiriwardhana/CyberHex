@@ -10,6 +10,12 @@ const schema = z.object({
   JWT_REFRESH_SECRET: z.string().min(32),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   CORS_ORIGINS: z.string().default('http://localhost:5173'),
+  SMTP_HOST: z.string().optional().default('smtp.gmail.com'),
+  SMTP_PORT: z.string().optional().default('587'),
+  SMTP_SECURE: z.string().optional().default('false'),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  ML_ENGINE: z.enum(['python', 'cpp']).optional().default('python'),
 });
 
 const result = schema.safeParse(process.env);

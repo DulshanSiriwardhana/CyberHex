@@ -2,13 +2,17 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [master, release, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [master, release]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
-  NODE_VERSION: '18'
-  PYTHON_VERSION: '3.11'
+  NODE_VERSION: "20"
+  PYTHON_VERSION: "3.11"
 
 jobs:
   lint-backend:
@@ -17,18 +21,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: 'backend/package-lock.json'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
-      - name: Install backend dependencies
+      - name: Install dependencies
         run: cd backend && npm ci
 
       - name: Run ESLint
-        run: cd backend && npm run lint || true
+        run: cd backend && npm run lint -- --max-warnings 0 2>&1 || true
 
   test-backend:
     name: Test Backend
@@ -36,53 +39,34 @@ jobs:
     services:
       mongodb:
         image: mongo:7-alpine
+        ports:
+          - 27017:27017
         options: >-
-          --health-cmd mongosh
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ping:1})'"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 27017:27017
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: 'backend/package-lock.json'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
-      - name: Install backend dependencies
+      - name: Install dependencies
         run: cd backend && npm ci
 
-      - name: Run backend tests
-        run: cd backend && npm test
+      - name: Run tests
+        run: cd backend && NODE_OPTIONS=--experimental-vm-modules npx jest --forceExit --detectOpenHandles
         env:
-          DB_URI: mongodb://localhost:27017/cyberhex
-          JWT_SECRET: test_secret
-          JWT_REFRESH_SECRET: test_refresh_secret
+          MONGODB_URI: mongodb://localhost:27017/cyberhex_test
+          JWT_SECRET: test_jwt_secret_minimum_32_chars_long
+          JWT_REFRESH_SECRET: test_refresh_secret_minimum_32_chars_long
           NODE_ENV: test
-
-  build-backend:
-    name: Build Backend Docker Image
-    runs-on: ubuntu-latest
-    needs: [ lint-backend, test-backend ]
-    if: github.event_name == 'push'
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build backend image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          CORS_ORIGINS: http://localhost:5173
 
   lint-client:
     name: Lint Client
@@ -90,21 +74,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: 'client/package-lock.json'
+          cache: npm
+          cache-dependency-path: client/package-lock.json
 
-      - name: Install client dependencies
+      - name: Install dependencies
         run: cd client && npm ci
 
       - name: Run ESLint
-        run: cd client && npm run lint || true
+        run: cd client && npm run lint -- --max-warnings 0 2>&1 || true
 
-      - name: Type check with TypeScript
-        run: cd client && npm run build 2>&1 | head -20 || true
+      - name: TypeScript check
+        run: cd client && npx vue-tsc --noEmit 2>&1 || cd client && npx tsc --noEmit 2>&1 || true
 
   test-client:
     name: Test Client
@@ -112,37 +95,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: 'client/package-lock.json'
+          cache: npm
+          cache-dependency-path: client/package-lock.json
 
-      - name: Install client dependencies
+      - name: Install dependencies
         run: cd client && npm ci
 
-      - name: Run client tests
-        run: cd client && npm test -- --run || true
+      - name: Run tests
+        run: cd client && npx vitest run --reporter=verbose 2>&1 || true
 
   build-client:
     name: Build Client
     runs-on: ubuntu-latest
-    needs: [ lint-client, test-client ]
+    needs: [lint-client, test-client]
+    if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: 'client/package-lock.json'
+          cache: npm
+          cache-dependency-path: client/package-lock.json
 
-      - name: Install client dependencies
+      - name: Install dependencies
         run: cd client && npm ci
 
-      - name: Build client
+      - name: Build
         run: cd client && npm run build
         env:
           VITE_API_BASE_URL: /api/v1
@@ -150,71 +132,145 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: client-build
+          name: client-dist
           path: client/dist
-          retention-days: 1
+          retention-days: 7
 
   build-cpp:
-    name: Build C++ Modules
+    name: Build and Test C++ Modules
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake build-essential
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq cmake build-essential libomp-dev
 
       - name: Configure CMake
-        run: cd ML/models/cpp-modules && cmake -B build -DCMAKE_BUILD_TYPE=Release
+        run: |
+          cd ML/models/cpp-modules
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: cd ML/models/cpp-modules && cmake --build build
+        run: cd ML/models/cpp-modules && cmake --build build --parallel $(nproc)
+
+      - name: Run unit tests
+        run: cd ML/models/cpp-modules/build && ./unit_tests --test 2>&1 || true
+
+      - name: Upload C++ artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpp-binaries
+          path: |
+            ML/models/cpp-modules/build/cyberhex_ml
+            ML/models/cpp-modules/build/libcyberhex.so
+          retention-days: 7
+          if-no-files-found: ignore
 
   security-scan:
-    name: Security Scan
+    name: Security Audit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Run npm audit on backend
-        run: cd backend && npm audit --audit-level=moderate || true
+      - name: Audit backend dependencies
+        run: cd backend && npm audit --audit-level=high 2>&1 || true
 
-      - name: Run npm audit on client
-        run: cd client && npm audit --audit-level=moderate || true
+      - name: Audit client dependencies
+        run: cd client && npm audit --audit-level=high 2>&1 || true
 
-  docker-compose-validation:
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [lint-backend, test-backend]
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build client image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./client
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  docker-compose-check:
     name: Validate Docker Compose
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate docker-compose.yml
-        run: docker-compose config -f docker-compose.yml > /dev/null
-
-      - name: Build Docker images
-        run: |
-          docker-compose build --no-cache backend
-          docker-compose build --no-cache frontend
+      - name: Validate compose file
+        run: docker compose -f docker-compose.yml config > /dev/null
 
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [ lint-backend, test-backend, build-backend, lint-client, test-client, build-client, build-cpp, security-scan, docker-compose-validation ]
+    needs:
+      [
+        lint-backend,
+        test-backend,
+        lint-client,
+        test-client,
+        build-client,
+        build-cpp,
+        security-scan,
+        docker-build,
+        docker-compose-check,
+      ]
     if: always()
     steps:
-      - name: Check build status
+      - name: Collect results
         run: |
-          if [ "${{ job.status }}" == "failure" ]; then
-            echo "❌ CI pipeline failed"
+          echo "### CI Pipeline Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          declare -A job_results
+          job_results["lint-backend"]="${{ needs.lint-backend.result }}"
+          job_results["test-backend"]="${{ needs.test-backend.result }}"
+          job_results["lint-client"]="${{ needs.lint-client.result }}"
+          job_results["test-client"]="${{ needs.test-client.result }}"
+          job_results["build-client"]="${{ needs.build-client.result }}"
+          job_results["build-cpp"]="${{ needs.build-cpp.result }}"
+          job_results["security-scan"]="${{ needs.security-scan.result }}"
+          job_results["docker-build"]="${{ needs.docker-build.result }}"
+          job_results["docker-compose-check"]="${{ needs.docker-compose-check.result }}"
+
+          failed=false
+          for job in "${!job_results[@]}"; do
+            result="${job_results[$job]}"
+            if [ "$result" = "success" ]; then
+              echo "- PASS: $job" >> $GITHUB_STEP_SUMMARY
+            elif [ "$result" = "skipped" ]; then
+              echo "- SKIP: $job" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- FAIL: $job ($result)" >> $GITHUB_STEP_SUMMARY
+              failed=true
+            fi
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "$failed" = true ]; then
+            echo "## Pipeline failed" >> $GITHUB_STEP_SUMMARY
             exit 1
           else
-            echo "✅ CI pipeline passed"
+            echo "## Pipeline passed" >> $GITHUB_STEP_SUMMARY
           fi

@@ -11,6 +11,7 @@ import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import experimentRoutes from './routes/experimentRoutes.js';
 import mlTrainingRoutes from './routes/mlTrainingRoutes.js';
+import otpRoutes from './routes/otpRoutes.js';
 import logger from './utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -53,6 +54,7 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/experiments', experimentRoutes);
 app.use('/api/v1/ml', mlTrainingRoutes);
+app.use('/api/v1/otp', otpRoutes);
 
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', version: '1.0.0', timestamp: new Date() }));
