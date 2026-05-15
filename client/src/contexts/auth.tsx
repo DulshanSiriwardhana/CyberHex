@@ -1,239 +1,214 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+const API_BASE = 'http://localhost:5000';
 
-interface User {
-    id: string;
-    username: string;
-    email: string;
-    role: string;
-    profilePicture?: string;
-    emailVerified?: boolean;
+export interface User {
+  _id: string;
+  username: string;
+  email: string;
+  role: string;
+  emailVerified: boolean;
+  createdAt: string;
 }
 
-interface AuthContextType {
-    user: User | null;
-    accessToken: string | null;
-    login: (email: string, password: string) => Promise<void>;
-    register: (username: string, email: string, password: string) => Promise<void>;
-    logout: () => Promise<void>;
-    refreshToken: () => Promise<void>;
-    changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<void>;
-    loading: boolean;
-    error: string | null;
+interface AuthState {
+  user: User | null;
+  token: string | null;
+  loading: boolean;
+  isAuthenticated: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+interface AuthContextType extends AuthState {
+  login: (email: string, password: string) => Promise<void>;
+  register: (username: string, email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  refreshSession: () => Promise<boolean>;
+}
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) throw new Error('useAuth must be used within AuthProvider');
-    return context;
-};
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [accessToken, setAccessToken] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    let refreshTokenTimeout: ReturnType<typeof setTimeout> | null = null;
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [state, setState] = useState<AuthState>({
+    user: null,
+    token: localStorage.getItem('accessToken'),
+    loading: true,
+    isAuthenticated: false,
+  });
 
-    const clearError = useCallback(() => setError(null), []);
+  const clearAuth = useCallback(() => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('user');
+    setState({ user: null, token: null, loading: false, isAuthenticated: false });
+  }, []);
 
-    const scheduleTokenRefresh = useCallback((expiresIn: number = 14 * 60 * 1000) => {
-        if (refreshTokenTimeout) clearTimeout(refreshTokenTimeout);
-        refreshTokenTimeout = setTimeout(async () => {
-            try {
-                await refreshToken();
-            } catch (err) {
-                console.error('Token refresh failed:', err);
-            }
-        }, expiresIn);
-    }, []);
+  const refreshSession = useCallback(async (): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        clearAuth();
+        return false;
+      }
+      const data = await res.json();
+      if (data.accessToken) {
+        localStorage.setItem('accessToken', data.accessToken);
+        setState((prev) => ({ ...prev, token: data.accessToken, isAuthenticated: true }));
+        return true;
+      }
+      clearAuth();
+      return false;
+    } catch {
+      clearAuth();
+      return false;
+    }
+  }, [clearAuth]);
 
-    useEffect(() => {
-        const initAuth = async () => {
-            try {
-                const token = localStorage.getItem('accessToken');
-                if (token) {
-                    setAccessToken(token);
-                    const response = await fetch(`${API_BASE_URL}/auth/profile`, {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
+  useEffect(() => {
+    const init = async () => {
+      const savedUser = localStorage.getItem('user');
+      const savedToken = localStorage.getItem('accessToken');
 
-                    if (response.ok) {
-                        const data = await response.json();
-                        setUser(data.user);
-                        clearError();
-                        scheduleTokenRefresh();
-                    } else if (response.status === 401) {
-                        localStorage.removeItem('accessToken');
-                        setAccessToken(null);
-                        setUser(null);
-                    } else {
-                        throw new Error('Failed to fetch profile');
-                    }
-                }
-            } catch (err) {
-                console.error('Auth initialization error:', err);
-                localStorage.removeItem('accessToken');
-                setAccessToken(null);
-                setUser(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        initAuth();
-
-        return () => {
-            if (refreshTokenTimeout) clearTimeout(refreshTokenTimeout);
-        };
-    }, [clearError, scheduleTokenRefresh]);
-
-    const login = async (email: string, password: string) => {
+      if (savedUser && savedToken) {
         try {
-            setLoading(true);
-            clearError();
-
-            const res = await fetch(`${API_BASE_URL}/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ email, password })
+          const res = await fetch(`${API_BASE}/api/v1/auth/profile`, {
+            headers: { Authorization: `Bearer ${savedToken}` },
+            credentials: 'include',
+          });
+          if (!res.ok) {
+            const refreshed = await refreshSession();
+            if (!refreshed) {
+              clearAuth();
+              return;
+            }
+            const retryRes = await fetch(`${API_BASE}/api/v1/auth/profile`, {
+              headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+              credentials: 'include',
             });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.error || 'Login failed');
+            if (!retryRes.ok) {
+              clearAuth();
+              return;
             }
-
-            localStorage.setItem('accessToken', data.accessToken);
-            setAccessToken(data.accessToken);
-            setUser(data.user);
-            scheduleTokenRefresh();
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Login failed';
-            setError(errorMessage);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const register = async (username: string, email: string, password: string) => {
-        try {
-            setLoading(true);
-            clearError();
-
-            const res = await fetch(`${API_BASE_URL}/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ username, email, password })
+            const retryData = await retryRes.json();
+            localStorage.setItem('user', JSON.stringify(retryData.user));
+            setState({
+              user: retryData.user,
+              token: localStorage.getItem('accessToken'),
+              loading: false,
+              isAuthenticated: true,
             });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.error || 'Registration failed');
-            }
-
-            localStorage.setItem('accessToken', data.accessToken);
-            setAccessToken(data.accessToken);
-            setUser(data.user);
-            scheduleTokenRefresh();
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Registration failed';
-            setError(errorMessage);
-            throw err;
-        } finally {
-            setLoading(false);
+            return;
+          }
+          const data = await res.json();
+          localStorage.setItem('user', JSON.stringify(data.user));
+          setState({
+            user: data.user,
+            token: savedToken,
+            loading: false,
+            isAuthenticated: true,
+          });
+        } catch {
+          const refreshed = await refreshSession();
+          if (!refreshed) {
+            clearAuth();
+          }
         }
+      } else {
+        setState((prev) => ({ ...prev, loading: false }));
+      }
     };
 
-    const refreshToken = async () => {
-        try {
-            const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
-                method: 'POST',
-                credentials: 'include'
-            });
+    init();
 
-            const data = await res.json();
+    const handleAuthLogout = () => clearAuth();
+    window.addEventListener('auth:logout', handleAuthLogout);
+    return () => window.removeEventListener('auth:logout', handleAuthLogout);
+  }, [clearAuth, refreshSession]);
 
-            if (!res.ok) {
-                throw new Error(data.error || 'Token refresh failed');
-            }
-
-            localStorage.setItem('accessToken', data.accessToken);
-            setAccessToken(data.accessToken);
-            clearError();
-            scheduleTokenRefresh();
-        } catch (err) {
-            console.error('Token refresh error:', err);
-            logout();
-            throw err;
-        }
-    };
-
-    const logout = async () => {
-        try {
-            const token = localStorage.getItem('accessToken');
-            if (token) {
-                await fetch(`${API_BASE_URL}/auth/logout`, {
-                    method: 'POST',
-                    headers: { Authorization: `Bearer ${token}` },
-                    credentials: 'include'
-                });
-            }
-        } catch (err) {
-            console.error('Logout error:', err);
-        } finally {
-            localStorage.removeItem('accessToken');
-            setAccessToken(null);
-            setUser(null);
-            setError(null);
-            if (refreshTokenTimeout) clearTimeout(refreshTokenTimeout);
-        }
-    };
-
-    const changePassword = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
-        try {
-            setLoading(true);
-            clearError();
-
-            const token = localStorage.getItem('accessToken');
-            if (!token) {
-                throw new Error('Not authenticated');
-            }
-
-            const res = await fetch(`${API_BASE_URL}/auth/change-password`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.error || 'Password change failed');
-            }
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Password change failed';
-            setError(errorMessage);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <AuthContext.Provider value={{ user, accessToken, login, register, logout, refreshToken, changePassword, loading, error }}>
-            {children}
-        </AuthContext.Provider>
+  useEffect(() => {
+    if (!state.isAuthenticated || !state.token) return;
+    const interval = setInterval(
+      () => {
+        refreshSession();
+      },
+      14 * 60 * 1000,
     );
-};
+    return () => clearInterval(interval);
+  }, [state.isAuthenticated, state.token, refreshSession]);
+
+  const login = async (email: string, password: string) => {
+    const res = await fetch(`${API_BASE}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: 'Login failed' }));
+      throw new Error(err.message || err.error || 'Login failed');
+    }
+    const data = await res.json();
+    localStorage.setItem('accessToken', data.accessToken);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    setState({
+      user: data.user,
+      token: data.accessToken,
+      loading: false,
+      isAuthenticated: true,
+    });
+  };
+
+  const register = async (username: string, email: string, password: string) => {
+    const res = await fetch(`${API_BASE}/api/v1/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ username, email, password }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: 'Registration failed' }));
+      throw new Error(err.message || err.error || 'Registration failed');
+    }
+    const data = await res.json();
+    localStorage.setItem('accessToken', data.accessToken);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    setState({
+      user: data.user,
+      token: data.accessToken,
+      loading: false,
+      isAuthenticated: true,
+    });
+  };
+
+  const logout = async () => {
+    try {
+      await fetch(`${API_BASE}/api/v1/auth/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${state.token}` },
+        credentials: 'include',
+      });
+    } catch {}
+    clearAuth();
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        ...state,
+        login,
+        register,
+        logout,
+        refreshSession,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  return context;
+}

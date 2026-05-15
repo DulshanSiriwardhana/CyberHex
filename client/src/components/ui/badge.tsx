@@ -1,27 +1,51 @@
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
-interface BadgeProps {
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'neutral';
-  children: React.ReactNode;
-  className?: string;
-}
+const badgeVariants = cva(
+  "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:ring-offset-2 focus:ring-offset-neutral-950",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-cyan-500/30 bg-cyan-500/10 text-cyan-400",
+        secondary:
+          "border-violet-500/30 bg-violet-500/10 text-violet-400",
+        destructive:
+          "border-rose-500/30 bg-rose-500/10 text-rose-400",
+        success:
+          "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
+        warning:
+          "border-amber-500/30 bg-amber-500/10 text-amber-400",
+        outline:
+          "border-neutral-700 bg-transparent text-neutral-400",
+        muted:
+          "border-neutral-800 bg-neutral-800/50 text-neutral-500",
+      },
+      size: {
+        default: "px-2.5 py-0.5 text-xs",
+        sm: "px-2 py-0.5 text-[10px]",
+        lg: "px-3 py-1 text-sm",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  },
+);
 
-const variants = {
-  default: 'bg-[rgba(220,38,38,0.12)] text-red-400 border-[rgba(220,38,38,0.2)]',
-  success: 'bg-[rgba(34,197,94,0.1)] text-green-400 border-[rgba(34,197,94,0.2)]',
-  warning: 'bg-[rgba(234,179,8,0.1)] text-yellow-400 border-[rgba(234,179,8,0.2)]',
-  danger: 'bg-[rgba(220,38,38,0.15)] text-red-400 border-[rgba(220,38,38,0.25)]',
-  neutral: 'bg-[rgba(255,255,255,0.06)] text-[#8a8a8a] border-[rgba(255,255,255,0.1)]',
-};
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {}
 
-export function Badge({ variant = 'default', children, className }: BadgeProps) {
+function Badge({ className, variant, size, ...props }: BadgeProps) {
   return (
-    <span className={cn(
-      'inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border',
-      variants[variant],
-      className
-    )}>
-      {children}
-    </span>
+    <div
+      className={cn(badgeVariants({ variant, size }), className)}
+      {...props}
+    />
   );
 }
+
+export { Badge, badgeVariants };

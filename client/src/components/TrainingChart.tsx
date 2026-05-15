@@ -1,196 +1,118 @@
-import React, { useMemo } from 'react';
-import {
-    LineChart,
-    Line,
-    AreaChart,
-    Area,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-    ComposedChart
-} from 'recharts';
-
-export interface TrainingDataPoint {
-    epoch: number;
-    loss: number;
-    accuracy?: number;
-    timestamp?: string;
-    validationLoss?: number;
-    metrics?: Record<string, number>;
-}
+import { useEffect, useRef } from 'react';
 
 interface TrainingChartProps {
-    data: TrainingDataPoint[];
-    title?: string;
-    showLoss?: boolean;
-    showAccuracy?: boolean;
-    showValidation?: boolean;
-    height?: number;
-    isLoading?: boolean;
+  epochs: number[];
+  trainLoss: number[];
+  valLoss?: number[];
+  height?: number;
 }
 
-const CustomTooltip: React.FC<any> = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-        return (
-            <div className="bg-white p-3 border border-gray-300 rounded shadow-lg">
-                <p className="font-semibold text-gray-800">
-                    {`Epoch: ${payload[0].payload.epoch}`}
-                </p>
-                {payload.map((entry: any, index: number) => (
-                    <p key={index} style={{ color: entry.color }} className="text-sm">
-                        {`${entry.name}: ${typeof entry.value === 'number' ? entry.value.toFixed(4) : entry.value}`}
-                    </p>
-                ))}
-            </div>
-        );
-    }
-    return null;
-};
+export default function TrainingChart({ epochs, trainLoss, valLoss, height = 300 }: TrainingChartProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-export const TrainingChart: React.FC<TrainingChartProps> = React.memo(({
-    data,
-    title = 'Training Progress',
-    showLoss = true,
-    showAccuracy = true,
-    showValidation = false,
-    height = 400,
-    isLoading = false
-}) => {
-    const chartData = useMemo(() => {
-        return data.map(point => ({
-            epoch: point.epoch,
-            loss: typeof point.loss === 'number' ? parseFloat(point.loss.toFixed(4)) : null,
-            accuracy: point.accuracy ? parseFloat(point.accuracy.toFixed(4)) : null,
-            validationLoss: point.validationLoss ? parseFloat(point.validationLoss.toFixed(4)) : null,
-            ...point.metrics
-        }));
-    }, [data]);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center" style={{ height }}>
-                <div className="text-gray-500">Loading chart data...</div>
-            </div>
-        );
-    }
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    if (!chartData || chartData.length === 0) {
-        return (
-            <div className="flex items-center justify-center" style={{ height }}>
-                <div className="text-gray-500">No data available</div>
-            </div>
-        );
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = height * dpr;
+    ctx.scale(dpr, dpr);
+    canvas.style.width = `${rect.width}px`;
+    canvas.style.height = `${height}px`;
+
+    const padding = { top: 20, right: 20, bottom: 40, left: 60 };
+    const chartW = rect.width - padding.left - padding.right;
+    const chartH = height - padding.top - padding.bottom;
+
+    ctx.clearRect(0, 0, rect.width, height);
+
+    const allLosses = [...trainLoss, ...(valLoss || [])].filter((v) => isFinite(v));
+    if (allLosses.length === 0) return;
+
+    const minLoss = Math.floor(Math.min(0, ...allLosses) * 100) / 100;
+    const maxLoss = Math.ceil(Math.max(...allLosses) * 100) / 100;
+    const lossRange = maxLoss - minLoss || 1;
+
+    const scaleX = (i: number) => padding.left + (i / Math.max(epochs.length - 1, 1)) * chartW;
+    const scaleY = (v: number) => padding.top + chartH - ((v - minLoss) / lossRange) * chartH;
+
+    ctx.strokeStyle = '#374151';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i <= 5; i++) {
+      const y = padding.top + (chartH * i) / 5;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, y);
+      ctx.lineTo(padding.left + chartW, y);
+      ctx.stroke();
+
+      const val = maxLoss - (lossRange * i) / 5;
+      ctx.fillStyle = '#6B7280';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(val.toFixed(2), padding.left - 8, y + 4);
     }
 
-    return (
-        <div className="w-full bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">{title}</h2>
+    for (let i = 0; i <= Math.min(epochs.length, 10); i++) {
+      const epochIdx = Math.floor((i / Math.min(epochs.length, 10)) * (epochs.length - 1));
+      const x = scaleX(epochIdx);
+      ctx.beginPath();
+      ctx.moveTo(x, padding.top);
+      ctx.lineTo(x, padding.top + chartH);
+      ctx.stroke();
 
-            {showAccuracy && showLoss ? (
-                <ResponsiveContainer width="100%" height={height}>
-                    <ComposedChart data={chartData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis
-                            dataKey="epoch"
-                            label={{ value: 'Epoch', position: 'insideBottomRight', offset: -5 }}
-                        />
-                        <YAxis yAxisId="left" label={{ value: 'Loss', angle: -90, position: 'insideLeft' }} />
-                        <YAxis
-                            yAxisId="right"
-                            orientation="right"
-                            label={{ value: 'Accuracy', angle: 90, position: 'insideRight' }}
-                        />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend />
-                        {showLoss && (
-                            <Line
-                                yAxisId="left"
-                                type="monotone"
-                                dataKey="loss"
-                                stroke="#ef4444"
-                                dot={false}
-                                isAnimationActive={false}
-                                name="Loss"
-                            />
-                        )}
-                        {showValidation && (
-                            <Line
-                                yAxisId="left"
-                                type="monotone"
-                                dataKey="validationLoss"
-                                stroke="#f97316"
-                                dot={false}
-                                isAnimationActive={false}
-                                name="Validation Loss"
-                            />
-                        )}
-                        {showAccuracy && (
-                            <Line
-                                yAxisId="right"
-                                type="monotone"
-                                dataKey="accuracy"
-                                stroke="#22c55e"
-                                dot={false}
-                                isAnimationActive={false}
-                                name="Accuracy"
-                            />
-                        )}
-                    </ComposedChart>
-                </ResponsiveContainer>
-            ) : showLoss ? (
-                <ResponsiveContainer width="100%" height={height}>
-                    <AreaChart data={chartData}>
-                        <defs>
-                            <linearGradient id="colorLoss" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
-                                <stop offset="95%" stopColor="#ef4444" stopOpacity={0.1} />
-                            </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis
-                            dataKey="epoch"
-                            label={{ value: 'Epoch', position: 'insideBottomRight', offset: -5 }}
-                        />
-                        <YAxis label={{ value: 'Loss', angle: -90, position: 'insideLeft' }} />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend />
-                        <Area
-                            type="monotone"
-                            dataKey="loss"
-                            stroke="#ef4444"
-                            fill="url(#colorLoss)"
-                            isAnimationActive={false}
-                            name="Loss"
-                        />
-                    </AreaChart>
-                </ResponsiveContainer>
-            ) : (
-                <ResponsiveContainer width="100%" height={height}>
-                    <LineChart data={chartData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis
-                            dataKey="epoch"
-                            label={{ value: 'Epoch', position: 'insideBottomRight', offset: -5 }}
-                        />
-                        <YAxis label={{ value: 'Accuracy', angle: -90, position: 'insideLeft' }} />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend />
-                        <Line
-                            type="monotone"
-                            dataKey="accuracy"
-                            stroke="#22c55e"
-                            dot={false}
-                            isAnimationActive={false}
-                            name="Accuracy"
-                        />
-                    </LineChart>
-                </ResponsiveContainer>
-            )}
-        </div>
-    );
-});
+      ctx.fillStyle = '#6B7280';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(String(epochs[epochIdx] || 0), x, padding.top + chartH + 16);
+    }
 
-export default TrainingChart;
+    ctx.fillStyle = '#9CA3AF';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('Epoch', padding.left + chartW / 2, height - 4);
+
+    const drawLine = (data: number[], color: string, width: number) => {
+      if (data.length < 2) return;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      for (let i = 0; i < data.length; i++) {
+        const x = scaleX(i);
+        const y = scaleY(data[i]);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    };
+
+    drawLine(trainLoss, '#818CF8', 2);
+
+    if (valLoss && valLoss.length > 0) {
+      drawLine(valLoss, '#34D399', 2);
+    }
+
+    ctx.font = '11px sans-serif';
+    ctx.fillStyle = '#818CF8';
+    ctx.textAlign = 'left';
+    ctx.fillText('Train Loss', padding.left, padding.top - 6);
+
+    if (valLoss && valLoss.length > 0) {
+      ctx.fillStyle = '#34D399';
+      ctx.fillText('Val Loss', padding.left + 95, padding.top - 6);
+    }
+  }, [epochs, trainLoss, valLoss, height]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="w-full"
+      style={{ height: `${height}px` }}
+    />
+  );
+}

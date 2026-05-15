@@ -1,45 +1,30 @@
-import type { ReactNode } from "react"
-import { useNavigate } from "react-router-dom"
-import { Button } from "@/components/ui/button"
-import { AlertTriangle, ArrowLeft } from "lucide-react"
+import { ReactNode } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/auth";
 
 interface ProtectedRouteProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const navigate = useNavigate()
-  const isAuthenticated = false // Replace with actual auth check
+export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const { user, loading } = useAuth();
+  const location = useLocation();
 
-  if (!isAuthenticated) {
+  if (loading) {
     return (
-      <div className="min-h-[calc(100vh-80px)] flex items-center justify-center p-8">
-        <div className="text-center space-y-6 max-w-md">
-          <div className="w-16 h-16 rounded-2xl bg-red-600/10 flex items-center justify-center mx-auto">
-            <AlertTriangle className="w-8 h-8 text-red-500" />
-          </div>
-          <div>
-            <h2 className="font-spectral text-2xl font-extrabold text-white mb-2">
-              Authentication Required
-            </h2>
-            <p className="text-neutral-400 text-sm">
-              Please sign in to access this page.
-            </p>
-          </div>
-          <Button
-            variant="cyber"
-            onClick={() => navigate("/")}
-            aria-label="Go back to home"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Go Home
-          </Button>
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 text-cyan-400 animate-spin mx-auto mb-4" />
+          <p className="text-sm text-neutral-500">Loading session...</p>
         </div>
       </div>
-    )
+    );
   }
 
-  return <>{children}</>
-}
+  if (!user) {
+    return <Navigate to="/" state={{ from: location }} replace />;
+  }
 
-export default ProtectedRoute
+  return <>{children}</>;
+}
