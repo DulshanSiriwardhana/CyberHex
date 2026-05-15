@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import Otp from '../models/Otp.js';
 import RevokedToken from '../models/RevokedToken.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { asyncHandler, ValidationError, ConflictError, AuthenticationError, NotFoundError } from '../middleware/errorHandler.js';
@@ -17,6 +18,11 @@ router.post('/register', asyncHandler(async (req, res) => {
 
     const { username, email, password } = validation.data;
 
+    const verifiedOtp = await Otp.findOne({ email: email.toLowerCase(), verified: true });
+    if (!verifiedOtp) {
+        throw new ValidationError('Email not verified. Please verify your email before registering.');
+    }
+
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
         throw new ConflictError(
@@ -24,8 +30,9 @@ router.post('/register', asyncHandler(async (req, res) => {
         );
     }
 
-    const user = new User({ username, email, password });
+    const user = new User({ username, email, password, emailVerified: true });
     await user.save();
+    await Otp.deleteMany({ email: email.toLowerCase() });
     logger.info(`User registered: ${email}`);
 
     const accessToken = jwt.sign(
@@ -34,7 +41,7 @@ router.post('/register', asyncHandler(async (req, res) => {
         { expiresIn: '15m' }
     );
     const refreshToken = jwt.sign(
-        { userId: user._id },
+        { userId: user._id, role: user.role },
         process.env.JWT_REFRESH_SECRET,
         { expiresIn: '7d' }
     );
@@ -74,7 +81,7 @@ router.post('/login', asyncHandler(async (req, res) => {
         { expiresIn: '15m' }
     );
     const refreshToken = jwt.sign(
-        { userId: user._id },
+        { userId: user._id, role: user.role },
         process.env.JWT_REFRESH_SECRET,
         { expiresIn: '7d' }
     );
