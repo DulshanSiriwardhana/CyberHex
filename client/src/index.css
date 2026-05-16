@@ -1,27 +1,30 @@
 @import "tailwindcss";
 
 /* ========================================================================== */
-/*  CyberHex v2.0 — Neon Cyberpunk + Glassmorphism                           */
+/*  CyberHex v3.0 — Multi-Theme Design System + Neon Cyberpunk + Glass        */
 /* ========================================================================== */
 
 @theme {
-  /* Brand — green primary */
-  --color-green-300: #86efac;
-  --color-green-400: #4ade80;
-  --color-green-500: #22c55e;
-  --color-green-600: #16a34a;
-  --color-green-700: #15803d;
-  --color-green-800: #166534;
-  /* Cyan kept as alias to green for back-compat in class names */
-  --color-cyan-400: #4ade80;
-  --color-cyan-500: #22c55e;
-  --color-cyan-600: #16a34a;
-  --color-cyan-700: #15803d;
+  /* ── Brand: True Cyan (not green) ──────────────────────────────────────── */
+  --color-cyan-300: #67e8f9;
+  --color-cyan-400: #22d3ee;
+  --color-cyan-500: #06b6d4;
+  --color-cyan-600: #0891b2;
+  --color-cyan-700: #0e7490;
+  --color-cyan-800: #155e75;
+
+  /* ── Purple / Violet ───────────────────────────────────────────────────── */
+  --color-violet-300: #c4b5fd;
   --color-violet-400: #a78bfa;
   --color-violet-500: #8b5cf6;
   --color-violet-600: #7c3aed;
+  --color-violet-700: #6d28d9;
 
-  /* Neutrals */
+  /* ── Pink / Rose ───────────────────────────────────────────────────────── */
+  --color-pink-400: #f472b6;
+  --color-pink-500: #ec4899;
+
+  /* ── Neutrals — extended deep scale ────────────────────────────────────── */
   --color-neutral-0: #ffffff;
   --color-neutral-50: #fafafa;
   --color-neutral-100: #f4f4f5;
@@ -39,36 +42,56 @@
   --color-neutral-950: #09090b;
   --color-neutral-1000: #050508;
 
-  /* Semantic */
+  /* ── Semantic colors ───────────────────────────────────────────────────── */
+  --color-green-300: #86efac;
+  --color-green-400: #4ade80;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+  --color-green-800: #166534;
   --color-rose-400: #fb7185;
   --color-rose-500: #f43f5e;
   --color-rose-600: #e11d48;
   --color-emerald-400: #34d399;
   --color-emerald-500: #10b981;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
   --color-amber-400: #fbbf24;
   --color-amber-500: #f59e0b;
   --color-amber-600: #d97706;
 
-  /* Fonts */
+  /* ── Typography ─────────────────────────────────────────────────────────── */
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-display: "Spectral", "Georgia", serif;
   --font-spectral: "Spectral", "Georgia", serif;
 
-  /* Radii */
+  /* ── Radii ─────────────────────────────────────────────────────────────── */
   --radius: 0.5rem;
+  --radius-sm: 0.25rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
+
+  /* ── Animation durations ────────────────────────────────────────────────── */
+  --duration-instant: 75ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
 }
 
 :root {
-  /* CSS variable aliases for non-tailwind usage */
+  /* ── Core palette ─────────────────────────────────────────────────────── */
   --color-green-400: #4ade80;
   --color-green-500: #22c55e;
   --color-green-600: #16a34a;
-  --color-cyan-400: #4ade80;
-  --color-cyan-500: #22c55e;
-  --color-cyan-600: #16a34a;
+  --color-cyan-300: #67e8f9;
+  --color-cyan-400: #22d3ee;
+  --color-cyan-500: #06b6d4;
+  --color-cyan-600: #0891b2;
+  --color-cyan-700: #0e7490;
+  --color-violet-300: #c4b5fd;
   --color-violet-400: #a78bfa;
   --color-violet-500: #8b5cf6;
   --color-violet-600: #7c3aed;
@@ -84,13 +107,40 @@
   --color-neutral-900: #18181b;
   --color-neutral-925: #111115;
   --color-neutral-950: #09090b;
+
+  /* ── Typography ──────────────────────────────────────────────────────── */
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-display: "Spectral", "Georgia", serif;
   --font-spectral: "Spectral", "Georgia", serif;
+  --radius-sm: 0.25rem;
   --radius: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+}
+
+/* ── Light theme overrides ──────────────────────────────────────────────── */
+.light {
+  --color-neutral-950: #f8fafc;
+  --color-neutral-925: #f1f5f9;
+  --color-neutral-900: #ffffff;
+  --color-neutral-850: #f8fafc;
+  --color-neutral-800: #f1f5f9;
+  --color-neutral-750: #e2e8f0;
+  --color-neutral-700: #cbd5e1;
+  --color-neutral-600: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-400: #475569;
+  --color-neutral-300: #334155;
+  --color-neutral-200: #1e293b;
+  --color-neutral-100: #0f172a;
+  --color-neutral-50: #020617;
+  --color-neutral-0: #0a0a0f;
+  color-scheme: light;
 }
 
 /* ---- Base Styles ---------------------------------------------------------- */

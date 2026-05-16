@@ -152,7 +152,7 @@ export default function Hero() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400" />
           </span>
-          v2.0 — Now with C++ inference engine
+          v3.0 — Multi-Theme + Native C++ Inference Engine
         </motion.div>
 
         {/* Main heading */}
