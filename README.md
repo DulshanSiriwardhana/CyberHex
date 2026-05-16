@@ -66,6 +66,7 @@ CyberHex is a **full-stack machine learning platform** that combines a custom C+
 - **CyberGames** — interactive ML educational games
 - **Model visualization** — real-time training loss and metrics via Recharts
 - Authentication flows: sign-up (multi-step), sign-in, protected routes
+- Multi-theme system with 6 variants: **Cyber**, **Nebula**, **Midnight**, **Plasma**, **Aurora**, **Emerald** — plus dark/light mode
 - State management with **Zustand**, animations with **Framer Motion**
 - Responsive UI built with **Tailwind CSS** and **shadcn/ui** (Radix primitives)
 
