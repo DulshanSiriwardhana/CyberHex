@@ -29,7 +29,8 @@ export function useModelData() {
           if (cancelled) return;
           const idx = FILES[i];
           const resp = await fetch(`/layer_${idx}.json`);
-          if (!resp.ok) {
+          const contentType = resp.headers.get('content-type') ?? '';
+          if (!resp.ok || !contentType.includes('application/json')) {
             if (i === 0) {
               throw new Error(`Failed to load layer_${idx}.json: HTTP ${resp.status}`);
             }
