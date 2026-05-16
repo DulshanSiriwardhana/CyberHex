@@ -81,7 +81,6 @@ function drawHistogram(
 
   const maxCount = Math.max(...counts, 1);
   const barW = w / bins;
-  const dpr = window.devicePixelRatio || 1;
 
   // Background
   ctx.fillStyle = 'rgba(15, 23, 42, 0.6)';
@@ -263,7 +262,6 @@ export default function DistributionView({ layers }: DistributionViewProps) {
 
       // Total stats card
       const allWeights = layers.flatMap(l => l.weights.flat());
-      const allBiases = layers.flatMap(l => [...l.bias]);
       const totalW = allWeights.length;
       const meanW = allWeights.reduce((a, b) => a + b, 0) / totalW;
       const zeros = allWeights.filter(w => Math.abs(w) < 1e-8).length;
@@ -312,7 +310,7 @@ export default function DistributionView({ layers }: DistributionViewProps) {
         {mode === 'histogram' && (
           <div className="flex items-center gap-2 ml-4">
             <span className="text-[10px] text-slate-500">Layer:</span>
-            {layers.map((l, i) => (
+            {layers.map((_layer, i) => (
               <button
                 key={i}
                 onClick={() => setSelectedLayer(i)}

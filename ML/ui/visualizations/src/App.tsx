@@ -167,7 +167,7 @@ export default function App() {
               )}
             </div>
           </div>
-          <div className="flex items-center gap-4 text-[10px]">
+          <div className="flex items-center gap-3 text-[10px]">
             {isLoading && (
               <span className="flex items-center gap-2 text-slate-400">
                 <span className="w-3 h-3 border border-slate-600 border-t-cyan-400 rounded-full animate-spin" />
@@ -176,12 +176,28 @@ export default function App() {
             )}
             {isError && <span className="text-red-400">● Error loading data</span>}
             {isLoaded && (
-              <span className="flex items-center gap-2 bg-slate-900/60 border border-slate-800 rounded-full px-3 py-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-slate-400">
-                  {architecture.inputSize} <span className="text-slate-600">→</span> {architecture.outputSize}
+              <>
+                <button
+                  onClick={exportSummary}
+                  className="px-2.5 py-1 bg-slate-900/60 border border-slate-700 rounded text-slate-400 hover:text-slate-200 hover:border-slate-600 transition-colors flex items-center gap-1"
+                  title="Export model summary as JSON"
+                >
+                  📥 JSON
+                </button>
+                <button
+                  onClick={() => setShowShortcuts(s => !s)}
+                  className="px-2 py-1 bg-slate-900/60 border border-slate-700 rounded text-slate-500 hover:text-slate-300 hover:border-slate-600 transition-colors"
+                  title="Keyboard shortcuts (? or h)"
+                >
+                  ?
+                </button>
+                <span className="flex items-center gap-2 bg-slate-900/60 border border-slate-800 rounded-full px-3 py-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-slate-400">
+                    {architecture.inputSize} <span className="text-slate-600">→</span> {architecture.outputSize}
+                  </span>
                 </span>
-              </span>
+              </>
             )}
           </div>
         </div>
@@ -320,6 +336,41 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {/* Keyboard shortcuts modal */}
+      {showShortcuts && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowShortcuts(false)}>
+          <div
+            className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-2xl max-w-sm w-full mx-4"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-white">Keyboard Shortcuts</h3>
+              <button onClick={() => setShowShortcuts(false)} className="text-slate-500 hover:text-slate-300 text-sm">✕</button>
+            </div>
+            <div className="space-y-2 text-xs">
+              {TABS.map((tab, i) => (
+                <div key={tab.id} className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-slate-800/40">
+                  <span className="flex items-center gap-2 text-slate-300">
+                    <span>{tab.icon}</span>
+                    {tab.label}
+                  </span>
+                  <kbd className="px-2 py-0.5 rounded bg-slate-700 text-slate-400 font-mono text-[10px]">{i + 1}</kbd>
+                </div>
+              ))}
+              <div className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-slate-800/40 mt-3 border-t border-slate-800 pt-3">
+                <span className="text-slate-300">Toggle shortcuts</span>
+                <kbd className="px-2 py-0.5 rounded bg-slate-700 text-slate-400 font-mono text-[10px]">?</kbd>
+              </div>
+              <div className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-slate-800/40">
+                <span className="text-slate-300">Export JSON</span>
+                <kbd className="px-2 py-0.5 rounded bg-slate-700 text-slate-400 font-mono text-[10px]">📥</kbd>
+              </div>
+            </div>
+            <p className="text-[10px] text-slate-600 mt-4 text-center">Press Escape to close</p>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-slate-800/60 mt-12">
