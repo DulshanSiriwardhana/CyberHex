@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/auth";
+import { ToastProvider } from "@/components/ui/toaster";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import NavBar from "@/components/navbar/navbar";
@@ -18,6 +19,7 @@ const SignUpPage = lazy(() => import("@/pages/SignUpPage"));
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 const ExperimentBuilderPage = lazy(() => import("@/pages/ExperimentBuilderPage"));
 const ExperimentDetailPage = lazy(() => import("@/pages/ExperimentDetailPage"));
+const ExperimentsListPage = lazy(() => import("@/pages/ExperimentsListPage"));
 const ModelsPage = lazy(() => import("@/pages/ModelsPage"));
 const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
 const CyberGames = lazy(() => import("@/pages/CyberGames"));
@@ -34,6 +36,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
+        <ToastProvider>
         <Router>
           <div className="min-h-screen bg-neutral-950 font-sans antialiased">
             <NavBar />
@@ -67,7 +70,7 @@ export default function App() {
                   path="/experiments"
                   element={
                     <ProtectedRoute>
-                      <ExperimentBuilderPage />
+                      <ExperimentsListPage />
                     </ProtectedRoute>
                   }
                 />
@@ -111,6 +114,7 @@ export default function App() {
             </Suspense>
           </div>
         </Router>
+        </ToastProvider>
       </AuthProvider>
     </ErrorBoundary>
   );
