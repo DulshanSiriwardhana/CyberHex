@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useModelData, useLossData } from './hooks/useModelData';
 import ArchitectureOverview from './components/views/ArchitectureOverview';
 import NeuronNetwork2D from './components/views/NeuronNetwork2D';
@@ -6,14 +6,16 @@ import WeightHeatmapView from './components/views/WeightHeatmapView';
 import Network3DView from './components/views/Network3DView';
 import RealTimeTrainingView from './components/views/RealTimeTrainingView';
 import LossChartView from './components/views/LossChartView';
+import DistributionView from './components/views/DistributionView';
 
-type TabId = 'architecture' | 'network2d' | 'heatmap' | 'network3d' | 'loss' | 'realtime';
+type TabId = 'architecture' | 'network2d' | 'heatmap' | 'network3d' | 'distribution' | 'loss' | 'realtime';
 
 const TABS: { id: TabId; label: string; icon: string; description: string }[] = [
   { id: 'architecture', label: 'Architecture', icon: '🏗️', description: 'Layer-by-layer model summary' },
   { id: 'network2d', label: '2D Network', icon: '🕸️', description: 'Interactive neuron & connection canvas' },
   { id: 'heatmap', label: 'Weight Heatmap', icon: '🔥', description: 'Per-layer weight matrix visualization' },
   { id: 'network3d', label: '3D Network', icon: '🌐', description: 'Three.js neural network render' },
+  { id: 'distribution', label: 'Distribution', icon: '📊', description: 'Weight/bias histograms & stats' },
   { id: 'loss', label: 'Loss Curve', icon: '📉', description: 'Epoch vs loss from CSV data' },
   { id: 'realtime', label: 'Real-Time', icon: '📡', description: 'Live WebSocket training dashboard' },
 ];
@@ -66,6 +68,7 @@ function ErrorScreen({ message, onRetry }: { message: string; onRetry: () => voi
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>('architecture');
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const { architecture, loadState, errorMessage, progress } = useModelData();
   const { data: lossData, loadState: lossLoadState } = useLossData();
 
@@ -74,6 +77,66 @@ export default function App() {
   const isLoaded = loadState === 'loaded' && architecture;
 
   const layers = architecture?.layers ?? [];
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      const keyMap: Record<string, TabId> = {
+        '1': 'architecture',
+        '2': 'network2d',
+        '3': 'heatmap',
+        '4': 'network3d',
+        '5': 'distribution',
+        '6': 'loss',
+        '7': 'realtime',
+      };
+      if (e.key === '?' || e.key === 'h') {
+        setShowShortcuts(s => !s);
+        return;
+      }
+      if (e.key === 'Escape') {
+        setShowShortcuts(false);
+        return;
+      }
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      const tab = keyMap[e.key];
+      if (tab) setActiveTab(tab);
+    }
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, []);
+
+  const exportSummary = useCallback(() => {
+    if (!architecture) return;
+    const summary = {
+      exportedAt: new Date().toISOString(),
+      inputSize: architecture.inputSize,
+      outputSize: architecture.outputSize,
+      totalParams: architecture.totalParams,
+      numLayers: architecture.layers.length,
+      layers: architecture.layers.map((l, i) => ({
+        index: i,
+        type: l.layerType,
+        inputShape: l.inputShape,
+        outputShape: l.outputShape,
+        weightShape: [l.weights.length, l.weights[0]?.length ?? 0],
+        biasSize: l.bias.length,
+        weightMean: (l.weights.flat().reduce((a, b) => a + b, 0) / l.weights.flat().length).toFixed(6),
+        weightStd: Math.sqrt(l.weights.flat().reduce((s, w) => {
+          const mean = l.weights.flat().reduce((a, b) => a + b, 0) / l.weights.flat().length;
+          return s + (w - mean) ** 2;
+        }, 0) / l.weights.flat().length).toFixed(6),
+      })),
+    };
+    const blob = new Blob([JSON.stringify(summary, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `model-summary-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [architecture]);
 
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-200">
@@ -196,6 +259,20 @@ export default function App() {
                 </div>
                 <div className="card-gradient rounded-xl overflow-hidden">
                   <Network3DView layers={layers} />
+                </div>
+              </section>
+            )}
+
+            {activeTab === 'distribution' && (
+              <section>
+                <div className="mb-5">
+                  <h2 className="text-base font-semibold text-white">Weight & Bias Distribution</h2>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Histograms of weight and bias values per layer. Compare distributions across all layers or view stats table.
+                  </p>
+                </div>
+                <div className="card-gradient rounded-xl p-5">
+                  <DistributionView layers={layers} />
                 </div>
               </section>
             )}
