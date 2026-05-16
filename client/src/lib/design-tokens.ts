@@ -7,7 +7,7 @@
  */
 
 // ──── Theme Variants ─────────────────────────────────────────────
-export type ThemeVariant = 'cyber' | 'nebula' | 'aurora' | 'midnight' | 'plasma';
+export type ThemeVariant = 'cyber' | 'nebula' | 'aurora' | 'midnight' | 'plasma' | 'emerald';
 
 export interface ThemeConfig {
   id: ThemeVariant;
@@ -259,6 +259,53 @@ const midnightColors: ThemeColors = {
   chart: ['#38bdf8', '#6366f1', '#a78bfa', '#34d399', '#fbbf24', '#60a5fa', '#f87171', '#06b6d4'],
 };
 
+// ──── Emerald Theme (Green) ───────────────────────────────────────
+const emeraldColors: ThemeColors = {
+  bg: {
+    root: '#060e09',
+    surface: '#0d1912',
+    elevated: '#132418',
+    overlay: 'rgba(6, 14, 9, 0.88)',
+    field: '#172e1f',
+  },
+  accent: {
+    primary: '#00e676',
+    secondary: '#00bfa5',
+    tertiary: '#a0f0a0',
+    success: '#00c853',
+    warning: '#ffb300',
+    danger: '#ff5252',
+    info: '#448aff',
+  },
+  text: {
+    primary: '#e8f5e9',
+    secondary: '#a5d6a7',
+    tertiary: '#6b9b70',
+    inverse: '#060e09',
+    link: '#69f0ae',
+  },
+  border: {
+    subtle: 'rgba(0, 230, 118, 0.06)',
+    default: 'rgba(0, 230, 118, 0.10)',
+    strong: 'rgba(0, 230, 118, 0.18)',
+    accent: 'rgba(0, 230, 118, 0.30)',
+  },
+  gradient: {
+    hero: 'linear-gradient(135deg, #060e09 0%, #0b1a10 40%, #0d3020 70%, #060e09 100%)',
+    card: 'linear-gradient(135deg, rgba(19, 36, 24, 0.9), rgba(13, 25, 18, 0.95))',
+    glow: 'radial-gradient(ellipse at center, rgba(0, 230, 118, 0.08) 0%, transparent 70%)',
+    accent: 'linear-gradient(135deg, #00e676, #00bfa5)',
+    surface: 'linear-gradient(180deg, rgba(0,230,118,0.03) 0%, transparent 100%)',
+  },
+  glow: {
+    primary: '0 0 20px rgba(0, 230, 118, 0.15), 0 0 60px rgba(0, 230, 118, 0.05)',
+    secondary: '0 0 20px rgba(0, 191, 165, 0.15), 0 0 60px rgba(0, 191, 165, 0.05)',
+    accent: '0 0 15px rgba(0, 230, 118, 0.2)',
+    card: '0 0 30px rgba(0, 230, 118, 0.04)',
+  },
+  chart: ['#00e676', '#00bfa5', '#a0f0a0', '#00c853', '#ffb300', '#448aff', '#ff5252', '#69f0ae'],
+};
+
 // ──── Plasma Theme ───────────────────────────────────────────────
 const plasmaColors: ThemeColors = {
   bg: {
@@ -342,6 +389,13 @@ export const THEME_REGISTRY: Record<ThemeVariant, ThemeConfig> = {
     description: 'Vibrant warm tones — coral, gold, and electric energy',
     preview: 'linear-gradient(135deg, #0f0f1a, #ff6b6b, #ffd93d)',
     colors: plasmaColors,
+  },
+  emerald: {
+    id: 'emerald',
+    name: 'Emerald',
+    description: 'Lush green accents on deep forest backgrounds — fresh and focused',
+    preview: 'linear-gradient(135deg, #060e09, #00e676, #00bfa5)',
+    colors: emeraldColors,
   },
 };
 
