@@ -10,18 +10,28 @@ import {
   LayoutDashboard,
   ChevronDown,
   Sparkles,
+  Sun,
+  Moon,
+  Palette,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth";
+import { useThemeStore } from "@/stores/theme";
+import { THEME_REGISTRY } from "@/lib/design-tokens";
+import type { ThemeVariant } from "@/lib/design-tokens";
 
 const NavBar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const themeMenuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { resolved, variant, toggle, setVariant } = useThemeStore();
+  const themeVariantEntries = Object.values(THEME_REGISTRY);
 
   const closeMobile = useCallback(() => setIsMobileOpen(false), []);
 
@@ -35,6 +45,9 @@ const NavBar = () => {
     const handleClick = (e: MouseEvent) => {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false);
+      }
+      if (themeMenuRef.current && !themeMenuRef.current.contains(e.target as Node)) {
+        setThemeMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClick);
@@ -109,6 +122,87 @@ const NavBar = () => {
 
         {/* Desktop actions */}
         <div className="hidden md:flex items-center gap-3">
+          {/* ── Theme Controls ── */}
+          <div className="flex items-center gap-0.5 rounded-xl border border-neutral-700/50 bg-neutral-800/30 p-0.5 mr-1">
+            {/* Dark / Light toggle */}
+            <button
+              onClick={toggle}
+              className="relative rounded-lg p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-all duration-200"
+              aria-label={`Switch to ${resolved === 'dark' ? 'light' : 'dark'} mode`}
+              title={`Switch to ${resolved === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={resolved}
+                  initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+                  animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                  exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
+                  transition={{ duration: 0.2 }}
+                  className="block"
+                >
+                  {resolved === 'dark' ? (
+                    <Moon className="h-3.5 w-3.5" />
+                  ) : (
+                    <Sun className="h-3.5 w-3.5" />
+                  )}
+                </motion.span>
+              </AnimatePresence>
+            </button>
+            {/* Theme variant dropdown */}
+            <div className="relative" ref={themeMenuRef}>
+              <button
+                onClick={() => setThemeMenuOpen(!themeMenuOpen)}
+                className="rounded-lg p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-all duration-200 flex items-center gap-0.5"
+                aria-label="Choose color theme"
+                title="Choose color theme"
+              >
+                <Palette className="h-3.5 w-3.5" />
+                <ChevronDown className={`h-2.5 w-2.5 transition-transform duration-200 ${themeMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+              <AnimatePresence>
+                {themeMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-56 rounded-xl border border-neutral-700/50 bg-neutral-900/95 backdrop-blur-xl p-1.5 shadow-[0_0_30px_rgba(0,0,0,0.5)]"
+                  >
+                    <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-widest text-neutral-500">
+                      Color Theme
+                    </p>
+                    {themeVariantEntries.map((t) => {
+                      const isActive = t.id === variant;
+                      return (
+                        <button
+                          key={t.id}
+                          onClick={() => {
+                            setVariant(t.id as ThemeVariant);
+                            setThemeMenuOpen(false);
+                          }}
+                          className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                            isActive
+                              ? 'bg-neutral-800 text-white'
+                              : 'text-neutral-300 hover:text-white hover:bg-neutral-800/60'
+                          }`}
+                        >
+                          <span
+                            className="h-3.5 w-3.5 rounded-full ring-1 ring-white/10 flex-shrink-0"
+                            style={{ background: t.preview }}
+                          />
+                          <span className="flex-1 text-left">{t.name}</span>
+                          {isActive && (
+                            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.5)]" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
           {user ? (
             <>
               <Link to="/dashboard">
@@ -188,18 +282,31 @@ const NavBar = () => {
           )}
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="inline-flex md:hidden items-center justify-center rounded-lg p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
-          aria-label="Toggle menu"
-        >
-          {isMobileOpen ? (
-            <X className="h-5 w-5" />
-          ) : (
-            <Menu className="h-5 w-5" />
-          )}
-        </button>
+        {/* Mobile theme toggle + hamburger */}
+        <div className="flex md:hidden items-center gap-1">
+          <button
+            onClick={toggle}
+            className="inline-flex items-center justify-center rounded-lg p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
+            aria-label={`Switch to ${resolved === 'dark' ? 'light' : 'dark'} mode`}
+          >
+            {resolved === 'dark' ? (
+              <Moon className="h-5 w-5" />
+            ) : (
+              <Sun className="h-5 w-5" />
+            )}
+          </button>
+          <button
+            onClick={() => setIsMobileOpen(!isMobileOpen)}
+            className="inline-flex items-center justify-center rounded-lg p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMobileOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -246,7 +353,39 @@ const NavBar = () => {
               >
                 Contact
               </Link>
-              <div className="pt-3 mt-3 border-t border-neutral-800/50 space-y-2">
+              {/* ── Mobile Theme Variants ── */}
+              <div className="pt-3 border-t border-neutral-800/50">
+                <p className="px-3 pt-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-neutral-500">
+                  Color Theme
+                </p>
+                <div className="flex flex-wrap gap-1.5 px-3 pb-1">
+                  {themeVariantEntries.map((t) => {
+                    const isActive = t.id === variant;
+                    return (
+                      <button
+                        key={t.id}
+                        onClick={() => {
+                          setVariant(t.id as ThemeVariant);
+                          closeMobile();
+                        }}
+                        className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                          isActive
+                            ? 'bg-neutral-800 text-white ring-1 ring-cyan-500/30'
+                            : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                        }`}
+                      >
+                        <span
+                          className="h-3 w-3 rounded-full ring-1 ring-white/10"
+                          style={{ background: t.preview }}
+                        />
+                        {t.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="pt-2 mt-2 border-t border-neutral-800/50 space-y-2">
                 {user ? (
                   <>
                     <Link
