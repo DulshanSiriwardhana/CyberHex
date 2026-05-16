@@ -50,7 +50,7 @@
   --color-amber-600: #d97706;
 
   /* Fonts */
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans: "Spectral", "Georgia", serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
   --font-spectral: "Spectral", "Georgia", serif;
 
