@@ -1,0 +1,153 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
+@layer base {
+  :root {
+    --background: 240 50% 5%;
+    --foreground: 210 40% 98%;
+    --card: 240 40% 8%;
+    --card-foreground: 210 40% 98%;
+    --popover: 240 40% 8%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 192 100% 50%;
+    --primary-foreground: 240 50% 5%;
+    --secondary: 280 100% 50%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 240 30% 15%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 192 100% 50%;
+    --accent-foreground: 240 50% 5%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 240 30% 15%;
+    --input: 240 30% 15%;
+    --ring: 192 100% 50%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground font-sans antialiased overflow-hidden;
+    font-feature-settings: 'ss01', 'ss02', 'cv01', 'cv02';
+  }
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { @apply w-1.5 h-1.5; }
+::-webkit-scrollbar-track { @apply bg-transparent; }
+::-webkit-scrollbar-thumb { @apply bg-white/10 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-white/15; }
+
+/* Glass Panel Utility */
+@layer components {
+  .glass-panel {
+    @apply rounded-lg border border-white/10;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.03) 100%);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+  }
+
+  .glass-panel-heavy {
+    @apply rounded-lg border border-white/10;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.04) 100%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+  }
+
+  .neural-hud {
+    @apply relative;
+  }
+  .neural-hud::before {
+    content: '';
+    @apply absolute inset-0 pointer-events-none rounded-lg;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(0,240,255,0.3), rgba(123,47,247,0.3), rgba(0,240,255,0.3));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  .neural-hud::after {
+    content: '';
+    @apply absolute pointer-events-none -z-10 rounded-lg;
+    inset: -2px;
+    background: linear-gradient(135deg, rgba(0,240,255,0.08), transparent 40%, rgba(123,47,247,0.08));
+    filter: blur(8px);
+  }
+
+  .animated-gradient {
+    background-size: 200% 200%;
+    animation: gradientShift 8s linear infinite;
+  }
+
+  .scan-line-overlay {
+    @apply relative overflow-hidden;
+  }
+  .scan-line-overlay::after {
+    content: '';
+    @apply absolute inset-0 pointer-events-none;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,240,255,0.02) 50%, transparent 100%);
+    animation: scanLine 4s linear infinite;
+  }
+}
+
+/* Keyframes */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes scanLine {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes equalizer {
+  0%, 100% { transform: scaleY(0.3); }
+  40% { transform: scaleY(1); }
+  60% { transform: scaleY(0.6); }
+}
+
+@keyframes particleDrift {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(10px, -20px); }
+  50% { transform: translate(-10px, -10px); }
+  75% { transform: translate(5px, -30px); }
+}
+
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Resize handle */
+.resize-handle {
+  @apply absolute z-50;
+  &-n { @apply top-0 left-0 right-0 h-1 cursor-n-resize; }
+  &-s { @apply bottom-0 left-0 right-0 h-1 cursor-s-resize; }
+  &-e { @apply top-0 bottom-0 right-0 w-1 cursor-e-resize; }
+  &-w { @apply top-0 bottom-0 left-0 w-1 cursor-w-resize; }
+  &-ne, &-se, &-sw, &-nw { @apply w-3 h-3; }
+  &-ne { @apply top-0 right-0 cursor-ne-resize; }
+  &-se { @apply bottom-0 right-0 cursor-se-resize; }
+  &-sw { @apply bottom-0 left-0 cursor-sw-resize; }
+  &-nw { @apply top-0 left-0 cursor-nw-resize; }
+}
+
+/* Performance monitor styling */
+.perf-monitor {
+  @apply font-mono text-xs;
+}
+.perf-monitor .fps-good { @apply text-neon-green; }
+.perf-monitor .fps-warn { @apply text-neon-yellow; }
+.perf-monitor .fps-bad { @apply text-red-400; }
