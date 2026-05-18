@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist-electron/
+coverage/
+.env
+*.tsbuildinfo
+.vite/
+.storybook/
+.eslintcache
+storybook-static/
+playwright-report/
+test-results/
