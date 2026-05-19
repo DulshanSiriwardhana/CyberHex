@@ -102,7 +102,8 @@ public:
                       LossFunction& loss,
                       Optimizer& optimizer,
                       NodeId output_id,
-                      const DistributedContext* dist = nullptr);
+                      const DistributedContext* dist = nullptr,
+                      int step = 0);
 
     using EpochCallback = std::function<void(int epoch, double train_loss, double val_loss, bool has_val)>;
 

@@ -4,6 +4,7 @@
 import express from 'express';
 import { asyncHandler, ValidationError, NotFoundError } from '../middleware/errorHandler.js';
 import { runInference } from '../services/inferenceService.js';
+import { exportOnnx } from '../services/exportService.js';
 import { cacheGet, cacheSet, cacheDel } from '../services/cacheService.js';
 import logger from '../utils/logger.js';
 
@@ -22,7 +23,9 @@ router.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
     engine: process.env.ML_ENGINE ?? 'python',
-    inference: 'python-numpy',
+    inference: process.env.ML_INFER_ENGINE ?? 'auto',
+    features: ['python-numpy', 'cpp-mlp', 'onnx-export'],
+    distributed: ['file-allreduce', 'mpi-optional'],
     timestamp: new Date().toISOString(),
   });
 });
@@ -67,6 +70,14 @@ router.post('/models/unload', asyncHandler(async (req, res) => {
   await cacheDel(`${MODEL_CACHE_PREFIX}${modelId}`);
   logger.info(`[Engine] Model unloaded: ${modelId}`);
   res.json({ success: true, modelId });
+}));
+
+router.post('/models/export', asyncHandler(async (req, res) => {
+  const { weightsPrefix, onnxPath, task } = req.body ?? {};
+  if (!weightsPrefix) throw new ValidationError('weightsPrefix is required');
+
+  const result = await exportOnnx({ weightsPrefix, onnxPath, task });
+  res.json(result);
 }));
 
 router.post('/inference', asyncHandler(async (req, res) => {
