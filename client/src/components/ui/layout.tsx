@@ -206,15 +206,18 @@ export function SectionHeading({
         className,
       )}
     >
-      <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-500/80 mb-3">
+        CyberHex
+      </p>
+      <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-[2.5rem] lg:leading-tight">
         {title}
       </h2>
       {description && (
-        <p className="mt-3 max-w-2xl text-lg text-neutral-400 mx-auto">
+        <p className="mt-4 max-w-2xl text-base sm:text-lg text-neutral-400 leading-relaxed mx-auto">
           {description}
         </p>
       )}
-      <div className={cn("mt-4 divider-cyber", align === "center" && "mx-auto max-w-md")} />
+      <div className={cn("mt-6 divider-cyber", align === "center" && "mx-auto max-w-xs")} />
     </div>
   );
 }

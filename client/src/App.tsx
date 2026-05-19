@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider } from "@/contexts/auth";
 import { ToastProvider } from "@/components/ui/toaster";
 import { ToastContainer } from "@/components/ui/toast";
-import { ParticleBackground } from "@/components/ui/particle-background";
+import { AmbientBackground } from "@/components/ui/ambient-background";
 import CommandPalette from "@/components/command-palette/CommandPalette";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -41,9 +41,8 @@ function AppLayout() {
   useKeyboardShortcuts();
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0f] font-sans antialiased">
-      {/* Ambient particle background layer */}
-      <ParticleBackground />
+    <div className="relative min-h-screen bg-neutral-950 font-sans antialiased">
+      <AmbientBackground />
 
       {/* Content layer */}
       <div className="relative" style={{ zIndex: 1 }}>

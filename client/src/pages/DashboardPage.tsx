@@ -51,7 +51,7 @@ export default function DashboardPage() {
       >
         <Flex justify="between" wrap>
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white">
+            <h1 className="text-3xl font-bold tracking-tight text-white">
               Welcome back,{" "}
               <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">
                 {user.username}

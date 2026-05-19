@@ -158,15 +158,15 @@ export const StudioShell: React.FC<StudioShellProps> = () => {
   );
 
   return (
-    <motion.div className="h-screen w-screen flex flex-col bg-[#0a0a1a] text-white overflow-hidden select-none">
+    <motion.div className="h-screen w-screen flex flex-col bg-[#09090b] text-white overflow-hidden select-none">
       {/* Top bar */}
       <header className="h-12 glass-panel-heavy border-b border-white/5 flex items-center justify-between px-4 shrink-0 z-30">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-neon-cyan to-neon-magenta flex items-center justify-center">
             <Sparkles size={16} className="text-white" />
           </div>
-          <h1 className="text-sm font-display font-semibold tracking-wider bg-gradient-to-r from-neon-cyan via-white to-neon-magenta bg-clip-text text-transparent">
-            CYBERHEX STUDIO
+          <h1 className="text-sm font-semibold tracking-wide bg-gradient-to-r from-neon-cyan via-white to-neon-magenta bg-clip-text text-transparent">
+            CyberHex Studio
           </h1>
           <span className="text-[10px] text-white/30 font-mono px-2 py-0.5 rounded border border-white/10">NEURAL v1.0</span>
         </div>

@@ -392,8 +392,8 @@ body {
 /* ---- Neon Text Effects ---------------------------------------------------- */
 
 .neon-text-cyan {
-  text-shadow: 0 0 7px rgba(74, 222, 128, 0.5), 0 0 20px rgba(34, 197, 94, 0.25),
-    0 0 40px rgba(22, 163, 74, 0.15);
+  text-shadow: 0 0 7px rgba(34, 211, 238, 0.45), 0 0 20px rgba(6, 182, 212, 0.2),
+    0 0 40px rgba(8, 145, 178, 0.12);
 }
 
 .neon-text-violet {
@@ -450,7 +450,7 @@ body {
   border: 1px solid color-mix(in srgb, var(--color-neutral-700) 50%, transparent);
   border-radius: var(--radius-2xl);
   overflow: hidden;
-  box-shadow: 0 0 30px rgba(34, 197, 94, 0.08), 0 20px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 30px rgba(6, 182, 212, 0.08), 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
 .terminal-header {
@@ -478,7 +478,7 @@ body {
   line-height: 1.7;
   max-height: 320px;
   overflow-y: auto;
-  color: var(--color-green-400);
+  color: var(--color-cyan-300);
 }
 
 .terminal-line {
@@ -487,7 +487,7 @@ body {
 }
 
 .terminal-prompt {
-  color: var(--color-green-500);
+  color: var(--color-cyan-500);
   white-space: nowrap;
   user-select: none;
 }
@@ -512,7 +512,7 @@ body {
   color: var(--color-neutral-0);
   font-family: var(--font-mono);
   font-size: 0.8125rem;
-  caret-color: var(--color-green-400);
+  caret-color: var(--color-cyan-400);
 }
 
 .terminal-input::placeholder {
@@ -776,6 +776,38 @@ body {
   .bg-cyber-grid-dense {
     background-size: 20px 20px;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- App shell ------------------------------------------------------------- */
+
+.app-surface {
+  background-color: var(--color-neutral-950);
+  color: var(--color-neutral-300);
+}
+
+.prose-muted {
+  color: var(--color-neutral-400);
+  line-height: 1.65;
+}
+
+.link-subtle {
+  color: var(--color-neutral-400);
+  transition: color var(--duration-fast) ease;
+}
+
+.link-subtle:hover {
+  color: var(--color-cyan-400);
 }
 
 /* ========================================================================== */

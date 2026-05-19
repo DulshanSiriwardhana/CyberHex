@@ -45,10 +45,10 @@ function FeatureCard({
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
     >
-      <Card className="group h-full border-neutral-800/50 bg-neutral-900/40 hover:border-green-500/20 hover:shadow-[0_0_30px_rgba(34,197,94,0.08)]">
+      <Card className="group h-full hover:border-cyan-500/25 hover:shadow-[0_12px_40px_rgba(6,182,212,0.08)]">
         <CardContent className="p-6 pt-6">
           <div
-            className={`inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${gradient} border border-green-500/10 text-2xl mb-4 group-hover:scale-110 transition-transform duration-300`}
+            className={`inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${gradient} border border-cyan-500/15 text-2xl mb-4 group-hover:scale-105 transition-transform duration-300`}
           >
             {icon}
           </div>
@@ -79,7 +79,7 @@ function CTASection() {
         </div>
         <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
           Start Training Models{" "}
-          <span className="bg-gradient-to-r from-green-400 to-violet-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">
             Today
           </span>
         </h2>
@@ -108,7 +108,7 @@ function CTASection() {
 
 function Footer() {
   return (
-    <footer className="border-t border-neutral-800/50 bg-neutral-950/80 backdrop-blur-lg">
+    <footer className="border-t border-neutral-800/50 bg-neutral-950/90 backdrop-blur-xl">
       <Container className="py-12">
         <Grid cols={4} gap="lg">
           <Stack gap="sm">
@@ -143,36 +143,36 @@ function Footer() {
 
           <Stack gap="sm">
             <h4 className="text-sm font-semibold text-white">Platform</h4>
-            <Link to="/dashboard" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
+            <Link to="/dashboard" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
               Dashboard
             </Link>
-            <Link to="/models" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
+            <Link to="/models" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
               Models
             </Link>
-            <Link to="/experiments" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
+            <Link to="/experiments" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
               Experiments
             </Link>
-            <Link to="/cybergames" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
+            <Link to="/cybergames" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
               CyberGames
             </Link>
           </Stack>
 
           <Stack gap="sm">
             <h4 className="text-sm font-semibold text-white">Company</h4>
-            <Link to="/about" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
+            <Link to="/about" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
               About
             </Link>
-            <Link to="/contact" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
+            <Link to="/contact" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
               Contact
             </Link>
           </Stack>
 
           <Stack gap="sm">
             <h4 className="text-sm font-semibold text-white">Legal</h4>
-            <a href="#" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
+            <a href="#" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
               Privacy Policy
             </a>
-            <a href="#" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
+            <a href="#" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
               Terms of Service
             </a>
           </Stack>
@@ -183,7 +183,7 @@ function Footer() {
             &copy; {new Date().getFullYear()} CyberHex. All rights reserved.
           </p>
           <p className="text-xs text-neutral-700 flex items-center gap-1">
-            Built with <Heart className="h-3 w-3 text-rose-400" /> and <Code2 className="h-3 w-3 text-green-400" /> by the CyberHex team
+            Built with <Heart className="h-3 w-3 text-rose-400" /> and <Code2 className="h-3 w-3 text-cyan-400" /> by the CyberHex team
           </p>
         </div>
       </Container>

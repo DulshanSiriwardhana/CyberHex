@@ -12,8 +12,8 @@ import { useThemeStore } from '@/stores/theme';
 import { THEME_REGISTRY } from '@/lib/design-tokens';
 
 // ──── Configuration ──────────────────────────────────────────────
-const PARTICLE_COUNT = 60;
-const CONNECTION_DISTANCE = 140;
+const PARTICLE_COUNT = 42;
+const CONNECTION_DISTANCE = 120;
 const PARTICLE_SPEED = 0.3;
 const PARTICLE_RADIUS = 1.5;
 const MOUSE_RADIUS = 180;
@@ -143,7 +143,7 @@ export function ParticleBackground() {
         // Draw particle
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.3)`;
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.22)`;
         ctx.fill();
 
         // Draw connections
@@ -154,7 +154,7 @@ export function ParticleBackground() {
           const cdist = Math.sqrt(cdx * cdx + cdy * cdy);
 
           if (cdist < CONNECTION_DISTANCE) {
-            const alpha = (1 - cdist / CONNECTION_DISTANCE) * 0.08;
+            const alpha = (1 - cdist / CONNECTION_DISTANCE) * 0.05;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
@@ -182,7 +182,7 @@ export function ParticleBackground() {
       ref={canvasRef}
       aria-hidden="true"
       className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 0 }}
+      style={{ zIndex: 0, opacity: 0.85 }}
     />
   );
 }

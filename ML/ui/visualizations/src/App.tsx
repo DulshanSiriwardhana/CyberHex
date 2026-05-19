@@ -22,8 +22,8 @@ const TABS: { id: TabId; label: string; icon: string; description: string }[] = 
 
 function FloatingParticles() {
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-      {Array.from({ length: 20 }).map((_, i) => (
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-60" aria-hidden="true">
+      {Array.from({ length: 8 }).map((_, i) => (
         <div
           key={i}
           className="particle"

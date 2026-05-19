@@ -4,16 +4,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 disabled:pointer-events-none disabled:opacity-40 select-none active:scale-[0.97]",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 disabled:pointer-events-none disabled:opacity-40 select-none active:scale-[0.98]",
   {
     variants: {
       variant: {
         primary:
-          "bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:from-cyan-400 hover:to-cyan-500 border border-cyan-400/30",
+          "bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-[0_1px_2px_rgba(0,0,0,0.4),0_8px_24px_rgba(6,182,212,0.18)] hover:from-cyan-400 hover:to-cyan-500 hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_12px_32px_rgba(6,182,212,0.28)] border border-cyan-400/25",
         secondary:
-          "bg-gradient-to-r from-violet-600 to-violet-700 text-white shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:from-violet-500 hover:to-violet-600 border border-violet-400/30",
+          "bg-gradient-to-r from-violet-600 to-violet-700 text-white shadow-[0_1px_2px_rgba(0,0,0,0.4),0_8px_24px_rgba(139,92,246,0.18)] hover:from-violet-500 hover:to-violet-600 hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_12px_32px_rgba(139,92,246,0.28)] border border-violet-400/25",
         outline:
-          "border border-cyan-500/40 text-cyan-400 bg-transparent hover:bg-cyan-500/10 hover:border-cyan-400/60 hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]",
+          "border border-neutral-700 text-neutral-200 bg-neutral-900/40 hover:bg-neutral-800/60 hover:border-cyan-500/35 hover:text-cyan-300",
         ghost:
           "text-neutral-400 hover:text-white hover:bg-neutral-800/60",
         destructive:
