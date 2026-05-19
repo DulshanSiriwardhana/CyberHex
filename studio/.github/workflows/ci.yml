@@ -1,0 +1,190 @@
+name: CyberHex Studio CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '22'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-studio
+
+jobs:
+  # ─── Quality Gates ──────────────────────
+  quality:
+    name: Quality Gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+          cache-dependency-path: studio/yarn.lock
+
+      - name: Install dependencies
+        working-directory: studio
+        run: yarn install --frozen-lockfile --prefer-offline
+
+      - name: TypeScript type-check
+        working-directory: studio
+        run: yarn type-check
+
+      - name: Lint
+        working-directory: studio
+        run: yarn lint
+
+      - name: Format check
+        working-directory: studio
+        run: yarn format --check
+
+  # ─── Tests ──────────────────────────────
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+          cache-dependency-path: studio/yarn.lock
+
+      - name: Install dependencies
+        working-directory: studio
+        run: yarn install --frozen-lockfile --prefer-offline
+
+      - name: Run unit tests
+        working-directory: studio
+        run: yarn test -- --reporter=verbose
+
+      - name: Upload coverage
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: studio/coverage/
+
+  # ─── Build ──────────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+          cache-dependency-path: studio/yarn.lock
+
+      - name: Install dependencies
+        working-directory: studio
+        run: yarn install --frozen-lockfile --prefer-offline
+
+      - name: Build application
+        working-directory: studio
+        run: yarn build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: studio/dist/
+
+  # ─── Docker ──────────────────────────────
+  docker:
+    name: Docker Build & Push
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,format=short
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: studio
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ─── Electron Build (Linux) ────────────
+  electron:
+    name: Electron Build
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+          cache-dependency-path: studio/yarn.lock
+
+      - name: Install dependencies
+        working-directory: studio
+        run: yarn install --frozen-lockfile --prefer-offline
+
+      - name: Build Electron app
+        working-directory: studio
+        run: yarn electron:build --linux
+
+      - name: Upload Electron artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-linux
+          path: studio/dist-electron/
+
+  # ─── Security Scan ──────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Snyk scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --all-projects --exclude=node_modules,dist
+          command: test
