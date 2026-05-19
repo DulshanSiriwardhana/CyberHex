@@ -12,6 +12,7 @@ import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import experimentRoutes from './routes/experimentRoutes.js';
 import mlTrainingRoutes from './routes/mlTrainingRoutes.js';
+import engineRoutes from './routes/engineRoutes.js';
 import otpRoutes from './routes/otpRoutes.js';
 import healthRoutes from './routes/healthRoutes.js';
 import logger from './utils/logger.js';
@@ -61,6 +62,7 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/experiments', experimentRoutes);
 app.use('/api/v1/ml', mlTrainingRoutes);
+app.use('/api/v1/engine', engineRoutes);
 app.use('/api/v1/otp', otpRoutes);
 
 // Legacy health aliases

@@ -86,9 +86,14 @@ export default function ExperimentDetailPage() {
 
   // WebSocket for live updates
   const handleWsMessage = useCallback((data: any) => {
-    if (data.type === 'training_metrics' || data.epoch !== undefined) {
+    if (
+      data.type === 'training_metrics' ||
+      data.type === 'training_metric' ||
+      data.type === 'epoch' ||
+      data.epoch !== undefined
+    ) {
       const epoch = data.epoch ?? data.currentEpoch ?? 0;
-      const loss = data.loss ?? data.trainLoss ?? 0;
+      const loss = data.loss ?? data.trainLoss ?? data.train_loss ?? 0;
       const valLoss = data.valLoss ?? data.val_loss;
       setCurrentEpoch(epoch);
       setLossData(prev => {
@@ -110,8 +115,9 @@ export default function ExperimentDetailPage() {
     }
   }, [bestLoss, id, toast]);
 
+  const wsBase = import.meta.env.VITE_WS_URL ?? 'ws://localhost:5000';
   const { isConnected, send, reconnect } = useWebSocket(
-    `/ws/experiments/${id}`,
+    `${wsBase}?experimentId=${id}`,
     handleWsMessage,
     { maxRetries: 3 }
   );

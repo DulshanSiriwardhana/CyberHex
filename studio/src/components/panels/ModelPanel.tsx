@@ -67,7 +67,15 @@ export const ModelPanel: React.FC = () => {
                     Load
                   </Button>
                 ) : (
-                  <Button size="xs" variant="ghost" leftIcon={<Trash2 size={10} />} onClick={() => unloadModel(model.id)}>
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    leftIcon={<Trash2 size={10} />}
+                    onClick={() => {
+                      registry.unloadModel(model.id);
+                      unloadModel(model.id);
+                    }}
+                  >
                     Unload
                   </Button>
                 )}
