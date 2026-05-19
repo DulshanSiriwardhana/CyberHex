@@ -13,6 +13,7 @@ export const AudioPanel: React.FC = () => {
   const fluencyConfig = useStudioStore((s) => s.fluencyConfig);
   const updateFluencyConfig = useStudioStore((s) => s.updateFluencyConfig);
   const [metrics, setMetrics] = useState<AudioMetrics | null>(null);
+  const [, setTick] = useState(0);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -26,6 +27,11 @@ export const AudioPanel: React.FC = () => {
   }, []);
 
   const stages = audioPipeline?.stages ?? [];
+
+  const toggleStage = (stageId: string, enabled: boolean) => {
+    audioEngine.setProcessorEnabled(stageId, enabled);
+    setTick((t) => t + 1);
+  };
 
   return (
     <div className="flex flex-col gap-3 h-full text-xs">
@@ -60,7 +66,7 @@ export const AudioPanel: React.FC = () => {
                 <Waves size={12} className="text-neon-magenta" />
                 {stage.name}
               </span>
-              <Switch checked={stage.enabled} onCheckedChange={() => {}} />
+              <Switch checked={stage.enabled} onCheckedChange={(v) => toggleStage(stage.id, v)} />
             </div>
           ))
         )}
@@ -86,18 +92,6 @@ export const AudioPanel: React.FC = () => {
             checked={fluencyConfig.generateSubtitles}
             onCheckedChange={(v) => updateFluencyConfig({ generateSubtitles: v })}
           />
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-white/40 w-16">Style</span>
-          <select
-            className="flex-1 bg-white/5 border border-white/10 rounded px-2 py-1 text-white/70"
-            value={fluencyConfig.correctionStyle}
-            onChange={(e) => updateFluencyConfig({ correctionStyle: e.target.value as 'minimal' | 'balanced' | 'strict' })}
-          >
-            <option value="minimal">Minimal</option>
-            <option value="balanced">Balanced</option>
-            <option value="strict">Strict</option>
-          </select>
         </div>
       </div>
     </div>
