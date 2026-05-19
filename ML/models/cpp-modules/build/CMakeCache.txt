@@ -439,9 +439,18 @@ CMAKE_TAPI:FILEPATH=CMAKE_TAPI-NOTFOUND
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+<<<<<<< HEAD
 //Build with CYBERHEX_CUDA matmul dispatch
 CYBERHEX_ENABLE_CUDA:BOOL=OFF
 
+=======
+//Build CUDA matmul kernels
+CYBERHEX_ENABLE_CUDA:BOOL=OFF
+
+//Link MPI for distributed all-reduce
+CYBERHEX_USE_MPI:BOOL=OFF
+
+>>>>>>> v3.0
 //Dependencies for the target
 Catch2WithMain_LIB_DEPENDS:STATIC=general;Catch2;
 
