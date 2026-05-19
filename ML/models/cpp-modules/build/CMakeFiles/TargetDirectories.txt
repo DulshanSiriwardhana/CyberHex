@@ -2,6 +2,8 @@
 /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles/app.dir
 /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles/cyberhex_bench.dir
 /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles/cyberhex_ml.dir
+/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles/cyberhex_infer.dir
+/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles/cyberhex_export.dir
 /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles/unit_tests.dir
 /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles/test.dir
 /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles/edit_cache.dir

@@ -14,6 +14,7 @@
 #include "device.h"
 #include "transformer.h"
 #include "distributed.h"
+#include "onnx_export.h"
 #include <iostream>
 #include <memory>
 #include <random>
@@ -180,6 +181,14 @@ bool load_dataset(const TrainingConfig& cfg, Matrix<double>& X, Matrix<double>& 
     return false;
 }
 
+void maybe_export_onnx(const TrainingConfig& cfg, const std::string& prefix) {
+    if (!cfg.export_onnx) return;
+    std::string manifest = prefix + "/export_manifest.json";
+    if (write_export_manifest(prefix, manifest, cfg.task)) {
+        emit_log("ONNX export manifest written: " + manifest);
+    }
+}
+
 void configure_device(const TrainingConfig& cfg) {
     if (!std::getenv("CYBERHEX_DEVICE")) {
         std::string dev = cfg.device;
@@ -242,6 +251,7 @@ int run_graph_training(const TrainingConfig& cfg, Matrix<double>& X, Matrix<doub
     std::filesystem::path prefix_path = out_dir / prefix.str();
     trainer.save_weights(prefix_path.string());
     std::string model_path = prefix_path.string();
+    maybe_export_onnx(cfg, prefix_path.string());
     emit_training_complete(final_train, final_val, model_path);
     return 0;
 }
@@ -290,6 +300,8 @@ int run_transformer_training(const TrainingConfig& cfg, Matrix<double>& X, Matri
     prefix << "transformer_" << ::getpid();
     std::filesystem::path prefix_path = out_dir / prefix.str();
     model.save_weights(prefix_path.string());
+    model.save_weights_binary(prefix_path.string());
+    maybe_export_onnx(cfg, prefix_path.string());
     emit_training_complete(final_train, final_val, prefix_path.string() + "_weights");
     return 0;
 }
@@ -405,6 +417,8 @@ int main() {
     prefix << "model_" << ::getpid();
     std::filesystem::path prefix_path = out_dir / prefix.str();
     model.save_weights(prefix_path.string());
+    model.save_weights_binary(prefix_path.string());
+    maybe_export_onnx(cfg, prefix_path.string());
 
     std::string model_path = prefix_path.string() + "_weights";
     emit_training_complete(final_train, final_val, model_path);
