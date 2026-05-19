@@ -341,6 +341,98 @@ Matrix<double> Dropout::backward(const Matrix<double>& grad, double lr, Optimize
 }
 
 // ============================================================================
+// Layer Normalization
+// ============================================================================
+LayerNormalization::LayerNormalization(size_t normalized_shape, double epsilon)
+    : gamma(1, normalized_shape, 1.0), beta(1, normalized_shape, 0.0), epsilon_(epsilon) {}
+
+void LayerNormalization::reset_state() {
+    gamma.fill(1.0);
+    beta.fill(0.0);
+}
+
+Matrix<double> LayerNormalization::forward(const Matrix<double>& X) {
+    input_cache = X;
+    const size_t rows = X.rows();
+    const size_t cols = X.cols();
+    mean_cache = Matrix<double>(rows, 1, 0.0);
+    inv_std_cache = Matrix<double>(rows, 1, 0.0);
+    Matrix<double> output(rows, cols);
+
+    for (size_t i = 0; i < rows; i++) {
+        double mean = 0.0;
+        for (size_t j = 0; j < cols; j++) mean += X(i, j);
+        mean /= static_cast<double>(cols);
+        mean_cache(i, 0) = mean;
+
+        double var = 0.0;
+        for (size_t j = 0; j < cols; j++) {
+            double d = X(i, j) - mean;
+            var += d * d;
+        }
+        var /= static_cast<double>(cols);
+        double inv_std = 1.0 / std::sqrt(var + epsilon_);
+        inv_std_cache(i, 0) = inv_std;
+
+        for (size_t j = 0; j < cols; j++) {
+            double x_hat = (X(i, j) - mean) * inv_std;
+            output(i, j) = gamma(0, j) * x_hat + beta(0, j);
+        }
+    }
+    return output;
+}
+
+Matrix<double> LayerNormalization::backward(const Matrix<double>& grad, double lr,
+                                            OptimizerType opt, int t) {
+    const size_t rows = grad.rows();
+    const size_t cols = grad.cols();
+    Matrix<double> input_grad(rows, cols, 0.0);
+    Matrix<double> d_gamma(1, cols, 0.0);
+    Matrix<double> d_beta(1, cols, 0.0);
+
+    for (size_t i = 0; i < rows; i++) {
+        double mean = mean_cache(i, 0);
+        double inv_std = inv_std_cache(i, 0);
+        const double D = static_cast<double>(cols);
+
+        Matrix<double> dx_hat(1, cols);
+        for (size_t j = 0; j < cols; j++) {
+            double x_hat = (input_cache(i, j) - mean) * inv_std;
+            d_gamma(0, j) += grad(i, j) * x_hat;
+            d_beta(0, j) += grad(i, j);
+            dx_hat(0, j) = grad(i, j) * gamma(0, j);
+        }
+
+        double dvar = 0.0;
+        for (size_t j = 0; j < cols; j++) {
+            dvar += dx_hat(0, j) * (input_cache(i, j) - mean);
+        }
+        dvar *= -0.5 * std::pow(inv_std, 3.0);
+
+        double dmean = 0.0;
+        for (size_t j = 0; j < cols; j++) {
+            dmean += dx_hat(0, j) * (-inv_std);
+        }
+        dmean += dvar * (-2.0 * mean / D);
+
+        for (size_t j = 0; j < cols; j++) {
+            double dx = dx_hat(0, j) * inv_std;
+            dx += dvar * 2.0 * (input_cache(i, j) - mean) / D;
+            dx += dmean / D;
+            input_grad(i, j) = dx;
+        }
+    }
+
+    if (lr > 0.0) {
+        gamma = gamma - d_gamma * lr;
+        beta = beta - d_beta * lr;
+        (void)opt;
+        (void)t;
+    }
+    return input_grad;
+}
+
+// ============================================================================
 // Batch Normalization
 // ============================================================================
 BatchNormalization::BatchNormalization(size_t input_size, double epsilon, double momentum)
