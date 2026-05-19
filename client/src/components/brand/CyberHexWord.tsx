@@ -75,7 +75,7 @@ export function CyberHexWord({
       <span className={cn('wordmark-v4-cyber font-extrabold uppercase text-white', s.cyber)}>
         Cyber
       </span>
-      <span className={cn('wordmark-v4-hex relative font-extrabold text-[var(--v4-signal-cyan)]', s.hex)}>
+      <span className={cn('wordmark-v4-hex relative font-extrabold text-[var(--v4-signal-green)]', s.hex)}>
         Hex
         <span
           className="absolute -bottom-0.5 left-0 right-0 h-[2px] rounded-full wordmark-v4-underline opacity-80"

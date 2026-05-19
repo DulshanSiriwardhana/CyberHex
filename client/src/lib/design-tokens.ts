@@ -357,7 +357,7 @@ export const THEME_REGISTRY: Record<ThemeVariant, ThemeConfig> = {
   cyber: {
     id: 'cyber',
     name: 'Cyber',
-    description: 'Neon cyan on deep space — the original CyberHex aesthetic',
+    description: 'Neon green on deep space — the original CyberHex aesthetic',
     preview: 'linear-gradient(135deg, #0a0a0f, #00f0ff, #7c3aed)',
     colors: cyberColors,
   },

@@ -15,7 +15,7 @@ export default function NotFoundPage() {
         className="relative z-10 text-center max-w-md"
       >
         {/* 404 hex number */}
-        <div className="text-[140px] sm:text-[180px] font-extrabold font-mono leading-none tracking-tighter bg-gradient-to-br from-cyan-400 via-cyan-300 to-violet-400 bg-clip-text text-transparent select-none">
+        <div className="text-[140px] sm:text-[180px] font-extrabold font-mono leading-none tracking-tighter bg-gradient-to-br from-green-400 via-green-300 to-violet-400 bg-clip-text text-transparent select-none">
           404
         </div>
 

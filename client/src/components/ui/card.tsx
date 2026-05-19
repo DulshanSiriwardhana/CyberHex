@@ -80,9 +80,9 @@ const GlowCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
     <div
       ref={ref}
       className={cn(
-        "rounded-2xl border border-cyan-500/20 bg-neutral-900/60 backdrop-blur-lg",
-        "shadow-[0_0_15px_rgba(6,182,212,0.1)]",
-        "hover:border-cyan-500/30 hover:shadow-[0_0_25px_rgba(6,182,212,0.15)]",
+        "rounded-2xl border border-green-500/20 bg-neutral-900/60 backdrop-blur-lg",
+        "shadow-[0_0_15px_rgba(34, 197, 94,0.1)]",
+        "hover:border-green-500/30 hover:shadow-[0_0_25px_rgba(34, 197, 94,0.15)]",
         "transition-all duration-300",
         className,
       )}

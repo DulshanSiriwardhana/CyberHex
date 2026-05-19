@@ -13,11 +13,11 @@ export const V4_RELEASE = {
   fullLabel: 'v4.0 · Release No. 01 — The Word',
 } as const;
 
-/** Signal palette — refined from v3 cyan; adds hex-gold for the "Hex" syllable */
+/** Signal palette — refined from v3 green; adds hex-gold for the "Hex" syllable */
 export const V4_COLORS = {
   signal: {
-    cyan: '#00e5ff',
-    cyanDim: '#06b6d4',
+    green: '#00e5ff',
+    greenDim: '#06b6d4',
     violet: '#8b5cf6',
     gold: '#d4a017',
     goldSoft: 'rgba(212, 160, 23, 0.35)',

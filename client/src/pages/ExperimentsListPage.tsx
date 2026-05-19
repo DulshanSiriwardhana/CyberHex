@@ -76,7 +76,7 @@ export default function ExperimentsListPage() {
         <Flex justify="between" wrap>
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              <FlaskConical className="h-7 w-7 text-cyan-400" />
+              <FlaskConical className="h-7 w-7 text-green-400" />
               Experiments
             </h1>
             <p className="mt-1 text-neutral-400">Manage and monitor your ML training experiments</p>
@@ -112,7 +112,7 @@ export default function ExperimentsListPage() {
                 onClick={() => setStatusFilter(s)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   statusFilter === s
-                    ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
+                    ? 'bg-green-500/10 text-green-400 border border-green-500/20'
                     : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/50'
                 }`}
               >
@@ -153,12 +153,12 @@ export default function ExperimentsListPage() {
                 to={`/experiments/${exp._id}`}
                 className="block group"
               >
-                <Card className="hover:border-cyan-500/20 hover:shadow-[0_0_25px_rgba(6,182,212,0.05)] cursor-pointer transition-all duration-300">
+                <Card className="hover:border-green-500/20 hover:shadow-[0_0_25px_rgba(34, 197, 94,0.05)] cursor-pointer transition-all duration-300">
                   <CardContent className="p-5">
                     <Flex justify="between" gap="md" wrap>
                       <div className="flex items-center gap-4 min-w-0">
                         <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
-                          exp.status === 'training' ? 'bg-cyan-500/10 border border-cyan-500/20 text-cyan-400' :
+                          exp.status === 'training' ? 'bg-green-500/10 border border-green-500/20 text-green-400' :
                           exp.status === 'completed' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' :
                           exp.status === 'failed' ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400' :
                           'bg-neutral-800/50 border border-neutral-700/30 text-neutral-500'
@@ -166,7 +166,7 @@ export default function ExperimentsListPage() {
                           <FlaskConical className="h-5 w-5" />
                         </div>
                         <div className="min-w-0">
-                          <h3 className="text-base font-semibold text-white truncate group-hover:text-cyan-400 transition-colors">
+                          <h3 className="text-base font-semibold text-white truncate group-hover:text-green-400 transition-colors">
                             {exp.name}
                           </h3>
                           <div className="flex items-center gap-3 mt-1 text-xs text-neutral-500">
@@ -175,8 +175,8 @@ export default function ExperimentsListPage() {
                               {exp.createdAt}
                             </span>
                             {exp.status === 'training' && (
-                              <span className="flex items-center gap-1 text-cyan-400">
-                                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                              <span className="flex items-center gap-1 text-green-400">
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                                 Active
                               </span>
                             )}
@@ -187,7 +187,7 @@ export default function ExperimentsListPage() {
                         <Badge variant={statusVariant[exp.status] as any} size="sm">
                           {exp.status}
                         </Badge>
-                        <ArrowRight className="h-4 w-4 text-neutral-600 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all duration-200" />
+                        <ArrowRight className="h-4 w-4 text-neutral-600 group-hover:text-green-400 group-hover:translate-x-1 transition-all duration-200" />
                       </div>
                     </Flex>
                   </CardContent>

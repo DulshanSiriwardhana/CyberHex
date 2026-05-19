@@ -140,7 +140,7 @@ function ToastItem({ toast }: { toast: Toast }) {
               toast.action?.onClick();
               removeToast(toast.id);
             }}
-            className="mt-2 text-[11px] font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+            className="mt-2 text-[11px] font-medium text-green-400 hover:text-green-300 transition-colors"
           >
             {toast.action.label}
           </button>

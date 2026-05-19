@@ -140,7 +140,7 @@ function NavItemComponent({
           text-sm font-medium transition-all duration-150 ease-out
           ${
             isActive
-              ? 'bg-cyan-500/8 text-cyan-300 border border-cyan-500/15'
+              ? 'bg-green-500/8 text-green-300 border border-green-500/15'
               : 'text-white/60 hover:text-white/85 hover:bg-white/[0.03] border border-transparent'
           }
           ${collapsed ? 'justify-center px-2' : ''}
@@ -150,7 +150,7 @@ function NavItemComponent({
       >
         <Icon
           className={`w-5 h-5 shrink-0 transition-colors ${
-            isActive ? 'text-cyan-400' : 'text-white/35 group-hover:text-white/60'
+            isActive ? 'text-green-400' : 'text-white/35 group-hover:text-white/60'
           }`}
         />
 
@@ -165,7 +165,7 @@ function NavItemComponent({
             )}
 
             {item.badge && (
-              <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-semibold bg-cyan-500/15 text-cyan-400 border border-cyan-500/20">
+              <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-semibold bg-green-500/15 text-green-400 border border-green-500/20">
                 {item.badge}
               </span>
             )}
@@ -236,7 +236,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       {/* Logo area */}
       <div className="flex items-center gap-3 px-4 h-14 shrink-0 border-b border-white/[0.04]">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-violet-600 flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-violet-600 flex items-center justify-center shrink-0">
           <span className="text-xs font-bold text-white">CH</span>
         </div>
         <AnimatePresence>
@@ -264,7 +264,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <div className="px-3 py-3 border-t border-white/[0.04]">
         {!collapsed && (
           <div className="flex items-center gap-2 px-2 py-2 rounded-xl bg-white/[0.02]">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 flex items-center justify-center shrink-0">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-violet-500 flex items-center justify-center shrink-0">
               <span className="text-[10px] font-bold text-white">U</span>
             </div>
             <div className="flex-1 min-w-0">

@@ -60,7 +60,7 @@ export default function CyberGames() {
       <Grid cols={3} gap="md" className="mb-8">
         {[
           { icon: Trophy, label: "Top Rank", value: "#42", color: "text-amber-400" },
-          { icon: Users, label: "Active Players", value: "3,847", color: "text-cyan-400" },
+          { icon: Users, label: "Active Players", value: "3,847", color: "text-green-400" },
           { icon: Zap, label: "Live Matches", value: "23", color: "text-emerald-400" },
         ].map((stat, i) => (
           <motion.div
@@ -133,7 +133,7 @@ export default function CyberGames() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-cyan-400" />
+                <Shield className="h-5 w-5 text-green-400" />
                 Active Challenges
               </CardTitle>
             </CardHeader>
@@ -143,7 +143,7 @@ export default function CyberGames() {
                   <Link
                     key={challenge.id}
                     to={`/cybergames/${challenge.id}`}
-                    className="block rounded-xl border border-neutral-800/60 bg-neutral-850/50 p-4 hover:border-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.08)] transition-all duration-300"
+                    className="block rounded-xl border border-neutral-800/60 bg-neutral-850/50 p-4 hover:border-green-500/20 hover:shadow-[0_0_15px_rgba(34, 197, 94,0.08)] transition-all duration-300"
                   >
                     <Flex justify="between" className="mb-2">
                       <h4 className="font-semibold text-white">{challenge.name}</h4>

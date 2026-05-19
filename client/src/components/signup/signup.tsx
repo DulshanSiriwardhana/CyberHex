@@ -138,9 +138,9 @@ export default function SignUp() {
             key={s.id}
             className={`h-1 flex-1 rounded-full transition-all duration-500 ${
               s.id < step
-                ? "bg-gradient-to-r from-cyan-500 to-cyan-400 shadow-[0_0_6px_rgba(6,182,212,0.4)]"
+                ? "bg-gradient-to-r from-green-500 to-green-400 shadow-[0_0_6px_rgba(34, 197, 94,0.4)]"
                 : s.id === step
-                  ? "bg-cyan-500/60"
+                  ? "bg-green-500/60"
                   : "bg-neutral-800"
             }`}
           />
@@ -278,7 +278,7 @@ export default function SignUp() {
                 type="button"
                 disabled={otpCooldown > 0}
                 onClick={sendOtpCode}
-                className="inline-flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 disabled:text-neutral-600 disabled:cursor-not-allowed mt-1 transition-colors"
+                className="inline-flex items-center gap-1 text-xs text-green-400 hover:text-green-300 disabled:text-neutral-600 disabled:cursor-not-allowed mt-1 transition-colors"
               >
                 <RefreshCw
                   className={`h-3 w-3 ${otpCooldown > 0 ? "animate-spin" : ""}`}

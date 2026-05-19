@@ -20,6 +20,7 @@ import { useThemeStore } from "@/stores/theme";
 import { THEME_REGISTRY } from "@/lib/design-tokens";
 import type { ThemeVariant } from "@/lib/design-tokens";
 import { CyberHexWord } from "@/components/brand";
+import { useAuthModal } from "@/stores/authModal";
 
 const NavBar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -32,6 +33,7 @@ const NavBar = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { resolved, variant, toggle, setVariant } = useThemeStore();
+  const { openSignIn, openSignUp } = useAuthModal();
   const themeVariantEntries = Object.values(THEME_REGISTRY);
 
   const closeMobile = useCallback(() => setIsMobileOpen(false), []);
@@ -79,7 +81,7 @@ const NavBar = () => {
           className="flex items-center gap-2 group"
           onClick={closeMobile}
         >
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-700 shadow-[0_0_15px_rgba(6,182,212,0.4)] group-hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] transition-shadow duration-300">
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-700 shadow-[0_0_15px_rgba(34, 197, 94,0.4)] group-hover:shadow-[0_0_25px_rgba(34, 197, 94,0.6)] transition-shadow duration-300">
             <Terminal className="h-5 w-5 text-white" />
           </div>
           <CyberHexWord size="sm" showSerial={false} />
@@ -89,31 +91,28 @@ const NavBar = () => {
         <div className="hidden md:flex items-center gap-1">
           <Link
             to="/"
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-              location.pathname === "/"
-                ? "text-cyan-400 bg-cyan-500/10"
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/"
+                ? "text-green-400 bg-green-500/10"
                 : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
-            }`}
+              }`}
           >
             Home
           </Link>
           <Link
             to="/about"
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-              location.pathname === "/about"
-                ? "text-cyan-400 bg-cyan-500/10"
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/about"
+                ? "text-green-400 bg-green-500/10"
                 : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
-            }`}
+              }`}
           >
             About
           </Link>
           <Link
             to="/contact"
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-              location.pathname === "/contact"
-                ? "text-cyan-400 bg-cyan-500/10"
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/contact"
+                ? "text-green-400 bg-green-500/10"
                 : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
-            }`}
+              }`}
           >
             Contact
           </Link>
@@ -179,11 +178,10 @@ const NavBar = () => {
                             setVariant(t.id as ThemeVariant);
                             setThemeMenuOpen(false);
                           }}
-                          className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                            isActive
+                          className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${isActive
                               ? 'bg-neutral-800 text-white'
                               : 'text-neutral-300 hover:text-white hover:bg-neutral-800/60'
-                          }`}
+                            }`}
                         >
                           <span
                             className="h-3.5 w-3.5 rounded-full ring-1 ring-white/10 flex-shrink-0"
@@ -191,7 +189,7 @@ const NavBar = () => {
                           />
                           <span className="flex-1 text-left">{t.name}</span>
                           {isActive && (
-                            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.5)]" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-green-400 shadow-[0_0_6px_rgba(74, 222, 128,0.5)]" />
                           )}
                         </button>
                       );
@@ -215,7 +213,7 @@ const NavBar = () => {
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="flex items-center gap-2 rounded-xl border border-neutral-700/50 bg-neutral-800/50 px-3 py-2 text-sm font-medium text-white hover:border-neutral-600/50 hover:bg-neutral-800 transition-all duration-200"
                 >
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-violet-500 text-[10px] font-bold text-white">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-violet-500 text-[10px] font-bold text-white">
                     {user.username?.[0]?.toUpperCase() || "U"}
                   </div>
                   <span className="max-w-[100px] truncate">
@@ -266,17 +264,13 @@ const NavBar = () => {
             </>
           ) : (
             <>
-              <Link to="/signin">
-                <Button variant="ghost" size="sm">
-                  Sign in
-                </Button>
-              </Link>
-              <Link to="/signup">
-                <Button size="sm">
-                  <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-                  Get Started
-                </Button>
-              </Link>
+              <Button variant="ghost" size="sm" onClick={openSignIn}>
+                Sign in
+              </Button>
+              <Button size="sm" onClick={openSignUp}>
+                <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                Get Started
+              </Button>
             </>
           )}
         </div>
@@ -322,33 +316,30 @@ const NavBar = () => {
               <Link
                 to="/"
                 onClick={closeMobile}
-                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${
-                  location.pathname === "/"
-                    ? "text-cyan-400 bg-cyan-500/10"
+                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/"
+                    ? "text-green-400 bg-green-500/10"
                     : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
-                }`}
+                  }`}
               >
                 Home
               </Link>
               <Link
                 to="/about"
                 onClick={closeMobile}
-                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${
-                  location.pathname === "/about"
-                    ? "text-cyan-400 bg-cyan-500/10"
+                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/about"
+                    ? "text-green-400 bg-green-500/10"
                     : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
-                }`}
+                  }`}
               >
                 About
               </Link>
               <Link
                 to="/contact"
                 onClick={closeMobile}
-                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${
-                  location.pathname === "/contact"
-                    ? "text-cyan-400 bg-cyan-500/10"
+                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/contact"
+                    ? "text-green-400 bg-green-500/10"
                     : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
-                }`}
+                  }`}
               >
                 Contact
               </Link>
@@ -367,11 +358,10 @@ const NavBar = () => {
                           setVariant(t.id as ThemeVariant);
                           closeMobile();
                         }}
-                        className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                          isActive
-                            ? 'bg-neutral-800 text-white ring-1 ring-cyan-500/30'
+                        className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${isActive
+                            ? 'bg-neutral-800 text-white ring-1 ring-green-500/30'
                             : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
-                        }`}
+                          }`}
                       >
                         <span
                           className="h-3 w-3 rounded-full ring-1 ring-white/10"
@@ -409,20 +399,24 @@ const NavBar = () => {
                   </>
                 ) : (
                   <>
-                    <Link
-                      to="/signin"
-                      onClick={closeMobile}
-                      className="block w-full rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-300 hover:text-white hover:bg-neutral-800/50"
+                    <button
+                      onClick={() => {
+                        openSignIn();
+                        closeMobile();
+                      }}
+                      className="block w-full text-left rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-300 hover:text-white hover:bg-neutral-800/50"
                     >
                       Sign in
-                    </Link>
-                    <Link
-                      to="/signup"
-                      onClick={closeMobile}
-                      className="block w-full rounded-xl bg-gradient-to-r from-cyan-500 to-cyan-600 px-3 py-2.5 text-center text-sm font-semibold text-white"
+                    </button>
+                    <button
+                      onClick={() => {
+                        openSignUp();
+                        closeMobile();
+                      }}
+                      className="block w-full rounded-xl bg-gradient-to-r from-green-500 to-green-600 px-3 py-2.5 text-center text-sm font-semibold text-white"
                     >
                       Get Started
-                    </Link>
+                    </button>
                   </>
                 )}
               </div>

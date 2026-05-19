@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { CyberHexWord, ReleaseBadge } from "@/components/brand";
 import { stats } from "@/const/data";
+import { useAuthModal } from "@/stores/authModal";
 
 const floatingIcons = [
   { Icon: Cpu, x: "10%", y: "20%", delay: 0, duration: 5 },
@@ -22,7 +23,8 @@ const floatingIcons = [
 
 export default function Hero() {
   const [typedText, setTypedText] = useState("");
-  const fullText = "Machine Learning for Hackers";
+  const { openSignUp } = useAuthModal();
+  const fullText = "Machine Learning for Engineers";
 
   useEffect(() => {
     let i = 0;
@@ -42,7 +44,7 @@ export default function Hero() {
       {floatingIcons.map(({ Icon, x, y, delay, duration }, i) => (
         <motion.div
           key={i}
-          className="absolute text-cyan-500/10"
+          className="absolute text-green-500/10"
           style={{ left: x, top: y }}
           animate={{ y: ["-8px", "8px", "-8px"] }}
           transition={{ duration, repeat: Infinity, ease: "easeInOut", delay }}
@@ -77,8 +79,8 @@ export default function Hero() {
           className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
         >
           <span className="block">Build Neural Networks</span>
-          <span className="block mt-2 bg-gradient-to-r from-cyan-400 via-cyan-300 to-violet-400 bg-clip-text text-transparent">
-            Like a Hacker
+          <span className="block mt-2 bg-gradient-to-r from-green-400 via-green-300 to-violet-400 bg-clip-text text-transparent">
+            Like an Engineer
           </span>
         </motion.h1>
 
@@ -88,8 +90,8 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="mt-6 text-lg text-neutral-400 sm:text-xl max-w-2xl mx-auto leading-relaxed"
         >
-          <span className="text-cyan-400 font-mono">{typedText}</span>
-          <span className="animate-terminal-cursor text-cyan-400">|</span>
+          <span className="text-green-400 font-mono">{typedText}</span>
+          <span className="animate-terminal-cursor text-green-400">|</span>
         </motion.p>
 
         <motion.p
@@ -108,13 +110,11 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 1 }}
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <Link to="/signup">
-            <Button size="xl">
-              <Sparkles className="h-5 w-5 mr-2" />
-              Start Building Free
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </Button>
-          </Link>
+          <Button size="xl" onClick={openSignUp}>
+            <Sparkles className="h-5 w-5 mr-2" />
+            Start Building Free
+            <ArrowRight className="h-5 w-5 ml-2" />
+          </Button>
           <Link to="/about">
             <Button variant="outline" size="xl">
               <Cpu className="h-5 w-5 mr-2" />
@@ -136,7 +136,7 @@ export default function Hero() {
             >
               <div className="text-2xl sm:text-3xl font-bold text-white font-mono tracking-tight">
                 {stat.value}
-                <span className="text-cyan-400">{stat.suffix}</span>
+                <span className="text-green-400">{stat.suffix}</span>
               </div>
               <div className="mt-1 text-[11px] text-neutral-500 font-medium uppercase tracking-wider">
                 {stat.label}

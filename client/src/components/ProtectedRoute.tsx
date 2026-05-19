@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/auth";
@@ -15,7 +15,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     return (
       <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-10 w-10 text-cyan-400 animate-spin mx-auto mb-4" />
+          <Loader2 className="h-10 w-10 text-green-400 animate-spin mx-auto mb-4" />
           <p className="text-sm text-neutral-500">Loading session...</p>
         </div>
       </div>

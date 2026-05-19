@@ -30,7 +30,7 @@ const values = [
   },
   {
     icon: Terminal,
-    title: "Hacker Ethos",
+    title: "Engineer Ethos",
     description:
       "This is a platform built by engineers, for engineers. No hand-holding, no bloat — just power.",
   },
@@ -58,7 +58,7 @@ export default function AboutPage() {
       >
         <SectionHeading
           title="About CyberHex"
-          description="We're building the machine learning platform that hackers deserve."
+          description="We're building the machine learning platform that engineers deserve."
           align="center"
         />
       </motion.div>
@@ -72,7 +72,7 @@ export default function AboutPage() {
         <div className="rounded-2xl border border-neutral-800/60 bg-neutral-900/40 p-8 backdrop-blur-lg">
           <p className="text-lg text-neutral-300 leading-relaxed">
             CyberHex started with a simple question:{" "}
-            <span className="text-cyan-400 font-semibold">
+            <span className="text-green-400 font-semibold">
               why do you need a PhD to train a neural network?
             </span>
           </p>
@@ -101,9 +101,9 @@ export default function AboutPage() {
             viewport={{ once: true }}
             transition={{ delay: i * 0.08, duration: 0.4 }}
           >
-            <div className="rounded-2xl border border-neutral-800/60 bg-neutral-900/40 p-6 text-center backdrop-blur-lg hover:border-cyan-500/20 transition-all duration-300 h-full">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500/20 to-cyan-600/5 border border-cyan-500/10 mb-4">
-                <value.icon className="h-6 w-6 text-cyan-400" />
+            <div className="rounded-2xl border border-neutral-800/60 bg-neutral-900/40 p-6 text-center backdrop-blur-lg hover:border-green-500/20 transition-all duration-300 h-full">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/5 border border-green-500/10 mb-4">
+                <value.icon className="h-6 w-6 text-green-400" />
               </div>
               <h3 className="text-lg font-bold text-white mb-2">{value.title}</h3>
               <p className="text-sm text-neutral-400 leading-relaxed">{value.description}</p>
@@ -115,7 +115,7 @@ export default function AboutPage() {
       {/* CTA */}
       <div className="text-center py-12">
         <h2 className="text-2xl font-extrabold text-white mb-4">
-          Ready to <span className="text-cyan-400">build</span>?
+          Ready to <span className="text-green-400">build</span>?
         </h2>
         <Flex justify="center" gap="md">
           <Link to="/signup">

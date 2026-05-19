@@ -231,15 +231,15 @@ export default function ExperimentDetailPage() {
         <Flex justify="between" wrap>
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              <FlaskConical className="h-7 w-7 text-cyan-400" />
+              <FlaskConical className="h-7 w-7 text-green-400" />
               {exp.name}
             </h1>
             <div className="flex items-center gap-3 mt-2">
               <Badge variant={status === 'training' ? 'default' : status === 'completed' ? 'success' : status === 'failed' ? 'destructive' : 'muted'}>
                 {status === 'training' && (
                   <span className="relative flex h-1.5 w-1.5 mr-1">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-400" />
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-400" />
                   </span>
                 )}
                 {status}
@@ -292,7 +292,7 @@ export default function ExperimentDetailPage() {
         {[
           { icon: BarChart3, label: 'Best Loss', value: bestLoss?.toFixed(4) ?? '—', color: 'text-emerald-400' },
           { icon: TrendingDown, label: 'Current Loss', value: latest?.loss?.toFixed(4) ?? '—', color: 'text-rose-400' },
-          { icon: Clock, label: 'Progress', value: `Epoch ${currentEpoch}/${totalEpochs}`, color: 'text-cyan-400' },
+          { icon: Clock, label: 'Progress', value: `Epoch ${currentEpoch}/${totalEpochs}`, color: 'text-green-400' },
           { icon: Zap, label: 'Improvement', value: `${improvement}%`, color: 'text-amber-400' },
         ].map((stat, i) => (
           <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08, duration: 0.4 }}>
@@ -355,7 +355,7 @@ export default function ExperimentDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-cyan-400" />
+                <Activity className="h-5 w-5 text-green-400" />
                 Training Log
               </CardTitle>
             </CardHeader>
@@ -389,7 +389,7 @@ export default function ExperimentDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
-                <Cpu className="h-4 w-4 text-cyan-400" />
+                <Cpu className="h-4 w-4 text-green-400" />
                 Latest engine inference
               </CardTitle>
             </CardHeader>
@@ -413,7 +413,7 @@ export default function ExperimentDetailPage() {
             <Flex gap="sm" wrap>
               {exp.layers.map((layer, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-3 py-2 text-sm font-mono text-cyan-400">
+                  <div className="rounded-lg border border-green-500/20 bg-green-500/5 px-3 py-2 text-sm font-mono text-green-400">
                     {layer}
                   </div>
                   {i < exp.layers.length - 1 && <ArrowLeft className="h-4 w-4 text-neutral-700 rotate-180" />}

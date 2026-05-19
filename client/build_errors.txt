@@ -1,0 +1,53 @@
+
+> client@3.0.0 build
+> tsc -b && vite build
+
+src/components/ErrorBoundary.tsx(1,21): error TS1484: 'ErrorInfo' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/components/ErrorBoundary.tsx(1,32): error TS1484: 'ReactNode' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/components/ProtectedRoute.tsx(1,10): error TS1484: 'ReactNode' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/components/auth-modals.tsx(7,59): error TS6133: 'openSignUp' is declared but its value is never read.
+src/components/navbar/navbar.tsx(8,3): error TS6133: 'User' is declared but its value is never read.
+src/components/signin.tsx(2,1): error TS6133: 'Link' is declared but its value is never read.
+src/components/signup/signup.tsx(26,10): error TS6133: 'otpSent' is declared but its value is never read.
+src/components/ui/layout.tsx(1,10): error TS1484: 'ReactNode' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/components/ui/particle-background.tsx(65,11): error TS6133: 'particleCount' is declared but its value is never read.
+src/components/ui/particle-background.tsx(95,11): error TS6133: 'bgColor' is declared but its value is never read.
+src/components/ui/toast.tsx(9,1): error TS6133: 'useEffect' is declared but its value is never read.
+src/pages/AboutPage.tsx(8,3): error TS6133: 'Code2' is declared but its value is never read.
+src/pages/AboutPage.tsx(9,3): error TS6133: 'Heart' is declared but its value is never read.
+src/pages/AboutPage.tsx(22,49): error TS6133: 'Stack' is declared but its value is never read.
+src/pages/ContactPage.tsx(21,43): error TS6133: 'Flex' is declared but its value is never read.
+src/pages/CyberGames.tsx(10,3): error TS6133: 'ArrowRight' is declared but its value is never read.
+src/pages/CyberGames.tsx(16,33): error TS6133: 'SectionHeading' is declared but its value is never read.
+src/pages/DashboardPage.tsx(12,3): error TS6133: 'BarChart3' is declared but its value is never read.
+src/pages/DashboardPage.tsx(19,27): error TS6133: 'Stack' is declared but its value is never read.
+src/pages/DashboardPage.tsx(19,40): error TS6133: 'SectionHeading' is declared but its value is never read.
+src/pages/DashboardPage.tsx(132,44): error TS6133: 'i' is declared but its value is never read.
+src/pages/ExperimentBuilderPage.tsx(12,3): error TS6133: 'Brain' is declared but its value is never read.
+src/pages/ExperimentBuilderPage.tsx(18,1): error TS6133: 'Badge' is declared but its value is never read.
+src/pages/ExperimentDetailPage.tsx(33,27): error TS6133: 'Stack' is declared but its value is never read.
+src/pages/ExperimentDetailPage.tsx(36,42): error TS6133: 'TrainingStatus' is declared but its value is never read.
+src/pages/ExperimentDetailPage.tsx(49,23): error TS6133: 'setTotalEpochs' is declared but its value is never read.
+src/pages/ExperimentDetailPage.tsx(169,24): error TS6133: 'send' is declared but its value is never read.
+src/pages/ExperimentDetailPage.tsx(169,30): error TS6133: 'reconnect' is declared but its value is never read.
+src/pages/ExperimentsListPage.tsx(8,3): error TS6133: 'Filter' is declared but its value is never read.
+src/pages/ExperimentsListPage.tsx(10,3): error TS6133: 'Play' is declared but its value is never read.
+src/pages/ExperimentsListPage.tsx(11,3): error TS6133: 'Square' is declared but its value is never read.
+src/pages/ExperimentsListPage.tsx(12,3): error TS6133: 'Trash2' is declared but its value is never read.
+src/pages/ExperimentsListPage.tsx(14,3): error TS6133: 'BarChart3' is declared but its value is never read.
+src/pages/ExperimentsListPage.tsx(16,3): error TS6133: 'Layers' is declared but its value is never read.
+src/pages/ExperimentsListPage.tsx(19,29): error TS6133: 'CardHeader' is declared but its value is never read.
+src/pages/ExperimentsListPage.tsx(19,41): error TS6133: 'CardTitle' is declared but its value is never read.
+src/pages/ExperimentsListPage.tsx(21,21): error TS6133: 'Grid' is declared but its value is never read.
+src/pages/ExperimentsListPage.tsx(35,9): error TS6133: 'toast' is declared but its value is never read.
+src/pages/ModelsPage.tsx(6,3): error TS6133: 'Cpu' is declared but its value is never read.
+src/pages/NotFoundPage.tsx(3,16): error TS6133: 'Search' is declared but its value is never read.
+src/pages/SettingsPage.tsx(8,3): error TS6133: 'Eye' is declared but its value is never read.
+src/pages/SettingsPage.tsx(9,3): error TS6133: 'EyeOff' is declared but its value is never read.
+src/pages/SettingsPage.tsx(14,34): error TS6133: 'Flex' is declared but its value is never read.
+src/pages/SignUpPage.tsx(3,20): error TS6133: 'ArrowLeft' is declared but its value is never read.
+src/pages/SignUpPage.tsx(4,1): error TS6133: 'Button' is declared but its value is never read.
+src/stores/commandPalette.ts(60,68): error TS6133: 'get' is declared but its value is never read.
+src/stores/experiments.ts(2,26): error TS1484: 'Experiment' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/stores/experiments.ts(2,38): error TS1484: 'TrainingStatus' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/stores/experiments.ts(2,54): error TS1484: 'ActiveJob' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.

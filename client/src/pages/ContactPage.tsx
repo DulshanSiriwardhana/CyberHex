@@ -157,15 +157,15 @@ export default function ContactPage() {
               href={item.link}
               target={item.link.startsWith("http") ? "_blank" : undefined}
               rel={item.link.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="block rounded-2xl border border-neutral-800/60 bg-neutral-900/60 backdrop-blur-lg p-5 hover:border-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.08)] transition-all duration-300"
+              className="block rounded-2xl border border-neutral-800/60 bg-neutral-900/60 backdrop-blur-lg p-5 hover:border-green-500/20 hover:shadow-[0_0_15px_rgba(34, 197, 94,0.08)] transition-all duration-300"
             >
               <div className="flex items-center gap-4">
-                <div className="h-10 w-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-                  <item.icon className="h-5 w-5 text-cyan-400" />
+                <div className="h-10 w-10 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+                  <item.icon className="h-5 w-5 text-green-400" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-white">{item.title}</p>
-                  <p className="text-sm text-cyan-400">{item.value}</p>
+                  <p className="text-sm text-green-400">{item.value}</p>
                 </div>
               </div>
             </a>

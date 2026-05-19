@@ -53,7 +53,7 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-white">
               Welcome back,{" "}
-              <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-green-400 to-violet-400 bg-clip-text text-transparent">
                 {user.username}
               </span>
             </h1>
@@ -95,12 +95,12 @@ export default function DashboardPage() {
                 <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
                   {stat.label}
                 </span>
-                <stat.icon className="h-4 w-4 text-cyan-400" />
+                <stat.icon className="h-4 w-4 text-green-400" />
               </div>
               <div className="text-2xl font-extrabold text-white font-mono">
                 {stat.value}
               </div>
-              <span className="text-xs text-cyan-400">{stat.change}</span>
+              <span className="text-xs text-green-400">{stat.change}</span>
             </StatCard>
           </motion.div>
         ))}
@@ -116,7 +116,7 @@ export default function DashboardPage() {
           <CardHeader>
             <Flex justify="between">
               <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-cyan-400" />
+                <Activity className="h-5 w-5 text-green-400" />
                 Recent Experiments
               </CardTitle>
               <Link to="/experiments">
@@ -137,7 +137,7 @@ export default function DashboardPage() {
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${
-                      exp.status === "running" ? "bg-cyan-500/10 text-cyan-400" :
+                      exp.status === "running" ? "bg-green-500/10 text-green-400" :
                       exp.status === "completed" ? "bg-emerald-500/10 text-emerald-400" :
                       "bg-neutral-800 text-neutral-500"
                     }`}>
@@ -168,10 +168,10 @@ export default function DashboardPage() {
       {/* Quick actions */}
       <Grid cols={2} gap="md" className="mt-8">
         <Link to="/experiments/new">
-          <Card className="group border-cyan-500/10 hover:border-cyan-500/30 hover:shadow-[0_0_25px_rgba(6,182,212,0.1)] cursor-pointer transition-all duration-300">
+          <Card className="group border-green-500/10 hover:border-green-500/30 hover:shadow-[0_0_25px_rgba(34, 197, 94,0.1)] cursor-pointer transition-all duration-300">
             <CardContent className="p-6 flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-cyan-600/5 border border-cyan-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Zap className="h-6 w-6 text-cyan-400" />
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/5 border border-green-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Zap className="h-6 w-6 text-green-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-white">Quick Experiment</h3>

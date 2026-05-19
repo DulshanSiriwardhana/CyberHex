@@ -69,7 +69,7 @@ export default function ExperimentBuilderPage() {
               Back to experiments
             </Link>
             <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              <FlaskConical className="h-7 w-7 text-cyan-400" />
+              <FlaskConical className="h-7 w-7 text-green-400" />
               {name}
             </h1>
           </div>
@@ -97,7 +97,7 @@ export default function ExperimentBuilderPage() {
             <CardHeader>
               <Flex justify="between">
                 <CardTitle className="flex items-center gap-2">
-                  <Layers className="h-5 w-5 text-cyan-400" />
+                  <Layers className="h-5 w-5 text-green-400" />
                   Layers
                 </CardTitle>
                 <Button variant="ghost" size="sm" onClick={addLayer}>
@@ -113,7 +113,7 @@ export default function ExperimentBuilderPage() {
                     key={layer.id}
                     className="flex items-center gap-3 rounded-xl border border-neutral-800/60 bg-neutral-850/50 px-4 py-3"
                   >
-                    <div className="h-8 w-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-xs font-bold text-cyan-400 font-mono">
+                    <div className="h-8 w-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center text-xs font-bold text-green-400 font-mono">
                       {i + 1}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -210,7 +210,7 @@ export default function ExperimentBuilderPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-cyan-400" />
+                <BarChart3 className="h-5 w-5 text-green-400" />
                 Summary
               </CardTitle>
             </CardHeader>

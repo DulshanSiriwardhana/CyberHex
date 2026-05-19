@@ -10,6 +10,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import NavBar from "@/components/navbar/navbar";
 import { SkeletonPage } from "@/components/ui/skeleton";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import AuthModals from "@/components/auth-modals";
 
 // Eager: landing is the first thing everyone sees
 import LandingPage from "@/pages/LandingPage";
@@ -41,7 +42,7 @@ function AppLayout() {
   useKeyboardShortcuts();
 
   return (
-    <div className="relative min-h-screen bg-neutral-950 font-sans antialiased">
+    <div className="relative min-h-screen bg-neutral-950 font-spectral antialiased">
       <AmbientBackground />
 
       {/* Content layer */}
@@ -119,6 +120,7 @@ function AppLayout() {
             <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>
         </Suspense>
+        <AuthModals />
       </div>
     </div>
   );

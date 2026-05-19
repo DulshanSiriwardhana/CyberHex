@@ -287,7 +287,7 @@ export default function CommandPalette() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search commands..."
-              className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder:text-white/30 font-sans"
+              className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder:text-white/30 font-spectral"
               autoComplete="off"
               spellCheck={false}
             />
@@ -325,7 +325,7 @@ export default function CommandPalette() {
                           group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-all duration-75
                           ${
                             isSelected
-                              ? 'bg-cyan-500/10 border border-cyan-500/20 text-cyan-300'
+                              ? 'bg-green-500/10 border border-green-500/20 text-green-300'
                               : 'text-white/70 hover:bg-white/[0.03] border border-transparent'
                           }
                         `}
@@ -333,7 +333,7 @@ export default function CommandPalette() {
                         <div
                           className={`
                             flex items-center justify-center w-7 h-7 rounded-lg shrink-0 transition-colors
-                            ${isSelected ? 'bg-cyan-500/15 text-cyan-400' : 'bg-white/[0.04] text-white/40'}
+                            ${isSelected ? 'bg-green-500/15 text-green-400' : 'bg-white/[0.04] text-white/40'}
                           `}
                         >
                           <Icon className="w-3.5 h-3.5" />
@@ -354,7 +354,7 @@ export default function CommandPalette() {
                           </kbd>
                         )}
                         {isSelected && (
-                          <CornerDownLeft className="w-3.5 h-3.5 text-cyan-400/60 shrink-0" />
+                          <CornerDownLeft className="w-3.5 h-3.5 text-green-400/60 shrink-0" />
                         )}
                       </button>
                     );

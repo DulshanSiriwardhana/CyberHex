@@ -14,7 +14,7 @@ export const Sidebar = () => {
             to={item.path}
             className={`w-11 h-11 flex items-center justify-center rounded-xl transition-all duration-200 group relative ${
               isActive
-                ? "bg-cyan-500/10 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.2)]"
+                ? "bg-green-500/10 text-green-400 shadow-[0_0_10px_rgba(34, 197, 94,0.2)]"
                 : "text-neutral-500 hover:text-white hover:bg-neutral-800/60"
             }`}
             aria-label={item.name}
@@ -22,7 +22,7 @@ export const Sidebar = () => {
           >
             <item.icon className="w-5 h-5" />
             {isActive && (
-              <span className="absolute left-0 top-2 bottom-2 w-0.5 bg-gradient-to-b from-cyan-400 to-cyan-600 rounded-full" />
+              <span className="absolute left-0 top-2 bottom-2 w-0.5 bg-gradient-to-b from-green-400 to-green-600 rounded-full" />
             )}
             {/* Tooltip on hover */}
             <span className="absolute left-14 tooltip-cyber opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">

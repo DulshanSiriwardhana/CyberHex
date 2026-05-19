@@ -86,7 +86,7 @@ function darkenHex(hex: string, factor: number): string {
 
 /**
  * Applies the selected theme variant by overriding Tailwind's --color-* CSS
- * custom properties on :root. This causes all text-cyan-*, bg-cyan-*, etc
+ * custom properties on :root. This causes all text-green-*, bg-green-*, etc
  * classes to dynamically resolve to the variant's palette at runtime.
  */
 function applyVariantCSS(variant: ThemeVariant): void {
@@ -96,13 +96,13 @@ function applyVariantCSS(variant: ThemeVariant): void {
   const p = c.accent.primary;
   const s = c.accent.secondary;
 
-  // Override Tailwind cyan scale (primary accent) with variant accent.primary
-  root.style.setProperty('--color-cyan-300', lightenHex(p, 0.25));
-  root.style.setProperty('--color-cyan-400', p);
-  root.style.setProperty('--color-cyan-500', darkenHex(p, 0.15));
-  root.style.setProperty('--color-cyan-600', darkenHex(p, 0.35));
-  root.style.setProperty('--color-cyan-700', darkenHex(p, 0.55));
-  root.style.setProperty('--color-cyan-800', darkenHex(p, 0.7));
+  // Override Tailwind green scale (primary accent) with variant accent.primary
+  root.style.setProperty('--color-green-300', lightenHex(p, 0.25));
+  root.style.setProperty('--color-green-400', p);
+  root.style.setProperty('--color-green-500', darkenHex(p, 0.15));
+  root.style.setProperty('--color-green-600', darkenHex(p, 0.35));
+  root.style.setProperty('--color-green-700', darkenHex(p, 0.55));
+  root.style.setProperty('--color-green-800', darkenHex(p, 0.7));
 
   // Override Tailwind violet scale (secondary accent) with variant accent.secondary
   root.style.setProperty('--color-violet-300', lightenHex(s, 0.25));

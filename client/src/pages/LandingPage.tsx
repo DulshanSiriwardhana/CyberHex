@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/c
 import { SectionHeading, Container, Grid, Stack, Flex } from "@/components/ui/layout";
 import { features } from "@/const/data";
 import { CyberHexWord, ReleaseBadge } from "@/components/brand";
+import { useAuthModal } from "@/stores/authModal";
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -45,10 +46,10 @@ function FeatureCard({
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
     >
-      <Card className="group h-full hover:border-cyan-500/25 hover:shadow-[0_12px_40px_rgba(6,182,212,0.08)]">
+      <Card className="group h-full hover:border-green-500/25 hover:shadow-[0_12px_40px_rgba(34, 197, 94,0.08)]">
         <CardContent className="p-6 pt-6">
           <div
-            className={`inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${gradient} border border-cyan-500/15 text-2xl mb-4 group-hover:scale-105 transition-transform duration-300`}
+            className={`inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${gradient} border border-green-500/15 text-2xl mb-4 group-hover:scale-105 transition-transform duration-300`}
           >
             {icon}
           </div>
@@ -61,6 +62,7 @@ function FeatureCard({
 }
 
 function CTASection() {
+  const { openSignUp } = useAuthModal();
   return (
     <section className="relative py-24 px-4 overflow-hidden">
       <div className="absolute inset-0 bg-cyber-radial pointer-events-none" />
@@ -79,7 +81,7 @@ function CTASection() {
         </div>
         <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
           Start Training Models{" "}
-          <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-green-400 to-violet-400 bg-clip-text text-transparent">
             Today
           </span>
         </h2>
@@ -88,13 +90,11 @@ function CTASection() {
           that runs circles around Python.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link to="/signup">
-            <Button size="xl">
-              <TerminalIcon className="h-5 w-5 mr-2" />
-              Launch Terminal — Free
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </Button>
-          </Link>
+          <Button size="xl" onClick={openSignUp}>
+            <TerminalIcon className="h-5 w-5 mr-2" />
+            Launch Terminal — Free
+            <ArrowRight className="h-5 w-5 ml-2" />
+          </Button>
           <Link to="/about">
             <Button variant="outline" size="xl">
               Read the Docs
@@ -113,14 +113,14 @@ function Footer() {
         <Grid cols={4} gap="lg">
           <Stack gap="sm">
             <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-700 shadow-[0_0_12px_rgba(6,182,212,0.35)]">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-700 shadow-[0_0_12px_rgba(34, 197, 94,0.35)]">
                 <TerminalIcon className="h-4 w-4 text-white" />
               </div>
               <CyberHexWord size="sm" showSerial={false} />
             </Link>
             <ReleaseBadge variant="compact" pulse={false} className="w-fit text-xs py-1 px-3" />
             <p className="text-sm text-neutral-500 max-w-xs">
-              Next-generation machine learning platform built for hackers and
+              Next-generation machine learning platform built for engineers and
               engineers.
             </p>
             <Flex gap="sm" className="mt-2">
@@ -143,36 +143,36 @@ function Footer() {
 
           <Stack gap="sm">
             <h4 className="text-sm font-semibold text-white">Platform</h4>
-            <Link to="/dashboard" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
+            <Link to="/dashboard" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
               Dashboard
             </Link>
-            <Link to="/models" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
+            <Link to="/models" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
               Models
             </Link>
-            <Link to="/experiments" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
+            <Link to="/experiments" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
               Experiments
             </Link>
-            <Link to="/cybergames" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
+            <Link to="/cybergames" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
               CyberGames
             </Link>
           </Stack>
 
           <Stack gap="sm">
             <h4 className="text-sm font-semibold text-white">Company</h4>
-            <Link to="/about" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
+            <Link to="/about" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
               About
             </Link>
-            <Link to="/contact" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
+            <Link to="/contact" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
               Contact
             </Link>
           </Stack>
 
           <Stack gap="sm">
             <h4 className="text-sm font-semibold text-white">Legal</h4>
-            <a href="#" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
+            <a href="#" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
               Privacy Policy
             </a>
-            <a href="#" className="text-sm text-neutral-400 hover:text-cyan-400 transition-colors">
+            <a href="#" className="text-sm text-neutral-400 hover:text-green-400 transition-colors">
               Terms of Service
             </a>
           </Stack>
@@ -183,7 +183,7 @@ function Footer() {
             &copy; {new Date().getFullYear()} CyberHex. All rights reserved.
           </p>
           <p className="text-xs text-neutral-700 flex items-center gap-1">
-            Built with <Heart className="h-3 w-3 text-rose-400" /> and <Code2 className="h-3 w-3 text-cyan-400" /> by the CyberHex team
+            Built with <Heart className="h-3 w-3 text-rose-400" /> and <Code2 className="h-3 w-3 text-green-400" /> by the CyberHex team
           </p>
         </div>
       </Container>

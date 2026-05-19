@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth";
+import { useAuthModal } from "@/stores/authModal";
 
 interface SignInProps {
   onSuccess?: () => void;
@@ -22,6 +23,7 @@ export default function SignIn({ onSuccess }: SignInProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const openSignUp = useAuthModal((state) => state.openSignUp);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -127,12 +129,15 @@ export default function SignIn({ onSuccess }: SignInProps) {
       <div className="mt-6 text-center">
         <p className="text-sm text-neutral-500">
           Don't have an account?{" "}
-          <Link
-            to="/signup"
-            className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              openSignUp();
+            }}
+            className="font-medium text-green-400 hover:text-green-300 transition-colors"
           >
             Create one
-          </Link>
+          </button>
         </p>
       </div>
     </DialogContent>

@@ -29,7 +29,7 @@ export default function SettingsPage() {
         className="mb-8"
       >
         <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-          <Settings className="h-7 w-7 text-cyan-400" />
+          <Settings className="h-7 w-7 text-green-400" />
           Settings
         </h1>
         <p className="mt-1 text-neutral-400">Manage your account and preferences</p>
@@ -45,14 +45,14 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-cyan-400" />
+                <User className="h-5 w-5 text-green-400" />
                 Profile
               </CardTitle>
             </CardHeader>
             <CardContent>
               <Stack gap="md">
                 <div className="flex items-center gap-4">
-                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-500 flex items-center justify-center text-2xl font-extrabold text-white shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-green-500 to-violet-500 flex items-center justify-center text-2xl font-extrabold text-white shadow-[0_0_20px_rgba(34, 197, 94,0.3)]">
                     {user.username?.[0]?.toUpperCase()}
                   </div>
                   <div>
@@ -104,7 +104,7 @@ export default function SettingsPage() {
                 {["Training completions", "Experiment failures", "Model deployment status", "Weekly digests"].map((item) => (
                   <label key={item} className="flex items-center justify-between py-2 cursor-pointer">
                     <span className="text-sm text-neutral-300">{item}</span>
-                    <input type="checkbox" defaultChecked className="rounded border-neutral-700 bg-neutral-800 text-cyan-500 focus:ring-cyan-500/50" />
+                    <input type="checkbox" defaultChecked className="rounded border-neutral-700 bg-neutral-800 text-green-500 focus:ring-green-500/50" />
                   </label>
                 ))}
               </Stack>

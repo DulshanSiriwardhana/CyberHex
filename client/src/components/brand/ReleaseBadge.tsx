@@ -32,11 +32,11 @@ export function ReleaseBadge({
     >
       {pulse && (
         <span className="relative flex h-2 w-2 shrink-0">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--v4-signal-cyan)] opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--v4-signal-cyan)]" />
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--v4-signal-green)] opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--v4-signal-green)]" />
         </span>
       )}
-      <span className="font-mono text-[var(--v4-signal-cyan)] tabular-nums">{copy[variant]}</span>
+      <span className="font-mono text-[var(--v4-signal-green)] tabular-nums">{copy[variant]}</span>
     </div>
   );
 }

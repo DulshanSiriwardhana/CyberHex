@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { experimentsApi, Experiment, TrainingStatus, ActiveJob } from '../lib/api';
+import { experimentsApi, type Experiment, type TrainingStatus, type ActiveJob } from '../lib/api';
 
 interface ExperimentsState {
   experiments: Experiment[];

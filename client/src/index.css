@@ -5,13 +5,7 @@
 /* ========================================================================== */
 
 @theme {
-  /* ── Brand: True Cyan (not green) ──────────────────────────────────────── */
-  --color-cyan-300: #67e8f9;
-  --color-cyan-400: #22d3ee;
-  --color-cyan-500: #06b6d4;
-  --color-cyan-600: #0891b2;
-  --color-cyan-700: #0e7490;
-  --color-cyan-800: #155e75;
+  /* ── Brand: True Green ──────────────────────────────────────── */
 
   /* ── Purple / Violet ───────────────────────────────────────────────────── */
   --color-violet-300: #c4b5fd;
@@ -61,14 +55,14 @@
   --color-amber-600: #d97706;
 
   /* ── Typography ─────────────────────────────────────────────────────────── */
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-spectral: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
   --font-display: "Spectral", "Georgia", serif;
   --font-spectral: "Spectral", "Georgia", serif;
   --font-wordmark: "Outfit", "Inter", system-ui, sans-serif;
 
   /* v4.0 — Release No. 01 (The Word) */
-  --v4-signal-cyan: #00e5ff;
+  --v4-signal-green: #00e5ff;
   --v4-signal-violet: #8b5cf6;
   --v4-hex-gold: #d4a017;
   --v4-word-underline: linear-gradient(90deg, #00e5ff 0%, #d4a017 50%, #8b5cf6 100%);
@@ -93,11 +87,6 @@
   --color-green-400: #4ade80;
   --color-green-500: #22c55e;
   --color-green-600: #16a34a;
-  --color-cyan-300: #67e8f9;
-  --color-cyan-400: #22d3ee;
-  --color-cyan-500: #06b6d4;
-  --color-cyan-600: #0891b2;
-  --color-cyan-700: #0e7490;
   --color-violet-300: #c4b5fd;
   --color-violet-400: #a78bfa;
   --color-violet-500: #8b5cf6;
@@ -116,7 +105,7 @@
   --color-neutral-950: #09090b;
 
   /* ── Typography ──────────────────────────────────────────────────────── */
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-spectral: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
   --font-display: "Spectral", "Georgia", serif;
   --font-spectral: "Spectral", "Georgia", serif;
@@ -163,14 +152,14 @@ html {
 body {
   background-color: var(--color-neutral-950);
   color: var(--color-neutral-300);
-  font-family: var(--font-sans);
+  font-family: var(--font-spectral);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* Selection color */
 ::selection {
-  background-color: rgba(6, 182, 212, 0.3);
+  background-color: rgba(34, 197, 94, 0.3);
   color: var(--color-neutral-0);
 }
 
@@ -191,7 +180,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-cyan-500);
+  background: var(--color-green-500);
 }
 
 /* ---- Custom Animations ---------------------------------------------------- */
@@ -199,11 +188,11 @@ body {
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 15px rgba(6, 182, 212, 0.2), 0 0 40px rgba(6, 182, 212, 0.1);
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.2), 0 0 40px rgba(34, 197, 94, 0.1);
   }
   50% {
-    box-shadow: 0 0 25px rgba(6, 182, 212, 0.4), 0 0 60px rgba(6, 182, 212, 0.2),
-      0 0 80px rgba(6, 182, 212, 0.1);
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.4), 0 0 60px rgba(34, 197, 94, 0.2),
+      0 0 80px rgba(34, 197, 94, 0.1);
   }
 }
 
@@ -229,12 +218,12 @@ body {
 @keyframes border-glow {
   0%,
   100% {
-    border-color: rgba(6, 182, 212, 0.3);
-    box-shadow: 0 0 10px rgba(6, 182, 212, 0.1);
+    border-color: rgba(34, 197, 94, 0.3);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.1);
   }
   50% {
-    border-color: rgba(6, 182, 212, 0.6);
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+    border-color: rgba(34, 197, 94, 0.6);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
   }
 }
 
@@ -385,15 +374,15 @@ body {
   background-color: color-mix(in srgb, var(--color-neutral-900) 60%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid color-mix(in srgb, var(--color-cyan-500) 20%, transparent);
-  box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+  border: 1px solid color-mix(in srgb, var(--color-green-500) 20%, transparent);
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);
 }
 
 /* ---- Neon Text Effects ---------------------------------------------------- */
 
-.neon-text-cyan {
-  text-shadow: 0 0 7px rgba(34, 211, 238, 0.45), 0 0 20px rgba(6, 182, 212, 0.2),
-    0 0 40px rgba(8, 145, 178, 0.12);
+.neon-text-green {
+  text-shadow: 0 0 7px rgba(74, 222, 128, 0.45), 0 0 20px rgba(34, 197, 94, 0.2),
+    0 0 40px rgba(22, 163, 74, 0.12);
 }
 
 .neon-text-violet {
@@ -405,19 +394,19 @@ body {
 
 .bg-cyber-grid {
   background-image: linear-gradient(
-      rgba(6, 182, 212, 0.03) 1px,
+      rgba(34, 197, 94, 0.03) 1px,
       transparent 1px
     ),
-    linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px);
+    linear-gradient(90deg, rgba(34, 197, 94, 0.03) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
 .bg-cyber-grid-dense {
   background-image: linear-gradient(
-      rgba(6, 182, 212, 0.04) 1px,
+      rgba(34, 197, 94, 0.04) 1px,
       transparent 1px
     ),
-    linear-gradient(90deg, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
+    linear-gradient(90deg, rgba(34, 197, 94, 0.04) 1px, transparent 1px);
   background-size: 30px 30px;
 }
 
@@ -428,7 +417,7 @@ body {
     135deg,
     var(--color-neutral-950) 0%,
     var(--color-neutral-925) 30%,
-    rgba(6, 182, 212, 0.05) 50%,
+    rgba(34, 197, 94, 0.05) 50%,
     rgba(139, 92, 246, 0.03) 70%,
     var(--color-neutral-950) 100%
   );
@@ -437,7 +426,7 @@ body {
 .bg-cyber-radial {
   background: radial-gradient(
     ellipse at 50% 0%,
-    rgba(6, 182, 212, 0.08) 0%,
+    rgba(34, 197, 94, 0.08) 0%,
     rgba(139, 92, 246, 0.03) 30%,
     transparent 60%
   );
@@ -450,7 +439,7 @@ body {
   border: 1px solid color-mix(in srgb, var(--color-neutral-700) 50%, transparent);
   border-radius: var(--radius-2xl);
   overflow: hidden;
-  box-shadow: 0 0 30px rgba(6, 182, 212, 0.08), 0 20px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.08), 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
 .terminal-header {
@@ -478,7 +467,7 @@ body {
   line-height: 1.7;
   max-height: 320px;
   overflow-y: auto;
-  color: var(--color-cyan-300);
+  color: var(--color-green-300);
 }
 
 .terminal-line {
@@ -487,7 +476,7 @@ body {
 }
 
 .terminal-prompt {
-  color: var(--color-cyan-500);
+  color: var(--color-green-500);
   white-space: nowrap;
   user-select: none;
 }
@@ -512,7 +501,7 @@ body {
   color: var(--color-neutral-0);
   font-family: var(--font-mono);
   font-size: 0.8125rem;
-  caret-color: var(--color-cyan-400);
+  caret-color: var(--color-green-400);
 }
 
 .terminal-input::placeholder {
@@ -548,10 +537,10 @@ body {
   color: var(--color-neutral-500);
 }
 .input-cyber:focus {
-  border-color: color-mix(in srgb, var(--color-cyan-500) 50%, transparent);
+  border-color: color-mix(in srgb, var(--color-green-500) 50%, transparent);
   outline: none;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-cyan-500) 20%, transparent),
-    0 0 15px rgba(6, 182, 212, 0.15);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-green-500) 20%, transparent),
+    0 0 15px rgba(34, 197, 94, 0.15);
 }
 
 .input-cyber-error {
@@ -582,12 +571,12 @@ body {
   display: inline-flex;
   align-items: center;
   border-radius: 9999px;
-  border: 1px solid color-mix(in srgb, var(--color-cyan-500) 20%, transparent);
-  background-color: color-mix(in srgb, var(--color-cyan-500) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-green-500) 20%, transparent);
+  background-color: color-mix(in srgb, var(--color-green-500) 10%, transparent);
   padding: 0.125rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--color-cyan-400);
+  color: var(--color-green-400);
 }
 
 .badge-violet {
@@ -610,7 +599,7 @@ body {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(6, 182, 212, 0.3),
+    rgba(34, 197, 94, 0.3),
     rgba(139, 92, 246, 0.3),
     transparent
   );
@@ -671,8 +660,8 @@ body {
 }
 .focus-ring-cyber:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-cyan-500) 50%, transparent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-cyan-500) 50%, transparent),
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-green-500) 50%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-green-500) 50%, transparent),
     0 0 0 4px var(--color-neutral-950);
 }
 
@@ -696,7 +685,7 @@ body {
 
 .card-hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(6, 182, 212, 0.1);
+  box-shadow: 0 8px 30px rgba(34, 197, 94, 0.1);
 }
 
 /* ---- 3D perspective ------------------------------------------------------- */
@@ -720,7 +709,7 @@ body {
 
 .glitch-text::before {
   animation: glitch-1 2s infinite;
-  color: var(--color-cyan-400);
+  color: var(--color-green-400);
   clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
 }
 
@@ -807,7 +796,7 @@ body {
 }
 
 .link-subtle:hover {
-  color: var(--color-cyan-400);
+  color: var(--color-green-400);
 }
 
 /* ========================================================================== */
@@ -836,11 +825,11 @@ body {
 }
 
 .badge-v4-release {
-  border-color: color-mix(in srgb, var(--v4-signal-cyan) 22%, transparent);
-  background-color: color-mix(in srgb, var(--v4-signal-cyan) 6%, transparent);
-  color: color-mix(in srgb, var(--v4-signal-cyan) 90%, white);
+  border-color: color-mix(in srgb, var(--v4-signal-green) 22%, transparent);
+  background-color: color-mix(in srgb, var(--v4-signal-green) 6%, transparent);
+  color: color-mix(in srgb, var(--v4-signal-green) 90%, white);
 }
 
 .wordmark-v4-hero-glow {
-  filter: drop-shadow(0 0 40px rgba(0, 229, 255, 0.12));
+  filter: drop-shadow(0 0 40px rgba(5, 150, 105, 0.12));
 }

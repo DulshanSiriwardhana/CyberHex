@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface PageLayoutProps {
@@ -206,7 +206,7 @@ export function SectionHeading({
         className,
       )}
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-500/80 mb-3">
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-green-500/80 mb-3">
         CyberHex
       </p>
       <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-[2.5rem] lg:leading-tight">
