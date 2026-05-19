@@ -10,6 +10,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CyberHexWord, ReleaseBadge } from "@/components/brand";
 import { stats } from "@/const/data";
 
 const floatingIcons = [
@@ -141,18 +142,23 @@ export default function Hero() {
       ))}
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 text-center">
-        {/* Badge */}
+        {/* v4.0 wordmark — Release No. 01 */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.05 }}
+          className="mb-6 flex justify-center wordmark-v4-hero-glow pl-4"
+        >
+          <CyberHexWord size="hero" />
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="inline-flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/5 px-4 py-1.5 text-sm font-medium text-cyan-400 mb-8 backdrop-blur-sm"
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="mb-10"
         >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400" />
-          </span>
-          v3.0 — Multi-Theme + Native C++ Inference Engine
+          <ReleaseBadge variant="live" />
         </motion.div>
 
         {/* Main heading */}
