@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [master, release, develop]
+    branches: [master, main, release, develop, v3.0, 'v*']
   pull_request:
-    branches: [master, release]
+    branches: [master, main, release, develop, v3.0]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -31,7 +31,7 @@ jobs:
         run: cd backend && npm ci
 
       - name: Run ESLint
-        run: cd backend && npm run lint -- --max-warnings 0 2>&1 || true
+        run: cd backend && npm run lint -- --max-warnings 0
 
   test-backend:
     name: Test Backend
@@ -59,6 +59,9 @@ jobs:
       - name: Install dependencies
         run: cd backend && npm ci
 
+      - name: Install Python ML dependencies
+        run: pip3 install numpy --break-system-packages 2>/dev/null || pip3 install numpy
+
       - name: Run tests
         run: cd backend && NODE_OPTIONS=--experimental-vm-modules npx jest --forceExit --detectOpenHandles
         env:
@@ -67,6 +70,8 @@ jobs:
           JWT_REFRESH_SECRET: test_refresh_secret_minimum_32_chars_long
           NODE_ENV: test
           CORS_ORIGINS: http://localhost:5173
+          ML_TRAINING_SCRIPT: ${{ github.workspace }}/backend/tests/fixtures/fake_trainer.mjs
+          REDIS_DISABLED: '1'
 
   lint-studio:
     name: Lint & Build Studio
@@ -108,10 +113,10 @@ jobs:
         run: cd client && npm ci
 
       - name: Run ESLint
-        run: cd client && npm run lint -- --max-warnings 0 2>&1 || true
+        run: cd client && npm run lint -- --max-warnings 0
 
       - name: TypeScript check
-        run: cd client && npx vue-tsc --noEmit 2>&1 || cd client && npx tsc --noEmit 2>&1 || true
+        run: cd client && npx tsc --noEmit
 
   test-client:
     name: Test Client
@@ -129,7 +134,7 @@ jobs:
         run: cd client && npm ci
 
       - name: Run tests
-        run: cd client && npx vitest run --reporter=verbose 2>&1 || true
+        run: cd client && npx vitest run --reporter=verbose
 
   build-client:
     name: Build Client
@@ -179,8 +184,12 @@ jobs:
       - name: Build
         run: cd ML/models/cpp-modules && cmake --build build --parallel $(nproc)
 
-      - name: Run unit tests
-        run: cd ML/models/cpp-modules/build && ./unit_tests --test 2>&1 || true
+      - name: Run unit tests and benchmark
+        run: |
+          cd ML/models/cpp-modules/build
+          ctest --output-on-failure
+          ./unit_tests
+          ./cyberhex_bench 256 3
 
       - name: Upload C++ artifacts
         uses: actions/upload-artifact@v4

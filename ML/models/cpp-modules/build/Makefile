@@ -65,6 +65,16 @@ CMAKE_BINARY_DIR = /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+.PHONY : test/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
@@ -188,6 +198,32 @@ app/fast:
 .PHONY : app/fast
 
 #=============================================================================
+# Target rules for targets named cyberhex_bench
+
+# Build rule for target.
+cyberhex_bench: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cyberhex_bench
+.PHONY : cyberhex_bench
+
+# fast build rule for target.
+cyberhex_bench/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/build
+.PHONY : cyberhex_bench/fast
+
+#=============================================================================
+# Target rules for targets named cyberhex_ml
+
+# Build rule for target.
+cyberhex_ml: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cyberhex_ml
+.PHONY : cyberhex_ml
+
+# fast build rule for target.
+cyberhex_ml/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_ml.dir/build.make CMakeFiles/cyberhex_ml.dir/build
+.PHONY : cyberhex_ml/fast
+
+#=============================================================================
 # Target rules for targets named unit_tests
 
 # Build rule for target.
@@ -232,7 +268,6 @@ src/activations.o: src/activations.cpp.o
 # target to build an object file
 src/activations.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/activations.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/activations.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/activations.cpp.o
 .PHONY : src/activations.cpp.o
 
@@ -242,7 +277,6 @@ src/activations.i: src/activations.cpp.i
 # target to preprocess a source file
 src/activations.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/activations.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/activations.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/activations.cpp.i
 .PHONY : src/activations.cpp.i
 
@@ -252,9 +286,116 @@ src/activations.s: src/activations.cpp.s
 # target to generate assembly for a file
 src/activations.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/activations.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/activations.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/activations.cpp.s
 .PHONY : src/activations.cpp.s
+
+src/bench_main.o: src/bench_main.cpp.o
+.PHONY : src/bench_main.o
+
+# target to build an object file
+src/bench_main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/bench_main.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/src/bench_main.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/bench_main.cpp.o
+.PHONY : src/bench_main.cpp.o
+
+src/bench_main.i: src/bench_main.cpp.i
+.PHONY : src/bench_main.i
+
+# target to preprocess a source file
+src/bench_main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/bench_main.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/src/bench_main.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/bench_main.cpp.i
+.PHONY : src/bench_main.cpp.i
+
+src/bench_main.s: src/bench_main.cpp.s
+.PHONY : src/bench_main.s
+
+# target to generate assembly for a file
+src/bench_main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/bench_main.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/src/bench_main.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/bench_main.cpp.s
+.PHONY : src/bench_main.cpp.s
+
+src/conv2d.o: src/conv2d.cpp.o
+.PHONY : src/conv2d.o
+
+# target to build an object file
+src/conv2d.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/conv2d.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/conv2d.cpp.o
+.PHONY : src/conv2d.cpp.o
+
+src/conv2d.i: src/conv2d.cpp.i
+.PHONY : src/conv2d.i
+
+# target to preprocess a source file
+src/conv2d.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/conv2d.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/conv2d.cpp.i
+.PHONY : src/conv2d.cpp.i
+
+src/conv2d.s: src/conv2d.cpp.s
+.PHONY : src/conv2d.s
+
+# target to generate assembly for a file
+src/conv2d.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/conv2d.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/conv2d.cpp.s
+.PHONY : src/conv2d.cpp.s
+
+src/cuda_matmul_stub.o: src/cuda_matmul_stub.cpp.o
+.PHONY : src/cuda_matmul_stub.o
+
+# target to build an object file
+src/cuda_matmul_stub.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/cuda_matmul_stub.cpp.o
+.PHONY : src/cuda_matmul_stub.cpp.o
+
+src/cuda_matmul_stub.i: src/cuda_matmul_stub.cpp.i
+.PHONY : src/cuda_matmul_stub.i
+
+# target to preprocess a source file
+src/cuda_matmul_stub.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/cuda_matmul_stub.cpp.i
+.PHONY : src/cuda_matmul_stub.cpp.i
+
+src/cuda_matmul_stub.s: src/cuda_matmul_stub.cpp.s
+.PHONY : src/cuda_matmul_stub.s
+
+# target to generate assembly for a file
+src/cuda_matmul_stub.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/cuda_matmul_stub.cpp.s
+.PHONY : src/cuda_matmul_stub.cpp.s
+
+src/cyberhex_ml.o: src/cyberhex_ml.cpp.o
+.PHONY : src/cyberhex_ml.o
+
+# target to build an object file
+src/cyberhex_ml.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_ml.dir/build.make CMakeFiles/cyberhex_ml.dir/src/cyberhex_ml.cpp.o
+.PHONY : src/cyberhex_ml.cpp.o
+
+src/cyberhex_ml.i: src/cyberhex_ml.cpp.i
+.PHONY : src/cyberhex_ml.i
+
+# target to preprocess a source file
+src/cyberhex_ml.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_ml.dir/build.make CMakeFiles/cyberhex_ml.dir/src/cyberhex_ml.cpp.i
+.PHONY : src/cyberhex_ml.cpp.i
+
+src/cyberhex_ml.s: src/cyberhex_ml.cpp.s
+.PHONY : src/cyberhex_ml.s
+
+# target to generate assembly for a file
+src/cyberhex_ml.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_ml.dir/build.make CMakeFiles/cyberhex_ml.dir/src/cyberhex_ml.cpp.s
+.PHONY : src/cyberhex_ml.cpp.s
 
 src/dense.o: src/dense.cpp.o
 .PHONY : src/dense.o
@@ -262,7 +403,6 @@ src/dense.o: src/dense.cpp.o
 # target to build an object file
 src/dense.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/dense.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/dense.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/dense.cpp.o
 .PHONY : src/dense.cpp.o
 
@@ -272,7 +412,6 @@ src/dense.i: src/dense.cpp.i
 # target to preprocess a source file
 src/dense.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/dense.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/dense.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/dense.cpp.i
 .PHONY : src/dense.cpp.i
 
@@ -282,9 +421,116 @@ src/dense.s: src/dense.cpp.s
 # target to generate assembly for a file
 src/dense.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/dense.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/dense.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/dense.cpp.s
 .PHONY : src/dense.cpp.s
+
+src/device.o: src/device.cpp.o
+.PHONY : src/device.o
+
+# target to build an object file
+src/device.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/device.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/device.cpp.o
+.PHONY : src/device.cpp.o
+
+src/device.i: src/device.cpp.i
+.PHONY : src/device.i
+
+# target to preprocess a source file
+src/device.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/device.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/device.cpp.i
+.PHONY : src/device.cpp.i
+
+src/device.s: src/device.cpp.s
+.PHONY : src/device.s
+
+# target to generate assembly for a file
+src/device.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/device.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/device.cpp.s
+.PHONY : src/device.cpp.s
+
+src/distributed.o: src/distributed.cpp.o
+.PHONY : src/distributed.o
+
+# target to build an object file
+src/distributed.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/distributed.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/distributed.cpp.o
+.PHONY : src/distributed.cpp.o
+
+src/distributed.i: src/distributed.cpp.i
+.PHONY : src/distributed.i
+
+# target to preprocess a source file
+src/distributed.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/distributed.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/distributed.cpp.i
+.PHONY : src/distributed.cpp.i
+
+src/distributed.s: src/distributed.cpp.s
+.PHONY : src/distributed.s
+
+# target to generate assembly for a file
+src/distributed.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/distributed.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/distributed.cpp.s
+.PHONY : src/distributed.cpp.s
+
+src/fused_ops.o: src/fused_ops.cpp.o
+.PHONY : src/fused_ops.o
+
+# target to build an object file
+src/fused_ops.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/fused_ops.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/fused_ops.cpp.o
+.PHONY : src/fused_ops.cpp.o
+
+src/fused_ops.i: src/fused_ops.cpp.i
+.PHONY : src/fused_ops.i
+
+# target to preprocess a source file
+src/fused_ops.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/fused_ops.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/fused_ops.cpp.i
+.PHONY : src/fused_ops.cpp.i
+
+src/fused_ops.s: src/fused_ops.cpp.s
+.PHONY : src/fused_ops.s
+
+# target to generate assembly for a file
+src/fused_ops.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/fused_ops.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/fused_ops.cpp.s
+.PHONY : src/fused_ops.cpp.s
+
+src/graph.o: src/graph.cpp.o
+.PHONY : src/graph.o
+
+# target to build an object file
+src/graph.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/graph.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/graph.cpp.o
+.PHONY : src/graph.cpp.o
+
+src/graph.i: src/graph.cpp.i
+.PHONY : src/graph.i
+
+# target to preprocess a source file
+src/graph.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/graph.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/graph.cpp.i
+.PHONY : src/graph.cpp.i
+
+src/graph.s: src/graph.cpp.s
+.PHONY : src/graph.s
+
+# target to generate assembly for a file
+src/graph.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/graph.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/graph.cpp.s
+.PHONY : src/graph.cpp.s
 
 src/loss.o: src/loss.cpp.o
 .PHONY : src/loss.o
@@ -292,7 +538,6 @@ src/loss.o: src/loss.cpp.o
 # target to build an object file
 src/loss.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/loss.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/loss.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/loss.cpp.o
 .PHONY : src/loss.cpp.o
 
@@ -302,7 +547,6 @@ src/loss.i: src/loss.cpp.i
 # target to preprocess a source file
 src/loss.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/loss.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/loss.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/loss.cpp.i
 .PHONY : src/loss.cpp.i
 
@@ -312,7 +556,6 @@ src/loss.s: src/loss.cpp.s
 # target to generate assembly for a file
 src/loss.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/loss.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/loss.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/loss.cpp.s
 .PHONY : src/loss.cpp.s
 
@@ -346,7 +589,6 @@ src/model.o: src/model.cpp.o
 # target to build an object file
 src/model.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/model.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/model.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/model.cpp.o
 .PHONY : src/model.cpp.o
 
@@ -356,7 +598,6 @@ src/model.i: src/model.cpp.i
 # target to preprocess a source file
 src/model.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/model.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/model.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/model.cpp.i
 .PHONY : src/model.cpp.i
 
@@ -366,9 +607,35 @@ src/model.s: src/model.cpp.s
 # target to generate assembly for a file
 src/model.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/model.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/model.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/model.cpp.s
 .PHONY : src/model.cpp.s
+
+src/ops_dispatch.o: src/ops_dispatch.cpp.o
+.PHONY : src/ops_dispatch.o
+
+# target to build an object file
+src/ops_dispatch.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/ops_dispatch.cpp.o
+.PHONY : src/ops_dispatch.cpp.o
+
+src/ops_dispatch.i: src/ops_dispatch.cpp.i
+.PHONY : src/ops_dispatch.i
+
+# target to preprocess a source file
+src/ops_dispatch.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/ops_dispatch.cpp.i
+.PHONY : src/ops_dispatch.cpp.i
+
+src/ops_dispatch.s: src/ops_dispatch.cpp.s
+.PHONY : src/ops_dispatch.s
+
+# target to generate assembly for a file
+src/ops_dispatch.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/ops_dispatch.cpp.s
+.PHONY : src/ops_dispatch.cpp.s
 
 src/optimizer.o: src/optimizer.cpp.o
 .PHONY : src/optimizer.o
@@ -376,7 +643,6 @@ src/optimizer.o: src/optimizer.cpp.o
 # target to build an object file
 src/optimizer.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/optimizer.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/optimizer.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/optimizer.cpp.o
 .PHONY : src/optimizer.cpp.o
 
@@ -386,7 +652,6 @@ src/optimizer.i: src/optimizer.cpp.i
 # target to preprocess a source file
 src/optimizer.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/optimizer.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/optimizer.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/optimizer.cpp.i
 .PHONY : src/optimizer.cpp.i
 
@@ -396,9 +661,35 @@ src/optimizer.s: src/optimizer.cpp.s
 # target to generate assembly for a file
 src/optimizer.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/optimizer.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/src/optimizer.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/optimizer.cpp.s
 .PHONY : src/optimizer.cpp.s
+
+src/precision.o: src/precision.cpp.o
+.PHONY : src/precision.o
+
+# target to build an object file
+src/precision.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/precision.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/precision.cpp.o
+.PHONY : src/precision.cpp.o
+
+src/precision.i: src/precision.cpp.i
+.PHONY : src/precision.i
+
+# target to preprocess a source file
+src/precision.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/precision.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/precision.cpp.i
+.PHONY : src/precision.cpp.i
+
+src/precision.s: src/precision.cpp.s
+.PHONY : src/precision.s
+
+# target to generate assembly for a file
+src/precision.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/precision.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/precision.cpp.s
+.PHONY : src/precision.cpp.s
 
 src/tests.o: src/tests.cpp.o
 .PHONY : src/tests.o
@@ -424,6 +715,87 @@ src/tests.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/tests.cpp.s
 .PHONY : src/tests.cpp.s
 
+src/training_protocol.o: src/training_protocol.cpp.o
+.PHONY : src/training_protocol.o
+
+# target to build an object file
+src/training_protocol.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/training_protocol.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/training_protocol.cpp.o
+.PHONY : src/training_protocol.cpp.o
+
+src/training_protocol.i: src/training_protocol.cpp.i
+.PHONY : src/training_protocol.i
+
+# target to preprocess a source file
+src/training_protocol.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/training_protocol.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/training_protocol.cpp.i
+.PHONY : src/training_protocol.cpp.i
+
+src/training_protocol.s: src/training_protocol.cpp.s
+.PHONY : src/training_protocol.s
+
+# target to generate assembly for a file
+src/training_protocol.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/training_protocol.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/training_protocol.cpp.s
+.PHONY : src/training_protocol.cpp.s
+
+src/transformer.o: src/transformer.cpp.o
+.PHONY : src/transformer.o
+
+# target to build an object file
+src/transformer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/transformer.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/transformer.cpp.o
+.PHONY : src/transformer.cpp.o
+
+src/transformer.i: src/transformer.cpp.i
+.PHONY : src/transformer.i
+
+# target to preprocess a source file
+src/transformer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/transformer.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/transformer.cpp.i
+.PHONY : src/transformer.cpp.i
+
+src/transformer.s: src/transformer.cpp.s
+.PHONY : src/transformer.s
+
+# target to generate assembly for a file
+src/transformer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/transformer.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/transformer.cpp.s
+.PHONY : src/transformer.cpp.s
+
+src/weight_io.o: src/weight_io.cpp.o
+.PHONY : src/weight_io.o
+
+# target to build an object file
+src/weight_io.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/weight_io.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/weight_io.cpp.o
+.PHONY : src/weight_io.cpp.o
+
+src/weight_io.i: src/weight_io.cpp.i
+.PHONY : src/weight_io.i
+
+# target to preprocess a source file
+src/weight_io.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/weight_io.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/weight_io.cpp.i
+.PHONY : src/weight_io.cpp.i
+
+src/weight_io.s: src/weight_io.cpp.s
+.PHONY : src/weight_io.s
+
+# target to generate assembly for a file
+src/weight_io.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/weight_io.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/weight_io.cpp.s
+.PHONY : src/weight_io.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -436,17 +808,44 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... test"
 	@echo "... Catch2"
 	@echo "... Catch2WithMain"
 	@echo "... app"
 	@echo "... cyberhex"
+	@echo "... cyberhex_bench"
+	@echo "... cyberhex_ml"
 	@echo "... unit_tests"
 	@echo "... src/activations.o"
 	@echo "... src/activations.i"
 	@echo "... src/activations.s"
+	@echo "... src/bench_main.o"
+	@echo "... src/bench_main.i"
+	@echo "... src/bench_main.s"
+	@echo "... src/conv2d.o"
+	@echo "... src/conv2d.i"
+	@echo "... src/conv2d.s"
+	@echo "... src/cuda_matmul_stub.o"
+	@echo "... src/cuda_matmul_stub.i"
+	@echo "... src/cuda_matmul_stub.s"
+	@echo "... src/cyberhex_ml.o"
+	@echo "... src/cyberhex_ml.i"
+	@echo "... src/cyberhex_ml.s"
 	@echo "... src/dense.o"
 	@echo "... src/dense.i"
 	@echo "... src/dense.s"
+	@echo "... src/device.o"
+	@echo "... src/device.i"
+	@echo "... src/device.s"
+	@echo "... src/distributed.o"
+	@echo "... src/distributed.i"
+	@echo "... src/distributed.s"
+	@echo "... src/fused_ops.o"
+	@echo "... src/fused_ops.i"
+	@echo "... src/fused_ops.s"
+	@echo "... src/graph.o"
+	@echo "... src/graph.i"
+	@echo "... src/graph.s"
 	@echo "... src/loss.o"
 	@echo "... src/loss.i"
 	@echo "... src/loss.s"
@@ -456,12 +855,27 @@ help:
 	@echo "... src/model.o"
 	@echo "... src/model.i"
 	@echo "... src/model.s"
+	@echo "... src/ops_dispatch.o"
+	@echo "... src/ops_dispatch.i"
+	@echo "... src/ops_dispatch.s"
 	@echo "... src/optimizer.o"
 	@echo "... src/optimizer.i"
 	@echo "... src/optimizer.s"
+	@echo "... src/precision.o"
+	@echo "... src/precision.i"
+	@echo "... src/precision.s"
 	@echo "... src/tests.o"
 	@echo "... src/tests.i"
 	@echo "... src/tests.s"
+	@echo "... src/training_protocol.o"
+	@echo "... src/training_protocol.i"
+	@echo "... src/training_protocol.s"
+	@echo "... src/transformer.o"
+	@echo "... src/transformer.i"
+	@echo "... src/transformer.s"
+	@echo "... src/weight_io.o"
+	@echo "... src/weight_io.i"
+	@echo "... src/weight_io.s"
 .PHONY : help
 
 

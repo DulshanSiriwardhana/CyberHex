@@ -183,6 +183,30 @@ public:
 // ============================================================================
 // Batch Normalization Layer
 // ============================================================================
+// ============================================================================
+// Layer Normalization (per sample, across features)
+// ============================================================================
+class LayerNormalization : public Layer {
+private:
+    Matrix<double> gamma;
+    Matrix<double> beta;
+    Matrix<double> input_cache;
+    Matrix<double> mean_cache;
+    Matrix<double> inv_std_cache;
+    double epsilon_;
+public:
+    explicit LayerNormalization(size_t normalized_shape, double epsilon = 1e-5);
+    Matrix<double> forward(const Matrix<double>& X) override;
+    Matrix<double> backward(const Matrix<double>& grad, double lr,
+                            OptimizerType opt = OptimizerType::ADAM,
+                            int t = 1) override;
+    std::vector<Matrix<double>*> parameters() override { return {&gamma, &beta}; }
+    std::vector<std::string> parameter_names() override { return {"gamma", "beta"}; }
+    std::string name() const override { return "LayerNorm"; }
+    size_t output_size() const override { return gamma.cols(); }
+    void reset_state() override;
+};
+
 class BatchNormalization : public Layer {
 private:
     Matrix<double> gamma;

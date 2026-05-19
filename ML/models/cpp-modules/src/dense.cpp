@@ -202,6 +202,17 @@ Matrix<double> Dense::backward(const Matrix<double>& grad, double lr, OptimizerT
     return grad_input;
 }
 
+void Dense::set_parameters(Matrix<double> W, Matrix<double> B) {
+    if (W.rows() != in_features_ || W.cols() != out_features_) {
+        throw DimensionMismatchException("Dense::set_parameters weight shape mismatch");
+    }
+    if (B.rows() != 1 || B.cols() != out_features_) {
+        throw DimensionMismatchException("Dense::set_parameters bias shape mismatch");
+    }
+    weights = std::move(W);
+    bias = std::move(B);
+}
+
 void Dense::reset_state() {
     m_W.fill(0.0);
     v_W.fill(0.0);

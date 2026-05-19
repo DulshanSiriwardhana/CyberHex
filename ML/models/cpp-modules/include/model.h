@@ -100,6 +100,7 @@ public:
 // ============================================================================
 struct TrainingMetrics {
     double loss = 0.0;
+    double val_loss = -1.0;  // validation loss when validation_split > 0
     double accuracy = 0.0;
     double grad_norm = 0.0;
     double learning_rate = 0.0;

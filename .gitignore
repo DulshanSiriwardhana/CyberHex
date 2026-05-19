@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# C++ build artifacts
+ML/models/cpp-modules/build/
+ML/models/cpp-modules/_deps/
+
+# ML outputs (generated at runtime)
+ML/models/outputs/*.npz
+ML/models/outputs/model_*
+
+# Logs
+logs/*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Test / coverage
+coverage/
+.nyc_output/
