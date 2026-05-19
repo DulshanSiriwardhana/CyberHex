@@ -67,7 +67,7 @@ app.use('/api/v1/otp', otpRoutes);
 
 // Legacy health aliases
 app.get('/api/v1/health', (_req, res) =>
-  res.json({ status: 'ok', version: '3.0.0', timestamp: new Date().toISOString() })
+    res.json({ status: 'ok', version: '3.0.0', timestamp: new Date().toISOString() })
 );
 
 app.use(errorHandler);
