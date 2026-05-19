@@ -3,15 +3,28 @@
 
 #include "matrix.h"
 #include <cstddef>
+<<<<<<< HEAD
+=======
+#include <string>
+>>>>>>> v3.0
 #include <vector>
 
 namespace cyberhex {
 
+<<<<<<< HEAD
 /**
  * Minimal distributed training context (cyberhex.dist.v1).
  * Ranks coordinate via CYBERHEX_RANK / CYBERHEX_WORLD_SIZE env vars.
  * Phase 4: in-process mean all-reduce; multi-node hooks for Phase 5.
  */
+=======
+enum class CollectiveBackend {
+    LOCAL,   /** grad /= world_size in-process */
+    FILE,    /** CYBERHEX_DIST_DIR shared filesystem */
+    MPI      /** CYBERHEX_MPI build + multi-process launch */
+};
+
+>>>>>>> v3.0
 struct DistributedContext {
     int rank = 0;
     int world_size = 1;
@@ -22,11 +35,29 @@ struct DistributedContext {
     static DistributedContext from_env();
 };
 
+<<<<<<< HEAD
 /** In-place mean all-reduce of gradient matrix across ranks (no-op if world_size==1). */
 void allreduce_mean(Matrix<double>& grad, const DistributedContext& ctx);
 
 /** Mean all-reduce for a list of parameter gradients (graph / manual training). */
 void allreduce_mean(std::vector<Matrix<double>*>& grads, const DistributedContext& ctx);
+=======
+CollectiveBackend detect_collective_backend();
+
+/**
+ * Mean all-reduce: sum gradients across ranks, divide by world_size.
+ * @param step  Training step id (for file backend barrier paths)
+ * @param param_id  Parameter bucket id (graph node id or dense index)
+ */
+void allreduce_mean_collective(Matrix<double>& grad,
+                               const DistributedContext& ctx,
+                               int step = 0,
+                               int param_id = 0);
+
+void allreduce_mean(std::vector<Matrix<double>*>& grads,
+                    const DistributedContext& ctx,
+                    int step = 0);
+>>>>>>> v3.0
 
 } // namespace cyberhex
 

@@ -308,4 +308,21 @@ CMakeFiles/unit_tests.dir/src/tests.cpp.o: \
  /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/include/precision.h \
  /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/include/ops_dispatch.h \
  /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/include/transformer.h \
+<<<<<<< HEAD
  /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/include/distributed.h
+=======
+ /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/include/distributed.h \
+ /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/include/onnx_export.h \
+ /usr/include/c++/14/filesystem /usr/include/c++/14/bits/fs_fwd.h \
+ /usr/include/c++/14/bits/fs_path.h /usr/include/c++/14/codecvt \
+ /usr/include/c++/14/bits/fs_dir.h /usr/include/c++/14/bits/fs_ops.h \
+ /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/environments.h \
+ /usr/include/x86_64-linux-gnu/bits/confname.h \
+ /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
+ /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
+ /usr/include/x86_64-linux-gnu/bits/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/unistd-decl.h \
+ /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
+ /usr/include/linux/close_range.h
+>>>>>>> v3.0

@@ -67,6 +67,11 @@ all: CMakeFiles/cyberhex.dir/all
 all: CMakeFiles/app.dir/all
 all: CMakeFiles/cyberhex_bench.dir/all
 all: CMakeFiles/cyberhex_ml.dir/all
+<<<<<<< HEAD
+=======
+all: CMakeFiles/cyberhex_infer.dir/all
+all: CMakeFiles/cyberhex_export.dir/all
+>>>>>>> v3.0
 all: CMakeFiles/unit_tests.dir/all
 all: _deps/catch2-build/all
 .PHONY : all
@@ -80,6 +85,11 @@ clean: CMakeFiles/cyberhex.dir/clean
 clean: CMakeFiles/app.dir/clean
 clean: CMakeFiles/cyberhex_bench.dir/clean
 clean: CMakeFiles/cyberhex_ml.dir/clean
+<<<<<<< HEAD
+=======
+clean: CMakeFiles/cyberhex_infer.dir/clean
+clean: CMakeFiles/cyberhex_export.dir/clean
+>>>>>>> v3.0
 clean: CMakeFiles/unit_tests.dir/clean
 clean: _deps/catch2-build/clean
 .PHONY : clean
@@ -123,12 +133,20 @@ _deps/catch2-build/src/clean: _deps/catch2-build/src/CMakeFiles/Catch2WithMain.d
 CMakeFiles/cyberhex.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/build
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=73,74,75,76,77,78,79,80,81,82,83,84 "Built target cyberhex"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=72,73,74,75,76,77,78,79,80,81,82 "Built target cyberhex"
+>>>>>>> v3.0
 .PHONY : CMakeFiles/cyberhex.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/cyberhex.dir/rule: cmake_check_build_system
+<<<<<<< HEAD
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 12
+=======
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 11
+>>>>>>> v3.0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/cyberhex.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 0
 .PHONY : CMakeFiles/cyberhex.dir/rule
@@ -149,12 +167,20 @@ CMakeFiles/cyberhex.dir/clean:
 CMakeFiles/app.dir/all: CMakeFiles/cyberhex.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/build
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=72 "Built target app"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=71 "Built target app"
+>>>>>>> v3.0
 .PHONY : CMakeFiles/app.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/app.dir/rule: cmake_check_build_system
+<<<<<<< HEAD
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 13
+=======
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 12
+>>>>>>> v3.0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/app.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 0
 .PHONY : CMakeFiles/app.dir/rule
@@ -175,7 +201,11 @@ CMakeFiles/app.dir/clean:
 CMakeFiles/cyberhex_bench.dir/all: CMakeFiles/cyberhex.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/build
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=85 "Built target cyberhex_bench"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=83,84 "Built target cyberhex_bench"
+>>>>>>> v3.0
 .PHONY : CMakeFiles/cyberhex_bench.dir/all
 
 # Build rule for subdir invocation for target.
@@ -201,12 +231,20 @@ CMakeFiles/cyberhex_bench.dir/clean:
 CMakeFiles/cyberhex_ml.dir/all: CMakeFiles/cyberhex.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_ml.dir/build.make CMakeFiles/cyberhex_ml.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_ml.dir/build.make CMakeFiles/cyberhex_ml.dir/build
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=86,87 "Built target cyberhex_ml"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=87,88 "Built target cyberhex_ml"
+>>>>>>> v3.0
 .PHONY : CMakeFiles/cyberhex_ml.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/cyberhex_ml.dir/rule: cmake_check_build_system
+<<<<<<< HEAD
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 14
+=======
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 13
+>>>>>>> v3.0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/cyberhex_ml.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 0
 .PHONY : CMakeFiles/cyberhex_ml.dir/rule
@@ -221,6 +259,61 @@ CMakeFiles/cyberhex_ml.dir/clean:
 .PHONY : CMakeFiles/cyberhex_ml.dir/clean
 
 #=============================================================================
+<<<<<<< HEAD
+=======
+# Target rules for target CMakeFiles/cyberhex_infer.dir
+
+# All Build rule for target.
+CMakeFiles/cyberhex_infer.dir/all: CMakeFiles/cyberhex.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_infer.dir/build.make CMakeFiles/cyberhex_infer.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_infer.dir/build.make CMakeFiles/cyberhex_infer.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=86 "Built target cyberhex_infer"
+.PHONY : CMakeFiles/cyberhex_infer.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/cyberhex_infer.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 12
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/cyberhex_infer.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 0
+.PHONY : CMakeFiles/cyberhex_infer.dir/rule
+
+# Convenience name for target.
+cyberhex_infer: CMakeFiles/cyberhex_infer.dir/rule
+.PHONY : cyberhex_infer
+
+# clean rule for target.
+CMakeFiles/cyberhex_infer.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_infer.dir/build.make CMakeFiles/cyberhex_infer.dir/clean
+.PHONY : CMakeFiles/cyberhex_infer.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/cyberhex_export.dir
+
+# All Build rule for target.
+CMakeFiles/cyberhex_export.dir/all: CMakeFiles/cyberhex.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_export.dir/build.make CMakeFiles/cyberhex_export.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_export.dir/build.make CMakeFiles/cyberhex_export.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=85 "Built target cyberhex_export"
+.PHONY : CMakeFiles/cyberhex_export.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/cyberhex_export.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 12
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/cyberhex_export.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 0
+.PHONY : CMakeFiles/cyberhex_export.dir/rule
+
+# Convenience name for target.
+cyberhex_export: CMakeFiles/cyberhex_export.dir/rule
+.PHONY : cyberhex_export
+
+# clean rule for target.
+CMakeFiles/cyberhex_export.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_export.dir/build.make CMakeFiles/cyberhex_export.dir/clean
+.PHONY : CMakeFiles/cyberhex_export.dir/clean
+
+#=============================================================================
+>>>>>>> v3.0
 # Target rules for target CMakeFiles/unit_tests.dir
 
 # All Build rule for target.
@@ -228,12 +321,20 @@ CMakeFiles/unit_tests.dir/all: _deps/catch2-build/src/CMakeFiles/Catch2.dir/all
 CMakeFiles/unit_tests.dir/all: _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/build
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=88,89,90,91,92,93,94,95,96,97,98,99,100 "Built target unit_tests"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=89,90,91,92,93,94,95,96,97,98,99,100 "Built target unit_tests"
+>>>>>>> v3.0
 .PHONY : CMakeFiles/unit_tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/unit_tests.dir/rule: cmake_check_build_system
+<<<<<<< HEAD
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 84
+=======
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 82
+>>>>>>> v3.0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/unit_tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 0
 .PHONY : CMakeFiles/unit_tests.dir/rule
@@ -254,12 +355,20 @@ CMakeFiles/unit_tests.dir/clean:
 _deps/catch2-build/src/CMakeFiles/Catch2.dir/all:
 	$(MAKE) $(MAKESILENT) -f _deps/catch2-build/src/CMakeFiles/Catch2.dir/build.make _deps/catch2-build/src/CMakeFiles/Catch2.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/catch2-build/src/CMakeFiles/Catch2.dir/build.make _deps/catch2-build/src/CMakeFiles/Catch2.dir/build
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69 "Built target Catch2"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68 "Built target Catch2"
+>>>>>>> v3.0
 .PHONY : _deps/catch2-build/src/CMakeFiles/Catch2.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/catch2-build/src/CMakeFiles/Catch2.dir/rule: cmake_check_build_system
+<<<<<<< HEAD
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 69
+=======
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 68
+>>>>>>> v3.0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/catch2-build/src/CMakeFiles/Catch2.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 0
 .PHONY : _deps/catch2-build/src/CMakeFiles/Catch2.dir/rule
@@ -280,12 +389,20 @@ _deps/catch2-build/src/CMakeFiles/Catch2.dir/clean:
 _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/all: _deps/catch2-build/src/CMakeFiles/Catch2.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/build.make _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/build.make _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/build
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=70,71 "Built target Catch2WithMain"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=69,70 "Built target Catch2WithMain"
+>>>>>>> v3.0
 .PHONY : _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/rule: cmake_check_build_system
+<<<<<<< HEAD
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 71
+=======
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 70
+>>>>>>> v3.0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles 0
 .PHONY : _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/rule

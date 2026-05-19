@@ -83,6 +83,7 @@ CMakeFiles/cyberhex.dir/src/activations.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cyberhex.dir/src/activations.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activations.cpp -o CMakeFiles/cyberhex.dir/src/activations.cpp.s
 
+<<<<<<< HEAD
 CMakeFiles/cyberhex.dir/src/bench_main.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/bench_main.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/bench_main.cpp
 CMakeFiles/cyberhex.dir/src/bench_main.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
@@ -101,6 +102,12 @@ CMakeFiles/cyberhex.dir/src/conv2d.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/conv2d.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/conv2d.cpp
 CMakeFiles/cyberhex.dir/src/conv2d.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/cyberhex.dir/src/conv2d.cpp.o"
+=======
+CMakeFiles/cyberhex.dir/src/conv2d.cpp.o: CMakeFiles/cyberhex.dir/flags.make
+CMakeFiles/cyberhex.dir/src/conv2d.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/conv2d.cpp
+CMakeFiles/cyberhex.dir/src/conv2d.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/cyberhex.dir/src/conv2d.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/conv2d.cpp.o -MF CMakeFiles/cyberhex.dir/src/conv2d.cpp.o.d -o CMakeFiles/cyberhex.dir/src/conv2d.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/conv2d.cpp
 
 CMakeFiles/cyberhex.dir/src/conv2d.cpp.i: cmake_force
@@ -111,6 +118,7 @@ CMakeFiles/cyberhex.dir/src/conv2d.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cyberhex.dir/src/conv2d.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/conv2d.cpp -o CMakeFiles/cyberhex.dir/src/conv2d.cpp.s
 
+<<<<<<< HEAD
 CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/cuda_matmul_stub.cpp
 CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
@@ -129,6 +137,12 @@ CMakeFiles/cyberhex.dir/src/dense.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/dense.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/dense.cpp
 CMakeFiles/cyberhex.dir/src/dense.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/cyberhex.dir/src/dense.cpp.o"
+=======
+CMakeFiles/cyberhex.dir/src/dense.cpp.o: CMakeFiles/cyberhex.dir/flags.make
+CMakeFiles/cyberhex.dir/src/dense.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/dense.cpp
+CMakeFiles/cyberhex.dir/src/dense.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/cyberhex.dir/src/dense.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/dense.cpp.o -MF CMakeFiles/cyberhex.dir/src/dense.cpp.o.d -o CMakeFiles/cyberhex.dir/src/dense.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/dense.cpp
 
 CMakeFiles/cyberhex.dir/src/dense.cpp.i: cmake_force
@@ -142,7 +156,11 @@ CMakeFiles/cyberhex.dir/src/dense.cpp.s: cmake_force
 CMakeFiles/cyberhex.dir/src/device.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/device.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/device.cpp
 CMakeFiles/cyberhex.dir/src/device.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/cyberhex.dir/src/device.cpp.o"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/cyberhex.dir/src/device.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/device.cpp.o -MF CMakeFiles/cyberhex.dir/src/device.cpp.o.d -o CMakeFiles/cyberhex.dir/src/device.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/device.cpp
 
 CMakeFiles/cyberhex.dir/src/device.cpp.i: cmake_force
@@ -156,7 +174,11 @@ CMakeFiles/cyberhex.dir/src/device.cpp.s: cmake_force
 CMakeFiles/cyberhex.dir/src/distributed.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/distributed.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/distributed.cpp
 CMakeFiles/cyberhex.dir/src/distributed.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/cyberhex.dir/src/distributed.cpp.o"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/cyberhex.dir/src/distributed.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/distributed.cpp.o -MF CMakeFiles/cyberhex.dir/src/distributed.cpp.o.d -o CMakeFiles/cyberhex.dir/src/distributed.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/distributed.cpp
 
 CMakeFiles/cyberhex.dir/src/distributed.cpp.i: cmake_force
@@ -170,7 +192,11 @@ CMakeFiles/cyberhex.dir/src/distributed.cpp.s: cmake_force
 CMakeFiles/cyberhex.dir/src/fused_ops.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/fused_ops.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/fused_ops.cpp
 CMakeFiles/cyberhex.dir/src/fused_ops.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/cyberhex.dir/src/fused_ops.cpp.o"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/cyberhex.dir/src/fused_ops.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/fused_ops.cpp.o -MF CMakeFiles/cyberhex.dir/src/fused_ops.cpp.o.d -o CMakeFiles/cyberhex.dir/src/fused_ops.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/fused_ops.cpp
 
 CMakeFiles/cyberhex.dir/src/fused_ops.cpp.i: cmake_force
@@ -184,7 +210,11 @@ CMakeFiles/cyberhex.dir/src/fused_ops.cpp.s: cmake_force
 CMakeFiles/cyberhex.dir/src/graph.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/graph.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/graph.cpp
 CMakeFiles/cyberhex.dir/src/graph.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/cyberhex.dir/src/graph.cpp.o"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/cyberhex.dir/src/graph.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/graph.cpp.o -MF CMakeFiles/cyberhex.dir/src/graph.cpp.o.d -o CMakeFiles/cyberhex.dir/src/graph.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/graph.cpp
 
 CMakeFiles/cyberhex.dir/src/graph.cpp.i: cmake_force
@@ -198,7 +228,11 @@ CMakeFiles/cyberhex.dir/src/graph.cpp.s: cmake_force
 CMakeFiles/cyberhex.dir/src/loss.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/loss.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/loss.cpp
 CMakeFiles/cyberhex.dir/src/loss.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/cyberhex.dir/src/loss.cpp.o"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/cyberhex.dir/src/loss.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/loss.cpp.o -MF CMakeFiles/cyberhex.dir/src/loss.cpp.o.d -o CMakeFiles/cyberhex.dir/src/loss.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/loss.cpp
 
 CMakeFiles/cyberhex.dir/src/loss.cpp.i: cmake_force
@@ -212,7 +246,11 @@ CMakeFiles/cyberhex.dir/src/loss.cpp.s: cmake_force
 CMakeFiles/cyberhex.dir/src/model.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/model.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/model.cpp
 CMakeFiles/cyberhex.dir/src/model.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/cyberhex.dir/src/model.cpp.o"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/cyberhex.dir/src/model.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/model.cpp.o -MF CMakeFiles/cyberhex.dir/src/model.cpp.o.d -o CMakeFiles/cyberhex.dir/src/model.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/model.cpp
 
 CMakeFiles/cyberhex.dir/src/model.cpp.i: cmake_force
@@ -223,10 +261,31 @@ CMakeFiles/cyberhex.dir/src/model.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cyberhex.dir/src/model.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/model.cpp -o CMakeFiles/cyberhex.dir/src/model.cpp.s
 
+<<<<<<< HEAD
 CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/ops_dispatch.cpp
 CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o"
+=======
+CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o: CMakeFiles/cyberhex.dir/flags.make
+CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/onnx_export.cpp
+CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o -MF CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o.d -o CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/onnx_export.cpp
+
+CMakeFiles/cyberhex.dir/src/onnx_export.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/cyberhex.dir/src/onnx_export.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/onnx_export.cpp > CMakeFiles/cyberhex.dir/src/onnx_export.cpp.i
+
+CMakeFiles/cyberhex.dir/src/onnx_export.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cyberhex.dir/src/onnx_export.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/onnx_export.cpp -o CMakeFiles/cyberhex.dir/src/onnx_export.cpp.s
+
+CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o: CMakeFiles/cyberhex.dir/flags.make
+CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/ops_dispatch.cpp
+CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o -MF CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o.d -o CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/ops_dispatch.cpp
 
 CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.i: cmake_force
@@ -240,7 +299,11 @@ CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.s: cmake_force
 CMakeFiles/cyberhex.dir/src/optimizer.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/optimizer.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/optimizer.cpp
 CMakeFiles/cyberhex.dir/src/optimizer.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/cyberhex.dir/src/optimizer.cpp.o"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/cyberhex.dir/src/optimizer.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/optimizer.cpp.o -MF CMakeFiles/cyberhex.dir/src/optimizer.cpp.o.d -o CMakeFiles/cyberhex.dir/src/optimizer.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/optimizer.cpp
 
 CMakeFiles/cyberhex.dir/src/optimizer.cpp.i: cmake_force
@@ -254,7 +317,11 @@ CMakeFiles/cyberhex.dir/src/optimizer.cpp.s: cmake_force
 CMakeFiles/cyberhex.dir/src/precision.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/precision.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/precision.cpp
 CMakeFiles/cyberhex.dir/src/precision.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/cyberhex.dir/src/precision.cpp.o"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/cyberhex.dir/src/precision.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/precision.cpp.o -MF CMakeFiles/cyberhex.dir/src/precision.cpp.o.d -o CMakeFiles/cyberhex.dir/src/precision.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/precision.cpp
 
 CMakeFiles/cyberhex.dir/src/precision.cpp.i: cmake_force
@@ -268,7 +335,11 @@ CMakeFiles/cyberhex.dir/src/precision.cpp.s: cmake_force
 CMakeFiles/cyberhex.dir/src/training_protocol.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/training_protocol.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/training_protocol.cpp
 CMakeFiles/cyberhex.dir/src/training_protocol.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/cyberhex.dir/src/training_protocol.cpp.o"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/cyberhex.dir/src/training_protocol.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/training_protocol.cpp.o -MF CMakeFiles/cyberhex.dir/src/training_protocol.cpp.o.d -o CMakeFiles/cyberhex.dir/src/training_protocol.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/training_protocol.cpp
 
 CMakeFiles/cyberhex.dir/src/training_protocol.cpp.i: cmake_force
@@ -282,7 +353,11 @@ CMakeFiles/cyberhex.dir/src/training_protocol.cpp.s: cmake_force
 CMakeFiles/cyberhex.dir/src/transformer.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/transformer.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/transformer.cpp
 CMakeFiles/cyberhex.dir/src/transformer.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/cyberhex.dir/src/transformer.cpp.o"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/cyberhex.dir/src/transformer.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/transformer.cpp.o -MF CMakeFiles/cyberhex.dir/src/transformer.cpp.o.d -o CMakeFiles/cyberhex.dir/src/transformer.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/transformer.cpp
 
 CMakeFiles/cyberhex.dir/src/transformer.cpp.i: cmake_force
@@ -296,7 +371,11 @@ CMakeFiles/cyberhex.dir/src/transformer.cpp.s: cmake_force
 CMakeFiles/cyberhex.dir/src/weight_io.cpp.o: CMakeFiles/cyberhex.dir/flags.make
 CMakeFiles/cyberhex.dir/src/weight_io.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/weight_io.cpp
 CMakeFiles/cyberhex.dir/src/weight_io.cpp.o: CMakeFiles/cyberhex.dir/compiler_depend.ts
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/cyberhex.dir/src/weight_io.cpp.o"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/cyberhex.dir/src/weight_io.cpp.o"
+>>>>>>> v3.0
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cyberhex.dir/src/weight_io.cpp.o -MF CMakeFiles/cyberhex.dir/src/weight_io.cpp.o.d -o CMakeFiles/cyberhex.dir/src/weight_io.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/weight_io.cpp
 
 CMakeFiles/cyberhex.dir/src/weight_io.cpp.i: cmake_force
@@ -310,9 +389,13 @@ CMakeFiles/cyberhex.dir/src/weight_io.cpp.s: cmake_force
 # Object files for target cyberhex
 cyberhex_OBJECTS = \
 "CMakeFiles/cyberhex.dir/src/activations.cpp.o" \
+<<<<<<< HEAD
 "CMakeFiles/cyberhex.dir/src/bench_main.cpp.o" \
 "CMakeFiles/cyberhex.dir/src/conv2d.cpp.o" \
 "CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.o" \
+=======
+"CMakeFiles/cyberhex.dir/src/conv2d.cpp.o" \
+>>>>>>> v3.0
 "CMakeFiles/cyberhex.dir/src/dense.cpp.o" \
 "CMakeFiles/cyberhex.dir/src/device.cpp.o" \
 "CMakeFiles/cyberhex.dir/src/distributed.cpp.o" \
@@ -320,6 +403,10 @@ cyberhex_OBJECTS = \
 "CMakeFiles/cyberhex.dir/src/graph.cpp.o" \
 "CMakeFiles/cyberhex.dir/src/loss.cpp.o" \
 "CMakeFiles/cyberhex.dir/src/model.cpp.o" \
+<<<<<<< HEAD
+=======
+"CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o" \
+>>>>>>> v3.0
 "CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o" \
 "CMakeFiles/cyberhex.dir/src/optimizer.cpp.o" \
 "CMakeFiles/cyberhex.dir/src/precision.cpp.o" \
@@ -331,9 +418,13 @@ cyberhex_OBJECTS = \
 cyberhex_EXTERNAL_OBJECTS =
 
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/activations.cpp.o
+<<<<<<< HEAD
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/bench_main.cpp.o
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/conv2d.cpp.o
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.o
+=======
+libcyberhex.so: CMakeFiles/cyberhex.dir/src/conv2d.cpp.o
+>>>>>>> v3.0
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/dense.cpp.o
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/device.cpp.o
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/distributed.cpp.o
@@ -341,6 +432,10 @@ libcyberhex.so: CMakeFiles/cyberhex.dir/src/fused_ops.cpp.o
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/graph.cpp.o
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/loss.cpp.o
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/model.cpp.o
+<<<<<<< HEAD
+=======
+libcyberhex.so: CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o
+>>>>>>> v3.0
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/optimizer.cpp.o
 libcyberhex.so: CMakeFiles/cyberhex.dir/src/precision.cpp.o
@@ -351,7 +446,11 @@ libcyberhex.so: CMakeFiles/cyberhex.dir/build.make
 libcyberhex.so: /usr/lib/gcc/x86_64-linux-gnu/14/libgomp.so
 libcyberhex.so: /usr/lib/x86_64-linux-gnu/libpthread.a
 libcyberhex.so: CMakeFiles/cyberhex.dir/link.txt
+<<<<<<< HEAD
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Linking CXX shared library libcyberhex.so"
+=======
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Linking CXX shared library libcyberhex.so"
+>>>>>>> v3.0
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/cyberhex.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
