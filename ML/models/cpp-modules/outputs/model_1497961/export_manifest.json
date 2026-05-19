@@ -1,0 +1,10 @@
+{
+  "version": "cyberhex.onnx.v1",
+  "task": "regression",
+  "weights_prefix": "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/../outputs/model_1497961",
+  "layers": [
+    "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/../outputs/model_1497961/layer_0.json",
+    "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/../outputs/model_1497961/layer_2.json",
+    "/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/../outputs/model_1497961/layer_4.json"
+  ]
+}

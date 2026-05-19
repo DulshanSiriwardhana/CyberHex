@@ -14,9 +14,18 @@
 #include "ops_dispatch.h"
 #include "transformer.h"
 #include "distributed.h"
+#include "onnx_export.h"
+#include "ops_dispatch.h"
+#include "graph.h"
+#include "fused_ops.h"
+#include "device.h"
+#include "precision.h"
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <memory>
+#include <filesystem>
+#include <unistd.h>
 
 using namespace cyberhex;
 
@@ -675,7 +684,7 @@ TEST_CASE("Distributed allreduce mean", "[distributed]") {
     ctx.world_size = 4;
     ctx.rank = 0;
     Matrix<double> g(2, 2, 4.0);
-    allreduce_mean(g, ctx);
+    allreduce_mean_collective(g, ctx, 0, 0);
     REQUIRE_NEAR(g(0, 0), 1.0, 1e-12);
 }
 
@@ -705,6 +714,33 @@ TEST_CASE("Float16 round trip", "[precision]") {
 TEST_CASE("Device defaults to CPU", "[device]") {
     REQUIRE(default_device().is_cpu());
     REQUIRE_FALSE(Device::cuda_available());
+}
+
+TEST_CASE("Collective backend detection", "[distributed][collective]") {
+    unsetenv("CYBERHEX_DIST_DIR");
+    REQUIRE(detect_collective_backend() == CollectiveBackend::LOCAL);
+}
+
+TEST_CASE("ONNX export manifest", "[onnx]") {
+    Model model;
+    model.add(std::make_unique<Dense>(3, 2));
+    model.add(std::make_unique<ReLU>());
+    model.add(std::make_unique<Dense>(2, 1));
+    const std::string prefix = "/tmp/cyberhex_onnx_test_" + std::to_string(::getpid());
+    model.save_weights(prefix);
+    const std::string manifest = prefix + "/export_manifest.json";
+    REQUIRE(write_export_manifest(prefix, manifest, "regression"));
+    REQUIRE(std::filesystem::exists(manifest));
+    std::filesystem::remove_all(prefix);
+}
+
+TEST_CASE("dispatch_matmul CPU", "[ops]") {
+    Matrix<double> A(2, 3, 1.0);
+    Matrix<double> B(3, 2, 0.5);
+    auto C = dispatch_matmul(Device::cpu(), A, B);
+    auto R = A.dot(B);
+    REQUIRE(C.rows() == R.rows());
+    REQUIRE_NEAR(C(0, 0), R(0, 0), 1e-12);
 }
 
 // Benchmark excluded (requires Catch2 benchmark header)

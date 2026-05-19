@@ -43,6 +43,7 @@ function buildCppConfig(experiment) {
     numHeads: cfg.numHeads || 4,
     transformerLayers: cfg.transformerLayers || 2,
     ffnDim: cfg.ffnDim || 256,
+    exportOnnx: cfg.exportOnnx ?? false,
   };
 }
 
