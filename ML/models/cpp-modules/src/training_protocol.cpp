@@ -60,9 +60,11 @@ std::string extract_string(const std::string& json, const std::string& key) {
 bool extract_bool(const std::string& json, const std::string& key, bool default_val) {
     size_t start = 0;
     if (!find_key(json, key, start)) return default_val;
-    std::string tail = json.substr(start, 12);
-    if (tail.find("true") == 0) return true;
-    if (tail.find("false") == 0) return false;
+    while (start < json.size() && std::isspace(static_cast<unsigned char>(json[start]))) {
+        start++;
+    }
+    if (json.compare(start, 4, "true") == 0) return true;
+    if (json.compare(start, 5, "false") == 0) return false;
     return default_val;
 }
 
@@ -198,6 +200,8 @@ TrainingConfig parse_training_config(const std::string& json) {
     if (!data_path.empty() && data_path != "null") cfg.data_path = data_path;
 
     cfg.seed = extract_int(json, "seed", cfg.seed);
+    cfg.export_onnx = extract_bool(json, "exportOnnx", cfg.export_onnx);
+    cfg.export_onnx = extract_bool(json, "export_onnx", cfg.export_onnx);
 
     std::string engine = extract_string(json, "engine");
     if (!engine.empty()) cfg.engine = engine;
