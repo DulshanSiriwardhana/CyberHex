@@ -1,8 +1,13 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 CMAKE_PROGRESS_1 = 70
 CMAKE_PROGRESS_2 = 71
 =======
 CMAKE_PROGRESS_1 = 69
 CMAKE_PROGRESS_2 = 70
 >>>>>>> v3.0
+=======
+CMAKE_PROGRESS_1 = 69
+CMAKE_PROGRESS_2 = 70
+>>>>>>> master
 

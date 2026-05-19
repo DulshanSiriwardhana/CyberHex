@@ -39,11 +39,17 @@ struct TrainingConfig {
     size_t transformer_layers = 2;
     size_t ffn_dim = 256;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
     /** After training, write export_manifest.json (and optional ONNX via export script). */
     bool export_onnx = false;
 >>>>>>> v3.0
+=======
+
+    /** After training, write export_manifest.json (and optional ONNX via export script). */
+    bool export_onnx = false;
+>>>>>>> master
 };
 
 /** Read CYBERHEX_CONFIG from the environment (defaults if unset). */

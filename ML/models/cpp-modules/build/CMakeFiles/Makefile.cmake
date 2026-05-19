@@ -76,10 +76,15 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/cyberhex_bench.dir/DependInfo.cmake"
   "CMakeFiles/cyberhex_ml.dir/DependInfo.cmake"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   "CMakeFiles/cyberhex_infer.dir/DependInfo.cmake"
   "CMakeFiles/cyberhex_export.dir/DependInfo.cmake"
 >>>>>>> v3.0
+=======
+  "CMakeFiles/cyberhex_infer.dir/DependInfo.cmake"
+  "CMakeFiles/cyberhex_export.dir/DependInfo.cmake"
+>>>>>>> master
   "CMakeFiles/unit_tests.dir/DependInfo.cmake"
   "_deps/catch2-build/src/CMakeFiles/Catch2.dir/DependInfo.cmake"
   "_deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/DependInfo.cmake"

@@ -15,9 +15,20 @@
 #include "transformer.h"
 #include "distributed.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+#include "onnx_export.h"
+#include "ops_dispatch.h"
+#include "graph.h"
+#include "fused_ops.h"
+#include "device.h"
+#include "precision.h"
+>>>>>>> master
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <memory>
+<<<<<<< HEAD
 =======
 #include "onnx_export.h"
 #include "ops_dispatch.h"
@@ -32,6 +43,10 @@
 #include <filesystem>
 #include <unistd.h>
 >>>>>>> v3.0
+=======
+#include <filesystem>
+#include <unistd.h>
+>>>>>>> master
 
 using namespace cyberhex;
 
@@ -691,10 +706,14 @@ TEST_CASE("Distributed allreduce mean", "[distributed]") {
     ctx.rank = 0;
     Matrix<double> g(2, 2, 4.0);
 <<<<<<< HEAD
+<<<<<<< HEAD
     allreduce_mean(g, ctx);
 =======
     allreduce_mean_collective(g, ctx, 0, 0);
 >>>>>>> v3.0
+=======
+    allreduce_mean_collective(g, ctx, 0, 0);
+>>>>>>> master
     REQUIRE_NEAR(g(0, 0), 1.0, 1e-12);
 }
 
@@ -727,7 +746,10 @@ TEST_CASE("Device defaults to CPU", "[device]") {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> master
 TEST_CASE("Collective backend detection", "[distributed][collective]") {
     unsetenv("CYBERHEX_DIST_DIR");
     REQUIRE(detect_collective_backend() == CollectiveBackend::LOCAL);
@@ -755,5 +777,8 @@ TEST_CASE("dispatch_matmul CPU", "[ops]") {
     REQUIRE_NEAR(C(0, 0), R(0, 0), 1e-12);
 }
 
+<<<<<<< HEAD
 >>>>>>> v3.0
+=======
+>>>>>>> master
 // Benchmark excluded (requires Catch2 benchmark header)

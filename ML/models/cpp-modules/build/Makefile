@@ -225,7 +225,10 @@ cyberhex_ml/fast:
 
 #=============================================================================
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> master
 # Target rules for targets named cyberhex_infer
 
 # Build rule for target.
@@ -252,7 +255,10 @@ cyberhex_export/fast:
 .PHONY : cyberhex_export/fast
 
 #=============================================================================
+<<<<<<< HEAD
 >>>>>>> v3.0
+=======
+>>>>>>> master
 # Target rules for targets named unit_tests
 
 # Build rule for target.
@@ -324,12 +330,16 @@ src/bench_main.o: src/bench_main.cpp.o
 # target to build an object file
 src/bench_main.cpp.o:
 <<<<<<< HEAD
+<<<<<<< HEAD
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/bench_main.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/src/bench_main.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/bench_main.cpp.o
 =======
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/src/bench_main.cpp.o
 >>>>>>> v3.0
+=======
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/src/bench_main.cpp.o
+>>>>>>> master
 .PHONY : src/bench_main.cpp.o
 
 src/bench_main.i: src/bench_main.cpp.i
@@ -338,12 +348,16 @@ src/bench_main.i: src/bench_main.cpp.i
 # target to preprocess a source file
 src/bench_main.cpp.i:
 <<<<<<< HEAD
+<<<<<<< HEAD
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/bench_main.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/src/bench_main.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/bench_main.cpp.i
 =======
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/src/bench_main.cpp.i
 >>>>>>> v3.0
+=======
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/src/bench_main.cpp.i
+>>>>>>> master
 .PHONY : src/bench_main.cpp.i
 
 src/bench_main.s: src/bench_main.cpp.s
@@ -352,12 +366,16 @@ src/bench_main.s: src/bench_main.cpp.s
 # target to generate assembly for a file
 src/bench_main.cpp.s:
 <<<<<<< HEAD
+<<<<<<< HEAD
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/bench_main.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/src/bench_main.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/bench_main.cpp.s
 =======
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/src/bench_main.cpp.s
 >>>>>>> v3.0
+=======
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_bench.dir/build.make CMakeFiles/cyberhex_bench.dir/src/bench_main.cpp.s
+>>>>>>> master
 .PHONY : src/bench_main.cpp.s
 
 src/conv2d.o: src/conv2d.cpp.o
@@ -388,28 +406,32 @@ src/conv2d.cpp.s:
 .PHONY : src/conv2d.cpp.s
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 src/cuda_matmul_stub.o: src/cuda_matmul_stub.cpp.o
 .PHONY : src/cuda_matmul_stub.o
+=======
+src/cyberhex_export.o: src/cyberhex_export.cpp.o
+.PHONY : src/cyberhex_export.o
+>>>>>>> master
 
 # target to build an object file
-src/cuda_matmul_stub.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/cuda_matmul_stub.cpp.o
-.PHONY : src/cuda_matmul_stub.cpp.o
+src/cyberhex_export.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_export.dir/build.make CMakeFiles/cyberhex_export.dir/src/cyberhex_export.cpp.o
+.PHONY : src/cyberhex_export.cpp.o
 
-src/cuda_matmul_stub.i: src/cuda_matmul_stub.cpp.i
-.PHONY : src/cuda_matmul_stub.i
+src/cyberhex_export.i: src/cyberhex_export.cpp.i
+.PHONY : src/cyberhex_export.i
 
 # target to preprocess a source file
-src/cuda_matmul_stub.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/cuda_matmul_stub.cpp.i
-.PHONY : src/cuda_matmul_stub.cpp.i
+src/cyberhex_export.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_export.dir/build.make CMakeFiles/cyberhex_export.dir/src/cyberhex_export.cpp.i
+.PHONY : src/cyberhex_export.cpp.i
 
-src/cuda_matmul_stub.s: src/cuda_matmul_stub.cpp.s
-.PHONY : src/cuda_matmul_stub.s
+src/cyberhex_export.s: src/cyberhex_export.cpp.s
+.PHONY : src/cyberhex_export.s
 
 # target to generate assembly for a file
+<<<<<<< HEAD
 src/cuda_matmul_stub.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex.dir/build.make CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/cuda_matmul_stub.cpp.s
@@ -435,6 +457,8 @@ src/cyberhex_export.s: src/cyberhex_export.cpp.s
 .PHONY : src/cyberhex_export.s
 
 # target to generate assembly for a file
+=======
+>>>>>>> master
 src/cyberhex_export.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_export.dir/build.make CMakeFiles/cyberhex_export.dir/src/cyberhex_export.cpp.s
 .PHONY : src/cyberhex_export.cpp.s
@@ -462,7 +486,10 @@ src/cyberhex_infer.s: src/cyberhex_infer.cpp.s
 src/cyberhex_infer.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cyberhex_infer.dir/build.make CMakeFiles/cyberhex_infer.dir/src/cyberhex_infer.cpp.s
 .PHONY : src/cyberhex_infer.cpp.s
+<<<<<<< HEAD
 >>>>>>> v3.0
+=======
+>>>>>>> master
 
 src/cyberhex_ml.o: src/cyberhex_ml.cpp.o
 .PHONY : src/cyberhex_ml.o
@@ -702,7 +729,10 @@ src/model.cpp.s:
 .PHONY : src/model.cpp.s
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> master
 src/onnx_export.o: src/onnx_export.cpp.o
 .PHONY : src/onnx_export.o
 
@@ -730,7 +760,10 @@ src/onnx_export.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/unit_tests.dir/build.make CMakeFiles/unit_tests.dir/src/onnx_export.cpp.s
 .PHONY : src/onnx_export.cpp.s
 
+<<<<<<< HEAD
 >>>>>>> v3.0
+=======
+>>>>>>> master
 src/ops_dispatch.o: src/ops_dispatch.cpp.o
 .PHONY : src/ops_dispatch.o
 
@@ -936,10 +969,15 @@ help:
 	@echo "... cyberhex"
 	@echo "... cyberhex_bench"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	@echo "... cyberhex_export"
 	@echo "... cyberhex_infer"
 >>>>>>> v3.0
+=======
+	@echo "... cyberhex_export"
+	@echo "... cyberhex_infer"
+>>>>>>> master
 	@echo "... cyberhex_ml"
 	@echo "... unit_tests"
 	@echo "... src/activations.o"
@@ -952,17 +990,23 @@ help:
 	@echo "... src/conv2d.i"
 	@echo "... src/conv2d.s"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	@echo "... src/cuda_matmul_stub.o"
 	@echo "... src/cuda_matmul_stub.i"
 	@echo "... src/cuda_matmul_stub.s"
 =======
+=======
+>>>>>>> master
 	@echo "... src/cyberhex_export.o"
 	@echo "... src/cyberhex_export.i"
 	@echo "... src/cyberhex_export.s"
 	@echo "... src/cyberhex_infer.o"
 	@echo "... src/cyberhex_infer.i"
 	@echo "... src/cyberhex_infer.s"
+<<<<<<< HEAD
 >>>>>>> v3.0
+=======
+>>>>>>> master
 	@echo "... src/cyberhex_ml.o"
 	@echo "... src/cyberhex_ml.i"
 	@echo "... src/cyberhex_ml.s"
@@ -991,11 +1035,17 @@ help:
 	@echo "... src/model.i"
 	@echo "... src/model.s"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	@echo "... src/onnx_export.o"
 	@echo "... src/onnx_export.i"
 	@echo "... src/onnx_export.s"
 >>>>>>> v3.0
+=======
+	@echo "... src/onnx_export.o"
+	@echo "... src/onnx_export.i"
+	@echo "... src/onnx_export.s"
+>>>>>>> master
 	@echo "... src/ops_dispatch.o"
 	@echo "... src/ops_dispatch.i"
 	@echo "... src/ops_dispatch.s"
