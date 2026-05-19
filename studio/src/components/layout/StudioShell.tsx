@@ -31,7 +31,7 @@ import type { Toast } from '@/types';
 type SidebarTab = 'layout' | 'video' | 'audio' | 'filters' | 'ai' | 'mixer' | 'scenes' | 'nodes' | 'record';
 
 interface StudioShellProps {
-  initialGpuAvailable: boolean;
+  initialGpuAvailable?: boolean;
 }
 
 const ToastItem: React.FC<{ toast: Toast; onDismiss: (id: string) => void }> = ({ toast, onDismiss }) => {
@@ -76,7 +76,7 @@ const PerformanceMonitor: React.FC = () => {
   );
 };
 
-export const StudioShell: React.FC<StudioShellProps> = ({ initialGpuAvailable }) => {
+export const StudioShell: React.FC<StudioShellProps> = () => {
   const [activeTab, setActiveTab] = useState<SidebarTab>('layout');
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.STUDIO);
 
@@ -91,13 +91,7 @@ export const StudioShell: React.FC<StudioShellProps> = ({ initialGpuAvailable })
   const commandPaletteOpen = useStudioStore((s) => s.commandPaletteOpen);
   const openCommandPalette = useStudioStore((s) => s.openCommandPalette);
   const closeCommandPalette = useStudioStore((s) => s.closeCommandPalette);
-  const setGpuStatus = useStudioStore((s) => s.setGpuStatus);
-
   const { addWebcamFeed, addScreenFeed, initAudio } = useStudioBootstrap();
-
-  React.useEffect(() => {
-    setGpuStatus(initialGpuAvailable, initialGpuAvailable);
-  }, [initialGpuAvailable, setGpuStatus]);
 
   const toolbarItems: { id: SidebarTab; icon: React.ReactNode; label: string }[] = [
     { id: 'layout', icon: <Layout size={18} />, label: 'Layout' },

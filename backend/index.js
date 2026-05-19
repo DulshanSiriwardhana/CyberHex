@@ -61,6 +61,21 @@ global.broadcastToExperiment = (experimentId, data) => {
   });
 };
 
+let studioSocketShutdown = () => {};
+
+try {
+  const { attachStudioSocket } = await import('./services/studioSocket.js');
+  const studioSocket = attachStudioSocket(server);
+  studioSocketShutdown = studioSocket.shutdown;
+  logger.info('Studio Socket.IO bridge active at path /ws');
+} catch (err) {
+  logger.warn(`Studio Socket.IO not started: ${err.message}`);
+}
+
 server.listen(PORT, () => {
   logger.info(`CyberHex backend running on port ${PORT}`);
+});
+
+process.on('SIGTERM', () => {
+  studioSocketShutdown();
 });

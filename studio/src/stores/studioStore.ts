@@ -393,7 +393,10 @@ export const useStudioStore = create<StudioState & StudioActions>()(
 
       /* ── AI Models ── */
       loadModel: (model) =>
-        set((s) => { s.models[model.id] = { ...model, status: ModelStatus.READY, loadedAt: Date.now() }; s.loadedModels.push(model.id); }),
+        set((s) => {
+          s.models[model.id] = { ...model, status: model.status ?? ModelStatus.READY, loadedAt: model.loadedAt ?? Date.now() };
+          if (!s.loadedModels.includes(model.id)) s.loadedModels.push(model.id);
+        }),
       unloadModel: (id) =>
         set((s) => { if (s.models[id]) s.models[id].status = ModelStatus.UNLOADED; s.loadedModels = s.loadedModels.filter((mid) => mid !== id); }),
       setModelStatus: (id, status, error) =>

@@ -7,7 +7,7 @@ import { useStudioStore } from '@/stores/studioStore';
 import { useWebcam, useScreenShare, useMicrophone } from '@/hooks/useMediaDevices';
 import { AudioEngine } from '@/ai/audio/denoiser/AudioEngine';
 import { SceneManager } from '@/engine/scene/SceneManager';
-import { LayoutTemplateType, ViewMode, AudioFilterType } from '@/types';
+import { LayoutTemplateType, AudioFilterType, type AudioEnhancer } from '@/types';
 import { v4 as uuid } from 'uuid';
 
 const audioEngine = new AudioEngine();
@@ -99,14 +99,18 @@ export function useStudioBootstrap() {
         stream
       );
 
+      const stages: AudioEnhancer[] = [
+        { id: 'denoise', type: AudioFilterType.DENOISER, name: 'Denoiser', enabled: true, params: { threshold: 0.01 }, node: null },
+        { id: 'comp', type: AudioFilterType.COMPRESSOR, name: 'Compressor', enabled: true, params: { threshold: -24, ratio: 4, attackMs: 5, releaseMs: 50, knee: 30 }, node: null },
+        { id: 'enhance', type: AudioFilterType.ENHANCER, name: 'Enhancer', enabled: true, params: { warmth: 0.3 }, node: null },
+      ];
+
+      stages.forEach((stage) => audioEngine.addProcessor(stage));
+
       setAudioPipeline({
         id: uuid(),
         name: 'Neural Audio',
-        stages: [
-          { id: 'denoise', type: AudioFilterType.DENOISER, name: 'Denoiser', enabled: true, params: { threshold: 0.01 }, node: null },
-          { id: 'comp', type: AudioFilterType.COMPRESSOR, name: 'Compressor', enabled: true, params: { threshold: -24, ratio: 4 }, node: null },
-          { id: 'enhance', type: AudioFilterType.ENHANCER, name: 'Enhancer', enabled: true, params: {}, node: null },
-        ],
+        stages,
         bypass: false,
         solo: false,
         gain: 1,
