@@ -1,9 +1,13 @@
 /**
 <<<<<<< HEAD
+<<<<<<< HEAD
  * Model inference via Python NumPy runner (weights from train.py .npz).
 =======
  * Model inference — Python NumPy (.npz) or C++ binary/json weights.
 >>>>>>> v3.0
+=======
+ * Model inference — Python NumPy (.npz) or C++ binary/json weights.
+>>>>>>> master
  * @module services/inferenceService
  */
 
@@ -19,14 +23,37 @@ const projectRoot = path.resolve(__dirname, '../../');
 
 const INFER_SCRIPT = path.join(projectRoot, 'ML', 'models', 'python-modules', 'infer.py');
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+const INFER_CPP = path.join(projectRoot, 'ML', 'models', 'cpp-modules', 'build', 'cyberhex_infer');
+>>>>>>> master
 
-/**
- * Run inference on a saved model.
- * @param {{ modelPath: string, features: number[][], task?: string }} params
- * @returns {Promise<{ success: boolean, predictions: number[][], shape: number[], latencyMs: number, backend: string }>}
- */
-export function runInference({ modelPath, features, task = 'regression' }) {
+function resolveWeightsPrefix(modelPath) {
+  let prefix = modelPath;
+  if (prefix.endsWith('_weights')) {
+    prefix = prefix.slice(0, -'_weights'.length);
+  }
+  if (fs.existsSync(prefix) && fs.statSync(prefix).isDirectory()) {
+    return prefix;
+  }
+  return null;
+}
+
+function shouldUseCppInfer(modelPath) {
+  if (process.env.ML_INFER_ENGINE === 'python') return false;
+  if (process.env.ML_INFER_ENGINE === 'cpp') return true;
+
+  const prefix = resolveWeightsPrefix(modelPath);
+  if (!prefix) return false;
+  return (
+    fs.existsSync(path.join(prefix, 'layer_0.json')) ||
+    fs.existsSync(path.join(prefix, 'layer_0_weights.bin'))
+  );
+}
+
+function runCppInference({ modelPath, features, task }) {
   return new Promise((resolve, reject) => {
+<<<<<<< HEAD
     if (!modelPath || !fs.existsSync(modelPath)) {
       return reject(new Error(`Model file not found: ${modelPath}`));
 =======
@@ -60,12 +87,19 @@ function runCppInference({ modelPath, features, task }) {
     if (!fs.existsSync(INFER_CPP)) {
       return reject(new Error('cyberhex_infer not built; run cmake in ML/models/cpp-modules'));
 >>>>>>> v3.0
+=======
+    if (!fs.existsSync(INFER_CPP)) {
+      return reject(new Error('cyberhex_infer not built; run cmake in ML/models/cpp-modules'));
+>>>>>>> master
     }
 
     const start = performance.now();
     const config = { model_path: modelPath, features, task };
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> master
     const child = spawnTraining(INFER_CPP, [], {
       env: { ...process.env, CYBERHEX_INFER_CONFIG: JSON.stringify(config) },
     });
@@ -102,7 +136,10 @@ function runPythonInference({ modelPath, features, task }) {
   return new Promise((resolve, reject) => {
     const start = performance.now();
     const config = { model_path: modelPath, features, task };
+<<<<<<< HEAD
 >>>>>>> v3.0
+=======
+>>>>>>> master
     const python = process.env.PYTHON_EXECUTABLE || 'python3';
 
     const child = spawnTraining(python, [INFER_SCRIPT], {
@@ -112,6 +149,7 @@ function runPythonInference({ modelPath, features, task }) {
 
     let stdout = '';
     let stderr = '';
+<<<<<<< HEAD
 <<<<<<< HEAD
 
     child.stdout.on('data', (chunk) => {
@@ -124,6 +162,10 @@ function runPythonInference({ modelPath, features, task }) {
     child.stdout.on('data', (chunk) => { stdout += chunk.toString(); });
     child.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
 >>>>>>> v3.0
+=======
+    child.stdout.on('data', (chunk) => { stdout += chunk.toString(); });
+    child.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
+>>>>>>> master
 
     child.on('close', (code) => {
       const latencyMs = performance.now() - start;
@@ -144,6 +186,7 @@ function runPythonInference({ modelPath, features, task }) {
           latencyMs: Math.round(latencyMs * 100) / 100,
         });
 <<<<<<< HEAD
+<<<<<<< HEAD
       } catch (err) {
         reject(new Error(`Invalid inference output: ${line?.slice(0, 200)}`));
       }
@@ -155,12 +198,21 @@ function runPythonInference({ modelPath, features, task }) {
       }
     });
 >>>>>>> v3.0
+=======
+      } catch {
+        reject(new Error(`Invalid inference output: ${line?.slice(0, 200)}`));
+      }
+    });
+>>>>>>> master
     child.on('error', reject);
   });
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> master
 /**
  * Run inference on a saved model.
  * @param {{ modelPath: string, features: number[][], task?: string }} params
@@ -185,5 +237,8 @@ export function runInference({ modelPath, features, task = 'regression' }) {
   return runPythonInference({ modelPath, features, task });
 }
 
+<<<<<<< HEAD
 >>>>>>> v3.0
+=======
+>>>>>>> master
 export default { runInference };

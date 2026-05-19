@@ -103,11 +103,16 @@ public:
                       Optimizer& optimizer,
                       NodeId output_id,
 <<<<<<< HEAD
+<<<<<<< HEAD
                       const DistributedContext* dist = nullptr);
 =======
                       const DistributedContext* dist = nullptr,
                       int step = 0);
 >>>>>>> v3.0
+=======
+                      const DistributedContext* dist = nullptr,
+                      int step = 0);
+>>>>>>> master
 
     using EpochCallback = std::function<void(int epoch, double train_loss, double val_loss, bool has_val)>;
 

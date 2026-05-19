@@ -2,6 +2,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/unit_tests.dir/src/activations.cpp.o"
   "CMakeFiles/unit_tests.dir/src/activations.cpp.o.d"
 <<<<<<< HEAD
+<<<<<<< HEAD
   "CMakeFiles/unit_tests.dir/src/bench_main.cpp.o"
   "CMakeFiles/unit_tests.dir/src/bench_main.cpp.o.d"
   "CMakeFiles/unit_tests.dir/src/conv2d.cpp.o"
@@ -12,6 +13,10 @@ file(REMOVE_RECURSE
   "CMakeFiles/unit_tests.dir/src/conv2d.cpp.o"
   "CMakeFiles/unit_tests.dir/src/conv2d.cpp.o.d"
 >>>>>>> v3.0
+=======
+  "CMakeFiles/unit_tests.dir/src/conv2d.cpp.o"
+  "CMakeFiles/unit_tests.dir/src/conv2d.cpp.o.d"
+>>>>>>> master
   "CMakeFiles/unit_tests.dir/src/dense.cpp.o"
   "CMakeFiles/unit_tests.dir/src/dense.cpp.o.d"
   "CMakeFiles/unit_tests.dir/src/device.cpp.o"
@@ -27,10 +32,15 @@ file(REMOVE_RECURSE
   "CMakeFiles/unit_tests.dir/src/model.cpp.o"
   "CMakeFiles/unit_tests.dir/src/model.cpp.o.d"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   "CMakeFiles/unit_tests.dir/src/onnx_export.cpp.o"
   "CMakeFiles/unit_tests.dir/src/onnx_export.cpp.o.d"
 >>>>>>> v3.0
+=======
+  "CMakeFiles/unit_tests.dir/src/onnx_export.cpp.o"
+  "CMakeFiles/unit_tests.dir/src/onnx_export.cpp.o.d"
+>>>>>>> master
   "CMakeFiles/unit_tests.dir/src/ops_dispatch.cpp.o"
   "CMakeFiles/unit_tests.dir/src/ops_dispatch.cpp.o.d"
   "CMakeFiles/unit_tests.dir/src/optimizer.cpp.o"

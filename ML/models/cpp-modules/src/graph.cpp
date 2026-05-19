@@ -325,11 +325,16 @@ double GraphTrainer::train_step(const Matrix<double>& X, const Matrix<double>& y
                                 Optimizer& optimizer,
                                 NodeId output_id,
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 const DistributedContext* dist) {
 =======
                                 const DistributedContext* dist,
                                 int step) {
 >>>>>>> v3.0
+=======
+                                const DistributedContext* dist,
+                                int step) {
+>>>>>>> master
     graph_.bind_input(input_id_, X);
     Matrix<double> pred = graph_.forward(output_id);
     double loss_val = loss.forward(pred, y);
@@ -340,11 +345,18 @@ double GraphTrainer::train_step(const Matrix<double>& X, const Matrix<double>& y
 
     if (dist && dist->is_distributed()) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         std::vector<Matrix<double>*> grads;
+=======
+        int pid_idx = 0;
+>>>>>>> master
         for (NodeId pid : param_ids_) {
             auto& n = graph_.mutable_node(pid);
-            if (!n.grad_weight.empty()) grads.push_back(&n.grad_weight);
+            if (!n.grad_weight.empty()) {
+                allreduce_mean_collective(n.grad_weight, *dist, step, pid_idx++);
+            }
         }
+<<<<<<< HEAD
         allreduce_mean(grads, *dist);
 =======
         int pid_idx = 0;
@@ -355,6 +367,8 @@ double GraphTrainer::train_step(const Matrix<double>& X, const Matrix<double>& y
             }
         }
 >>>>>>> v3.0
+=======
+>>>>>>> master
     }
 
     int t = 1;
@@ -391,9 +405,13 @@ double GraphTrainer::fit(const Matrix<double>& X, const Matrix<double>& y,
     double last_val = 0.0;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     int global_step = 0;
 >>>>>>> v3.0
+=======
+    int global_step = 0;
+>>>>>>> master
     for (int epoch = 0; epoch < epochs; epoch++) {
         double total_loss = 0.0;
         int batches = 0;
@@ -404,10 +422,14 @@ double GraphTrainer::fit(const Matrix<double>& X, const Matrix<double>& y,
             size_t count = end - start;
             double step_loss = train_step(X.row_slice(start, count), y.row_slice(start, count),
 <<<<<<< HEAD
+<<<<<<< HEAD
                                           loss, optimizer, output_id, dist);
 =======
                                           loss, optimizer, output_id, dist, global_step++);
 >>>>>>> v3.0
+=======
+                                          loss, optimizer, output_id, dist, global_step++);
+>>>>>>> master
             total_loss += step_loss;
             batches++;
         }

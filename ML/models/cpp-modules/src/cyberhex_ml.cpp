@@ -15,9 +15,13 @@
 #include "transformer.h"
 #include "distributed.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 #include "onnx_export.h"
 >>>>>>> v3.0
+=======
+#include "onnx_export.h"
+>>>>>>> master
 #include <iostream>
 #include <memory>
 #include <random>
@@ -185,7 +189,10 @@ bool load_dataset(const TrainingConfig& cfg, Matrix<double>& X, Matrix<double>& 
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> master
 void maybe_export_onnx(const TrainingConfig& cfg, const std::string& prefix) {
     if (!cfg.export_onnx) return;
     std::string manifest = prefix + "/export_manifest.json";
@@ -194,7 +201,10 @@ void maybe_export_onnx(const TrainingConfig& cfg, const std::string& prefix) {
     }
 }
 
+<<<<<<< HEAD
 >>>>>>> v3.0
+=======
+>>>>>>> master
 void configure_device(const TrainingConfig& cfg) {
     if (!std::getenv("CYBERHEX_DEVICE")) {
         std::string dev = cfg.device;
@@ -258,9 +268,13 @@ int run_graph_training(const TrainingConfig& cfg, Matrix<double>& X, Matrix<doub
     trainer.save_weights(prefix_path.string());
     std::string model_path = prefix_path.string();
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     maybe_export_onnx(cfg, prefix_path.string());
 >>>>>>> v3.0
+=======
+    maybe_export_onnx(cfg, prefix_path.string());
+>>>>>>> master
     emit_training_complete(final_train, final_val, model_path);
     return 0;
 }
@@ -310,10 +324,15 @@ int run_transformer_training(const TrainingConfig& cfg, Matrix<double>& X, Matri
     std::filesystem::path prefix_path = out_dir / prefix.str();
     model.save_weights(prefix_path.string());
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     model.save_weights_binary(prefix_path.string());
     maybe_export_onnx(cfg, prefix_path.string());
 >>>>>>> v3.0
+=======
+    model.save_weights_binary(prefix_path.string());
+    maybe_export_onnx(cfg, prefix_path.string());
+>>>>>>> master
     emit_training_complete(final_train, final_val, prefix_path.string() + "_weights");
     return 0;
 }
@@ -430,10 +449,15 @@ int main() {
     std::filesystem::path prefix_path = out_dir / prefix.str();
     model.save_weights(prefix_path.string());
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     model.save_weights_binary(prefix_path.string());
     maybe_export_onnx(cfg, prefix_path.string());
 >>>>>>> v3.0
+=======
+    model.save_weights_binary(prefix_path.string());
+    maybe_export_onnx(cfg, prefix_path.string());
+>>>>>>> master
 
     std::string model_path = prefix_path.string() + "_weights";
     emit_training_complete(final_train, final_val, model_path);

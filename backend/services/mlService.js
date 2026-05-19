@@ -44,9 +44,13 @@ function buildCppConfig(experiment) {
     transformerLayers: cfg.transformerLayers || 2,
     ffnDim: cfg.ffnDim || 256,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     exportOnnx: cfg.exportOnnx ?? false,
 >>>>>>> v3.0
+=======
+    exportOnnx: cfg.exportOnnx ?? false,
+>>>>>>> master
   };
 }
 
