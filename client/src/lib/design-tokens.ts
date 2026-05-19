@@ -1,9 +1,8 @@
 /**
- * CyberHex v3.0 — Unified Design Token System
+ * CyberHex Design Tokens — Multi-Theme Foundation (v3+) + v4 Word System
  *
- * A comprehensive design token architecture that powers theming,
- * typography, spacing, animation, and visual effects across the
- * entire platform. Extended from v2.0 with full multi-theme support.
+ * Theme registry and scales for the platform. For v4.0 Release No. 01
+ * wordmark typography and serial badges, see `@/lib/design-v4`.
  */
 
 // ──── Theme Variants ─────────────────────────────────────────────

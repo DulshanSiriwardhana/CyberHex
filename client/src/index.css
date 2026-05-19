@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ========================================================================== */
-/*  CyberHex v3.0 — Multi-Theme Design System + Neon Cyberpunk + Glass        */
+/*  CyberHex v4.0 — Release No. 01: "The Word" + v3 Multi-Theme Foundation   */
 /* ========================================================================== */
 
 @theme {
@@ -65,6 +65,13 @@
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
   --font-display: "Spectral", "Georgia", serif;
   --font-spectral: "Spectral", "Georgia", serif;
+  --font-wordmark: "Outfit", "Inter", system-ui, sans-serif;
+
+  /* v4.0 — Release No. 01 (The Word) */
+  --v4-signal-cyan: #00e5ff;
+  --v4-signal-violet: #8b5cf6;
+  --v4-hex-gold: #d4a017;
+  --v4-word-underline: linear-gradient(90deg, #00e5ff 0%, #d4a017 50%, #8b5cf6 100%);
 
   /* ── Radii ─────────────────────────────────────────────────────────────── */
   --radius: 0.5rem;
@@ -781,4 +788,27 @@ body {
 
 .font-mono {
   font-family: var(--font-mono);
+}
+
+/* ========================================================================== */
+/*  v4.0 — Release No. 01: The Word (wordmark system)                         */
+/* ========================================================================== */
+
+.wordmark-v4 {
+  font-family: var(--font-wordmark);
+  padding-left: 0.75rem;
+}
+
+.wordmark-v4-hex .wordmark-v4-underline {
+  background: var(--v4-word-underline);
+}
+
+.badge-v4-release {
+  border-color: color-mix(in srgb, var(--v4-signal-cyan) 22%, transparent);
+  background-color: color-mix(in srgb, var(--v4-signal-cyan) 6%, transparent);
+  color: color-mix(in srgb, var(--v4-signal-cyan) 90%, white);
+}
+
+.wordmark-v4-hero-glow {
+  filter: drop-shadow(0 0 40px rgba(0, 229, 255, 0.12));
 }

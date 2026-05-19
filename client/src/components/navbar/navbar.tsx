@@ -19,6 +19,7 @@ import { useAuth } from "@/contexts/auth";
 import { useThemeStore } from "@/stores/theme";
 import { THEME_REGISTRY } from "@/lib/design-tokens";
 import type { ThemeVariant } from "@/lib/design-tokens";
+import { CyberHexWord } from "@/components/brand";
 
 const NavBar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -81,9 +82,7 @@ const NavBar = () => {
           <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-700 shadow-[0_0_15px_rgba(6,182,212,0.4)] group-hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] transition-shadow duration-300">
             <Terminal className="h-5 w-5 text-white" />
           </div>
-          <span className="text-lg font-extrabold tracking-tight text-white">
-            Cyber<span className="text-cyan-400">Hex</span>
-          </span>
+          <CyberHexWord size="sm" showSerial={false} />
         </Link>
 
         {/* Desktop nav */}
