@@ -43,6 +43,7 @@ public:
     // Accessors
     const Matrix<double>& getWeights() const { return weights; }
     const Matrix<double>& getBias() const { return bias; }
+    void set_parameters(Matrix<double> W, Matrix<double> B);
 
     // Regularization
     void set_l1(double lambda) { l1_lambda_ = lambda; }

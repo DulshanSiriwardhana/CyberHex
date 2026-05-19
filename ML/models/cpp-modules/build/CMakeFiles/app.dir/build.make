@@ -83,99 +83,20 @@ CMakeFiles/app.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/app.dir/src/main.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/main.cpp -o CMakeFiles/app.dir/src/main.cpp.s
 
-CMakeFiles/app.dir/src/activations.cpp.o: CMakeFiles/app.dir/flags.make
-CMakeFiles/app.dir/src/activations.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activations.cpp
-CMakeFiles/app.dir/src/activations.cpp.o: CMakeFiles/app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/app.dir/src/activations.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/app.dir/src/activations.cpp.o -MF CMakeFiles/app.dir/src/activations.cpp.o.d -o CMakeFiles/app.dir/src/activations.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activations.cpp
-
-CMakeFiles/app.dir/src/activations.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/app.dir/src/activations.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activations.cpp > CMakeFiles/app.dir/src/activations.cpp.i
-
-CMakeFiles/app.dir/src/activations.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/app.dir/src/activations.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/activations.cpp -o CMakeFiles/app.dir/src/activations.cpp.s
-
-CMakeFiles/app.dir/src/dense.cpp.o: CMakeFiles/app.dir/flags.make
-CMakeFiles/app.dir/src/dense.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/dense.cpp
-CMakeFiles/app.dir/src/dense.cpp.o: CMakeFiles/app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/app.dir/src/dense.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/app.dir/src/dense.cpp.o -MF CMakeFiles/app.dir/src/dense.cpp.o.d -o CMakeFiles/app.dir/src/dense.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/dense.cpp
-
-CMakeFiles/app.dir/src/dense.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/app.dir/src/dense.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/dense.cpp > CMakeFiles/app.dir/src/dense.cpp.i
-
-CMakeFiles/app.dir/src/dense.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/app.dir/src/dense.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/dense.cpp -o CMakeFiles/app.dir/src/dense.cpp.s
-
-CMakeFiles/app.dir/src/loss.cpp.o: CMakeFiles/app.dir/flags.make
-CMakeFiles/app.dir/src/loss.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/loss.cpp
-CMakeFiles/app.dir/src/loss.cpp.o: CMakeFiles/app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/app.dir/src/loss.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/app.dir/src/loss.cpp.o -MF CMakeFiles/app.dir/src/loss.cpp.o.d -o CMakeFiles/app.dir/src/loss.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/loss.cpp
-
-CMakeFiles/app.dir/src/loss.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/app.dir/src/loss.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/loss.cpp > CMakeFiles/app.dir/src/loss.cpp.i
-
-CMakeFiles/app.dir/src/loss.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/app.dir/src/loss.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/loss.cpp -o CMakeFiles/app.dir/src/loss.cpp.s
-
-CMakeFiles/app.dir/src/model.cpp.o: CMakeFiles/app.dir/flags.make
-CMakeFiles/app.dir/src/model.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/model.cpp
-CMakeFiles/app.dir/src/model.cpp.o: CMakeFiles/app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/app.dir/src/model.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/app.dir/src/model.cpp.o -MF CMakeFiles/app.dir/src/model.cpp.o.d -o CMakeFiles/app.dir/src/model.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/model.cpp
-
-CMakeFiles/app.dir/src/model.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/app.dir/src/model.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/model.cpp > CMakeFiles/app.dir/src/model.cpp.i
-
-CMakeFiles/app.dir/src/model.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/app.dir/src/model.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/model.cpp -o CMakeFiles/app.dir/src/model.cpp.s
-
-CMakeFiles/app.dir/src/optimizer.cpp.o: CMakeFiles/app.dir/flags.make
-CMakeFiles/app.dir/src/optimizer.cpp.o: /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/optimizer.cpp
-CMakeFiles/app.dir/src/optimizer.cpp.o: CMakeFiles/app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/app.dir/src/optimizer.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/app.dir/src/optimizer.cpp.o -MF CMakeFiles/app.dir/src/optimizer.cpp.o.d -o CMakeFiles/app.dir/src/optimizer.cpp.o -c /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/optimizer.cpp
-
-CMakeFiles/app.dir/src/optimizer.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/app.dir/src/optimizer.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/optimizer.cpp > CMakeFiles/app.dir/src/optimizer.cpp.i
-
-CMakeFiles/app.dir/src/optimizer.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/app.dir/src/optimizer.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/src/optimizer.cpp -o CMakeFiles/app.dir/src/optimizer.cpp.s
-
 # Object files for target app
 app_OBJECTS = \
-"CMakeFiles/app.dir/src/main.cpp.o" \
-"CMakeFiles/app.dir/src/activations.cpp.o" \
-"CMakeFiles/app.dir/src/dense.cpp.o" \
-"CMakeFiles/app.dir/src/loss.cpp.o" \
-"CMakeFiles/app.dir/src/model.cpp.o" \
-"CMakeFiles/app.dir/src/optimizer.cpp.o"
+"CMakeFiles/app.dir/src/main.cpp.o"
 
 # External object files for target app
 app_EXTERNAL_OBJECTS =
 
 app: CMakeFiles/app.dir/src/main.cpp.o
-app: CMakeFiles/app.dir/src/activations.cpp.o
-app: CMakeFiles/app.dir/src/dense.cpp.o
-app: CMakeFiles/app.dir/src/loss.cpp.o
-app: CMakeFiles/app.dir/src/model.cpp.o
-app: CMakeFiles/app.dir/src/optimizer.cpp.o
 app: CMakeFiles/app.dir/build.make
+app: libcyberhex.so
 app: /usr/lib/gcc/x86_64-linux-gnu/14/libgomp.so
 app: /usr/lib/x86_64-linux-gnu/libpthread.a
 app: CMakeFiles/app.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable app"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/app.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

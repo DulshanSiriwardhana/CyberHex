@@ -4,22 +4,14 @@ project(CyberHex VERSION 2.0.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Build flags
-# Base flags for all build types (warnings only; optimizations per-config)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wshadow -Wno-unused-parameter")
-
-# Release flags: aggressive optimization, keep denormals-flush for performance
-# Note: -ffast-math disables NaN checking — only enable if you don't need IEEE compliance
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native -ffast-math -DNDEBUG")
-
-# Debug flags: no optimization, frame pointers for profiling, debug symbols
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g3 -fno-omit-frame-pointer -DDEBUG -DCYBERHEX_DEBUG")
-# RelWithDebInfo: optimized but with debug symbols for profiling
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O2 -march=native -g -DNDEBUG")
 
-# Boost (optional - only for WebSocket server)
-# Comment out if Boost not available, WebSocket will be disabled
 option(USE_BOOST "Use Boost for WebSocket server" OFF)
+option(CYBERHEX_ENABLE_CUDA "Build CUDA matmul kernels" OFF)
+option(CYBERHEX_USE_MPI "Link MPI for distributed all-reduce" OFF)
 
 if(USE_BOOST)
     set(Boost_INCLUDE_DIRS "/home/dulshan/boost_1_83_0")
@@ -27,7 +19,6 @@ if(USE_BOOST)
     add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS -DCYBERHEX_USE_BOOST)
 endif()
 
-# OpenMP
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
     message(STATUS "OpenMP found - parallelism enabled")
@@ -37,7 +28,6 @@ else()
     message(WARNING "OpenMP NOT found - falling back to sequential execution")
 endif()
 
-# SIMD detection
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-mavx2" COMPILER_HAS_AVX2)
 if(COMPILER_HAS_AVX2)
@@ -48,14 +38,11 @@ else()
     if(COMPILER_HAS_SSE41)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
         message(STATUS "SSE4.1 enabled")
-    else()
-        message(WARNING "No SIMD extensions found")
     endif()
 endif()
 
 include_directories(include)
 
-# Catch2 for unit tests
 include(FetchContent)
 FetchContent_Declare(
   Catch2
@@ -64,12 +51,33 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
-# Source files
 file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-list(FILTER SOURCES EXCLUDE REGEX ".*/(main|tests)\\.cpp$")
+list(FILTER SOURCES EXCLUDE REGEX ".*/(main|tests|cyberhex_ml|cyberhex_infer|cyberhex_export|bench_main|cuda_matmul_stub)\\.cpp$")
 
-# Shared library
 add_library(cyberhex SHARED ${SOURCES})
+
+if(CYBERHEX_ENABLE_CUDA)
+    include(CheckLanguage)
+    check_language(CUDA)
+    if(CMAKE_CUDA_COMPILER)
+        enable_language(CUDA)
+        target_sources(cyberhex PRIVATE cuda/matmul.cu)
+        set_target_properties(cyberhex PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+        message(STATUS "CUDA matmul kernel enabled")
+    else()
+        target_sources(cyberhex PRIVATE src/cuda_matmul_stub.cpp)
+        message(STATUS "CUDA compiler not found — using host stub matmul")
+    endif()
+    target_compile_definitions(cyberhex PUBLIC CYBERHEX_CUDA)
+endif()
+
+if(CYBERHEX_USE_MPI)
+    find_package(MPI REQUIRED)
+    target_link_libraries(cyberhex PUBLIC MPI::MPI_CXX)
+    target_compile_definitions(cyberhex PUBLIC CYBERHEX_MPI)
+    message(STATUS "MPI distributed collectives enabled")
+endif()
+
 if(OpenMP_CXX_FOUND)
     target_link_libraries(cyberhex PRIVATE OpenMP::OpenMP_CXX)
 endif()
@@ -78,30 +86,55 @@ if(USE_BOOST)
 endif()
 target_link_libraries(cyberhex PRIVATE pthread)
 
-# Version defines
 target_compile_definitions(cyberhex PRIVATE
     CYBERHEX_VERSION_MAJOR=2
     CYBERHEX_VERSION_MINOR=0
     CYBERHEX_VERSION_PATCH=0
 )
 
-# Standalone executable (for experiments and development)
-add_executable(app src/main.cpp ${SOURCES})
-if(OpenMP_CXX_FOUND)
-    target_link_libraries(app PRIVATE OpenMP::OpenMP_CXX)
-endif()
-target_link_libraries(app PRIVATE pthread)
+macro(link_cyberhex_target target)
+    target_link_libraries(${target} PRIVATE cyberhex pthread)
+    if(OpenMP_CXX_FOUND)
+        target_link_libraries(${target} PRIVATE OpenMP::OpenMP_CXX)
+    endif()
+endmacro()
 
-# Unit tests
+add_executable(app src/main.cpp)
+link_cyberhex_target(app)
+
+add_executable(cyberhex_bench src/bench_main.cpp)
+link_cyberhex_target(cyberhex_bench)
+
+add_executable(cyberhex_ml src/cyberhex_ml.cpp)
+link_cyberhex_target(cyberhex_ml)
+
+add_executable(cyberhex_infer src/cyberhex_infer.cpp)
+link_cyberhex_target(cyberhex_infer)
+
+add_executable(cyberhex_export src/cyberhex_export.cpp)
+link_cyberhex_target(cyberhex_export)
+
 add_executable(unit_tests src/tests.cpp ${SOURCES})
 target_include_directories(unit_tests PRIVATE ${catch2_SOURCE_DIR}/src)
+if(CYBERHEX_ENABLE_CUDA)
+    if(CMAKE_CUDA_COMPILER)
+        target_sources(unit_tests PRIVATE cuda/matmul.cu)
+    else()
+        target_sources(unit_tests PRIVATE src/cuda_matmul_stub.cpp)
+    endif()
+    target_compile_definitions(unit_tests PRIVATE CYBERHEX_CUDA)
+endif()
+if(CYBERHEX_USE_MPI)
+    target_link_libraries(unit_tests PRIVATE MPI::MPI_CXX)
+    target_compile_definitions(unit_tests PRIVATE CYBERHEX_MPI)
+endif()
 if(OpenMP_CXX_FOUND)
     target_link_libraries(unit_tests PRIVATE OpenMP::OpenMP_CXX)
 endif()
 target_link_libraries(unit_tests PRIVATE Catch2::Catch2WithMain pthread)
 
-# Install rules
-install(TARGETS cyberhex
-    LIBRARY DESTINATION lib
-    PUBLIC_HEADER DESTINATION include
-)
+enable_testing()
+add_test(NAME cyberhex_unit_tests COMMAND unit_tests)
+set_tests_properties(cyberhex_unit_tests PROPERTIES LABELS "cpp")
+
+install(TARGETS cyberhex LIBRARY DESTINATION lib)
