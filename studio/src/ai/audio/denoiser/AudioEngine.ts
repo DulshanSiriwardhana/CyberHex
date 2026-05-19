@@ -3,7 +3,7 @@
  * Real-time audio enhancement: denoising, compression, isolation, mastering,
  * and English fluency correction.
  */
-import { AudioFilterType, type AudioMetrics, type FluencyConfig, type CorrectionResult, type FluencyMetrics, type TranscriptSegment } from '@/types';
+import { AudioFilterType, FluencyAction, EmotionType, type AudioMetrics, type FluencyConfig, type CorrectionResult, type FluencyMetrics, type TranscriptSegment } from '@/types';
 
 /* ─── Types ────────────────────────────── */
 
@@ -46,7 +46,7 @@ export class AudioEngine {
   /* Fluency */
   private fluencyConfig: FluencyConfig = {
     enabled: false,
-    mode: 'correction' as const,
+    mode: FluencyAction.CORRECTION,
     targetLanguage: 'en',
     preservePersonality: true,
     confidenceThreshold: 0.7,
@@ -60,7 +60,15 @@ export class AudioEngine {
     transcriptSegments: [],
     metrics: { wordsPerMinute: 0, fillerWordCount: 0, grammarErrorsPerMinute: 0, vocabularyRichness: 0, confidenceScore: 0, fluencyScore: 0, clarityScore: 0 },
   };
-  private speechRecognition: SpeechRecognition | null = null;
+  private speechRecognition: {
+    continuous: boolean;
+    interimResults: boolean;
+    lang: string;
+    onresult: ((event: { resultIndex: number; results: { isFinal: boolean; [i: number]: { transcript: string } }[] }) => void) | null;
+    onerror: ((event: { error: string }) => void) | null;
+    start: () => void;
+    stop: () => void;
+  } | null = null;
   private fluencyListeners: Set<(result: CorrectionResult) => void> = new Set();
   private transcriptListeners: Set<(segment: TranscriptSegment) => void> = new Set();
   private metricsListeners: Set<(metrics: FluencyMetrics) => void> = new Set();
@@ -228,7 +236,7 @@ export class AudioEngine {
       rms: Math.round(rms * 1000) / 1000,
       peak: Math.round(peak * 1000) / 1000,
       snr: rms > 0.001 ? Math.round(20 * Math.log10(rms / 0.001)) : 0,
-      latencyMs: this.config?.latencyTarget * 1000 ?? 0,
+      latencyMs: (this.config?.latencyTarget ?? 0) * 1000,
       noiseLevel: Math.round(noiseLevel * 100) / 100,
       voiceActivity: Math.round(voiceActivity * 100) / 100,
       confidence: 0.9,
@@ -248,12 +256,12 @@ export class AudioEngine {
       return;
     }
 
-    this.speechRecognition = new SpeechRecognition();
-    this.speechRecognition.continuous = true;
-    this.speechRecognition.interimResults = true;
-    this.speechRecognition.lang = this.fluencyConfig.targetLanguage;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = this.fluencyConfig.targetLanguage;
 
-    this.speechRecognition.onresult = (event: any) => {
+    recognition.onresult = (event: any) => {
       let interim = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
@@ -270,11 +278,12 @@ export class AudioEngine {
       }
     };
 
-    this.speechRecognition.onerror = (event: any) => {
+    recognition.onerror = (event: any) => {
       console.warn('[AudioEngine] Speech recognition error:', event.error);
     };
 
-    this.speechRecognition.start();
+    this.speechRecognition = recognition;
+    recognition.start();
     console.log('[AudioEngine] Speech recognition started');
   }
 
@@ -299,7 +308,7 @@ export class AudioEngine {
           endTime: Date.now(),
           confidence: correction.confidence,
           errors: correction.corrections,
-          sentiment: 'neutral',
+          sentiment: EmotionType.NEUTRAL,
         };
         this.fluency.transcriptSegments.push(segment);
         if (this.fluency.transcriptSegments.length > 500) this.fluency.transcriptSegments.shift();

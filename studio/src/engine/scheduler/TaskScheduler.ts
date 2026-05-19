@@ -53,7 +53,7 @@ export class TaskScheduler {
         cancelled: false,
       };
 
-      this.queue.push(task);
+      this.queue.push(task as ScheduledTask);
       this.queue.sort((a, b) => a.priority - b.priority || a.createdAt - b.createdAt);
 
       if (!this.running) this._runLoop();
