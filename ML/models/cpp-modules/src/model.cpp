@@ -1,5 +1,6 @@
 #include "model.h"
 #include "dense.h"
+#include "weight_io.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -257,24 +258,44 @@ Checkpoint Checkpoint::load(const std::string& path) {
     cp.weights_flat.resize(num_layers);
     cp.bias_flat.resize(num_layers);
 
+    // Must match Checkpoint::save() section order: types → shapes → weights → biases
     for (size_t i = 0; i < num_layers; i++) {
-        size_t len;
+        size_t len = 0;
         file.read(reinterpret_cast<char*>(&len), sizeof(size_t));
         cp.layer_types[i].resize(len);
-        file.read(&cp.layer_types[i][0], len);
+        if (len > 0) {
+            file.read(cp.layer_types[i].data(), static_cast<std::streamsize>(len));
+        }
+    }
 
-        size_t dims;
+    for (size_t i = 0; i < num_layers; i++) {
+        size_t dims = 0;
         file.read(reinterpret_cast<char*>(&dims), sizeof(size_t));
         cp.shapes[i].resize(dims);
-        file.read(reinterpret_cast<char*>(cp.shapes[i].data()), dims * sizeof(size_t));
+        if (dims > 0) {
+            file.read(reinterpret_cast<char*>(cp.shapes[i].data()),
+                      static_cast<std::streamsize>(dims * sizeof(size_t)));
+        }
+    }
 
+    for (size_t i = 0; i < num_layers; i++) {
+        size_t len = 0;
         file.read(reinterpret_cast<char*>(&len), sizeof(size_t));
         cp.weights_flat[i].resize(len);
-        file.read(reinterpret_cast<char*>(cp.weights_flat[i].data()), len * sizeof(double));
+        if (len > 0) {
+            file.read(reinterpret_cast<char*>(cp.weights_flat[i].data()),
+                      static_cast<std::streamsize>(len * sizeof(double)));
+        }
+    }
 
+    for (size_t i = 0; i < num_layers; i++) {
+        size_t len = 0;
         file.read(reinterpret_cast<char*>(&len), sizeof(size_t));
         cp.bias_flat[i].resize(len);
-        file.read(reinterpret_cast<char*>(cp.bias_flat[i].data()), len * sizeof(double));
+        if (len > 0) {
+            file.read(reinterpret_cast<char*>(cp.bias_flat[i].data()),
+                      static_cast<std::streamsize>(len * sizeof(double)));
+        }
     }
 
     return cp;
@@ -413,12 +434,14 @@ void Model::fit(const Matrix<double>& X, const Matrix<double>& y,
             if (optimizer_) optimizer_->set_lr(new_lr);
         }
 
-        // Compute validation accuracy
+        // Validation metrics
         double val_accuracy = 0.0;
-        if (validation_split > 0.0) {
+        double val_loss = -1.0;
+        if (validation_split > 0.0 && val_samples > 0) {
             auto X_val = X.row_slice(train_samples, val_samples);
             auto y_val = y.row_slice(train_samples, val_samples);
             auto val_pred = forward(X_val);
+            val_loss = compute_loss(val_pred, y_val);
             val_accuracy = accuracy(val_pred, y_val);
         }
 
@@ -440,6 +463,7 @@ void Model::fit(const Matrix<double>& X, const Matrix<double>& y,
         if (on_epoch_end_) {
             TrainingMetrics m;
             m.loss = avg_loss;
+            m.val_loss = val_loss;
             m.accuracy = val_accuracy;
             m.epoch = epoch_;
             m.learning_rate = optimizer_ ? optimizer_->get_lr() : 0.01;
@@ -606,7 +630,29 @@ void Model::save_weights_binary(const std::string& prefix) {
 }
 
 void Model::load_weights(const std::string& prefix) {
-    // TODO: Implement weights loading
+    namespace fs = std::filesystem;
+    std::lock_guard<std::mutex> lock(mtx_);
+
+    for (size_t idx = 0; idx < layers_.size(); idx++) {
+        Dense* d = dynamic_cast<Dense*>(layers_[idx].get());
+        if (!d) continue;
+
+        std::string bin_w = prefix + "/layer_" + std::to_string(idx) + "_weights.bin";
+        std::string bin_b = prefix + "/layer_" + std::to_string(idx) + "_bias.bin";
+        std::string json_path = prefix + "/layer_" + std::to_string(idx) + ".json";
+
+        if (fs::exists(bin_w) && fs::exists(bin_b)) {
+            d->set_parameters(load_matrix_binary(bin_w), load_matrix_binary(bin_b));
+            continue;
+        }
+
+        if (fs::exists(json_path)) {
+            Matrix<double> W, B;
+            if (load_dense_json(json_path, W, B)) {
+                d->set_parameters(std::move(W), std::move(B));
+            }
+        }
+    }
 }
 
 void Model::save_checkpoint(const std::string& path) {
