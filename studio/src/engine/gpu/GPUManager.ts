@@ -4,10 +4,10 @@
  */
 import type {
   GPUInfo,
-  GPUProvider,
   MemoryUsage,
   BenchmarkResult,
 } from '@/types';
+import { GPUProvider } from '@/types';
 
 /* ─── Internal Types ──────────────────── */
 
@@ -218,8 +218,8 @@ export class GPUManager {
       const limits = (this._adapter as any).limits;
       this._capabilities = {
         provider: GPUProvider.WEBGPU,
-        vendor: this._adapter.info?.vendor ?? 'Unknown',
-        renderer: this._adapter.info?.architecture ?? 'Unknown',
+        vendor: (this._adapter as GPUAdapter & { info?: { vendor?: string } }).info?.vendor ?? 'Unknown',
+        renderer: (this._adapter as GPUAdapter & { info?: { architecture?: string } }).info?.architecture ?? 'Unknown',
         maxTextureSize: limits?.maxTextureDimension2D ?? 8192,
         maxBufferSize: limits?.maxBufferSize ?? 1024 * 1024 * 1024,
         maxComputeWorkgroupSize: limits?.maxComputeWorkgroupSizeX ?? 256,
@@ -292,7 +292,7 @@ export class GPUManager {
         format: format as GPUTextureFormat,
         usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.STORAGE_BINDING,
       });
-      view = texture.createView();
+      view = (texture as GPUTexture).createView();
     } else if (this._provider === GPUProvider.WEBGL2 && this._gl) {
       const gl = this._gl!;
       texture = gl.createTexture();
@@ -427,7 +427,9 @@ export class GPUManager {
     const tensorMB = 0; // Would integrate with TF memory tracking
     const textureCount = [...this._texturePool.values()].filter((e) => e.handle.inUse).length;
     const textureMB = textureCount * 4 * 1920 / 1024; // Rough estimate
-    const totalMB = navigator?.deviceMemory ? (navigator as any).deviceMemory * 1024 : 8192;
+    const totalMB = (navigator as Navigator & { deviceMemory?: number }).deviceMemory
+      ? (navigator as Navigator & { deviceMemory?: number }).deviceMemory! * 1024
+      : 8192;
     const usedMB = textureMB + tensorMB;
 
     return { totalMB: totalMB ?? 8192, usedMB, freeMB: (totalMB ?? 8192) - usedMB, tensorMB, textureMB, bufferMB: 0 };

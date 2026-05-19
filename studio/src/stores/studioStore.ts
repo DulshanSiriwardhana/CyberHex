@@ -26,19 +26,23 @@ import type {
   Toast,
   Plugin,
   FilterConfig,
-  NeuralFilterType,
   FeedPosition,
-  LayoutTemplateType,
   DockLayout,
   WorkspacePreset,
   TrainingConfig,
   DatasetConfig,
   StudioConfig,
-  ModelStatus,
   ConnectionState,
-  AudioFilterType,
   ModelPerformance,
   FluencyConfig,
+} from '@/types';
+import {
+  NeuralFilterType,
+  LayoutTemplateType,
+  GPUProvider,
+  ViewMode,
+  FluencyAction,
+  ModelStatus,
 } from '@/types';
 
 /* ─── State Interface ────────────────── */
@@ -196,7 +200,7 @@ const defaultPerformance: PerformanceMetrics = {
   },
   memory: { totalMB: 0, usedMB: 0, freeMB: 0, tensorMB: 0, textureMB: 0, bufferMB: 0 },
   gpu: {
-    provider: 'webgpu' as const,
+    provider: GPUProvider.WEBGPU,
     vendor: '',
     renderer: '',
     maxTextureSize: 0,
@@ -213,7 +217,7 @@ const defaultPerformance: PerformanceMetrics = {
 
 const defaultStudioConfig: StudioConfig = {
   theme: { mode: 'dark', accent: '#00f0ff', fontSize: 'medium', interfaceScale: 1, reducedMotion: false, highContrast: false },
-  layout: { defaultViewMode: 'studio' as const, defaultTemplate: LayoutTemplateType.ZOOM_SPEAKER, autoSaveInterval: 300, enableAnimations: true },
+  layout: { defaultViewMode: ViewMode.STUDIO, defaultTemplate: LayoutTemplateType.ZOOM_SPEAKER, autoSaveInterval: 300, enableAnimations: true },
   performance: { targetFPS: 60, maxResolution: { width: 1920, height: 1080 }, preferGPU: true, enableWorkers: true, frameSkipping: false, maxBatchSize: 4, modelCacheSize: 3 },
   security: { encryptMedia: false, sandboxPlugins: true, requireAuth: false, auditLogging: false },
   plugins: { enabled: true, autoUpdate: true, maxActive: 5, safelist: [] },
@@ -238,7 +242,7 @@ const initialState: StudioState = {
   audioPipeline: null,
   fluencyConfig: {
     enabled: false,
-    mode: 'correction' as const,
+    mode: FluencyAction.CORRECTION,
     targetLanguage: 'en',
     preservePersonality: true,
     confidenceThreshold: 0.7,
@@ -389,9 +393,9 @@ export const useStudioStore = create<StudioState & StudioActions>()(
 
       /* ── AI Models ── */
       loadModel: (model) =>
-        set((s) => { s.models[model.id] = { ...model, status: 'ready', loadedAt: Date.now() }; s.loadedModels.push(model.id); }),
+        set((s) => { s.models[model.id] = { ...model, status: ModelStatus.READY, loadedAt: Date.now() }; s.loadedModels.push(model.id); }),
       unloadModel: (id) =>
-        set((s) => { if (s.models[id]) s.models[id].status = 'unloaded'; s.loadedModels = s.loadedModels.filter((mid) => mid !== id); }),
+        set((s) => { if (s.models[id]) s.models[id].status = ModelStatus.UNLOADED; s.loadedModels = s.loadedModels.filter((mid) => mid !== id); }),
       setModelStatus: (id, status, error) =>
         set((s) => { if (s.models[id]) { s.models[id].status = status; if (error) s.models[id].error = error; } }),
       setModelPerformance: (id, perf) =>

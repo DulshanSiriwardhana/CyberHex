@@ -2,8 +2,8 @@
  * CyberHex Studio — Plugin Manager
  * Plugin loading, sandboxing, lifecycle management, permissions, hooks, and auto-update.
  */
-import type { PluginId, Plugin, PluginManifest, PluginHook, PluginAPI, PluginPermission, FilterPipeline, PanelConfig, MediaFeed } from '@/types';
-import { PluginEvent } from '@/types';
+import type { PluginId, Plugin, PluginManifest, PluginHook, PluginAPI, FilterPipeline, PanelConfig, MediaFeed } from '@/types';
+import { PluginEvent, PluginPermission } from '@/types';
 import { eventBus } from '@/utils/eventBus';
 
 interface PluginEntry {

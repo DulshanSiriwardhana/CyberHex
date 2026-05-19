@@ -4,7 +4,8 @@
  * Applies neural style transfer, segmentation, enhancement, and artistic filters.
  */
 import * as tf from '@tensorflow/tfjs';
-import type { NeuralFilterType, FilterConfig } from '@/types';
+import type { FilterConfig } from '@/types';
+import { NeuralFilterType } from '@/types';
 
 /* ─── Types ────────────────────────────── */
 
