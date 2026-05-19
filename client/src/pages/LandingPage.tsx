@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { SectionHeading, Container, Grid, Stack, Flex } from "@/components/ui/layout";
 import { features } from "@/const/data";
+import { CyberHexWord, ReleaseBadge } from "@/components/brand";
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -112,13 +113,12 @@ function Footer() {
         <Grid cols={4} gap="lg">
           <Stack gap="sm">
             <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-700 shadow-[0_0_12px_rgba(34,197,94,0.4)]">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-700 shadow-[0_0_12px_rgba(6,182,212,0.35)]">
                 <TerminalIcon className="h-4 w-4 text-white" />
               </div>
-              <span className="text-lg font-extrabold text-white">
-                Cyber<span className="text-green-400">Hex</span>
-              </span>
+              <CyberHexWord size="sm" showSerial={false} />
             </Link>
+            <ReleaseBadge variant="compact" pulse={false} className="w-fit text-xs py-1 px-3" />
             <p className="text-sm text-neutral-500 max-w-xs">
               Next-generation machine learning platform built for hackers and
               engineers.
