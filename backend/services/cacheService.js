@@ -54,23 +54,33 @@ class MemoryCache {
 }
 
 // ──── Redis Client Setup ─────────────────────────────────────────
-const REDIS_URL = config.REDIS_URL || 'redis://localhost:6379';
+const REDIS_URL = config.REDIS_URL;
+function isRedisDisabled() {
+  return process.env.REDIS_DISABLED === '1';
+}
+
 let redisClient = null;
 let isRedisConnected = false;
+let redisConnectAttempted = false;
 
 async function getRedisClient() {
+  if (isRedisDisabled() || !REDIS_URL) return null;
   if (redisClient && isRedisConnected) return redisClient;
+  if (redisConnectAttempted && !isRedisConnected) return null;
+
+  redisConnectAttempted = true;
 
   try {
     redisClient = createClient({
       url: REDIS_URL,
       socket: {
+        connectTimeout: 2000,
         reconnectStrategy: (retries) => {
-          if (retries > 10) {
+          if (retries > 3) {
             logger.warn('Redis: max reconnection attempts reached, using memory cache');
             return new Error('Max retries reached');
           }
-          return Math.min(retries * 100, 3000);
+          return Math.min(retries * 100, 500);
         },
       },
     });

@@ -27,6 +27,9 @@ if(USE_BOOST)
     add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS -DCYBERHEX_USE_BOOST)
 endif()
 
+# Optional CUDA matmul (off by default; CI uses CPU)
+option(CYBERHEX_ENABLE_CUDA "Build with CYBERHEX_CUDA matmul dispatch" OFF)
+
 # OpenMP
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
@@ -66,10 +69,15 @@ FetchContent_MakeAvailable(Catch2)
 
 # Source files
 file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-list(FILTER SOURCES EXCLUDE REGEX ".*/(main|tests)\\.cpp$")
+list(FILTER SOURCES EXCLUDE REGEX ".*/(main|tests|cyberhex_ml)\\.cpp$")
 
 # Shared library
 add_library(cyberhex SHARED ${SOURCES})
+if(CYBERHEX_ENABLE_CUDA)
+    target_sources(cyberhex PRIVATE src/cuda_matmul_stub.cpp)
+    target_compile_definitions(cyberhex PRIVATE CYBERHEX_CUDA)
+    message(STATUS "CYBERHEX_CUDA enabled (host stub matmul)")
+endif()
 if(OpenMP_CXX_FOUND)
     target_link_libraries(cyberhex PRIVATE OpenMP::OpenMP_CXX)
 endif()
@@ -86,19 +94,41 @@ target_compile_definitions(cyberhex PRIVATE
 )
 
 # Standalone executable (for experiments and development)
-add_executable(app src/main.cpp ${SOURCES})
+add_executable(app src/main.cpp)
+target_link_libraries(app PRIVATE cyberhex)
 if(OpenMP_CXX_FOUND)
     target_link_libraries(app PRIVATE OpenMP::OpenMP_CXX)
 endif()
 target_link_libraries(app PRIVATE pthread)
 
+# Micro-benchmarks (JSON line to stdout)
+add_executable(cyberhex_bench src/bench_main.cpp)
+target_link_libraries(cyberhex_bench PRIVATE cyberhex pthread)
+
+# Production training CLI (backend ML_ENGINE=cpp)
+add_executable(cyberhex_ml src/cyberhex_ml.cpp)
+target_link_libraries(cyberhex_ml PRIVATE cyberhex)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(cyberhex_ml PRIVATE OpenMP::OpenMP_CXX)
+endif()
+target_link_libraries(cyberhex_ml PRIVATE pthread)
+
 # Unit tests
 add_executable(unit_tests src/tests.cpp ${SOURCES})
 target_include_directories(unit_tests PRIVATE ${catch2_SOURCE_DIR}/src)
+if(CYBERHEX_ENABLE_CUDA)
+    target_sources(unit_tests PRIVATE src/cuda_matmul_stub.cpp)
+    target_compile_definitions(unit_tests PRIVATE CYBERHEX_CUDA)
+endif()
 if(OpenMP_CXX_FOUND)
     target_link_libraries(unit_tests PRIVATE OpenMP::OpenMP_CXX)
 endif()
 target_link_libraries(unit_tests PRIVATE Catch2::Catch2WithMain pthread)
+
+# CTest
+enable_testing()
+add_test(NAME cyberhex_unit_tests COMMAND unit_tests)
+set_tests_properties(cyberhex_unit_tests PROPERTIES LABELS "cpp")
 
 # Install rules
 install(TARGETS cyberhex

@@ -4,7 +4,19 @@
 #include "activations.h"
 #include "dense.h"
 #include "model.h"
+#include "training_protocol.h"
+#include "tensor.h"
+#include "conv2d.h"
+#include "graph.h"
+#include "fused_ops.h"
+#include "device.h"
+#include "precision.h"
+#include "ops_dispatch.h"
+#include "transformer.h"
+#include "distributed.h"
 #include <cmath>
+#include <cstdio>
+#include <memory>
 
 using namespace cyberhex;
 
@@ -103,7 +115,8 @@ TEST_CASE("Matrix arithmetic", "[matrix]") {
     }
 
     SECTION("Dimension mismatch throws") {
-        REQUIRE_THROWS_AS(a.dot(c), DimensionMismatchException);
+        Matrix<double> bad(3, 1, 1.0);
+        REQUIRE_THROWS_AS(a.dot(bad), DimensionMismatchException);
         REQUIRE_THROWS_AS(a + c, DimensionMismatchException);
     }
 }
@@ -340,16 +353,21 @@ TEST_CASE("Checkpoint save and load", "[checkpoint]") {
         std::make_unique<AdamOptimizer>(0.001)
     );
 
-    // Save checkpoint
-    model.save_checkpoint("/tmp/test_checkpoint.chk");
+    const std::string ckpt_path = "test_checkpoint.chk";
 
-    // Create new model and load
+    model.save_checkpoint(ckpt_path);
+
     Model model2;
     model2.add(std::make_unique<Dense>(3, 4));
     model2.add(std::make_unique<ReLU>());
     model2.add(std::make_unique<Dense>(4, 2));
 
-    model2.load_checkpoint("/tmp/test_checkpoint.chk");
+    model2.compile(
+        std::make_unique<MSELoss>(),
+        std::make_unique<AdamOptimizer>(0.001)
+    );
+    model2.load_checkpoint(ckpt_path);
+    std::remove(ckpt_path.c_str());
 
     // Predictions should match
     Matrix<double> X(5, 3, 0.7);
@@ -385,6 +403,308 @@ TEST_CASE("DataLoader batching", "[dataloader]") {
 
     REQUIRE(batches == 4);
     REQUIRE(total_samples == 100);
+}
+
+TEST_CASE("Softmax numerical stability with large logits", "[numerical]") {
+    Softmax sm;
+    Matrix<double> X(2, 4);
+    X(0, 0) = 1000; X(0, 1) = 1001; X(0, 2) = 999; X(0, 3) = 1000;
+    X(1, 0) = -500; X(1, 1) = -501; X(1, 2) = -499; X(1, 3) = -500;
+
+    auto out = sm.forward(X);
+    for (size_t i = 0; i < out.rows(); i++) {
+        double sum = 0.0;
+        for (size_t j = 0; j < out.cols(); j++) {
+            REQUIRE(std::isfinite(out(i, j)));
+            REQUIRE(out(i, j) >= 0.0);
+            sum += out(i, j);
+        }
+        REQUIRE_NEAR(sum, 1.0, 1e-9);
+    }
+    REQUIRE(out(0, 1) > out(0, 0));
+}
+
+namespace {
+
+bool finite_diff_loss_grad(std::unique_ptr<LossFunction> loss,
+                           const Matrix<double>& pred,
+                           const Matrix<double>& target,
+                           size_t check_samples = 8,
+                           double eps = 1e-6,
+                           double tol = 1e-4) {
+    Matrix<double> analytical = loss->backward(pred, target);
+    size_t checked = 0;
+    for (size_t i = 0; i < pred.size() && checked < check_samples; i++) {
+        double base = pred.at(i);
+        Matrix<double> p_plus = pred;
+        Matrix<double> p_minus = pred;
+        p_plus.at(i) = base + eps;
+        p_minus.at(i) = base - eps;
+        double num = (loss->forward(p_plus, target) - loss->forward(p_minus, target)) / (2.0 * eps);
+        double ana = analytical.at(i);
+        if (std::abs(num - ana) > tol * std::max(1.0, std::abs(num))) {
+            return false;
+        }
+        checked++;
+    }
+    return true;
+}
+
+} // namespace
+
+TEST_CASE("TensorView and broadcast_add", "[tensor]") {
+    Matrix<double> base(3, 4, 1.0);
+    TensorView<double> view(base, 1, 1, 2, 2);
+    REQUIRE(view.rows() == 2);
+    view(0, 0) = 5.0;
+    REQUIRE(base(1, 1) == 5.0);
+
+    Matrix<double> row_bias(1, 4, 2.0);
+    auto summed = broadcast_add(base, row_bias);
+    REQUIRE_NEAR(summed(2, 3), 3.0, 1e-9);
+}
+
+TEST_CASE("Conv2D forward shape", "[conv2d]") {
+    const size_t in_c = 1, in_h = 4, in_w = 4;
+  Conv2D conv(in_c, 2, in_h, in_w, 3, 3, 1, 1);
+    Matrix<double> X(2, in_c * in_h * in_w, 0.5);
+    auto out = conv.forward(X);
+    REQUIRE(out.rows() == 2);
+    REQUIRE(out.cols() == conv.output_size());
+}
+
+TEST_CASE("LayerNorm forward normalizes rows", "[layernorm]") {
+    LayerNormalization ln(4);
+    Matrix<double> X(2, 4);
+    X(0, 0) = 1; X(0, 1) = 2; X(0, 2) = 3; X(0, 3) = 4;
+    X(1, 0) = 10; X(1, 1) = 10; X(1, 2) = 10; X(1, 3) = 10;
+    auto Y = ln.forward(X);
+    double mean0 = 0.0, mean1 = 0.0;
+    for (size_t j = 0; j < 4; j++) {
+        mean0 += Y(0, j);
+        mean1 += Y(1, j);
+    }
+    REQUIRE_NEAR(mean0 / 4.0, mean1 / 4.0, 1e-5);
+}
+
+TEST_CASE("Loss gradient finite-difference checks", "[numerical]") {
+    Matrix<double> pred(4, 3, 0.6);
+    Matrix<double> target(4, 3, 0.4);
+    REQUIRE(finite_diff_loss_grad(std::make_unique<MSELoss>(), pred, target));
+    REQUIRE(finite_diff_loss_grad(std::make_unique<MAELoss>(), pred, target));
+    REQUIRE(finite_diff_loss_grad(std::make_unique<HuberLoss>(), pred, target));
+
+    Matrix<double> pred_prob(4, 1, 0.7);
+    Matrix<double> target_bin(4, 1, 1.0);
+    REQUIRE(finite_diff_loss_grad(std::make_unique<BinaryCrossEntropyLoss>(), pred_prob, target_bin));
+
+    Matrix<double> pred_c(4, 3, 0.0);
+    for (size_t i = 0; i < 4; i++) {
+        pred_c(i, i % 3) = 0.9;
+        pred_c(i, (i + 1) % 3) = 0.05;
+        pred_c(i, (i + 2) % 3) = 0.05;
+    }
+    Matrix<double> target_oh(4, 3, 0.0);
+    for (size_t i = 0; i < 4; i++) target_oh(i, i % 3) = 1.0;
+    REQUIRE(finite_diff_loss_grad(std::make_unique<CategoricalCrossEntropyLoss>(), pred_c, target_oh));
+}
+
+TEST_CASE("Model load_weights round trip", "[weights]") {
+    const std::string prefix = "test_weights_roundtrip";
+    Model model;
+    model.add(std::make_unique<Dense>(3, 2, InitType::XAVIER));
+    model.add(std::make_unique<ReLU>());
+    model.add(std::make_unique<Dense>(2, 1, InitType::XAVIER));
+    model.compile(std::make_unique<MSELoss>(), std::make_unique<SGDOptimizer>(0.01));
+
+    Matrix<double> X(5, 3, 0.3);
+    auto pred_before = model.predict(X);
+
+    model.save_weights_binary(prefix);
+
+    Model model2;
+    model2.add(std::make_unique<Dense>(3, 2, InitType::XAVIER));
+    model2.add(std::make_unique<ReLU>());
+    model2.add(std::make_unique<Dense>(2, 1, InitType::XAVIER));
+    model2.compile(std::make_unique<MSELoss>(), std::make_unique<SGDOptimizer>(0.01));
+    model2.load_weights(prefix);
+
+    auto pred_after = model2.predict(X);
+    for (size_t i = 0; i < pred_before.size(); i++) {
+        REQUIRE_NEAR(pred_before.at(i), pred_after.at(i), 1e-12);
+    }
+
+    std::remove((prefix + "/layer_0_weights.bin").c_str());
+    std::remove((prefix + "/layer_0_bias.bin").c_str());
+    std::remove((prefix + "/layer_2_weights.bin").c_str());
+    std::remove((prefix + "/layer_2_bias.bin").c_str());
+}
+
+TEST_CASE("MSE loss gradient finite-difference check", "[numerical]") {
+    Model model;
+    model.add(std::make_unique<Dense>(2, 3, InitType::XAVIER));
+    model.add(std::make_unique<ReLU>());
+    model.add(std::make_unique<Dense>(3, 1, InitType::XAVIER));
+    model.compile(std::make_unique<MSELoss>(), std::make_unique<SGDOptimizer>(0.01));
+
+    Matrix<double> X(4, 2);
+    Matrix<double> y(4, 1);
+    for (size_t i = 0; i < X.size(); i++) X.at(i) = 0.1 * static_cast<double>(i);
+    for (size_t i = 0; i < y.size(); i++) y.at(i) = 0.05 * static_cast<double>(i);
+
+    REQUIRE(model.check_gradients(X, y, 1e-5, 1e-3));
+}
+
+TEST_CASE("Training config JSON parsing", "[protocol]") {
+    const std::string json = R"({
+        "task": "regression",
+        "layers": [8, 16, 1],
+        "epochs": 25,
+        "batchSize": 16,
+        "learningRate": 0.01,
+        "optimizer": "adam",
+        "validationSplit": 0.15
+    })";
+    TrainingConfig cfg = parse_training_config(json);
+    REQUIRE(cfg.task == "regression");
+    REQUIRE(cfg.layers.size() == 3);
+    REQUIRE(cfg.layers[0] == 8);
+    REQUIRE(cfg.epochs == 25);
+    REQUIRE(cfg.batch_size == 16);
+    REQUIRE_NEAR(cfg.learning_rate, 0.01, 1e-9);
+    REQUIRE_NEAR(cfg.validation_split, 0.15, 1e-9);
+}
+
+TEST_CASE("Fused vs unfused linear+ReLU forward", "[graph][fusion]") {
+    Matrix<double> X(4, 3, 0.5);
+    Matrix<double> W(3, 5, 0.2);
+    Matrix<double> b(1, 5, 0.1);
+
+    Matrix<double> pre;
+    auto fused = fused_linear_relu_forward(X, W, b, pre);
+
+    auto linear = X.dot(W);
+    Matrix<double> unfused(linear.rows(), linear.cols());
+    for (size_t i = 0; i < linear.rows(); i++) {
+        for (size_t j = 0; j < linear.cols(); j++) {
+            double z = linear(i, j) + b(0, j);
+            unfused(i, j) = z > 0 ? z : 0.0;
+        }
+    }
+
+    for (size_t i = 0; i < fused.size(); i++) {
+        REQUIRE_NEAR(fused.at(i), unfused.at(i), 1e-12);
+    }
+}
+
+TEST_CASE("ComputationGraph autodiff matches manual dense+relu", "[graph][autodiff]") {
+    Matrix<double> X(4, 2);
+    X(0, 0) = 0; X(0, 1) = 0;
+    X(1, 0) = 0; X(1, 1) = 1;
+    X(2, 0) = 1; X(2, 1) = 0;
+    X(3, 0) = 1; X(3, 1) = 1;
+
+    Matrix<double> y(4, 1);
+    y(0, 0) = 0; y(1, 0) = 1; y(2, 0) = 1; y(3, 0) = 0;
+
+    ComputationGraph g;
+    NodeId input = g.add_input();
+    NodeId W = g.add_parameter(2, 4, InitType::XAVIER);
+    NodeId b = g.add_parameter(1, 4, InitType::XAVIER);
+    g.mutable_node(b).weight.fill(0.0);
+    NodeId out = g.add_fused_linear_relu(input, W, b);
+    NodeId W2 = g.add_parameter(4, 1, InitType::XAVIER);
+    NodeId b2 = g.add_parameter(1, 1, InitType::XAVIER);
+    g.mutable_node(b2).weight.fill(0.0);
+    out = g.add_matmul(out, W2);
+    out = g.add_bias_add(out, b2);
+
+    g.bind_input(input, X);
+    g.forward(out);
+    auto loss_fn = std::make_unique<BinaryCrossEntropyLoss>();
+    double loss_g = loss_fn->forward(g.value(out), y);
+    g.zero_grad();
+    g.backward(out, loss_fn->backward(g.value(out), y));
+
+    REQUIRE(std::isfinite(loss_g));
+    REQUIRE(g.node(W).grad_weight.rows() == 2);
+}
+
+TEST_CASE("GraphTrainer XOR convergence", "[graph]") {
+    Matrix<double> X(4, 2);
+    Matrix<double> y(4, 1);
+    for (size_t i = 0; i < 4; i++) {
+        X(i, 0) = (i < 2) ? 0.0 : 1.0;
+        X(i, 1) = (i % 2 == 0) ? 0.0 : 1.0;
+        y(i, 0) = (i == 1 || i == 2) ? 1.0 : 0.0;
+    }
+
+    GraphTrainer trainer;
+    trainer.set_mixed_precision(false);
+    NodeId out = trainer.build_mlp({2, 8, 1}, {"relu", "linear"});
+    AdamOptimizer opt(0.05);
+
+    MSELoss loss;
+    double loss0 = 1.0;
+    for (int epoch = 0; epoch < 300; epoch++) {
+        loss0 = trainer.train_step(X, y, loss, opt, out);
+    }
+    REQUIRE(loss0 < 0.08);
+}
+
+TEST_CASE("dispatch_matmul matches Matrix::dot on CPU", "[ops]") {
+    Matrix<double> A(3, 4, 0.5);
+    Matrix<double> B(4, 2, -0.25);
+    auto C = dispatch_matmul(Device::cpu(), A, B);
+    auto ref = A.dot(B);
+    for (size_t i = 0; i < C.size(); i++) {
+        REQUIRE_NEAR(C.at(i), ref.at(i), 1e-12);
+    }
+}
+
+TEST_CASE("TransformerEncoderBlock forward shape", "[transformer]") {
+    TransformerEncoderBlock block(8, 2, 16);
+    Matrix<double> X(4, 8, 0.1);
+    Matrix<double> Y = block.forward(X);
+    REQUIRE(Y.rows() == 4);
+    REQUIRE(Y.cols() == 8);
+}
+
+TEST_CASE("Distributed allreduce mean", "[distributed]") {
+    DistributedContext ctx;
+    ctx.world_size = 4;
+    ctx.rank = 0;
+    Matrix<double> g(2, 2, 4.0);
+    allreduce_mean(g, ctx);
+    REQUIRE_NEAR(g(0, 0), 1.0, 1e-12);
+}
+
+TEST_CASE("TrainingConfig engine and architecture", "[protocol]") {
+    TrainingConfig cfg = parse_training_config(R"({
+        "engine": "graph",
+        "device": "cpu",
+        "mixedPrecision": true,
+        "architecture": "transformer",
+        "dModel": 32,
+        "numHeads": 4
+    })");
+    REQUIRE(cfg.engine == "graph");
+    REQUIRE(cfg.mixed_precision);
+    REQUIRE(cfg.architecture == "transformer");
+    REQUIRE(cfg.d_model == 32);
+    REQUIRE(cfg.num_heads == 4);
+}
+
+TEST_CASE("Float16 round trip", "[precision]") {
+    for (double x : {0.0, 0.5, -1.25, 3.14159, 100.0}) {
+        Float16 h = Float16::from_double(x);
+        REQUIRE_NEAR(h.to_double(), static_cast<float>(x), 1e-3);
+    }
+}
+
+TEST_CASE("Device defaults to CPU", "[device]") {
+    REQUIRE(default_device().is_cpu());
+    REQUIRE_FALSE(Device::cuda_available());
 }
 
 // Benchmark excluded (requires Catch2 benchmark header)

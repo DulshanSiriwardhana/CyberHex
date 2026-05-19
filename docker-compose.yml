@@ -18,6 +18,19 @@ services:
     networks:
       - cyberhex-network
 
+  redis:
+    image: redis:7-alpine
+    container_name: cyberhex-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cyberhex-network
+
   backend:
     build:
       context: ./backend
@@ -28,8 +41,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       - MONGODB_URI=mongodb://db:27017/cyberhex
+      - REDIS_URL=redis://redis:6379
       - JWT_SECRET=${JWT_SECRET:-dev_jwt_secret_change_in_production_min_32_chars}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dev_refresh_secret_change_in_production_min_32_chars}
       - NODE_ENV=${NODE_ENV:-production}
@@ -41,8 +57,10 @@ services:
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASS=${SMTP_PASS}
       - ML_ENGINE=${ML_ENGINE:-python}
+      - PYTHON_EXECUTABLE=python3
     volumes:
       - ./backend:/app
+      - ./ML:/app/ML
       - /app/node_modules
     healthcheck:
       test: curl --fail http://localhost:5000/api/v1/health || exit 1

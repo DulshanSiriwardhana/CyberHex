@@ -1,69 +1,102 @@
 /**
- * CyberHex Studio — ML Engine REST API
- * Model lifecycle and inference bridge for the neural studio frontend.
+ * CyberHex ML Engine REST API — model registry and real inference.
  */
 import express from 'express';
+import { asyncHandler, ValidationError, NotFoundError } from '../middleware/errorHandler.js';
+import { runInference } from '../services/inferenceService.js';
+import { cacheGet, cacheSet, cacheDel } from '../services/cacheService.js';
 import logger from '../utils/logger.js';
 
 const router = express.Router();
+const MODEL_CACHE_PREFIX = 'engine:model:';
 
-/** @type {Map<string, { id: string; format: string; url: string; backend: string; loadedAt: number }>} */
-const loadedModels = new Map();
+async function getLoadedModel(id) {
+  return cacheGet(`${MODEL_CACHE_PREFIX}${id}`);
+}
+
+async function setLoadedModel(record) {
+  await cacheSet(`${MODEL_CACHE_PREFIX}${record.id}`, record, 0);
+}
 
 router.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
     engine: process.env.ML_ENGINE ?? 'python',
-    modelsLoaded: loadedModels.size,
+    inference: 'python-numpy',
     timestamp: new Date().toISOString(),
   });
 });
 
-router.get('/models', (_req, res) => {
-  res.json({ models: Array.from(loadedModels.values()) });
-});
-
-router.post('/models/load', (req, res) => {
-  const { id, format, url, backend } = req.body ?? {};
-  if (!id) {
-    return res.status(400).json({ error: 'Model id is required' });
-  }
-
-  loadedModels.set(id, {
-    id,
-    format: format ?? 'onnx',
-    url: url ?? '',
-    backend: backend ?? 'onnxruntime',
-    loadedAt: Date.now(),
+router.get('/models', asyncHandler(async (_req, res) => {
+  res.json({
+    message: 'Use GET /models/:id for a loaded model',
+    hint: 'POST /models/load to register a model path',
   });
+}));
 
-  logger.info(`[Engine] Model loaded: ${id}`);
-  res.json({ success: true, modelId: id, status: 'ready' });
-});
+router.get('/models/:id', asyncHandler(async (req, res) => {
+  const model = await getLoadedModel(req.params.id);
+  if (!model) throw new NotFoundError(`Model not loaded: ${req.params.id}`);
+  res.json({ model });
+}));
 
-router.post('/models/unload', (req, res) => {
-  const { modelId } = req.body ?? {};
-  if (!modelId) {
-    return res.status(400).json({ error: 'modelId is required' });
+router.post('/models/load', asyncHandler(async (req, res) => {
+  const { id, format, url, backend, modelPath } = req.body ?? {};
+  if (!id) throw new ValidationError('Model id is required');
+  if (!modelPath && !url) {
+    throw new ValidationError('modelPath or url is required');
   }
-  loadedModels.delete(modelId);
+
+  const record = {
+    id,
+    format: format ?? 'npz',
+    url: url ?? '',
+    modelPath: modelPath || url,
+    backend: backend ?? 'python-numpy',
+    loadedAt: Date.now(),
+  };
+
+  await setLoadedModel(record);
+  logger.info(`[Engine] Model loaded: ${id} -> ${record.modelPath}`);
+  res.json({ success: true, modelId: id, status: 'ready', model: record });
+}));
+
+router.post('/models/unload', asyncHandler(async (req, res) => {
+  const { modelId } = req.body ?? {};
+  if (!modelId) throw new ValidationError('modelId is required');
+  await cacheDel(`${MODEL_CACHE_PREFIX}${modelId}`);
   logger.info(`[Engine] Model unloaded: ${modelId}`);
   res.json({ success: true, modelId });
-});
+}));
 
-router.post('/inference', (req, res) => {
-  const { modelId, shape } = req.body ?? {};
-  if (modelId && !loadedModels.has(modelId)) {
-    return res.status(404).json({ error: `Model not loaded: ${modelId}` });
+router.post('/inference', asyncHandler(async (req, res) => {
+  const { modelId, features, task } = req.body ?? {};
+
+  let modelPath = req.body?.modelPath;
+  if (modelId) {
+    const loaded = await getLoadedModel(modelId);
+    if (!loaded) throw new NotFoundError(`Model not loaded: ${modelId}`);
+    modelPath = loaded.modelPath;
   }
 
-  const start = performance.now();
+  if (!modelPath) {
+    throw new ValidationError('modelId (loaded) or modelPath is required');
+  }
+  if (!features || !Array.isArray(features)) {
+    throw new ValidationError('features array is required');
+  }
+
+  const result = await runInference({
+    modelPath,
+    features,
+    task: task ?? 'regression',
+  });
+
   res.json({
     success: true,
-    latencyMs: performance.now() - start + 4,
-    backend: process.env.ML_ENGINE === 'cpp' ? 'tensorrt-ready' : 'onnxruntime',
-    shape: shape ?? [],
+    modelId: modelId ?? null,
+    ...result,
   });
-});
+}));
 
 export default router;
