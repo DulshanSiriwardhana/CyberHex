@@ -33,7 +33,7 @@ import { Badge } from '@/components/ui/badge';
 import { Container, Grid, Stack, Flex } from '@/components/ui/layout';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useToast } from '@/components/ui/toaster';
-import { experimentsApi, type TrainingStatus } from '@/lib/api';
+import { experimentsApi, engineApi, type TrainingStatus } from '@/lib/api';
 
 interface LivePoint {
   epoch: number;
@@ -50,6 +50,9 @@ export default function ExperimentDetailPage() {
   const [lossData, setLossData] = useState<LivePoint[]>([]);
   const [bestLoss, setBestLoss] = useState<number | null>(null);
   const [wsConnected, setWsConnected] = useState(false);
+  const [modelPath, setModelPath] = useState<string | null>(null);
+  const [engineBusy, setEngineBusy] = useState<'export' | 'infer' | null>(null);
+  const [lastPredictions, setLastPredictions] = useState<string | null>(null);
 
   const exp = {
     id,
@@ -77,12 +80,59 @@ export default function ExperimentDetailPage() {
           setCurrentEpoch(data.metrics.epochs.length);
         }
         setStatus(data.status as typeof status);
+        const mp = data.results?.modelPath;
+        if (mp) setModelPath(mp);
       })
       .catch(() => {
         // Backend may not be running — use demo data
         generateDemoData();
       });
   }, [id]);
+
+  function weightsPrefix(path: string) {
+    return path.endsWith('_weights') ? path.slice(0, -'_weights'.length) : path;
+  }
+
+  async function handleExportOnnx() {
+    if (!modelPath) {
+      toast('error', 'No trained model', 'Complete training before exporting ONNX');
+      return;
+    }
+    setEngineBusy('export');
+    try {
+      const result = await engineApi.exportOnnx({
+        weightsPrefix: weightsPrefix(modelPath),
+        task: 'regression',
+      });
+      toast('success', 'ONNX exported', result.onnxPath);
+    } catch {
+      toast('error', 'Export failed', 'Ensure onnx is installed and weights exist on the server');
+    } finally {
+      setEngineBusy(null);
+    }
+  }
+
+  async function handleRunInference() {
+    if (!modelPath) {
+      toast('error', 'No trained model', 'Complete training before running inference');
+      return;
+    }
+    setEngineBusy('infer');
+    try {
+      const features = [Array.from({ length: 5 }, (_, i) => 0.1 * (i + 1))];
+      const result = await engineApi.inference({
+        modelPath,
+        features,
+        task: 'regression',
+      });
+      setLastPredictions(JSON.stringify(result.predictions));
+      toast('success', 'Inference complete', `Backend: ${result.backend} (${result.latencyMs}ms)`);
+    } catch {
+      toast('error', 'Inference failed', 'Check engine health and model artifacts');
+    } finally {
+      setEngineBusy(null);
+    }
+  }
 
   // WebSocket for live updates
   const handleWsMessage = useCallback((data: any) => {
@@ -215,8 +265,23 @@ export default function ExperimentDetailPage() {
             <Button variant="outline" size="lg">
               <RefreshCw className="h-4 w-4 mr-2" /> Restart
             </Button>
-            <Button variant="primary" size="lg">
-              <Download className="h-4 w-4 mr-2" /> Export Model
+            <Button
+              variant="primary"
+              size="lg"
+              disabled={!modelPath || engineBusy !== null}
+              onClick={handleExportOnnx}
+            >
+              <Download className="h-4 w-4 mr-2" />
+              {engineBusy === 'export' ? 'Exporting…' : 'Export ONNX'}
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              disabled={!modelPath || engineBusy !== null}
+              onClick={handleRunInference}
+            >
+              <Cpu className="h-4 w-4 mr-2" />
+              {engineBusy === 'infer' ? 'Running…' : 'Run Inference'}
             </Button>
           </div>
         </Flex>
@@ -318,6 +383,22 @@ export default function ExperimentDetailPage() {
           </Card>
         </motion.div>
       </Grid>
+
+      {lastPredictions && (
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Cpu className="h-4 w-4 text-cyan-400" />
+                Latest engine inference
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <pre className="text-xs font-mono text-neutral-400 overflow-x-auto">{lastPredictions}</pre>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Architecture */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-8">

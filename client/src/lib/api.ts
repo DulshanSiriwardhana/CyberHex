@@ -169,9 +169,36 @@ export interface TrainingStatus {
     val_loss: number[];
     best_val_loss: number;
   };
+  results?: ExperimentResults;
   startedAt?: string;
   trainingLogs?: unknown[];
 }
+
+export interface EngineInferenceResult {
+  success: boolean;
+  predictions: number[][];
+  shape: number[];
+  backend: string;
+  latencyMs?: number;
+}
+
+export interface EngineExportResult {
+  success: boolean;
+  manifestPath: string;
+  onnxPath: string;
+  backend?: string;
+}
+
+export const engineApi = {
+  health: () =>
+    api.get<{ status: string; inference: string; features: string[] }>('/api/v1/engine/health'),
+
+  inference: (body: { modelPath: string; features: number[][]; task?: string; modelId?: string }) =>
+    api.post<EngineInferenceResult>('/api/v1/engine/inference', body),
+
+  exportOnnx: (body: { weightsPrefix: string; onnxPath?: string; task?: string }) =>
+    api.post<EngineExportResult>('/api/v1/engine/models/export', body),
+};
 
 export interface ActiveJob {
   experimentId: string;

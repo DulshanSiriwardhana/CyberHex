@@ -5,6 +5,7 @@
 extern "C" bool cyberhex_cuda_matmul(const double* A, size_t a_rows, size_t a_cols,
                                      const double* B, size_t b_rows, size_t b_cols,
                                      double* C);
+extern "C" bool cyberhex_cuda_runtime_available();
 #endif
 
 namespace cyberhex {

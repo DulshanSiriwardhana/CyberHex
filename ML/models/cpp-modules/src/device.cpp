@@ -15,9 +15,13 @@ void set_default_device(DeviceType type) {
     g_device = Device(type);
 }
 
+#ifdef CYBERHEX_CUDA
+extern "C" bool cyberhex_cuda_runtime_available();
+#endif
+
 bool Device::cuda_available() {
 #ifdef CYBERHEX_CUDA
-    return true;
+    return cyberhex_cuda_runtime_available();
 #else
     return false;
 #endif

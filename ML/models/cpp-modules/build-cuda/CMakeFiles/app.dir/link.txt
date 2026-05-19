@@ -1,0 +1,1 @@
+/usr/bin/c++  -Wall -Wextra -Wpedantic -Wshadow -Wno-unused-parameter -fopenmp -mavx2 CMakeFiles/app.dir/src/main.cpp.o -o app  -Wl,-rpath,/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build-cuda libcyberhex.so -lpthread /usr/lib/gcc/x86_64-linux-gnu/14/libgomp.so /usr/lib/x86_64-linux-gnu/libpthread.a

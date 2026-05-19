@@ -6,5 +6,5 @@ CXX_DEFINES = -D_OPENMP
 
 CXX_INCLUDES = -I/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/include
 
-CXX_FLAGS =  -Wall -Wextra -Wpedantic -Wshadow -Wno-unused-parameter -fopenmp -mavx2 -O3 -DNDEBUG -O3 -march=native -ffast-math -DNDEBUG -std=gnu++17 -fopenmp
+CXX_FLAGS =  -Wall -Wextra -Wpedantic -Wshadow -Wno-unused-parameter -fopenmp -mavx2 -std=gnu++17 -fopenmp
 

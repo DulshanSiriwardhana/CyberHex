@@ -2,7 +2,11 @@
 
 #ifdef CYBERHEX_CUDA
 
-/** Host-side CUDA matmul entry (full kernels in cuda/matmul.cu when nvcc is available). */
+extern "C" bool cyberhex_cuda_runtime_available() {
+    return false;
+}
+
+/** Host-side CUDA matmul entry when nvcc is unavailable. */
 extern "C" bool cyberhex_cuda_matmul(const double* A, size_t a_rows, size_t a_cols,
                                      const double* B, size_t b_rows, size_t b_cols,
                                      double* C) {

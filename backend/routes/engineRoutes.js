@@ -1,17 +1,10 @@
 /**
- * CyberHex ML Engine REST API — model registry and real inference.
+ * CyberHex ML Engine REST API — model registry, inference, ONNX export.
  */
 import express from 'express';
 import { asyncHandler, ValidationError, NotFoundError } from '../middleware/errorHandler.js';
 import { runInference } from '../services/inferenceService.js';
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 import { exportOnnx } from '../services/exportService.js';
->>>>>>> v3.0
-=======
-import { exportOnnx } from '../services/exportService.js';
->>>>>>> master
 import { cacheGet, cacheSet, cacheDel } from '../services/cacheService.js';
 import logger from '../utils/logger.js';
 
@@ -30,19 +23,10 @@ router.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
     engine: process.env.ML_ENGINE ?? 'python',
-<<<<<<< HEAD
-<<<<<<< HEAD
-    inference: 'python-numpy',
-=======
     inference: process.env.ML_INFER_ENGINE ?? 'auto',
-    features: ['python-numpy', 'cpp-mlp', 'onnx-export'],
-    distributed: ['file-allreduce', 'mpi-optional'],
->>>>>>> v3.0
-=======
-    inference: process.env.ML_INFER_ENGINE ?? 'auto',
-    features: ['python-numpy', 'cpp-mlp', 'onnx-export'],
-    distributed: ['file-allreduce', 'mpi-optional'],
->>>>>>> master
+    features: ['python-numpy', 'cpp-mlp', 'onnx-export', 'onnxruntime-infer'],
+    distributed: ['local', 'file-allreduce', 'mpi-optional'],
+    cuda: process.env.CYBERHEX_ENABLE_CUDA === '1',
     timestamp: new Date().toISOString(),
   });
 });
@@ -89,11 +73,6 @@ router.post('/models/unload', asyncHandler(async (req, res) => {
   res.json({ success: true, modelId });
 }));
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> master
 router.post('/models/export', asyncHandler(async (req, res) => {
   const { weightsPrefix, onnxPath, task } = req.body ?? {};
   if (!weightsPrefix) throw new ValidationError('weightsPrefix is required');
@@ -102,10 +81,6 @@ router.post('/models/export', asyncHandler(async (req, res) => {
   res.json(result);
 }));
 
-<<<<<<< HEAD
->>>>>>> v3.0
-=======
->>>>>>> master
 router.post('/inference', asyncHandler(async (req, res) => {
   const { modelId, features, task } = req.body ?? {};
 

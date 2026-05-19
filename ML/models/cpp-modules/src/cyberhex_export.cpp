@@ -46,8 +46,8 @@ int main() {
     }
 
     std::string manifest = prefix + "/export_manifest.json";
-    if (!write_export_manifest(prefix, manifest, task)) {
-        std::cout << "{\"error\":\"No layer JSON weights to export\"}" << std::endl;
+    if (!write_any_export_manifest(prefix, manifest, task)) {
+        std::cout << "{\"error\":\"No exportable weights at prefix\"}" << std::endl;
         return 1;
     }
 

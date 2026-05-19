@@ -6,5 +6,5 @@ CXX_DEFINES = -D_OPENMP
 
 CXX_INCLUDES = -I/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/include -I/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/_deps/catch2-src/src/catch2/.. -I/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/_deps/catch2-build/generated-includes
 
-CXX_FLAGS =  -Wall -Wextra -Wpedantic -Wshadow -Wno-unused-parameter -fopenmp -mavx2 -O3 -DNDEBUG -O3 -march=native -ffast-math -DNDEBUG -std=gnu++17 -ffile-prefix-map=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/_deps/catch2-src/=
+CXX_FLAGS =  -Wall -Wextra -Wpedantic -Wshadow -Wno-unused-parameter -fopenmp -mavx2 -std=gnu++17 -ffile-prefix-map=/home/dulshan/CyberHex/CyberHex/ML/models/cpp-modules/build/_deps/catch2-src/=
 

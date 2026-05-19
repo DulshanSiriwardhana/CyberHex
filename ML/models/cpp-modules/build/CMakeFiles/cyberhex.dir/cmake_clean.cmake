@@ -1,22 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/cyberhex.dir/src/activations.cpp.o"
   "CMakeFiles/cyberhex.dir/src/activations.cpp.o.d"
-<<<<<<< HEAD
-<<<<<<< HEAD
-  "CMakeFiles/cyberhex.dir/src/bench_main.cpp.o"
-  "CMakeFiles/cyberhex.dir/src/bench_main.cpp.o.d"
   "CMakeFiles/cyberhex.dir/src/conv2d.cpp.o"
   "CMakeFiles/cyberhex.dir/src/conv2d.cpp.o.d"
-  "CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.o"
-  "CMakeFiles/cyberhex.dir/src/cuda_matmul_stub.cpp.o.d"
-=======
-  "CMakeFiles/cyberhex.dir/src/conv2d.cpp.o"
-  "CMakeFiles/cyberhex.dir/src/conv2d.cpp.o.d"
->>>>>>> v3.0
-=======
-  "CMakeFiles/cyberhex.dir/src/conv2d.cpp.o"
-  "CMakeFiles/cyberhex.dir/src/conv2d.cpp.o.d"
->>>>>>> master
   "CMakeFiles/cyberhex.dir/src/dense.cpp.o"
   "CMakeFiles/cyberhex.dir/src/dense.cpp.o.d"
   "CMakeFiles/cyberhex.dir/src/device.cpp.o"
@@ -31,16 +17,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/cyberhex.dir/src/loss.cpp.o.d"
   "CMakeFiles/cyberhex.dir/src/model.cpp.o"
   "CMakeFiles/cyberhex.dir/src/model.cpp.o.d"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   "CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o"
   "CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o.d"
->>>>>>> v3.0
-=======
-  "CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o"
-  "CMakeFiles/cyberhex.dir/src/onnx_export.cpp.o.d"
->>>>>>> master
   "CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o"
   "CMakeFiles/cyberhex.dir/src/ops_dispatch.cpp.o.d"
   "CMakeFiles/cyberhex.dir/src/optimizer.cpp.o"
