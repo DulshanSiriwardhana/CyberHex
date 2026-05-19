@@ -13,6 +13,8 @@
 
 CyberHex is a **full-stack machine learning platform** that combines a custom C++ neural network engine, a Python ML module suite, a Node.js/Express backend, and a modern React dashboard — all containerized with Docker.
 
+A **public web showcase** (`/public-web`) is included in this repository: a standalone Vite + React + TypeScript single-page site that documents the project in a visual, interactive format.
+
 ---
 
 ## Table of Contents
@@ -21,6 +23,7 @@ CyberHex is a **full-stack machine learning platform** that combines a custom C+
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Project Structure](#project-structure)
+- [Public Web Showcase](#public-web-showcase)
 - [Screenshots](#screenshots)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
@@ -70,6 +73,12 @@ CyberHex is a **full-stack machine learning platform** that combines a custom C+
 - State management with **Zustand**, animations with **Framer Motion**
 - Responsive UI built with **Tailwind CSS** and **shadcn/ui** (Radix primitives)
 
+### Public Web Showcase (`/public-web`)
+- Standalone **Vite + React + TypeScript** single-page application
+- Visually documents the entire platform: features, architecture, API, ML engine, and author
+- Green-themed dark design with glassmorphism, grid animations, and scroll-triggered reveals
+- Fully static — no backend required; deployable to any CDN or static host
+
 ### DevOps & Infrastructure
 - Full **Docker Compose** setup (MongoDB, backend, frontend via nginx)
 - Health checks, restart policies, and bridged networking
@@ -87,6 +96,7 @@ CyberHex is a **full-stack machine learning platform** that combines a custom C+
 | **Backend**    | Node.js, Express 5, MongoDB/Mongoose, WebSockets (ws), JWT                 |
 | **Frontend**   | React 19, TypeScript, Vite, Tailwind CSS, shadcn/ui, Recharts, Zustand    |
 | **ML Viz UI**  | React, TypeScript, Vite, Recharts                                          |
+| **Public Web** | React, TypeScript, Vite (standalone static site)                           |
 | **Testing**    | Jest (backend), Vitest (frontend), Catch2 (C++)                           |
 | **Infra**      | Docker, Docker Compose, Nginx, MongoDB 7                                  |
 
@@ -162,6 +172,14 @@ CyberHex/
 │   ├── nginx.conf                    # Production nginx configuration
 │   └── vite.config.ts
 │
+├── public-web/                       # Public project showcase site (Vite + React + TypeScript)
+│   ├── src/
+│   │   ├── App.tsx                   # Root: assembles all sections
+│   │   ├── components.tsx            # All page sections (Hero, Features, API, etc.)
+│   │   └── index.css                 # Full design system (dark green glassmorphism)
+│   ├── index.html
+│   └── vite.config.ts
+│
 ├── ML/
 │   ├── models/
 │   │   ├── cpp-modules/              # C++ ML engine
@@ -186,6 +204,43 @@ CyberHex/
 ├── LICENSE
 └── NOTICE
 ```
+
+---
+
+## Public Web Showcase
+
+The `/public-web` directory contains a standalone, static single-page application that serves as a visual and interactive documentation site for CyberHex.
+
+Built with **Vite + React + TypeScript**, it requires no backend and can be deployed to any static hosting provider (GitHub Pages, Vercel, Netlify, etc.).
+
+### Run locally
+
+```bash
+cd public-web
+npm install
+npm run dev
+# Opens at http://localhost:5173
+```
+
+### Build for production
+
+```bash
+cd public-web
+npm run build
+# Output in public-web/dist/
+```
+
+### What it covers
+
+- Platform overview and animated hero with live stats
+- Feature cards for each major module
+- ASCII architecture diagram
+- Full tech stack breakdown with layer table
+- C++ ML engine component reference
+- REST + WebSocket API endpoint table
+- Docker quick-start guide
+- Testing strategy by layer
+- Author section with social links
 
 ---
 
@@ -310,7 +365,15 @@ npm run dev:frontend
 
 The frontend runs at `http://localhost:5173`.
 
-#### 6. Build the C++ ML engine
+#### 6. Start the public web showcase (development mode)
+
+```bash
+cd public-web && npm run dev
+```
+
+The showcase runs at `http://localhost:5173` (or next available port).
+
+#### 7. Build the C++ ML engine
 
 ```bash
 cd ML/models/cpp-modules
@@ -319,7 +382,7 @@ cmake ..
 make -j$(nproc)
 ```
 
-#### 7. Run Python ML modules
+#### 8. Run Python ML modules
 
 ```bash
 cd ML/models/python-modules
