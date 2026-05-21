@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import app from './app.js';
 import DBinitialize from './utils/db_init.js';
 import logger from './utils/logger.js';
+import { initPubSub } from './services/queueService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,6 +61,9 @@ global.broadcastToExperiment = (experimentId, data) => {
     if (client.readyState === 1) client.send(payload);
   });
 };
+
+// Initialize Redis pub/sub queue subscription
+void initPubSub();
 
 let studioSocketShutdown = () => {};
 

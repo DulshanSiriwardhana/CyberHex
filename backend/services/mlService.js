@@ -19,7 +19,7 @@ const projectRoot = path.resolve(__dirname, '../../');
 /** @type {Map<string, { process: import('child_process').ChildProcess, experimentId: string, metrics: object, status: string, startedAt: Date, buffer: string, engine: string }>} */
 const activeJobs = new Map();
 
-function buildCppConfig(experiment) {
+export function buildCppConfig(experiment) {
   const cfg = experiment.config || {};
   return {
     task: cfg.task || 'regression',
@@ -47,7 +47,7 @@ function buildCppConfig(experiment) {
   };
 }
 
-function buildPythonConfig(experiment) {
+export function buildPythonConfig(experiment) {
   const cfg = experiment.config || {};
   return {
     model_type: cfg.modelType || 'neural_network',
@@ -62,7 +62,7 @@ function buildPythonConfig(experiment) {
   };
 }
 
-function ensureOutputDir() {
+export function ensureOutputDir() {
   const dir = path.join(projectRoot, 'ML', 'models', 'outputs');
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   return dir;
@@ -82,7 +82,7 @@ async function persistJob(job) {
   await saveJobSnapshot(job.experimentId, serializeJob(job));
 }
 
-async function finalizeExperiment(experimentId, job) {
+export async function finalizeExperiment(experimentId, job) {
   try {
     const experiment = await Experiment.findById(experimentId);
     if (!experiment) return;
@@ -119,7 +119,7 @@ async function finalizeExperiment(experimentId, job) {
   }
 }
 
-function resolveTrainingCommand(useCpp, config) {
+export function resolveTrainingCommand(useCpp, config) {
   if (process.env.ML_TRAINING_SCRIPT) {
     return {
       command: 'node',
@@ -266,10 +266,17 @@ export async function startTraining(experiment) {
   const existingLocal = activeJobs.get(jobId);
   const existingRemote = await getJobSnapshot(jobId);
   if (
-    (existingLocal && existingLocal.status === 'running') ||
-    (existingRemote && existingRemote.status === 'running')
+    (existingLocal && (existingLocal.status === 'running' || existingLocal.status === 'queued')) ||
+    (existingRemote && (existingRemote.status === 'running' || existingRemote.status === 'queued'))
   ) {
-    throw new Error('Training already running for this experiment');
+    throw new Error('Training already running or queued for this experiment');
+  }
+
+  // Graceful degradation: Check if Redis queue is available
+  if (isRedisAvailable()) {
+    const { enqueueJob } = await import('./queueService.js');
+    await enqueueJob(experiment);
+    return jobId;
   }
 
   ensureOutputDir();
@@ -312,10 +319,23 @@ export async function stopTraining(jobId) {
   const job = activeJobs.get(jobId);
   if (!job) {
     const snapshot = await getJobSnapshot(jobId);
-    if (!snapshot || snapshot.status !== 'running') return null;
+    if (!snapshot || (snapshot.status !== 'running' && snapshot.status !== 'queued')) return null;
     snapshot.status = 'stopped';
     await saveJobSnapshot(jobId, snapshot);
     await finalizeExperiment(jobId, { status: 'stopped', metrics: snapshot.metrics || {} });
+
+    // Publish command to remote background workers
+    if (isRedisAvailable()) {
+      try {
+        const { createClient } = await import('redis');
+        const client = createClient({ url: process.env.REDIS_URL });
+        await client.connect();
+        await client.publish('ml:commands:channel', JSON.stringify({ command: 'stop', experimentId: jobId }));
+        await client.disconnect();
+      } catch (err) {
+        logger.error(`Failed to publish stop command to Redis: ${err.message}`);
+      }
+    }
     return { experimentId: jobId, status: 'stopped' };
   }
 
