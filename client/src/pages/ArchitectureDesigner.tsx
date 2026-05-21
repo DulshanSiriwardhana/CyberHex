@@ -129,9 +129,302 @@ export default function ArchitectureDesigner() {
   const [learningRate, setLearningRate] = useState<number>(0.001);
   const [lossFunction, setLossFunction] = useState<string>("Categorical Cross-Entropy");
 
-  const [activeTab, setActiveTab] = useState<"visual" | "cpp" | "json">("visual");
+  const [activeTab, setActiveTab] = useState<"visual" | "cpp" | "json" | "wasm">("visual");
+
+  // WASM simulation states
+  const [wasmModule, setWasmModule] = useState<any>(null);
+  const [wasmLoading, setWasmLoading] = useState<boolean>(false);
+  const [wasmError, setWasmError] = useState<string | null>(null);
+  const [wasmModel, setWasmModel] = useState<any>(null);
+  const [wasmXMatrix, setWasmXMatrix] = useState<any>(null);
+  const [wasmYMatrix, setWasmYMatrix] = useState<any>(null);
+  const [isWasmTraining, setIsWasmTraining] = useState<boolean>(false);
+  const [wasmEpochs, setWasmEpochs] = useState<number>(250);
+  const [currentWasmEpoch, setCurrentWasmEpoch] = useState<number>(0);
+  const [wasmLossHistory, setWasmLossHistory] = useState<{ epoch: number; loss: number }[]>([]);
+  const [wasmDatasetType, setWasmDatasetType] = useState<"xor" | "circle" | "sine">("xor");
+  const [wasmPoints, setWasmPoints] = useState<any[]>([]);
+
+  // Cleanup WASM memory on unmount or replace
+  useEffect(() => {
+    return () => {
+      if (wasmModel) {
+        try { wasmModel.delete(); } catch(e) {}
+      }
+      if (wasmXMatrix) {
+        try { wasmXMatrix.delete(); } catch(e) {}
+      }
+      if (wasmYMatrix) {
+        try { wasmYMatrix.delete(); } catch(e) {}
+      }
+    };
+  }, [wasmModel, wasmXMatrix, wasmYMatrix]);
+
+  // Generate 2D dataset
+  const generateDataset = (type: "xor" | "circle" | "sine", count: number = 200) => {
+    const X: number[] = [];
+    const y: number[] = [];
+    const points: { x1: number; x2: number; label: number }[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const x1 = Math.random() * 3.0 - 1.5;
+      const x2 = Math.random() * 3.0 - 1.5;
+      let label = 0;
+
+      if (type === "xor") {
+        label = (x1 > 0 && x2 > 0) || (x1 < 0 && x2 < 0) ? 1 : 0;
+      } else if (type === "circle") {
+        label = x1 * x1 + x2 * x2 < 0.64 ? 1 : 0;
+      } else { // sine
+        const targetVal = Math.sin(x1 * 2) * 0.8;
+        label = x2 > targetVal ? 1 : 0; // Classify above/below sine curve
+      }
+
+      X.push(x1, x2);
+      y.push(label);
+      points.push({ x1, x2, label });
+    }
+    return { X, y, points };
+  };
+
+  const drawDecisionBoundary = (module: any, model: any, points: any[]) => {
+    const canvas = document.getElementById("wasm-canvas") as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const width = canvas.width;
+    const height = canvas.height;
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
+
+    // Predict grid
+    const gridSize = 40;
+    const gridX: number[] = [];
+    for (let r = 0; r < gridSize; r++) {
+      for (let c = 0; c < gridSize; c++) {
+        const cx = (c / (gridSize - 1)) * 3.0 - 1.5;
+        const cy = (1.5 - (r / (gridSize - 1)) * 3.0) - 1.5;
+        gridX.push(cx, cy);
+      }
+    }
+
+    try {
+      const grid_mat = new module.Matrix(gridSize * gridSize, 2);
+      grid_mat.setData(gridX);
+      
+      const pred_mat = model.predict(grid_mat);
+      const preds = pred_mat.getData();
+      
+      grid_mat.delete();
+      pred_mat.delete();
+
+      // Draw background pixels
+      const cellW = width / gridSize;
+      const cellH = height / gridSize;
+
+      for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+          const val = preds[r * gridSize + c];
+          
+          // Interpolate colors
+          let color = "";
+          if (val > 0.5) {
+            const alpha = Math.min((val - 0.5) * 1.5, 0.45);
+            color = `rgba(34, 197, 94, ${alpha})`;
+          } else {
+            const alpha = Math.min((0.5 - val) * 1.5, 0.45);
+            color = `rgba(139, 92, 246, ${alpha})`;
+          }
+
+          ctx.fillStyle = color;
+          ctx.fillRect(c * cellW, r * cellH, cellW + 0.5, cellH + 0.5);
+        }
+      }
+    } catch (e) {
+      console.error("Boundary prediction failed:", e);
+    }
+
+    // Draw grid lines
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(width / 2, 0); ctx.lineTo(width / 2, height);
+    ctx.moveTo(0, height / 2); ctx.lineTo(width, height / 2);
+    ctx.stroke();
+
+    // Draw training data points
+    points.forEach(pt => {
+      const cx = ((pt.x1 + 1.5) / 3.0) * width;
+      const cy = ((1.5 - pt.x2) / 3.0) * height;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 3.5, 0, 2 * Math.PI);
+      
+      if (pt.label === 1) {
+        ctx.fillStyle = "#22c55e"; // bright green
+        ctx.strokeStyle = "#ffffff";
+      } else {
+        ctx.fillStyle = "#8b5cf6"; // bright purple
+        ctx.strokeStyle = "#ffffff";
+      }
+      
+      ctx.lineWidth = 1.0;
+      ctx.fill();
+      ctx.stroke();
+    });
+  };
+
+  const startWasmSimulation = async () => {
+    setWasmLoading(true);
+    setWasmError(null);
+    setIsWasmTraining(false);
+    try {
+      let module = wasmModule;
+      if (!module) {
+        module = await new Promise((resolve, reject) => {
+          if ((window as any).createCyberHexModule) {
+            (window as any).createCyberHexModule().then(resolve).catch(reject);
+            return;
+          }
+          const script = document.createElement("script");
+          script.src = "/wasm/cyberhex_wasm.js";
+          script.onload = () => {
+            (window as any).createCyberHexModule().then(resolve).catch(reject);
+          };
+          script.onerror = () => reject(new Error("Failed to load WebAssembly library script"));
+          document.body.appendChild(script);
+        });
+        setWasmModule(module);
+      }
+
+      if (wasmModel) {
+        try { wasmModel.delete(); } catch(e) {}
+      }
+      if (wasmXMatrix) {
+        try { wasmXMatrix.delete(); } catch(e) {}
+      }
+      if (wasmYMatrix) {
+        try { wasmYMatrix.delete(); } catch(e) {}
+      }
+
+      const model = new module.Model();
+
+      let prevOut = 2;
+      for (let i = 0; i < layers.length; i++) {
+        const l = layers[i];
+        if (l.type === "Dense") {
+          let out = Number(l.params.out_features) || 16;
+          const isLastDense = !layers.slice(i + 1).some(ly => ly.type === "Dense");
+          if (isLastDense) {
+            out = 1;
+          }
+          
+          const initEnum = module.InitType[l.params.init_type || "HE"] || module.InitType.HE;
+          const denseLayer = new module.Dense(prevOut, out, initEnum);
+          model.add(denseLayer);
+          prevOut = out;
+        } else if (l.type === "ReLU") {
+          model.add(new module.ReLU());
+        } else if (l.type === "Sigmoid") {
+          model.add(new module.Sigmoid());
+        } else if (l.type === "Softmax") {
+          model.add(new module.Sigmoid());
+        } else if (l.type === "Tanh") {
+          model.add(new module.Tanh());
+        } else if (l.type === "LayerNormalization") {
+          model.add(new module.LayerNormalization(prevOut));
+        } else if (l.type === "MultiHeadSelfAttention") {
+          model.add(new module.MultiHeadSelfAttention(prevOut, Number(l.params.num_heads) || 4));
+        } else if (l.type === "TransformerEncoderBlock") {
+          model.add(new module.TransformerEncoderBlock(prevOut, Number(l.params.num_heads) || 4, Number(l.params.ffn_dim) || 128));
+        }
+      }
+
+      let lossName = "BCE";
+      if (lossFunction.includes("Mean Squared") || lossFunction.includes("MSE")) {
+        lossName = "MSE";
+      } else if (lossFunction.includes("Absolute") || lossFunction.includes("MAE")) {
+        lossName = "MAE";
+      }
+      
+      let optName = "Adam";
+      if (optimizer === "SGD") optName = "SGD";
+      
+      model.compileWithLossAndOptimizer(lossName, optName, learningRate);
+
+      const data = generateDataset(wasmDatasetType);
+      setWasmPoints(data.points);
+
+      const X_mat = new module.Matrix(data.X.length / 2, 2);
+      X_mat.setData(data.X);
+      const y_mat = new module.Matrix(data.y.length, 1);
+      y_mat.setData(data.y);
+
+      setWasmModel(model);
+      setWasmXMatrix(X_mat);
+      setWasmYMatrix(y_mat);
+      setWasmLossHistory([]);
+      setCurrentWasmEpoch(0);
+      setWasmLoading(false);
+      
+      setTimeout(() => drawDecisionBoundary(module, model, data.points), 50);
+
+    } catch (e: any) {
+      console.error(e);
+      setWasmError(e.message || "An error occurred during WASM initialization");
+      setWasmLoading(false);
+    }
+  };
+
+  // Run wasm training loop step
+  useEffect(() => {
+    let animationFrameId: number;
+    
+    const runTrainingStep = () => {
+      if (!isWasmTraining || !wasmModel || !wasmXMatrix || !wasmYMatrix) return;
+      
+      if (currentWasmEpoch >= wasmEpochs) {
+        setIsWasmTraining(false);
+        return;
+      }
+
+      try {
+        const loss = wasmModel.trainStep(wasmXMatrix, wasmYMatrix, currentWasmEpoch);
+        
+        const newEpoch = currentWasmEpoch + 1;
+        setCurrentWasmEpoch(newEpoch);
+        
+        setWasmLossHistory(prev => {
+          const updated = [...prev, { epoch: newEpoch, loss: Number(loss.toFixed(6)) }];
+          if (updated.length > 100) {
+            return updated.filter((_, idx) => idx % 2 === 0 || idx === updated.length - 1);
+          }
+          return updated;
+        });
+
+        if (newEpoch % 5 === 0 || newEpoch === 1) {
+          drawDecisionBoundary(wasmModule, wasmModel, wasmPoints);
+        }
+
+        animationFrameId = requestAnimationFrame(runTrainingStep);
+      } catch (err: any) {
+        console.error(err);
+        setWasmError("Training loop error: " + err.message);
+        setIsWasmTraining(false);
+      }
+    };
+
+    if (isWasmTraining) {
+      animationFrameId = requestAnimationFrame(runTrainingStep);
+    }
+
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [isWasmTraining, wasmModule, wasmModel, wasmXMatrix, wasmYMatrix, currentWasmEpoch, wasmEpochs, wasmPoints]);
 
   const selectedLayer = layers.find((l) => l.id === selectedLayerId) || null;
+
 
   const handleAddLayer = (type: string) => {
     const id = Math.random().toString(36).substring(2, 9);
