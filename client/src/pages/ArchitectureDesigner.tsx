@@ -276,7 +276,7 @@ export default function ArchitectureDesigner() {
     });
   };
 
-  const startWasmSimulation = async () => {
+  const startWasmSimulation = async (datasetOverride?: "xor" | "circle" | "sine") => {
     setWasmLoading(true);
     setWasmError(null);
     setIsWasmTraining(false);
@@ -354,7 +354,7 @@ export default function ArchitectureDesigner() {
       
       model.compileWithLossAndOptimizer(lossName, optName, learningRate);
 
-      const data = generateDataset(wasmDatasetType);
+      const data = generateDataset(datasetOverride || wasmDatasetType);
       setWasmPoints(data.points);
 
       const X_mat = new module.Matrix(data.X.length / 2, 2);
@@ -749,6 +749,16 @@ export default function ArchitectureDesigner() {
             >
               JSON Manifest
             </button>
+            <button
+              onClick={() => { setActiveTab("wasm"); startWasmSimulation(); }}
+              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${
+                activeTab === "wasm"
+                  ? "text-green-400 border-green-500 bg-green-500/5"
+                  : "text-neutral-500 border-transparent hover:text-neutral-300"
+              }`}
+            >
+              Live WASM Simulation
+            </button>
           </Flex>
 
           {/* Active Workspace View */}
@@ -935,6 +945,208 @@ export default function ArchitectureDesigner() {
                   </pre>
                 </CardContent>
               </Card>
+            )}
+
+            {activeTab === "wasm" && (
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full min-h-[500px]">
+                {/* Left Column: Canvas & Controls */}
+                <div className="lg:col-span-3 space-y-4 flex flex-col">
+                  <GlowCard className="p-6 bg-neutral-950/40 relative overflow-hidden flex flex-col flex-1">
+                    <div className="absolute inset-0 bg-cyber-grid opacity-10 pointer-events-none" />
+                    
+                    <Flex justify="between" align="center" className="relative z-10 mb-4 pb-3 border-b border-neutral-800/40">
+                      <div className="flex items-center gap-2">
+                        <Cpu className="h-5 w-5 text-green-400 animate-pulse" />
+                        <div>
+                          <h3 className="text-sm font-semibold text-white">Interactive C++ Decision Space</h3>
+                          <p className="text-[10px] text-neutral-400">Powered by compiled WebAssembly engine</p>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="border-green-500/30 text-green-400 bg-green-950/20 px-2 py-0.5 text-[10px]">
+                        LOCAL IN-BROWSER
+                      </Badge>
+                    </Flex>
+
+                    {wasmLoading ? (
+                      <div className="flex-1 flex flex-col items-center justify-center min-h-[350px] relative z-10">
+                        <RotateCw className="h-8 w-8 text-green-400 animate-spin mb-3" />
+                        <p className="text-sm font-mono text-neutral-400">Compiling and initializing C++ model...</p>
+                      </div>
+                    ) : wasmError ? (
+                      <div className="flex-1 flex flex-col items-center justify-center min-h-[350px] relative z-10 text-center px-4">
+                        <AlertTriangle className="h-10 w-10 text-red-500 mb-3 animate-bounce" />
+                        <p className="text-sm font-mono text-red-400 mb-2">WASM Initialization Error</p>
+                        <p className="text-xs text-neutral-500 max-w-md">{wasmError}</p>
+                        <Button size="sm" variant="outline" className="mt-4 border-neutral-800 hover:bg-neutral-800 text-neutral-300" onClick={() => startWasmSimulation()}>
+                          Retry Initialization
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex-1 flex flex-col items-center justify-center relative z-10 py-2">
+                        {/* Canvas container with neon border */}
+                        <div className="relative p-1 rounded-2xl bg-neutral-900 border border-neutral-800 shadow-[0_0_20px_rgba(0,0,0,0.8)]">
+                          <canvas 
+                            id="wasm-canvas" 
+                            width={380} 
+                            height={380} 
+                            className="rounded-xl bg-neutral-950 block shadow-inner"
+                          />
+                        </div>
+
+                        {/* Controls Panel */}
+                        <div className="w-full mt-6 bg-neutral-900/80 border border-neutral-800/80 rounded-xl p-3 backdrop-blur-md">
+                          <Flex justify="between" align="center" gap="md" className="flex-wrap">
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-2">
+                              {isWasmTraining ? (
+                                <Button 
+                                  size="sm" 
+                                  className="bg-amber-600 hover:bg-amber-700 text-white font-mono flex items-center gap-1.5 shadow-[0_0_10px_rgba(217,119,6,0.3)] transition-all"
+                                  onClick={() => setIsWasmTraining(false)}
+                                >
+                                  <Pause className="h-3.5 w-3.5" />
+                                  PAUSE
+                                </Button>
+                              ) : (
+                                <Button 
+                                  size="sm" 
+                                  className="bg-green-600 hover:bg-green-700 text-white font-mono flex items-center gap-1.5 shadow-[0_0_10px_rgba(22,163,74,0.3)] transition-all"
+                                  onClick={() => {
+                                    if (currentWasmEpoch >= wasmEpochs) {
+                                      startWasmSimulation().then(() => setIsWasmTraining(true));
+                                    } else {
+                                      setIsWasmTraining(true);
+                                    }
+                                  }}
+                                  disabled={!wasmModel}
+                                >
+                                  <Play className="h-3.5 w-3.5" />
+                                  {currentWasmEpoch >= wasmEpochs ? "RESTART" : "TRAIN"}
+                                </Button>
+                              )}
+                              
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                className="border-neutral-800 hover:bg-neutral-800 text-neutral-400 hover:text-white"
+                                onClick={() => {
+                                  setIsWasmTraining(false);
+                                  startWasmSimulation();
+                                }}
+                              >
+                                <RotateCw className="h-3.5 w-3.5" />
+                                RESET
+                              </Button>
+                            </div>
+
+                            {/* Dropdowns / Inputs */}
+                            <div className="flex items-center gap-3">
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[9px] text-neutral-500 font-semibold tracking-wider uppercase">Dataset Pattern</label>
+                                <select
+                                  value={wasmDatasetType}
+                                  onChange={(e) => {
+                                    const val = e.target.value as any;
+                                    setIsWasmTraining(false);
+                                    setWasmDatasetType(val);
+                                    // Trigger immediate re-simulation with the new dataset
+                                    setTimeout(() => {
+                                      startWasmSimulation(val);
+                                    }, 0);
+                                  }}
+                                  className="bg-neutral-950 border border-neutral-800 rounded-md px-2 py-1 text-xs text-neutral-300 focus:outline-none focus:border-green-500"
+                                >
+                                  <option value="xor">XOR Multi-Grid</option>
+                                  <option value="circle">Concentric Circles</option>
+                                  <option value="sine">Sinusoidal Waves</option>
+                                </select>
+                              </div>
+
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[9px] text-neutral-500 font-semibold tracking-wider uppercase">Target Epochs</label>
+                                <input
+                                  type="number"
+                                  value={wasmEpochs}
+                                  onChange={(e) => setWasmEpochs(Math.max(10, Number(e.target.value)))}
+                                  className="bg-neutral-950 border border-neutral-800 rounded-md px-2 py-1 w-16 text-xs text-neutral-300 text-center focus:outline-none focus:border-green-500"
+                                />
+                              </div>
+                            </div>
+                          </Flex>
+                        </div>
+                      </div>
+                    )}
+                  </GlowCard>
+                </div>
+
+                {/* Right Column: Loss curve & WASM Engine Stats */}
+                <div className="lg:col-span-2 space-y-4 flex flex-col">
+                  {/* Live Stats */}
+                  <Card className="border-neutral-800 bg-neutral-900/60 backdrop-blur-xl">
+                    <CardHeader className="pb-2 border-b border-neutral-800/40">
+                      <CardTitle className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
+                        Real-time WASM Engine Metrics
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-4 grid grid-cols-2 gap-4">
+                      <div className="bg-neutral-950/40 p-3 rounded-lg border border-neutral-800/40 flex flex-col justify-center">
+                        <p className="text-[10px] text-neutral-500 font-semibold">EPOCH INDEX</p>
+                        <p className="text-lg font-mono font-bold text-green-400 mt-1">
+                          {currentWasmEpoch} <span className="text-xs text-neutral-600">/ {wasmEpochs}</span>
+                        </p>
+                      </div>
+
+                      <div className="bg-neutral-950/40 p-3 rounded-lg border border-neutral-800/40 flex flex-col justify-center">
+                        <p className="text-[10px] text-neutral-500 font-semibold">CURRENT LOSS</p>
+                        <p className="text-lg font-mono font-bold text-violet-400 mt-1">
+                          {wasmLossHistory.length > 0 ? wasmLossHistory[wasmLossHistory.length - 1].loss.toFixed(6) : "N/A"}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Real-time Loss Curve */}
+                  <Card className="border-neutral-800 bg-neutral-900/60 backdrop-blur-xl flex-1 flex flex-col overflow-hidden">
+                    <CardHeader className="pb-2 border-b border-neutral-800/40 flex flex-row justify-between items-center">
+                      <CardTitle className="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <TrendingUp className="h-3.5 w-3.5 text-violet-400" />
+                        Loss Optimization Curve
+                      </CardTitle>
+                    </CardHeader>
+                    
+                    <CardContent className="p-4 flex-1 flex flex-col justify-center min-h-[220px]">
+                      {wasmLossHistory.length === 0 ? (
+                        <div className="flex-1 flex items-center justify-center text-center">
+                          <p className="text-xs font-mono text-neutral-500">Awaiting training execution...</p>
+                        </div>
+                      ) : (
+                        <div className="w-full h-full min-h-[220px]">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={wasmLossHistory} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                              <XAxis dataKey="epoch" stroke="rgba(255,255,255,0.3)" fontSize={9} />
+                              <YAxis stroke="rgba(255,255,255,0.3)" fontSize={9} />
+                              <Tooltip 
+                                contentStyle={{ backgroundColor: "#171717", borderColor: "#262626", borderRadius: "8px" }}
+                                labelStyle={{ color: "#a3a3a3", fontSize: "10px", fontFamily: "monospace" }}
+                                itemStyle={{ color: "#a855f7", fontSize: "11px", fontFamily: "monospace" }}
+                              />
+                              <Line 
+                                type="monotone" 
+                                dataKey="loss" 
+                                stroke="#8b5cf6" 
+                                strokeWidth={2} 
+                                dot={false} 
+                                activeDot={{ r: 4, strokeWidth: 0 }}
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
             )}
           </div>
         </div>
