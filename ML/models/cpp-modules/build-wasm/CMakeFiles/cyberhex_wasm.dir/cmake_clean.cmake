@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/cyberhex_wasm.dir/src/activations.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/activations.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/conv2d.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/conv2d.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/dense.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/dense.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/device.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/device.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/distributed.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/distributed.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/fused_ops.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/fused_ops.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/graph.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/graph.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/loss.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/loss.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/model.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/model.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/onnx_export.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/onnx_export.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/ops_dispatch.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/ops_dispatch.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/optimizer.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/optimizer.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/precision.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/precision.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/training_protocol.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/training_protocol.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/transformer.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/transformer.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/wasm_bindings.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/wasm_bindings.cpp.o.d"
+  "CMakeFiles/cyberhex_wasm.dir/src/weight_io.cpp.o"
+  "CMakeFiles/cyberhex_wasm.dir/src/weight_io.cpp.o.d"
+  "cyberhex_wasm.js"
+  "cyberhex_wasm.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/cyberhex_wasm.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

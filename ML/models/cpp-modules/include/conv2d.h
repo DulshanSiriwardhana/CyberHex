@@ -22,9 +22,7 @@ public:
            InitType init = InitType::HE);
 
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt = OptimizerType::ADAM,
-                            int t = 1) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
 
     std::vector<Matrix<double>*> parameters() override { return {&weights_, &bias_}; }
     std::vector<Matrix<double>*> parameter_gradients() override;

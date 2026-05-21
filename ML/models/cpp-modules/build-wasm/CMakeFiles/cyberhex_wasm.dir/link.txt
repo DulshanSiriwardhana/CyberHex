@@ -1,0 +1,1 @@
+/home/dulshan/emsdk/upstream/emscripten/em++  -Wall -Wextra -Wpedantic -Wshadow -Wno-unused-parameter -O3 -DNDEBUG -O3 -ffast-math -DNDEBUG --bind -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s MODULARIZE=1 -s EXPORT_NAME='createCyberHexModule' -s ENVIRONMENT='web,worker' @CMakeFiles/cyberhex_wasm.dir/objects1.rsp -o cyberhex_wasm.js

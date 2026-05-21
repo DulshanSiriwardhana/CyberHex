@@ -135,8 +135,7 @@ Matrix<double> Conv2D::forward(const Matrix<double>& X) {
     return output;
 }
 
-Matrix<double> Conv2D::backward(const Matrix<double>& grad, double lr,
-                                OptimizerType opt, int t) {
+Matrix<double> Conv2D::backward(const Matrix<double>& grad) {
     const size_t batch = grad.rows();
     const size_t spatial_out = out_h_ * out_w_;
 
@@ -161,13 +160,6 @@ Matrix<double> Conv2D::backward(const Matrix<double>& grad, double lr,
             sum += grad_col(i, j);
         }
         grad_B_(0, j) = sum;
-    }
-
-    if (lr > 0.0) {
-        weights_ = weights_ - grad_W_ * lr;
-        bias_ = bias_ - grad_B_ * lr;
-        (void)opt;
-        (void)t;
     }
 
     Matrix<double> grad_col_input = grad_col.dot(weights_.transpose());

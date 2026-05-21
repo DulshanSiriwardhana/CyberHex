@@ -166,7 +166,7 @@ TEST_CASE("ReLU activation", "[activation]") {
     REQUIRE(out(1, 1) == 0.0);
 
     Matrix<double> grad(2, 2, 1.0);
-    auto back = relu.backward(grad, 0.01, OptimizerType::SGD, 1);
+    auto back = relu.backward(grad);
     REQUIRE(back(0, 0) == 0.0);  // grad * (x <= 0)
     REQUIRE(back(0, 1) == 1.0);  // grad * (x > 0)
 }
@@ -224,7 +224,7 @@ TEST_CASE("Dense layer backward", "[layer]") {
     auto out = dense.forward(x);
     Matrix<double> grad(2, 3, 0.1);
 
-    auto grad_input = dense.backward(grad, 0.01, OptimizerType::SGD, 1);
+    auto grad_input = dense.backward(grad);
     REQUIRE(grad_input.rows() == 2);
     REQUIRE(grad_input.cols() == 4);
 }

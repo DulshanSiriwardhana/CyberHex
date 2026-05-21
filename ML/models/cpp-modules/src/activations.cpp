@@ -32,7 +32,7 @@ Matrix<double> ReLU::forward(const Matrix<double>& X) {
     return out;
 }
 
-Matrix<double> ReLU::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+Matrix<double> ReLU::backward(const Matrix<double>& grad) {
     Matrix<double> res(grad.rows(), grad.cols());
     for (size_t i = 0; i < grad.size(); i++) {
         res.at(i) = input.at(i) > 0 ? grad.at(i) : 0.0;
@@ -51,7 +51,7 @@ Matrix<double> Sigmoid::forward(const Matrix<double>& X) {
     return output;
 }
 
-Matrix<double> Sigmoid::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+Matrix<double> Sigmoid::backward(const Matrix<double>& grad) {
     Matrix<double> res(grad.rows(), grad.cols());
     for (size_t i = 0; i < grad.size(); i++) {
         double s = output.at(i);
@@ -92,7 +92,7 @@ Matrix<double> Softmax::forward(const Matrix<double>& X) {
     return output;
 }
 
-Matrix<double> Softmax::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+Matrix<double> Softmax::backward(const Matrix<double>& grad) {
     // Optimized O(n) per row: grad_input = s ⊙ (grad - (grad · s))
     // instead of O(n²) Jacobian: J = diag(s) - s s^T
     Matrix<double> res(grad.rows(), grad.cols(), 0.0);
@@ -145,7 +145,7 @@ Matrix<double> Tanh::forward(const Matrix<double>& X) {
     return output;
 }
 
-Matrix<double> Tanh::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int timestep) {
+Matrix<double> Tanh::backward(const Matrix<double>& grad) {
     Matrix<double> res(grad.rows(), grad.cols());
     for (size_t i = 0; i < grad.size(); i++) {
         double tanh_val = output.at(i);
@@ -167,7 +167,7 @@ Matrix<double> LeakyReLU::forward(const Matrix<double>& X) {
     return output;
 }
 
-Matrix<double> LeakyReLU::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+Matrix<double> LeakyReLU::backward(const Matrix<double>& grad) {
     Matrix<double> res(grad.rows(), grad.cols());
     for (size_t i = 0; i < grad.size(); i++) {
         res.at(i) = output.at(i) > 0 ? grad.at(i) : alpha_ * grad.at(i);
@@ -192,7 +192,7 @@ Matrix<double> ELU::forward(const Matrix<double>& X) {
     return output;
 }
 
-Matrix<double> ELU::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+Matrix<double> ELU::backward(const Matrix<double>& grad) {
     Matrix<double> res(grad.rows(), grad.cols());
     for (size_t i = 0; i < grad.size(); i++) {
         if (output.at(i) > 0) {
@@ -224,7 +224,7 @@ Matrix<double> Swish::forward(const Matrix<double>& X) {
     return output;
 }
 
-Matrix<double> Swish::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+Matrix<double> Swish::backward(const Matrix<double>& grad) {
     Matrix<double> res(grad.rows(), grad.cols());
     for (size_t i = 0; i < grad.size(); i++) {
         double sigma = input_sigmoid_.at(i);
@@ -251,7 +251,7 @@ Matrix<double> GELU::forward(const Matrix<double>& X) {
     return out;
 }
 
-Matrix<double> GELU::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+Matrix<double> GELU::backward(const Matrix<double>& grad) {
     Matrix<double> res(grad.rows(), grad.cols());
     for (size_t i = 0; i < grad.size(); i++) {
         double x = input.at(i);
@@ -283,7 +283,7 @@ Matrix<double> Softplus::forward(const Matrix<double>& X) {
     return out;
 }
 
-Matrix<double> Softplus::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+Matrix<double> Softplus::backward(const Matrix<double>& grad) {
     Matrix<double> res(grad.rows(), grad.cols());
     for (size_t i = 0; i < grad.size(); i++) {
         // derivative = sigmoid(x)
@@ -299,7 +299,7 @@ Matrix<double> Identity::forward(const Matrix<double>& X) {
     return X;
 }
 
-Matrix<double> Identity::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+Matrix<double> Identity::backward(const Matrix<double>& grad) {
     return grad;
 }
 
@@ -331,7 +331,7 @@ Matrix<double> Dropout::forward(const Matrix<double>& X) {
     return output;
 }
 
-Matrix<double> Dropout::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+Matrix<double> Dropout::backward(const Matrix<double>& grad) {
     if (!training_) return grad;
     Matrix<double> res(grad.rows(), grad.cols());
     for (size_t i = 0; i < grad.size(); i++) {
@@ -344,11 +344,15 @@ Matrix<double> Dropout::backward(const Matrix<double>& grad, double lr, Optimize
 // Layer Normalization
 // ============================================================================
 LayerNormalization::LayerNormalization(size_t normalized_shape, double epsilon)
-    : gamma(1, normalized_shape, 1.0), beta(1, normalized_shape, 0.0), epsilon_(epsilon) {}
+    : gamma(1, normalized_shape, 1.0), beta(1, normalized_shape, 0.0),
+      d_gamma(1, normalized_shape, 0.0), d_beta(1, normalized_shape, 0.0),
+      epsilon_(epsilon) {}
 
 void LayerNormalization::reset_state() {
     gamma.fill(1.0);
     beta.fill(0.0);
+    d_gamma.fill(0.0);
+    d_beta.fill(0.0);
 }
 
 Matrix<double> LayerNormalization::forward(const Matrix<double>& X) {
@@ -382,13 +386,13 @@ Matrix<double> LayerNormalization::forward(const Matrix<double>& X) {
     return output;
 }
 
-Matrix<double> LayerNormalization::backward(const Matrix<double>& grad, double lr,
-                                            OptimizerType opt, int t) {
+Matrix<double> LayerNormalization::backward(const Matrix<double>& grad) {
     const size_t rows = grad.rows();
     const size_t cols = grad.cols();
     Matrix<double> input_grad(rows, cols, 0.0);
-    Matrix<double> d_gamma(1, cols, 0.0);
-    Matrix<double> d_beta(1, cols, 0.0);
+    
+    d_gamma.fill(0.0);
+    d_beta.fill(0.0);
 
     for (size_t i = 0; i < rows; i++) {
         double mean = mean_cache(i, 0);
@@ -423,12 +427,6 @@ Matrix<double> LayerNormalization::backward(const Matrix<double>& grad, double l
         }
     }
 
-    if (lr > 0.0) {
-        gamma = gamma - d_gamma * lr;
-        beta = beta - d_beta * lr;
-        (void)opt;
-        (void)t;
-    }
     return input_grad;
 }
 
@@ -437,12 +435,16 @@ Matrix<double> LayerNormalization::backward(const Matrix<double>& grad, double l
 // ============================================================================
 BatchNormalization::BatchNormalization(size_t input_size, double epsilon, double momentum)
     : gamma(1, input_size, 1.0), beta(1, input_size, 0.0),
+      d_gamma(1, input_size, 0.0), d_beta(1, input_size, 0.0),
       running_mean(1, input_size, 0.0), running_var(1, input_size, 1.0),
+      x_hat(1, input_size, 0.0), ivar(1, input_size, 0.0),
       epsilon_(epsilon), momentum_(momentum) {}
 
 void BatchNormalization::reset_state() {
     gamma.fill(1.0);
     beta.fill(0.0);
+    d_gamma.fill(0.0);
+    d_beta.fill(0.0);
     running_mean.fill(0.0);
     running_var.fill(1.0);
 }
@@ -450,6 +452,14 @@ void BatchNormalization::reset_state() {
 Matrix<double> BatchNormalization::forward(const Matrix<double>& X) {
     input_cache = X;
     Matrix<double> output(X.rows(), X.cols(), 0.0);
+    
+    // Dynamically resize internal caches to match batch size
+    if (x_hat.rows() != X.rows() || x_hat.cols() != X.cols()) {
+        x_hat = Matrix<double>(X.rows(), X.cols(), 0.0);
+    }
+    if (ivar.cols() != X.cols()) {
+        ivar = Matrix<double>(1, X.cols(), 0.0);
+    }
 
     if (training_) {
         // Compute batch mean and variance
@@ -492,20 +502,29 @@ Matrix<double> BatchNormalization::forward(const Matrix<double>& X) {
     return output;
 }
 
-Matrix<double> BatchNormalization::backward(const Matrix<double>& grad, double lr, OptimizerType opt, int t) {
+Matrix<double> BatchNormalization::backward(const Matrix<double>& grad) {
     Matrix<double> dX(grad.rows(), grad.cols(), 0.0);
     size_t N = grad.rows();
 
+    if (d_gamma.cols() != grad.cols()) {
+        d_gamma = Matrix<double>(1, grad.cols(), 0.0);
+    }
+    if (d_beta.cols() != grad.cols()) {
+        d_beta = Matrix<double>(1, grad.cols(), 0.0);
+    }
+    d_gamma.fill(0.0);
+    d_beta.fill(0.0);
+
     for (size_t j = 0; j < grad.cols(); j++) {
-        double dGamma = 0.0, dBeta = 0.0;
+        double dGamma_val = 0.0, dBeta_val = 0.0;
         for (size_t i = 0; i < N; i++) {
-            dGamma += grad(i, j) * x_hat(i, j);
-            dBeta += grad(i, j);
+            dGamma_val += grad(i, j) * x_hat(i, j);
+            dBeta_val += grad(i, j);
         }
 
-        // Simple SGD update for gamma/beta (user's responsibility to pass correct lr)
-        gamma(0, j) -= lr * dGamma / N;
-        beta(0, j) -= lr * dBeta / N;
+        // Store computed gradients in member matrices to be consumed by optimizer
+        d_gamma(0, j) = dGamma_val / N;
+        d_beta(0, j) = dBeta_val / N;
 
         // Gradient w.r.t. input
         double dxhat_sum = 0.0, dxhat_xhat_sum = 0.0;

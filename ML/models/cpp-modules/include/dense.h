@@ -15,6 +15,8 @@ private:
     Matrix<double> weights;
     Matrix<double> bias;
     Matrix<double> input;
+    Matrix<double> dW;
+    Matrix<double> dB;
 
     // Optimizer state
     Matrix<double> m_W, v_W;
@@ -32,9 +34,7 @@ public:
           InitType init_type = InitType::HE);
 
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt = OptimizerType::ADAM,
-                            int t = 1) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
 
     std::vector<Matrix<double>*> parameters() override { return {&weights, &bias}; }
     std::vector<Matrix<double>*> parameter_gradients() override;

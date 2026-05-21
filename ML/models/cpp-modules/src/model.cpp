@@ -382,10 +382,21 @@ void Model::fit(const Matrix<double>& X, const Matrix<double>& y,
                 }
             }
 
-            // Backward pass (all layers handle updates internally)
+            // Backward pass
             for (int i = (int)layers_.size() - 1; i >= 0; i--) {
-                double lr = optimizer_ ? optimizer_->get_lr() : 0.01;
-                grad = layers_[i]->backward(grad, lr, OptimizerType::ADAM, epoch_ + 1);
+                grad = layers_[i]->backward(grad);
+            }
+
+            // Centralized Optimizer Step (Option A)
+            if (optimizer_) {
+                size_t param_idx = 0;
+                for (auto& layer : layers_) {
+                    auto params = layer->parameters();
+                    auto grads = layer->parameter_gradients();
+                    for (size_t p = 0; p < params.size(); p++) {
+                        optimizer_->update(*(params[p]), *(grads[p]), param_idx++, epoch_ + 1);
+                    }
+                }
             }
 
             total_loss = loss_val;
@@ -409,8 +420,19 @@ void Model::fit(const Matrix<double>& X, const Matrix<double>& y,
 
                 // Backward pass
                 for (int i = (int)layers_.size() - 1; i >= 0; i--) {
-                    double lr = optimizer_ ? optimizer_->get_lr() : 0.01;
-                    grad = layers_[i]->backward(grad, lr, OptimizerType::ADAM, epoch_ + 1);
+                    grad = layers_[i]->backward(grad);
+                }
+
+                // Centralized Optimizer Step (Option A)
+                if (optimizer_) {
+                    size_t param_idx = 0;
+                    for (auto& layer : layers_) {
+                        auto params = layer->parameters();
+                        auto grads = layer->parameter_gradients();
+                        for (size_t p = 0; p < params.size(); p++) {
+                            optimizer_->update(*(params[p]), *(grads[p]), param_idx++, epoch_ + 1);
+                        }
+                    }
                 }
 
                 batches++;
@@ -520,8 +542,19 @@ void Model::fit_dataloader(DataLoader& train_loader, int epochs,
             total_loss += loss_val;
 
             for (int i = (int)layers_.size() - 1; i >= 0; i--) {
-                double lr = optimizer_ ? optimizer_->get_lr() : 0.01;
-                grad = layers_[i]->backward(grad, lr, OptimizerType::ADAM, epoch_ + 1);
+                grad = layers_[i]->backward(grad);
+            }
+
+            // Centralized Optimizer Step (Option A)
+            if (optimizer_) {
+                size_t param_idx = 0;
+                for (auto& layer : layers_) {
+                    auto params = layer->parameters();
+                    auto grads = layer->parameter_gradients();
+                    for (size_t p = 0; p < params.size(); p++) {
+                        optimizer_->update(*(params[p]), *(grads[p]), param_idx++, epoch_ + 1);
+                    }
+                }
             }
 
             batches++;
@@ -762,8 +795,7 @@ bool Model::check_gradients(const Matrix<double>& X, const Matrix<double>& y,
             // Get the gradient w.r.t. weights (we'll compute numerically)
             // For simplicity, we store current_grad as the gradient we're tracking
         }
-        double lr = 0.0; // Don't update during gradient checking
-        current_grad = layers_[i]->backward(current_grad, lr, OptimizerType::SGD, 1);
+        current_grad = layers_[i]->backward(current_grad);
     }
 
     // Numerical gradient checking (simplified)

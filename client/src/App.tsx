@@ -28,6 +28,7 @@ const ExperimentsListPage = lazy(() => import("@/pages/ExperimentsListPage"));
 const ModelsPage = lazy(() => import("@/pages/ModelsPage"));
 const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
 const CyberGames = lazy(() => import("@/pages/CyberGames"));
+const ArchitectureDesigner = lazy(() => import("@/pages/ArchitectureDesigner"));
 
 function PageFallback() {
   return (
@@ -71,6 +72,14 @@ function AppLayout() {
               element={
                 <ProtectedRoute>
                   <ModelsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/designer"
+              element={
+                <ProtectedRoute>
+                  <ArchitectureDesigner />
                 </ProtectedRoute>
               }
             />

@@ -14,8 +14,7 @@ private:
 public:
     ReLU() = default;
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt, int t) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     std::string name() const override { return "ReLU"; }
     size_t output_size() const override { return input.cols(); }
 };
@@ -29,8 +28,7 @@ private:
 public:
     Sigmoid() = default;
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt, int t) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     std::string name() const override { return "Sigmoid"; }
     size_t output_size() const override { return output.cols(); }
 };
@@ -44,8 +42,7 @@ private:
 public:
     Softmax() = default;
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt, int t) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     std::string name() const override { return "Softmax"; }
     size_t output_size() const override { return output.cols(); }
 
@@ -62,8 +59,7 @@ private:
 public:
     Tanh() = default;
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt, int t) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     std::string name() const override { return "Tanh"; }
     size_t output_size() const override { return output.cols(); }
 };
@@ -78,8 +74,7 @@ private:
 public:
     explicit LeakyReLU(double alpha = 0.01);
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt, int t) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     std::string name() const override { return "LeakyReLU"; }
     size_t output_size() const override { return output.cols(); }
 };
@@ -94,8 +89,7 @@ private:
 public:
     explicit ELU(double alpha = 1.0);
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt, int t) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     std::string name() const override { return "ELU"; }
     size_t output_size() const override { return output.cols(); }
 };
@@ -113,8 +107,7 @@ private:
 public:
     Swish() = default;
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt, int t) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     std::string name() const override { return "Swish"; }
     size_t output_size() const override { return output.cols(); }
 };
@@ -128,8 +121,7 @@ private:
 public:
     GELU() = default;
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt, int t) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     std::string name() const override { return "GELU"; }
     size_t output_size() const override { return input.cols(); }
 };
@@ -143,8 +135,7 @@ private:
 public:
     Softplus() = default;
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt, int t) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     std::string name() const override { return "Softplus"; }
     size_t output_size() const override { return input.cols(); }
 };
@@ -156,8 +147,7 @@ class Identity : public Layer {
 public:
     Identity() = default;
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt, int t) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     std::string name() const override { return "Identity"; }
     size_t output_size() const override { return 0; } // depends on input
 };
@@ -173,8 +163,7 @@ private:
 public:
     explicit Dropout(double rate = 0.5);
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt, int t) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     void set_training(bool training) override { training_ = training; }
     std::string name() const override { return "Dropout"; }
     size_t output_size() const override { return mask.cols(); }
@@ -190,6 +179,8 @@ class LayerNormalization : public Layer {
 private:
     Matrix<double> gamma;
     Matrix<double> beta;
+    Matrix<double> d_gamma;
+    Matrix<double> d_beta;
     Matrix<double> input_cache;
     Matrix<double> mean_cache;
     Matrix<double> inv_std_cache;
@@ -197,10 +188,9 @@ private:
 public:
     explicit LayerNormalization(size_t normalized_shape, double epsilon = 1e-5);
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt = OptimizerType::ADAM,
-                            int t = 1) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     std::vector<Matrix<double>*> parameters() override { return {&gamma, &beta}; }
+    std::vector<Matrix<double>*> parameter_gradients() override { return {&d_gamma, &d_beta}; }
     std::vector<std::string> parameter_names() override { return {"gamma", "beta"}; }
     std::string name() const override { return "LayerNorm"; }
     size_t output_size() const override { return gamma.cols(); }
@@ -211,6 +201,8 @@ class BatchNormalization : public Layer {
 private:
     Matrix<double> gamma;
     Matrix<double> beta;
+    Matrix<double> d_gamma;
+    Matrix<double> d_beta;
     Matrix<double> running_mean;
     Matrix<double> running_var;
     Matrix<double> x_hat;
@@ -222,10 +214,10 @@ private:
 public:
     explicit BatchNormalization(size_t input_size, double epsilon = 1e-5, double momentum = 0.9);
     Matrix<double> forward(const Matrix<double>& X) override;
-    Matrix<double> backward(const Matrix<double>& grad, double lr,
-                            OptimizerType opt, int t) override;
+    Matrix<double> backward(const Matrix<double>& grad) override;
     void set_training(bool training) override { training_ = training; }
     std::vector<Matrix<double>*> parameters() override { return {&gamma, &beta}; }
+    std::vector<Matrix<double>*> parameter_gradients() override { return {&d_gamma, &d_beta}; }
     std::vector<std::string> parameter_names() override { return {"gamma", "beta"}; }
     std::string name() const override { return "BatchNorm"; }
     size_t output_size() const override { return gamma.cols(); }

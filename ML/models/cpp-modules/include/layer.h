@@ -57,10 +57,7 @@ public:
 
     // Backward pass: gradient from upstream → gradient to downstream
     // Returns gradient w.r.t. input
-    virtual Matrix<double> backward(const Matrix<double>& grad_output,
-                                     double learning_rate,
-                                     OptimizerType opt = OptimizerType::ADAM,
-                                     int timestep = 1) = 0;
+    virtual Matrix<double> backward(const Matrix<double>& grad_output) = 0;
 
     // Parameter access for serialization / gradient checking
     virtual std::vector<Matrix<double>*> parameters() { return {}; }

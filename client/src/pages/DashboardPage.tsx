@@ -11,6 +11,7 @@ import {
   ArrowRight,
   BarChart3,
   Activity,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, StatCard } from "@/components/ui/card";
@@ -166,7 +167,7 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* Quick actions */}
-      <Grid cols={2} gap="md" className="mt-8">
+      <Grid cols={3} gap="md" className="mt-8">
         <Link to="/experiments/new">
           <Card className="group border-green-500/10 hover:border-green-500/30 hover:shadow-[0_0_25px_rgba(34, 197, 94,0.1)] cursor-pointer transition-all duration-300">
             <CardContent className="p-6 flex items-center gap-4">
@@ -176,6 +177,19 @@ export default function DashboardPage() {
               <div>
                 <h3 className="font-semibold text-white">Quick Experiment</h3>
                 <p className="text-sm text-neutral-400">Launch a pre-configured training run in 2 clicks</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link to="/designer">
+          <Card className="group border-amber-500/10 hover:border-amber-500/30 hover:shadow-[0_0_25px_rgba(245,158,11,0.1)] cursor-pointer transition-all duration-300">
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/5 border border-amber-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Layers className="h-6 w-6 text-amber-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Visual Designer</h3>
+                <p className="text-sm text-neutral-400">Assemble layers visually, configure nodes, export code</p>
               </div>
             </CardContent>
           </Card>
