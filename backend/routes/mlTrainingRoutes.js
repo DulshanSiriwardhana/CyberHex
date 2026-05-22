@@ -17,9 +17,10 @@ router.post('/experiments/:id/train', asyncHandler(async (req, res) => {
   if (experiment.userId.toString() !== req.user.userId) throw new NotFoundError('Experiment not found');
 
   const existing = await getJobStatus(experiment._id.toString());
-  if (existing && existing.status === 'running') {
-    throw new ConflictError('Training already in progress for this experiment');
+  if (existing && (existing.status === 'running' || existing.status === 'queued')) {
+    throw new ConflictError('Training already in progress or queued for this experiment');
   }
+
 
   experiment.status = 'training';
   await experiment.save();

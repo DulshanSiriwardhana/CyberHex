@@ -100,9 +100,11 @@ class NeuralNetwork:
         grads_b = [np.zeros_like(b) for b in self.biases]
         m = X.shape[0]
 
-        delta = activations[-1] - y.reshape(-1, 1)
         if self.task == 'classification':
             delta = activations[-1] - y
+        else:
+            delta = activations[-1] - y.reshape(-1, 1)
+
 
         for i in reversed(range(len(self.weights))):
             grads_w[i] = np.dot(activations[i].T, delta) / m

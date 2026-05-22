@@ -72,6 +72,34 @@ services:
       - cyberhex-network
     restart: unless-stopped
 
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cyberhex-worker
+    command: npm run worker
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - MONGODB_URI=mongodb://db:27017/cyberhex
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET:-dev_jwt_secret_change_in_production_min_32_chars}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dev_refresh_secret_change_in_production_min_32_chars}
+      - NODE_ENV=${NODE_ENV:-production}
+      - LOG_LEVEL=info
+      - ML_ENGINE=${ML_ENGINE:-cpp}
+      - PYTHON_EXECUTABLE=python3
+    volumes:
+      - ./backend:/app
+      - ./ML:/app/ML
+      - /app/node_modules
+    networks:
+      - cyberhex-network
+    restart: unless-stopped
+
   frontend:
     build:
       context: ./client

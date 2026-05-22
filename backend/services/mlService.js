@@ -11,6 +11,7 @@ import {
   deleteJobSnapshot,
   listJobSnapshots,
 } from './jobStore.js';
+import { isRedisAvailable } from './cacheService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,9 +32,13 @@ export function buildCppConfig(experiment) {
     learningRate: cfg.learningRate || 0.001,
     optimizer: cfg.optimizer || 'adam',
     validationSplit: cfg.validationSplit || 0.2,
+    testSplit: cfg.testSplit || 0.2,
     earlyStopping: cfg.earlyStopping ?? true,
     patience: cfg.patience || 10,
     dataPath: cfg.dataPath || null,
+    datasetName: cfg.datasetName || 'cyber_intrusion',
+    selectedFeatures: cfg.selectedFeatures || [],
+    targetFeature: cfg.targetFeature || '',
     seed: cfg.seed || 42,
     engine: cfg.engine || 'imperative',
     device: cfg.device || 'cpu',
@@ -58,6 +63,11 @@ export function buildPythonConfig(experiment) {
     learning_rate: cfg.learningRate || 0.001,
     optimizer: cfg.optimizer || 'adam',
     data_path: cfg.dataPath || null,
+    dataset_name: cfg.datasetName || 'cyber_intrusion',
+    selected_features: cfg.selectedFeatures || [],
+    target_feature: cfg.targetFeature || '',
+    test_split: cfg.testSplit || 0.2,
+    validation_split: cfg.validationSplit || 0.2,
     seed: cfg.seed || 42,
   };
 }

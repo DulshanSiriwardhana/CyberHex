@@ -34,10 +34,11 @@ export async function saveJobSnapshot(experimentId, snapshot) {
  * @returns {Promise<object|null>}
  */
 export async function getJobSnapshot(experimentId) {
-  if (memoryJobs.has(experimentId)) {
-    return memoryJobs.get(experimentId);
+  if (isRedisAvailable()) {
+    const cached = await cacheGet(jobKey(experimentId));
+    if (cached) return cached;
   }
-  return cacheGet(jobKey(experimentId));
+  return memoryJobs.get(experimentId) || null;
 }
 
 /**

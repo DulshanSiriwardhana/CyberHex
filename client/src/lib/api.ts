@@ -142,9 +142,13 @@ export interface ExperimentConfig {
   learningRate: number;
   optimizer: string;
   validationSplit: number;
+  testSplit?: number;
   earlyStopping: boolean;
   patience: number;
   dataPath: string | null;
+  datasetName?: string;
+  selectedFeatures?: string[];
+  targetFeature?: string;
   seed: number;
 }
 

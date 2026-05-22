@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   FlaskConical,
@@ -12,231 +12,931 @@ import {
   Brain,
   Settings2,
   BarChart3,
+  ChevronRight,
+  ChevronLeft,
+  Sliders,
+  Database,
+  Grid2X2,
+  Sparkles,
+  Info,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Container, Grid, Stack, Flex } from "@/components/ui/layout";
+import { Container, Grid, Stack, Flex, SectionHeading } from "@/components/ui/layout";
+import { experimentsApi } from "@/lib/api";
 
 interface Layer {
   id: string;
-  type: string;
+  type: "Dense" | "ReLU" | "Sigmoid" | "Tanh" | "LayerNormalization" | "MultiHeadSelfAttention" | "TransformerEncoderBlock";
   units: number;
-  activation: string;
+  activation: "relu" | "sigmoid" | "tanh" | "softmax" | "linear";
+  params?: {
+    num_heads?: number;
+    ffn_dim?: number;
+  };
 }
 
+interface DatasetSpec {
+  id: string;
+  name: string;
+  description: string;
+  taskType: "classification" | "regression";
+  totalRows: number;
+  features: { name: string; type: string; min: number; max: number; mean: number }[];
+  targets: string[];
+}
+
+const DATASETS: DatasetSpec[] = [
+  {
+    id: "cyber_intrusion",
+    name: "Cyber-Attack Threat Signals (Intrusion Packet Logs)",
+    description: "Real-time network packet statistics mapping anomalous protocol behaviors, payload sizes, and connection duration anomalies.",
+    taskType: "classification",
+    totalRows: 25000,
+    features: [
+      { name: "packet_size", type: "float", min: 40, max: 65535, mean: 1420 },
+      { name: "port_destination", type: "int", min: 1, max: 65535, mean: 443 },
+      { name: "connection_duration", type: "float", min: 0.001, max: 3600, mean: 42.12 },
+      { name: "payload_entropy", type: "float", min: 0.1, max: 7.99, mean: 4.87 },
+      { name: "syn_flags", type: "int (binary)", min: 0, max: 1, mean: 0.32 },
+      { name: "ack_flags", type: "int (binary)", min: 0, max: 1, mean: 0.68 },
+      { name: "packet_rate", type: "float", min: 0.1, max: 150000, mean: 842.5 },
+      { name: "fin_flags", type: "int (binary)", min: 0, max: 1, mean: 0.04 },
+      { name: "urg_flags", type: "int (binary)", min: 0, max: 1, mean: 0.01 },
+    ],
+    targets: ["is_intrusion", "severity_index"],
+  },
+  {
+    id: "ddos_traffic",
+    name: "DDoS Flow Logs (Traffic Volume Patterns)",
+    description: "Flow frequency telemetry recording volumetric TCP SYN/ACK flood signatures to train real-time edge firewall mitigators.",
+    taskType: "classification",
+    totalRows: 50500,
+    features: [
+      { name: "flow_duration", type: "float", min: 0.005, max: 1800, mean: 12.8 },
+      { name: "packet_length_variance", type: "float", min: 0, max: 45000, mean: 2840 },
+      { name: "syn_ack_ratio", type: "float", min: 0.01, max: 99.9, mean: 1.05 },
+      { name: "bytes_per_second", type: "float", min: 100, max: 120000000, mean: 5400000 },
+      { name: "packets_per_second", type: "float", min: 1, max: 850000, mean: 32000 },
+      { name: "rst_flags", type: "int (binary)", min: 0, max: 1, mean: 0.15 },
+    ],
+    targets: ["is_ddos", "anomaly_score"],
+  },
+  {
+    id: "iiot_sensor",
+    name: "Industrial IoT Sensor Telemetry (Fault Diagnosis)",
+    description: "Critical multi-axis physical sensor streams capturing voltage anomalies, rotational vibrations, and heat signatures.",
+    taskType: "regression",
+    totalRows: 15000,
+    features: [
+      { name: "temperature_celsius", type: "float", min: 15.2, max: 124.8, mean: 68.4 },
+      { name: "vibration_amplitude", type: "float", min: 0.01, max: 9.8, mean: 1.25 },
+      { name: "voltage_draw", type: "float", min: 110, max: 245, mean: 220.4 },
+      { name: "noise_decibels", type: "float", min: 45, max: 115, mean: 72.3 },
+      { name: "pressure_psi", type: "float", min: 10, max: 350, mean: 145.2 },
+      { name: "rotational_speed_rpm", type: "float", min: 200, max: 6000, mean: 2850 },
+      { name: "humidity_percent", type: "float", min: 20, max: 95, mean: 55.4 },
+      { name: "air_flow_rate", type: "float", min: 0.5, max: 25.0, mean: 5.2 },
+    ],
+    targets: ["failure_severity", "device_fault_type"],
+  },
+];
+
 export default function ExperimentBuilderPage() {
-  const [name, setName] = useState("Untitled Experiment");
-  const [layers, setLayers] = useState<Layer[]>([
-    { id: "1", type: "Dense", units: 128, activation: "relu" },
-    { id: "2", type: "Dense", units: 64, activation: "relu" },
-    { id: "3", type: "Dense", units: 10, activation: "softmax" },
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [name, setName] = useState("Cyber Threat Classifier");
+  const [selectedDatasetId, setSelectedDatasetId] = useState("cyber_intrusion");
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([
+    "packet_size",
+    "port_destination",
+    "connection_duration",
+    "payload_entropy",
+    "syn_flags",
+    "ack_flags",
   ]);
-  const [epochs, setEpochs] = useState(50);
+  const [targetFeature, setTargetFeature] = useState("is_intrusion");
+  
+  // Pipeline Splitting States
+  const [trainSplit, setTrainSplit] = useState(80);
+  const [valSplit, setValSplit] = useState(10);
+  const [testSplit, setTestSplit] = useState(10);
+
+  // Hidden Layers Architecture
+  const [layers, setLayers] = useState<Layer[]>([
+    { id: "1", type: "Dense", units: 32, activation: "relu" },
+    { id: "2", type: "Dense", units: 16, activation: "relu" },
+  ]);
+
+  // Hyperparameters
+  const [epochs, setEpochs] = useState(100);
   const [learningRate, setLearningRate] = useState(0.001);
   const [batchSize, setBatchSize] = useState(32);
+  const [optimizer, setOptimizer] = useState("adam");
+  const [loss, setLoss] = useState("bce");
+  const [earlyStopping, setEarlyStopping] = useState(true);
+
+  // Saving / Training States
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedbackMsg, setFeedbackMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const activeDataset = DATASETS.find((d) => d.id === selectedDatasetId) || DATASETS[0];
+
+  // Adjust dataset fields when selection changes
+  useEffect(() => {
+    setSelectedFeatures(activeDataset.features.slice(0, 6).map((f) => f.name));
+    setTargetFeature(activeDataset.targets[0]);
+    
+    // Automatically pre-configure default tasks, loss functions, and output layers
+    if (activeDataset.taskType === "classification") {
+      setLoss("bce");
+    } else {
+      setLoss("mse");
+    }
+  }, [selectedDatasetId]);
 
   const addLayer = () => {
     const newLayer: Layer = {
       id: crypto.randomUUID(),
       type: "Dense",
-      units: 32,
+      units: 16,
       activation: "relu",
     };
     setLayers([...layers, newLayer]);
   };
 
   const removeLayer = (id: string) => {
+    if (layers.length <= 1) return; // Keep at least one hidden layer
     setLayers(layers.filter((l) => l.id !== id));
   };
 
+  const updateLayerUnits = (id: string, units: number) => {
+    setLayers(layers.map((l) => (l.id === id ? { ...l, units: Math.max(1, units) } : l)));
+  };
+
+  const updateLayerActivation = (id: string, act: Layer["activation"]) => {
+    setLayers(layers.map((l) => (l.id === id ? { ...l, activation: act } : l)));
+  };
+
+  const toggleFeature = (featName: string) => {
+    if (selectedFeatures.includes(featName)) {
+      if (selectedFeatures.length <= 1) return; // Must select at least one feature
+      setSelectedFeatures(selectedFeatures.filter((f) => f !== featName));
+    } else {
+      setSelectedFeatures([...selectedFeatures, featName]);
+    }
+  };
+
+  const handleSplitChange = (val: number) => {
+    // Standardize Train + Val + Test = 100%
+    setTrainSplit(val);
+    const remainder = 100 - val;
+    setValSplit(Math.round(remainder / 2));
+    setTestSplit(Math.round(remainder / 2));
+  };
+
+  const getExperimentPayload = () => {
+    // Generate final layer manifest matching mongoose schema requirements
+    // C++ modules expect input size, hidden layers units, and final single output unit (e.g. 1)
+    const hiddenUnits = layers.map((l) => l.units);
+    const inputSize = selectedFeatures.length;
+    const outputSize = 1; // BCE or MSE prediction scalar
+
+    const activations = layers.map((l) => l.activation);
+    // Add activation for the final output layer (Sigmoid for binary classification, linear for regression)
+    activations.push(activeDataset.taskType === "classification" ? "sigmoid" : "linear");
+
+    return {
+      name,
+      description: `Training pipeline for ${activeDataset.name} using custom input features.`,
+      status: "draft" as const,
+      config: {
+        task: activeDataset.taskType,
+        modelType: "neural_network" as const,
+        layers: [inputSize, ...hiddenUnits, outputSize],
+        activations,
+        loss: loss.toUpperCase(),
+        batchSize,
+        epochs,
+        learningRate,
+        optimizer: optimizer.charAt(0).toUpperCase() + optimizer.slice(1),
+        validationSplit: valSplit / 100,
+        testSplit: testSplit / 100,
+        earlyStopping,
+        patience: 10,
+        dataPath: null,
+        datasetName: selectedDatasetId,
+        selectedFeatures,
+        targetFeature,
+        seed: 42,
+      },
+    };
+  };
+
+  const saveDraft = async () => {
+    setIsSubmitting(true);
+    setFeedbackMsg(null);
+    try {
+      const payload = getExperimentPayload();
+      await experimentsApi.create(payload);
+      setFeedbackMsg({ type: "success", text: "Pipeline draft saved successfully to database." });
+      setTimeout(() => navigate("/experiments"), 1500);
+    } catch (e: any) {
+      setFeedbackMsg({ type: "error", text: e.message || "Failed to save draft." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const startTraining = async () => {
+    setIsSubmitting(true);
+    setFeedbackMsg(null);
+    try {
+      const payload = getExperimentPayload();
+      const res = await experimentsApi.create(payload);
+      if (res.experiment && res.experiment._id) {
+        await experimentsApi.startTraining(res.experiment._id);
+        setFeedbackMsg({ type: "success", text: "Job successfully enqueued. Launching training process..." });
+        setTimeout(() => navigate(`/experiments/${res.experiment._id}`), 1500);
+      }
+    } catch (e: any) {
+      setFeedbackMsg({ type: "error", text: e.message || "Failed to start training process." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Calculates estimated training weight parameter count
+  const calculateParameters = () => {
+    let params = 0;
+    let prev = selectedFeatures.length;
+    for (const l of layers) {
+      params += prev * l.units + l.units; // w * x + b
+      prev = l.units;
+    }
+    params += prev * 1 + 1; // Final output neuron parameters
+    return params;
+  };
+
+  // Stepper Header
+  const steps = [
+    { num: 1, label: "Dataset Selection", icon: Database },
+    { num: 2, label: "Features & Targets", icon: Grid2X2 },
+    { num: 3, label: "Splitting Ratio", icon: Sliders },
+    { num: 4, label: "Engine configuration", icon: Settings2 },
+  ];
+
   return (
-    <Container className="py-8 pt-24">
-      {/* Header */}
+    <Container className="py-8 pt-24 max-w-7xl">
+      {/* Upper Navigation */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="mb-8"
+        className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800/40 pb-6"
       >
-        <Flex justify="between" wrap>
-          <div>
-            <Link
-              to="/experiments"
-              className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-300 transition-colors mb-2"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Back to experiments
-            </Link>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              <FlaskConical className="h-7 w-7 text-green-400" />
-              {name}
-            </h1>
+        <div>
+          <Link
+            to="/experiments"
+            className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-green-400 transition-colors mb-2 group"
+          >
+            <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            Back to Experiments
+          </Link>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-green-500/20 to-green-700/20 border border-green-500/20 flex items-center justify-center">
+              <FlaskConical className="h-5 w-5 text-green-400" />
+            </div>
+            <div>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="bg-transparent border-b border-transparent hover:border-neutral-800 focus:border-green-500 focus:outline-none text-2xl font-extrabold text-white tracking-tight w-72 transition-colors py-0.5"
+              />
+              <p className="text-xs text-neutral-500">Pipeline Manifest Builder</p>
+            </div>
           </div>
-          <div className="flex gap-3 mt-4 sm:mt-0">
-            <Button variant="outline" size="lg">
-              <Save className="h-4 w-4 mr-2" />
-              Save Draft
-            </Button>
-            <Button size="lg">
-              <Play className="h-4 w-4 mr-2" />
-              Start Training
-            </Button>
-          </div>
-        </Flex>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Button variant="outline" size="lg" onClick={saveDraft} disabled={isSubmitting}>
+            <Save className="h-4 w-4 mr-2" />
+            Save Draft
+          </Button>
+          <Button size="lg" className="bg-green-500 hover:bg-green-600 text-neutral-950 font-bold" onClick={startTraining} disabled={isSubmitting}>
+            <Play className="h-4 w-4 mr-2 fill-neutral-950" />
+            Start Training
+          </Button>
+        </div>
       </motion.div>
 
-      <Grid cols={2} gap="md">
-        {/* Layer builder */}
+      {/* Stepper Wizard Bar */}
+      <div className="mb-10 bg-neutral-900/30 border border-neutral-850 rounded-2xl p-4 backdrop-blur-sm">
+        <div className="flex justify-between items-center relative">
+          <div className="absolute left-6 right-6 top-1/2 h-0.5 bg-neutral-800 -translate-y-1/2 z-0" />
+          {steps.map((st) => {
+            const Icon = st.icon;
+            const isCompleted = currentStep > st.num;
+            const isActive = currentStep === st.num;
+            return (
+              <div
+                key={st.num}
+                onClick={() => setCurrentStep(st.num)}
+                className="flex flex-col items-center relative z-10 cursor-pointer group"
+              >
+                <div
+                  className={`h-11 w-11 rounded-xl flex items-center justify-center border font-mono font-bold text-sm transition-all duration-300 ${
+                    isActive
+                      ? "bg-green-500 border-green-400 text-neutral-950 shadow-[0_0_15px_rgba(34,197,94,0.35)]"
+                      : isCompleted
+                      ? "bg-neutral-850 border-green-500/40 text-green-400"
+                      : "bg-neutral-900 border-neutral-800 text-neutral-500 group-hover:border-neutral-700"
+                  }`}
+                >
+                  {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : <Icon className="h-4 w-4" />}
+                </div>
+                <span
+                  className={`mt-2 text-xs font-semibold tracking-wide uppercase transition-colors hidden sm:block ${
+                    isActive ? "text-green-400" : "text-neutral-500 group-hover:text-neutral-400"
+                  }`}
+                >
+                  {st.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {feedbackMsg && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+          className={`mb-6 p-4 rounded-xl border flex items-center gap-3 text-sm font-medium ${
+            feedbackMsg.type === "success"
+              ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400"
+              : "bg-rose-500/5 border-rose-500/20 text-rose-400"
+          }`}
         >
-          <Card className="h-full">
-            <CardHeader>
-              <Flex justify="between">
-                <CardTitle className="flex items-center gap-2">
-                  <Layers className="h-5 w-5 text-green-400" />
-                  Layers
-                </CardTitle>
-                <Button variant="ghost" size="sm" onClick={addLayer}>
-                  <Plus className="h-4 w-4 mr-1" />
-                  Add Layer
-                </Button>
-              </Flex>
-            </CardHeader>
-            <CardContent>
-              <Stack gap="sm">
-                {layers.map((layer, i) => (
-                  <div
-                    key={layer.id}
-                    className="flex items-center gap-3 rounded-xl border border-neutral-800/60 bg-neutral-850/50 px-4 py-3"
+          <Info className="h-4 w-4 shrink-0" />
+          {feedbackMsg.text}
+        </motion.div>
+      )}
+
+      {/* Stepper Forms */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentStep}
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -10 }}
+          transition={{ duration: 0.25 }}
+        >
+          {currentStep === 1 && (
+            <div className="space-y-6">
+              <SectionHeading
+                title="Select Input Dataset"
+                description="Choose the training dataset telemetry for compiling your specialized model."
+              />
+              <Grid cols={3} gap="md">
+                {DATASETS.map((ds) => (
+                  <Card
+                    key={ds.id}
+                    onClick={() => setSelectedDatasetId(ds.id)}
+                    className={`group cursor-pointer border transition-all duration-300 ${
+                      selectedDatasetId === ds.id
+                        ? "border-green-500 bg-green-500/5 shadow-[0_0_20px_rgba(34,197,94,0.06)]"
+                        : "border-neutral-850 bg-neutral-900/10 hover:border-neutral-700"
+                    }`}
                   >
-                    <div className="h-8 w-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center text-xs font-bold text-green-400 font-mono">
-                      {i + 1}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white">
-                        {layer.type}
+                    <CardHeader className="pb-2">
+                      <Flex justify="between" className="mb-2">
+                        <Badge variant={selectedDatasetId === ds.id ? "default" : "secondary"}>
+                          {ds.taskType.toUpperCase()}
+                        </Badge>
+                        <span className="text-xs text-neutral-500 font-mono">
+                          {ds.totalRows.toLocaleString()} rows
+                        </span>
+                      </Flex>
+                      <CardTitle className="text-lg font-bold text-white group-hover:text-green-400 transition-colors">
+                        {ds.id === "cyber_intrusion" ? "Intrusion Packets" : ds.id === "ddos_traffic" ? "DDoS Traffic" : "IIoT Telemetry"}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-neutral-400 mb-4 line-clamp-3">
+                        {ds.description}
                       </p>
-                      <p className="text-xs text-neutral-400">
-                        {layer.units} units · {layer.activation}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => removeLayer(layer.id)}
-                      className="p-1.5 rounded-lg text-neutral-600 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+                      <div className="border-t border-neutral-850 pt-3 flex justify-between items-center text-xs text-neutral-500">
+                        <span>Input Features: <strong className="text-neutral-300 font-mono">{ds.features.length}</strong></span>
+                        <span>Targets: <strong className="text-neutral-300 font-mono">{ds.targets.length}</strong></span>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
-              </Stack>
-            </CardContent>
-          </Card>
-        </motion.div>
+              </Grid>
 
-        {/* Settings */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="space-y-6"
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings2 className="h-5 w-5 text-violet-400" />
-                Hyperparameters
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Stack gap="md">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-neutral-400">
-                    Experiment Name
-                  </label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="input-cyber"
+              {/* Summary of active dataset selection */}
+              <Card className="mt-6 border-neutral-850 bg-neutral-900/20">
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row gap-6 items-center">
+                    <div className="h-16 w-16 shrink-0 rounded-2xl bg-gradient-to-br from-green-400/10 to-violet-500/10 border border-green-500/15 flex items-center justify-center">
+                      <Database className="h-8 w-8 text-green-400" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-bold text-white">{activeDataset.name}</h4>
+                      <p className="text-sm text-neutral-400 mt-1 max-w-3xl">
+                        This dataset supports <strong>{activeDataset.taskType}</strong>. It will be loaded from secure storage into the C++ compiled runtime.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {currentStep === 2 && (
+            <div className="space-y-6">
+              <SectionHeading
+                title="Schema & Columns Selection Matrix"
+                description="Check columns to allocate them as features inside the network input vector, and select your target output."
+              />
+              <Grid cols={3} gap="lg">
+                {/* Feature Selector checklist */}
+                <div className="col-span-2 space-y-4">
+                  <h3 className="text-md font-bold text-white flex items-center gap-2">
+                    <Grid2X2 className="h-4.5 w-4.5 text-green-400" />
+                    Available Features ({selectedFeatures.length} selected)
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {activeDataset.features.map((feat) => {
+                      const isChecked = selectedFeatures.includes(feat.name);
+                      return (
+                        <div
+                          key={feat.name}
+                          onClick={() => toggleFeature(feat.name)}
+                          className={`flex items-center justify-between rounded-xl border p-3 cursor-pointer transition-all duration-200 ${
+                            isChecked
+                              ? "bg-green-500/5 border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.02)]"
+                              : "bg-neutral-900/25 border-neutral-850 hover:border-neutral-800"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`h-4.5 w-4.5 rounded border flex items-center justify-center transition-colors ${
+                                isChecked ? "bg-green-500 border-green-400" : "border-neutral-700 bg-neutral-900"
+                              }`}
+                            >
+                              {isChecked && <div className="h-2 w-2 rounded-sm bg-neutral-950" />}
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-white font-mono">{feat.name}</p>
+                              <p className="text-xs text-neutral-500 uppercase">{feat.type}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Target Column configuration */}
+                <div className="space-y-6">
+                  <Card className="border-neutral-850">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-md font-bold text-white flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-violet-400" />
+                        Target Output Selection
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">
+                          Target Label (Y)
+                        </label>
+                        <select
+                          value={targetFeature}
+                          onChange={(e) => setTargetFeature(e.target.value)}
+                          className="input-cyber w-full py-2 bg-neutral-900 border border-neutral-800 text-white rounded-lg focus:border-green-500 focus:outline-none text-sm px-3"
+                        >
+                          {activeDataset.targets.map((tg) => (
+                            <option key={tg} value={tg}>
+                              {tg}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="rounded-xl bg-neutral-950/40 p-4 border border-neutral-850 space-y-3">
+                        <p className="text-xs text-neutral-400 leading-relaxed">
+                          Choosing a target updates the loss and final layer metrics. Selecting <strong>{targetFeature}</strong> implies a <strong>{activeDataset.taskType}</strong> task with 1 output scalar node.
+                        </p>
+                        <Badge variant="secondary" className="w-fit">
+                          Recommended Loss: {activeDataset.taskType === "classification" ? "BCE" : "MSE"}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Schema stats card */}
+                  <Card className="border-neutral-850 bg-neutral-900/10">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+                        Feature Stats Summary
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2.5">
+                      <div className="flex justify-between text-xs font-mono">
+                        <span className="text-neutral-500">Inputs Locked</span>
+                        <span className="text-green-400">{selectedFeatures.length} Nodes</span>
+                      </div>
+                      <div className="flex justify-between text-xs font-mono">
+                        <span className="text-neutral-500">Output Locked</span>
+                        <span className="text-violet-400">1 Scalar</span>
+                      </div>
+                      <div className="flex justify-between text-xs font-mono">
+                        <span className="text-neutral-500">Task Mode</span>
+                        <span className="text-neutral-300 capitalize">{activeDataset.taskType}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </Grid>
+            </div>
+          )}
+
+          {currentStep === 3 && (
+            <div className="space-y-6">
+              <SectionHeading
+                title="Splitting Ratios & Validation Strategy"
+                description="Allocate records to training, validation, and test arrays to verify performance and avoid overfitting."
+              />
+              <Grid cols={3} gap="lg">
+                <div className="col-span-2 space-y-6">
+                  {/* Slider Control */}
+                  <Card className="border-neutral-850 p-6">
+                    <div className="space-y-6">
+                      <Flex justify="between" className="mb-2">
+                        <span className="text-sm font-bold text-white uppercase tracking-wider">
+                          Training Split Ratio
+                        </span>
+                        <span className="text-lg font-bold text-green-400 font-mono">{trainSplit}%</span>
+                      </Flex>
+                      
+                      <div className="relative pt-1">
+                        <input
+                          type="range"
+                          min="50"
+                          max="90"
+                          value={trainSplit}
+                          onChange={(e) => handleSplitChange(Number(e.target.value))}
+                          className="w-full h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-green-500"
+                        />
+                      </div>
+
+                      {/* Split allocation display */}
+                      <Grid cols={3} gap="md" className="pt-4 border-t border-neutral-850">
+                        <div className="bg-green-500/5 border border-green-500/10 rounded-xl p-4 text-center">
+                          <p className="text-xs text-neutral-400 uppercase tracking-wide">Training</p>
+                          <p className="text-xl font-bold font-mono text-green-400 mt-1">{trainSplit}%</p>
+                          <p className="text-xs text-neutral-500 mt-1">
+                            {Math.round((activeDataset.totalRows * trainSplit) / 100).toLocaleString()} samples
+                          </p>
+                        </div>
+                        <div className="bg-amber-500/5 border border-amber-500/10 rounded-xl p-4 text-center">
+                          <p className="text-xs text-neutral-400 uppercase tracking-wide">Validation</p>
+                          <p className="text-xl font-bold font-mono text-amber-400 mt-1">{valSplit}%</p>
+                          <p className="text-xs text-neutral-500 mt-1">
+                            {Math.round((activeDataset.totalRows * valSplit) / 100).toLocaleString()} samples
+                          </p>
+                        </div>
+                        <div className="bg-violet-500/5 border border-violet-500/10 rounded-xl p-4 text-center">
+                          <p className="text-xs text-neutral-400 uppercase tracking-wide">Testing</p>
+                          <p className="text-xl font-bold font-mono text-violet-400 mt-1">{testSplit}%</p>
+                          <p className="text-xs text-neutral-500 mt-1">
+                            {Math.round((activeDataset.totalRows * testSplit) / 100).toLocaleString()} samples
+                          </p>
+                        </div>
+                      </Grid>
+                    </div>
+                  </Card>
+                </div>
+
+                <div className="space-y-4">
+                  <Card className="border-neutral-850 bg-neutral-900/15">
+                    <CardHeader>
+                      <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+                        <Info className="h-4.5 w-4.5 text-green-400" />
+                        Splitting Guidelines
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-xs text-neutral-400 leading-relaxed space-y-3">
+                      <p>
+                        * **Training Set**: Used to optimize model weights by minimizing the computed loss.
+                      </p>
+                      <p>
+                        * **Validation Set**: Monitored after each epoch. Used for hyperparameter tuning and triggers **Early Stopping** if loss diverges.
+                      </p>
+                      <p>
+                        * **Testing Set**: Evaluated post-training to generate un-biased final validation statistics.
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </Grid>
+            </div>
+          )}
+
+          {currentStep === 4 && (
+            <div className="space-y-6">
+              <Grid cols={3} gap="lg">
+                {/* Visual SVG Network Node Graph */}
+                <div className="col-span-2 space-y-6">
+                  <SectionHeading
+                    title="Engine Network Architecture"
+                    description="Configure nodes and activation triggers to construct your deep learning pipeline."
                   />
-                </div>
-                <Grid cols={3} gap="sm">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-400">
-                      Epochs
-                    </label>
-                    <input
-                      type="number"
-                      value={epochs}
-                      onChange={(e) => setEpochs(Number(e.target.value))}
-                      className="input-cyber"
-                      min={1}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-400">
-                      LR
-                    </label>
-                    <input
-                      type="number"
-                      value={learningRate}
-                      onChange={(e) => setLearningRate(Number(e.target.value))}
-                      className="input-cyber"
-                      step={0.0001}
-                      min={0.0001}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-neutral-400">
-                      Batch Size
-                    </label>
-                    <input
-                      type="number"
-                      value={batchSize}
-                      onChange={(e) => setBatchSize(Number(e.target.value))}
-                      className="input-cyber"
-                      min={1}
-                    />
-                  </div>
-                </Grid>
-              </Stack>
-            </CardContent>
-          </Card>
+                  <Card className="border-neutral-850 p-6">
+                    <Flex justify="between" className="mb-4">
+                      <CardTitle className="text-md font-bold text-white flex items-center gap-2">
+                        <Layers className="h-4.5 w-4.5 text-green-400" />
+                        Network Graph (SVG Representation)
+                      </CardTitle>
+                      <Button variant="outline" size="sm" onClick={addLayer}>
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Hidden Layer
+                      </Button>
+                    </Flex>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-green-400" />
-                Summary
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Stack gap="sm">
-                <div className="flex justify-between text-sm">
-                  <span className="text-neutral-400">Total layers</span>
-                  <span className="text-white font-mono">{layers.length}</span>
+                    {/* Node Visual Graph SVG */}
+                    <div className="bg-neutral-950 rounded-2xl p-4 border border-neutral-850 flex items-center justify-center overflow-x-auto min-h-[220px]">
+                      <svg width="600" height="200" className="max-w-full">
+                        {/* Render Input Features */}
+                        {selectedFeatures.slice(0, 4).map((_, i) => (
+                          <g key={`in-${i}`}>
+                            <circle cx="50" cy={40 + i * 40} r="7" className="fill-green-500/80 stroke-green-400 stroke-2 animate-pulse" />
+                            {i === 3 && selectedFeatures.length > 4 && (
+                              <text x="45" y="180" className="fill-neutral-500 font-mono text-[9px]">+{selectedFeatures.length - 4} more</text>
+                            )}
+                          </g>
+                        ))}
+                        <text x="30" y="20" className="fill-neutral-400 font-mono text-[10px] uppercase font-semibold">Inputs ({selectedFeatures.length})</text>
+
+                        {/* Connections from Input -> Layer 1 */}
+                        {selectedFeatures.slice(0, 4).map((_, i) =>
+                          layers[0] && Array.from({ length: Math.min(layers[0].units, 4) }).map((_, j) => (
+                            <line
+                              key={`c-in-1-${i}-${j}`}
+                              x1="57"
+                              y1={40 + i * 40}
+                              x2="200"
+                              y2={30 + j * 35}
+                              className="stroke-neutral-800/40"
+                              strokeWidth="0.8"
+                            />
+                          ))
+                        )}
+
+                        {/* Render Hidden Layers */}
+                        {layers.map((ly, lIdx) => {
+                          const xPos = 200 + lIdx * 150;
+                          return (
+                            <g key={`l-${ly.id}`}>
+                              <text x={xPos - 40} y="20" className="fill-neutral-400 font-mono text-[10px] uppercase font-semibold">
+                                Layer {lIdx + 1} ({ly.units})
+                              </text>
+                              {Array.from({ length: Math.min(ly.units, 4) }).map((_, i) => (
+                                <circle
+                                  key={`node-${lIdx}-${i}`}
+                                  cx={xPos}
+                                  cy={30 + i * 35}
+                                  r="8"
+                                  className="fill-green-500/20 stroke-green-500 stroke-2"
+                                />
+                              ))}
+                              {ly.units > 4 && (
+                                <text x={xPos - 12} y="175" className="fill-neutral-500 font-mono text-[9px]">
+                                  +{ly.units - 4} nodes
+                                </text>
+                              )}
+
+                              {/* Connections to Next Layer */}
+                              {layers[lIdx + 1] && Array.from({ length: Math.min(ly.units, 4) }).map((_, i) =>
+                                Array.from({ length: Math.min(layers[lIdx + 1].units, 4) }).map((_, j) => (
+                                  <line
+                                    key={`c-${lIdx}-${lIdx+1}-${i}-${j}`}
+                                    x1={xPos + 8}
+                                    y1={30 + i * 35}
+                                    x2={xPos + 150 - 8}
+                                    y2={30 + j * 35}
+                                    className="stroke-neutral-800/40"
+                                    strokeWidth="0.8"
+                                  />
+                                ))
+                              )}
+                            </g>
+                          );
+                        })}
+
+                        {/* Connect Last Hidden Layer to Output Node */}
+                        {layers.length > 0 && Array.from({ length: Math.min(layers[layers.length - 1].units, 4) }).map((_, i) => {
+                          const lastX = 200 + (layers.length - 1) * 150;
+                          return (
+                            <line
+                              key={`c-last-out-${i}`}
+                              x1={lastX + 8}
+                              y1={30 + i * 35}
+                              x2="520"
+                              y2="90"
+                              className="stroke-violet-500/25"
+                              strokeWidth="1.0"
+                            />
+                          );
+                        })}
+
+                        {/* Render Output Node */}
+                        <circle cx="520" cy="90" r="9" className="fill-violet-500/20 stroke-violet-400 stroke-2" />
+                        <text x="490" y="20" className="fill-neutral-400 font-mono text-[10px] uppercase font-semibold">Output (1)</text>
+                      </svg>
+                    </div>
+
+                    {/* Layer Editor List */}
+                    <div className="space-y-3 mt-4">
+                      {layers.map((layer, idx) => (
+                        <div
+                          key={layer.id}
+                          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-neutral-850 bg-neutral-900/10 px-4 py-3"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="h-7 w-7 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center text-[10px] font-bold text-green-400 font-mono">
+                              H{idx + 1}
+                            </div>
+                            <span className="text-sm font-semibold text-white">Dense Layer</span>
+                          </div>
+
+                          <Flex gap="md" className="flex-1 sm:justify-end">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs text-neutral-500 font-mono">Nodes:</span>
+                              <input
+                                type="number"
+                                value={layer.units}
+                                onChange={(e) => updateLayerUnits(layer.id, Number(e.target.value))}
+                                className="input-cyber w-16 text-center text-xs py-1"
+                                min={1}
+                                max={256}
+                              />
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs text-neutral-500 font-mono">Activation:</span>
+                              <select
+                                value={layer.activation}
+                                onChange={(e) => updateLayerActivation(layer.id, e.target.value as any)}
+                                className="bg-neutral-950 border border-neutral-800 text-xs rounded-lg py-1 px-2 focus:outline-none focus:border-green-500 text-white"
+                              >
+                                <option value="relu">ReLU</option>
+                                <option value="sigmoid">Sigmoid</option>
+                                <option value="tanh">Tanh</option>
+                                <option value="linear">Linear</option>
+                              </select>
+                            </div>
+                            <button
+                              onClick={() => removeLayer(layer.id)}
+                              disabled={layers.length <= 1}
+                              className="p-1.5 rounded-lg text-neutral-600 hover:text-rose-400 hover:bg-rose-500/10 transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </Flex>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-neutral-400">Total params</span>
-                  <span className="text-white font-mono">
-                    {(layers.reduce((sum, l) => sum + l.units * (layers.indexOf(l) > 0 ? layers[layers.indexOf(l) - 1].units : 784), 0)).toLocaleString()}
-                  </span>
+
+                <div className="space-y-6">
+                  {/* Optimizer / Loss settings */}
+                  <Card className="border-neutral-850">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+                        <Settings2 className="h-4.5 w-4.5 text-violet-400" />
+                        Hyperparameters
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-neutral-400">Epochs</label>
+                        <input
+                          type="number"
+                          value={epochs}
+                          onChange={(e) => setEpochs(Number(e.target.value))}
+                          className="input-cyber w-full py-1.5 text-sm"
+                          min={1}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-neutral-400">Learning Rate</label>
+                        <input
+                          type="number"
+                          value={learningRate}
+                          onChange={(e) => setLearningRate(Number(e.target.value))}
+                          className="input-cyber w-full py-1.5 text-sm"
+                          step={0.0001}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-neutral-400">Batch Size</label>
+                        <input
+                          type="number"
+                          value={batchSize}
+                          onChange={(e) => setBatchSize(Number(e.target.value))}
+                          className="input-cyber w-full py-1.5 text-sm"
+                          min={1}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-neutral-400">Optimizer</label>
+                        <select
+                          value={optimizer}
+                          onChange={(e) => setOptimizer(e.target.value)}
+                          className="w-full bg-neutral-900 border border-neutral-800 rounded-lg text-sm py-1.5 px-3 focus:outline-none focus:border-green-500 text-white"
+                        >
+                          <option value="adam">Adam</option>
+                          <option value="sgd">SGD</option>
+                        </select>
+                      </div>
+                      <div className="flex items-center justify-between rounded-xl bg-neutral-950/40 p-3 border border-neutral-850 mt-2">
+                        <span className="text-xs text-neutral-400 font-medium">Early Stopping</span>
+                        <input
+                          type="checkbox"
+                          checked={earlyStopping}
+                          onChange={(e) => setEarlyStopping(e.target.checked)}
+                          className="h-4 w-4 accent-green-500 cursor-pointer"
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Summary Card */}
+                  <Card className="border-neutral-850 bg-neutral-900/10">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+                        Compile Parameters
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="flex justify-between text-xs font-mono">
+                        <span className="text-neutral-500">Loss Metric</span>
+                        <span className="text-white uppercase">{loss}</span>
+                      </div>
+                      <div className="flex justify-between text-xs font-mono">
+                        <span className="text-neutral-500">Weight Count</span>
+                        <span className="text-white">{calculateParameters().toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-xs font-mono">
+                        <span className="text-neutral-500">Est. Train Time</span>
+                        <span className="text-white">~{Math.round(epochs * 0.45)}s</span>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-neutral-400">Estimated time</span>
-                  <span className="text-white font-mono">
-                    ~{Math.round(epochs * 0.6)}s
-                  </span>
-                </div>
-              </Stack>
-            </CardContent>
-          </Card>
+              </Grid>
+            </div>
+          )}
         </motion.div>
-      </Grid>
+      </AnimatePresence>
+
+      {/* Stepper Footer Navigation */}
+      <div className="mt-8 pt-6 border-t border-neutral-800/40 flex justify-between">
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
+          disabled={currentStep === 1}
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Previous Step
+        </Button>
+        {currentStep < 4 ? (
+          <Button
+            size="lg"
+            className="bg-neutral-800 hover:bg-neutral-750 text-white font-semibold"
+            onClick={() => setCurrentStep(currentStep + 1)}
+          >
+            Next Step
+            <ChevronRight className="h-4 w-4 ml-2" />
+          </Button>
+        ) : (
+          <Button
+            size="lg"
+            className="bg-green-500 hover:bg-green-600 text-neutral-950 font-bold"
+            onClick={startTraining}
+            disabled={isSubmitting}
+          >
+            <Play className="h-4 w-4 mr-2 fill-neutral-950" />
+            Launch Experiment
+          </Button>
+        )}
+      </div>
     </Container>
   );
 }

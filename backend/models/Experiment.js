@@ -34,9 +34,13 @@ const ExperimentSchema = new Schema({
     learningRate: { type: Number, default: 0.001 },
     optimizer: { type: String, default: 'adam' },
     validationSplit: { type: Number, default: 0.2, min: 0, max: 0.5 },
+    testSplit: { type: Number, default: 0.2, min: 0, max: 0.5 },
     earlyStopping: { type: Boolean, default: true },
     patience: { type: Number, default: 10 },
     dataPath: { type: String, default: null },
+    datasetName: { type: String, default: 'cyber_intrusion' },
+    selectedFeatures: { type: [String], default: [] },
+    targetFeature: { type: String, default: '' },
     seed: { type: Number, default: 42 },
   },
   results: {
