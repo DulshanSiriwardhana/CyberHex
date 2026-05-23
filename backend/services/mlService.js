@@ -69,6 +69,7 @@ export function buildPythonConfig(experiment) {
     test_split: cfg.testSplit || 0.2,
     validation_split: cfg.validationSplit || 0.2,
     custom_data: cfg.customData || null,
+    activations: cfg.activations || [],
     seed: cfg.seed || 42,
   };
 }

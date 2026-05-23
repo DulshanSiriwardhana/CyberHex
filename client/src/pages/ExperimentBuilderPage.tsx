@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -117,6 +117,7 @@ const DATASETS: DatasetSpec[] = [
 
 export default function ExperimentBuilderPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
   const [name, setName] = useState("Cyber Threat Classifier");
   const [selectedDatasetId, setSelectedDatasetId] = useState("cyber_intrusion");
@@ -138,6 +139,51 @@ export default function ExperimentBuilderPage() {
     { id: "1", type: "Dense", units: 32, activation: "relu" },
     { id: "2", type: "Dense", units: 16, activation: "relu" },
   ]);
+
+  useEffect(() => {
+    const state = location.state as any;
+    if (state?.prebuiltLayers) {
+      const designerLayers = state.prebuiltLayers;
+      const mapped: Layer[] = [];
+
+      for (let i = 0; i < designerLayers.length; i++) {
+        const current = designerLayers[i];
+        if (current.type === "Dense") {
+          const next = designerLayers[i + 1];
+          let activation: any = "relu";
+          if (next && ["ReLU", "Sigmoid", "Tanh", "Softmax"].includes(next.type)) {
+            activation = next.type.toLowerCase();
+            i++;
+          }
+          mapped.push({
+            id: current.id,
+            type: "Dense",
+            units: current.params?.out_features || 32,
+            activation
+          });
+        } else if (["ReLU", "Sigmoid", "Tanh", "Softmax", "GELU"].includes(current.type)) {
+          // Skip orphaned activations or handle them
+        } else {
+          mapped.push({
+            id: current.id,
+            type: current.type as any,
+            units: current.params?.out_features || 64,
+            activation: "linear",
+            params: current.params
+          });
+        }
+      }
+
+      if (mapped.length > 0) setLayers(mapped);
+
+      if (state.prebuiltParams) {
+        if (state.prebuiltParams.optimizer) setOptimizer(state.prebuiltParams.optimizer.toLowerCase());
+        if (state.prebuiltParams.learningRate) setLearningRate(state.prebuiltParams.learningRate);
+        if (state.prebuiltParams.name) setName(state.prebuiltParams.name);
+      }
+      setCurrentStep(4);
+    }
+  }, [location.state]);
 
   const [epochs, setEpochs] = useState(100);
   const [learningRate, setLearningRate] = useState(0.001);
@@ -393,7 +439,7 @@ export default function ExperimentBuilderPage() {
 
   return (
     <Container className="py-8 pt-24 max-w-7xl">
-      {}
+      { }
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -435,7 +481,7 @@ export default function ExperimentBuilderPage() {
         </div>
       </motion.div>
 
-      {}
+      { }
       <div className="mb-10 bg-neutral-900/30 border border-neutral-850 rounded-2xl p-4 backdrop-blur-sm">
         <div className="flex justify-between items-center relative">
           <div className="absolute left-6 right-6 top-1/2 h-0.5 bg-neutral-800 -translate-y-1/2 z-0" />
@@ -485,7 +531,7 @@ export default function ExperimentBuilderPage() {
         </motion.div>
       )}
 
-      {}
+      { }
       <AnimatePresence mode="wait">
         <motion.div
           key={currentStep}
@@ -637,7 +683,7 @@ export default function ExperimentBuilderPage() {
                 </motion.div>
               )}
 
-              {}
+              { }
               <Card className="mt-6 border-neutral-850 bg-neutral-900/20">
                 <CardContent className="p-6">
                   <div className="flex flex-col md:flex-row gap-6 items-center">
@@ -663,7 +709,7 @@ export default function ExperimentBuilderPage() {
                 description="Check columns to allocate them as features inside the network input vector, and select your target output."
               />
               <Grid cols={3} gap="lg">
-                {}
+                { }
                 <div className="col-span-2 space-y-4">
                   <h3 className="text-md font-bold text-white flex items-center gap-2">
                     <Grid2X2 className="h-4 w-4 text-green-400" />
@@ -699,7 +745,7 @@ export default function ExperimentBuilderPage() {
                   </div>
                 </div>
 
-                {}
+                { }
                 <div className="space-y-6">
                   <Card className="border-neutral-850">
                     <CardHeader className="pb-3">
@@ -736,7 +782,7 @@ export default function ExperimentBuilderPage() {
                     </CardContent>
                   </Card>
 
-                  {}
+                  { }
                   <Card className="border-neutral-850 bg-neutral-900/10">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-xs font-bold uppercase tracking-wider text-neutral-400">
@@ -771,7 +817,7 @@ export default function ExperimentBuilderPage() {
               />
               <Grid cols={3} gap="lg">
                 <div className="col-span-2 space-y-6">
-                  {}
+                  { }
                   <Card className="border-neutral-850 p-6">
                     <div className="space-y-6">
                       <Flex justify="between" className="mb-2">
@@ -792,7 +838,7 @@ export default function ExperimentBuilderPage() {
                         />
                       </div>
 
-                      {}
+                      { }
                       <Grid cols={3} gap="md" className="pt-4 border-t border-neutral-850">
                         <div className="bg-green-500/5 border border-green-500/10 rounded-xl p-4 text-center">
                           <p className="text-xs text-neutral-400 uppercase tracking-wide">Training</p>
@@ -848,7 +894,7 @@ export default function ExperimentBuilderPage() {
           {currentStep === 4 && (
             <div className="space-y-6">
               <Grid cols={3} gap="lg">
-                {}
+                { }
                 <div className="col-span-2 space-y-6">
                   <SectionHeading
                     title="Engine Network Architecture"
@@ -866,10 +912,10 @@ export default function ExperimentBuilderPage() {
                       </Button>
                     </Flex>
 
-                    {}
+                    { }
                     <div className="bg-neutral-950 rounded-2xl p-4 border border-neutral-850 flex items-center justify-center overflow-x-auto min-h-[220px]">
                       <svg width="600" height="200" className="max-w-full">
-                        {}
+                        { }
                         {selectedFeatures.slice(0, 4).map((_, i) => (
                           <g key={`in-${i}`}>
                             <circle cx="50" cy={40 + i * 40} r="7" className="fill-green-500/80 stroke-green-400 stroke-2 animate-pulse" />
@@ -880,7 +926,7 @@ export default function ExperimentBuilderPage() {
                         ))}
                         <text x="30" y="20" className="fill-neutral-400 font-mono text-[10px] uppercase font-semibold">Inputs ({selectedFeatures.length})</text>
 
-                        {}
+                        { }
                         {selectedFeatures.slice(0, 4).map((_, i) =>
                           layers[0] && Array.from({ length: Math.min(layers[0].units, 4) }).map((_, j) => (
                             <line
@@ -895,7 +941,7 @@ export default function ExperimentBuilderPage() {
                           ))
                         )}
 
-                        {}
+                        { }
                         {layers.map((ly, lIdx) => {
                           const xPos = 200 + lIdx * 150;
                           return (
@@ -918,7 +964,7 @@ export default function ExperimentBuilderPage() {
                                 </text>
                               )}
 
-                              {}
+                              { }
                               {layers[lIdx + 1] && Array.from({ length: Math.min(ly.units, 4) }).map((_, i) =>
                                 Array.from({ length: Math.min(layers[lIdx + 1].units, 4) }).map((_, j) => (
                                   <line
@@ -936,7 +982,7 @@ export default function ExperimentBuilderPage() {
                           );
                         })}
 
-                        {}
+                        { }
                         {layers.length > 0 && Array.from({ length: Math.min(layers[layers.length - 1].units, 4) }).map((_, i) => {
                           const lastX = 200 + (layers.length - 1) * 150;
                           return (
@@ -952,13 +998,13 @@ export default function ExperimentBuilderPage() {
                           );
                         })}
 
-                        {}
+                        { }
                         <circle cx="520" cy="90" r="9" className="fill-violet-500/20 stroke-violet-400 stroke-2" />
                         <text x="490" y="20" className="fill-neutral-400 font-mono text-[10px] uppercase font-semibold">Output (1)</text>
                       </svg>
                     </div>
 
-                    {}
+                    { }
                     <div className="space-y-3 mt-4">
                       {layers.map((layer, idx) => (
                         <div
@@ -1012,7 +1058,7 @@ export default function ExperimentBuilderPage() {
                 </div>
 
                 <div className="space-y-6">
-                  {}
+                  { }
                   <Card className="border-neutral-850">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
@@ -1074,7 +1120,7 @@ export default function ExperimentBuilderPage() {
                     </CardContent>
                   </Card>
 
-                  {}
+                  { }
                   <Card className="border-neutral-850 bg-neutral-900/10">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-xs font-bold uppercase tracking-wider text-neutral-400">
@@ -1103,7 +1149,7 @@ export default function ExperimentBuilderPage() {
         </motion.div>
       </AnimatePresence>
 
-      {}
+      { }
       <div className="mt-8 pt-6 border-t border-neutral-800/40 flex justify-between">
         <Button
           variant="outline"

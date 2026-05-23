@@ -50,7 +50,7 @@ class LinearRegression:
         return np.dot(X, self.weights) + self.bias
 
 class NeuralNetwork:
-    def __init__(self, layers, learning_rate=0.001, epochs=100, batch_size=32, task='regression', optimizer='adam'):
+    def __init__(self, layers, learning_rate=0.001, epochs=100, batch_size=32, task='regression', optimizer='adam', activations=None):
         self.layers = layers
         self.lr = learning_rate
         self.epochs = epochs
@@ -59,6 +59,18 @@ class NeuralNetwork:
         self.optimizer = optimizer
         self.weights = []
         self.biases = []
+        self.activations_config = activations
+
+        # Ensure we have enough activations; if not, default them
+        if not self.activations_config or len(self.activations_config) < len(layers) - 1:
+            default_hidden = 'relu'
+            default_output = 'softmax' if task == 'classification' else 'linear'
+            num_needed = len(layers) - 1
+            if not self.activations_config:
+                self.activations_config = [default_hidden] * (num_needed - 1) + [default_output]
+            else:
+                self.activations_config = self.activations_config + [default_hidden] * (num_needed - len(self.activations_config))
+
         self._build()
 
     def _build(self):
@@ -71,26 +83,46 @@ class NeuralNetwork:
             self.weights.append(np.random.uniform(-limit, limit, (fan_in, fan_out)))
             self.biases.append(np.zeros(fan_out))
 
+    def _activate(self, z, method):
+        method = method.lower()
+        if method == 'relu':
+            return np.maximum(0, z)
+        if method == 'sigmoid':
+            return 1 / (1 + np.exp(-np.clip(z, -500, 500)))
+        if method == 'tanh':
+            return np.tanh(z)
+        if method == 'softmax':
+            exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))
+            return exp_z / np.sum(exp_z, axis=1, keepdims=True)
+        return z
+
+    def _activate_derivative(self, a, method):
+        method = method.lower()
+        if method == 'relu':
+            return (a > 0).astype(float)
+        if method == 'sigmoid':
+            return a * (1 - a)
+        if method == 'tanh':
+            return 1 - a**2
+        return np.ones_like(a)
+
     def _forward(self, X):
         activations = [X]
         zs = []
         for i in range(len(self.weights)):
             z = np.dot(activations[-1], self.weights[i]) + self.biases[i]
             zs.append(z)
-            if i == len(self.weights) - 1:
-                if self.task == 'classification':
-                    exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))
-                    a = exp_z / np.sum(exp_z, axis=1, keepdims=True)
-                else:
-                    a = z
-            else:
-                a = np.maximum(0, z)
+            a = self._activate(z, self.activations_config[i])
             activations.append(a)
         return activations, zs
 
     def _compute_loss(self, y_pred, y_true):
         if self.task == 'classification':
             y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
+            if y_pred.shape[1] == 1:
+                # Binary Cross Entropy
+                return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+            # Categorical Cross Entropy
             return -np.mean(np.sum(y_true * np.log(y_pred), axis=1))
         return np.mean((y_pred - y_true.reshape(-1, 1)) ** 2)
 
@@ -99,25 +131,34 @@ class NeuralNetwork:
         grads_b = [np.zeros_like(b) for b in self.biases]
         m = X.shape[0]
 
-        if self.task == 'classification':
-            delta = activations[-1] - y
+        # Output layer delta
+        # For softmax + categorical cross-entropy or sigmoid + binary cross-entropy or linear + MSE, delta is (a - y)
+        last_act = self.activations_config[-1].lower()
+        if (last_act == 'softmax') or (last_act == 'sigmoid') or (last_act == 'linear'):
+            target = y if (self.task == 'classification' and y.ndim > 1) else y.reshape(-1, 1)
+            delta = activations[-1] - target
         else:
-            delta = activations[-1] - y.reshape(-1, 1)
+            # General case for other output activations
+            target = y if (self.task == 'classification' and y.ndim > 1) else y.reshape(-1, 1)
+            error = activations[-1] - target
+            delta = error * self._activate_derivative(activations[-1], last_act)
 
         for i in reversed(range(len(self.weights))):
             grads_w[i] = np.dot(activations[i].T, delta) / m
             grads_b[i] = np.sum(delta, axis=0) / m
             if i > 0:
-                delta = np.dot(delta, self.weights[i].T) * (activations[i] > 0)
+                delta = np.dot(delta, self.weights[i].T) * self._activate_derivative(activations[i], self.activations_config[i-1])
 
         return grads_w, grads_b
 
     def fit(self, X, y, X_val=None, y_val=None):
-        if self.task == 'classification':
+        if self.task == 'classification' and self.layers[-1] > 1:
             num_classes = self.layers[-1]
             y_onehot = np.zeros((y.shape[0], num_classes))
             y_onehot[np.arange(y.shape[0]), y.astype(int)] = 1
             y = y_onehot
+        elif self.task == 'classification' and self.layers[-1] == 1:
+            y = y.reshape(-1, 1)
 
         n_samples = X.shape[0]
         for epoch in range(self.epochs):
@@ -142,10 +183,12 @@ class NeuralNetwork:
 
             val_loss = None
             if X_val is not None and y_val is not None:
-                if self.task == 'classification':
-                    yv_onehot = np.zeros((y_val.shape[0], num_classes))
+                if self.task == 'classification' and self.layers[-1] > 1:
+                    yv_onehot = np.zeros((y_val.shape[0], self.layers[-1]))
                     yv_onehot[np.arange(y_val.shape[0]), y_val.astype(int)] = 1
                     yv = yv_onehot
+                elif self.task == 'classification' and self.layers[-1] == 1:
+                    yv = y_val.reshape(-1, 1)
                 else:
                     yv = y_val
                 act_val, _ = self._forward(X_val)
@@ -252,18 +295,28 @@ def main():
     X_val, y_val = None, None
 
     if data_path and os.path.exists(data_path):
-        size_gb = os.path.getsize(data_path) / (1024**3)
-        if size_gb > 0.1:
-             print(json.dumps({"type": "log", "message": f"Large dataset detected ({size_gb:.2f} GB). Enabling streaming mode."}), flush=True)
-             gen = DataGenerator(data_path, task, batch_size)
-
-             first_x, first_y = next(gen.flow())
-             X_train, y_train = first_x, first_y
+        size_mb = os.path.getsize(data_path) / (1024**2)
+        if size_mb > 500:
+             print(json.dumps({"type": "log", "message": f"Very large dataset detected ({size_mb:.2f} MB). The current engine will load a 500MB sample."}), flush=True)
+             gen = DataGenerator(data_path, task, batch_size=10000)
+             # Basic sampling for very large files
+             X_collect, y_collect = [], []
+             gen_flow = gen.flow()
+             for _ in range(50): # Take up to 500k samples
+                 try:
+                     bx, by = next(gen_flow)
+                     X_collect.append(bx)
+                     y_collect.append(by)
+                 except StopIteration: break
+             X_train = np.concatenate(X_collect, axis=0)
+             y_train = np.concatenate(y_collect, axis=0)
         else:
             try:
-
+                print(json.dumps({"type": "log", "message": f"Loading dataset ({size_mb:.2f} MB) into memory..."}), flush=True)
                 if data_path.endswith('.csv'):
-                    data = np.loadtxt(data_path, delimiter=',', skiprows=1)
+                    # Use a more memory-efficient way to load CSV if possible
+                    # but stick to numpy as per project style
+                    data = np.genfromtxt(data_path, delimiter=',', skip_header=1)
                     X_train = data[:, :-1]
                     y_train = data[:, -1]
                 else:
@@ -286,6 +339,14 @@ def main():
         X_train = X_train[:split_idx]
         y_train = y_train[:split_idx]
 
+    # Feature Scaling: Essential for Neural Networks
+    print(json.dumps({"type": "log", "message": "Applying feature scaling (StandardScaler)..."}), flush=True)
+    mean = np.mean(X_train, axis=0)
+    std = np.std(X_train, axis=0) + 1e-8
+    X_train = (X_train - mean) / std
+    if X_val is not None:
+        X_val = (X_val - mean) / std
+
     model_type = config.get('model_type', 'neural_network')
     epochs = config.get('epochs', 100)
     lr = config.get('learning_rate', 0.001)
@@ -298,13 +359,19 @@ def main():
         model = LinearRegression(learning_rate=lr, epochs=epochs, batch_size=batch_size)
     else:
         layers = config.get('layers', [X_train.shape[1], 64, 32, 1])
+        activations = config.get('activations', [])
         if layers[0] != X_train.shape[1]:
             layers = [X_train.shape[1]] + layers
+            # If we added an input layer, we might need an activation for the transition
+            # but builder usually sends activations for all transitions including the last one.
         if task == 'classification':
-            num_classes = len(np.unique(y))
-            if layers[-1] != num_classes:
+            num_classes = len(np.unique(y_train))
+            if layers[-1] == 1 and num_classes == 2:
+                # Binary classification, keep as 1 node
+                pass
+            elif layers[-1] != num_classes:
                 layers[-1] = num_classes
-        model = NeuralNetwork(layers=layers, learning_rate=lr, epochs=epochs, batch_size=batch_size, task=task)
+        model = NeuralNetwork(layers=layers, learning_rate=lr, epochs=epochs, batch_size=batch_size, task=task, activations=activations)
 
     train_loss, val_loss = model.fit(X_train, y_train, X_val, y_val)
 
@@ -315,6 +382,10 @@ def main():
             save_dict[f'weight_{i}'] = w
             save_dict[f'bias_{i}'] = b
         np.savez(model_path, **save_dict)
+    elif model_type == 'linear_regression':
+        np.savez(model_path, weights=model.weights, bias=model.bias)
+    else:
+        model_path = None
 
     print(json.dumps({
         "type": "training_complete",
