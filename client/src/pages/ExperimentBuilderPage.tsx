@@ -188,9 +188,18 @@ export default function ExperimentBuilderPage() {
   const [epochs, setEpochs] = useState(100);
   const [learningRate, setLearningRate] = useState(0.001);
   const [batchSize, setBatchSize] = useState(32);
-  const [optimizer, setOptimizer] = useState("adam");
+  const [optimizer, setOptimizer] = useState("adamw");
+  const [lrSchedule, setLrSchedule] = useState("cosine");
   const [loss, setLoss] = useState("bce");
   const [earlyStopping, setEarlyStopping] = useState(true);
+  const [patience, setPatience] = useState(15);
+  // Ultra-Max-Pro regularization
+  const [dropoutRate, setDropoutRate] = useState(0.0);
+  const [useBatchNorm, setUseBatchNorm] = useState(false);
+  const [gradientClip, setGradientClip] = useState(5.0);
+  const [labelSmoothing, setLabelSmoothing] = useState(0.0);
+  const [weightDecay, setWeightDecay] = useState(0.0001);
+  const [warmupEpochs, setWarmupEpochs] = useState(5);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -349,22 +358,19 @@ export default function ExperimentBuilderPage() {
   };
 
   const getExperimentPayload = () => {
-
     const hiddenUnits = layers.map((l) => l.units);
     const inputSize = selectedFeatures.length;
     const outputSize = 1;
-
     const activations = layers.map((l) => l.activation);
-
-    activations.push(activeDatasetObj.taskType === "classification" ? "sigmoid" : "linear");
+    activations.push(activeDatasetObj.taskType === 'classification' ? 'sigmoid' : 'linear');
 
     return {
       name,
       description: `Training pipeline for ${activeDatasetObj.name} using custom input features.`,
-      status: "draft" as const,
+      status: 'draft' as const,
       config: {
         task: activeDatasetObj.taskType,
-        modelType: "neural_network" as const,
+        modelType: 'neural_network' as const,
         layers: [inputSize, ...hiddenUnits, outputSize],
         activations,
         loss: loss.toUpperCase(),
@@ -372,15 +378,23 @@ export default function ExperimentBuilderPage() {
         epochs,
         learningRate,
         optimizer: optimizer.charAt(0).toUpperCase() + optimizer.slice(1),
+        lrSchedule,
+        warmupEpochs,
         validationSplit: valSplit / 100,
         testSplit: testSplit / 100,
         earlyStopping,
-        patience: 10,
-        dataPath: selectedDatasetId === "custom" ? uploadedFilePath : null,
+        patience,
+        // Ultra-Max-Pro regularization
+        dropoutRate,
+        useBatchNorm,
+        gradientClip,
+        labelSmoothing,
+        weightDecay,
+        dataPath: selectedDatasetId === 'custom' ? uploadedFilePath : null,
         datasetName: selectedDatasetId,
         selectedFeatures,
         targetFeature,
-        customData: selectedDatasetId === "custom" && !uploadedFilePath ? customCsv : null,
+        customData: selectedDatasetId === 'custom' && !uploadedFilePath ? customCsv : null,
         seed: 42,
       },
     };
@@ -1038,6 +1052,9 @@ export default function ExperimentBuilderPage() {
                                 className="bg-neutral-950 border border-neutral-800 text-xs rounded-lg py-1 px-2 focus:outline-none focus:border-green-500 text-white"
                               >
                                 <option value="relu">ReLU</option>
+                                <option value="gelu">GELU ⚡</option>
+                                <option value="swish">Swish</option>
+                                <option value="mish">Mish</option>
                                 <option value="sigmoid">Sigmoid</option>
                                 <option value="tanh">Tanh</option>
                                 <option value="linear">Linear</option>
@@ -1069,53 +1086,76 @@ export default function ExperimentBuilderPage() {
                     <CardContent className="space-y-4">
                       <div className="space-y-1">
                         <label className="text-xs font-semibold text-neutral-400">Epochs</label>
-                        <input
-                          type="number"
-                          value={epochs}
-                          onChange={(e) => setEpochs(Number(e.target.value))}
-                          className="input-cyber w-full py-1.5 text-sm"
-                          min={1}
-                        />
+                        <input type="number" value={epochs} onChange={(e) => setEpochs(Number(e.target.value))} className="input-cyber w-full py-1.5 text-sm" min={1} />
                       </div>
                       <div className="space-y-1">
                         <label className="text-xs font-semibold text-neutral-400">Learning Rate</label>
-                        <input
-                          type="number"
-                          value={learningRate}
-                          onChange={(e) => setLearningRate(Number(e.target.value))}
-                          className="input-cyber w-full py-1.5 text-sm"
-                          step={0.0001}
-                        />
+                        <input type="number" value={learningRate} onChange={(e) => setLearningRate(Number(e.target.value))} className="input-cyber w-full py-1.5 text-sm" step={0.0001} />
                       </div>
                       <div className="space-y-1">
                         <label className="text-xs font-semibold text-neutral-400">Batch Size</label>
-                        <input
-                          type="number"
-                          value={batchSize}
-                          onChange={(e) => setBatchSize(Number(e.target.value))}
-                          className="input-cyber w-full py-1.5 text-sm"
-                          min={1}
-                        />
+                        <input type="number" value={batchSize} onChange={(e) => setBatchSize(Number(e.target.value))} className="input-cyber w-full py-1.5 text-sm" min={1} />
                       </div>
                       <div className="space-y-1">
                         <label className="text-xs font-semibold text-neutral-400">Optimizer</label>
-                        <select
-                          value={optimizer}
-                          onChange={(e) => setOptimizer(e.target.value)}
-                          className="w-full bg-neutral-900 border border-neutral-800 rounded-lg text-sm py-1.5 px-3 focus:outline-none focus:border-green-500 text-white"
-                        >
+                        <select value={optimizer} onChange={(e) => setOptimizer(e.target.value)} className="w-full bg-neutral-900 border border-neutral-800 rounded-lg text-sm py-1.5 px-3 focus:outline-none focus:border-green-500 text-white">
+                          <option value="adamw">AdamW ⚡ (recommended)</option>
+                          <option value="radam">RAdam</option>
+                          <option value="lion">Lion 🦁</option>
                           <option value="adam">Adam</option>
-                          <option value="sgd">SGD</option>
+                          <option value="rmsprop">RMSProp</option>
+                          <option value="sgd">SGD + Momentum</option>
                         </select>
                       </div>
-                      <div className="flex items-center justify-between rounded-xl bg-neutral-950/40 p-3 border border-neutral-850 mt-2">
-                        <span className="text-xs text-neutral-400 font-medium">Early Stopping</span>
-                        <input
-                          type="checkbox"
-                          checked={earlyStopping}
-                          onChange={(e) => setEarlyStopping(e.target.checked)}
-                          className="h-4 w-4 accent-green-500 cursor-pointer"
-                        />
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-neutral-400">LR Schedule</label>
+                        <select value={lrSchedule} onChange={(e) => setLrSchedule(e.target.value)} className="w-full bg-neutral-900 border border-neutral-800 rounded-lg text-sm py-1.5 px-3 focus:outline-none focus:border-green-500 text-white">
+                          <option value="cosine">Cosine Annealing ✦</option>
+                          <option value="cosine_warm">Cosine Warm Restarts</option>
+                          <option value="step">Step Decay</option>
+                          <option value="none">Constant</option>
+                        </select>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-neutral-400">Warmup Epochs</label>
+                        <input type="number" value={warmupEpochs} onChange={(e) => setWarmupEpochs(Number(e.target.value))} className="input-cyber w-full py-1.5 text-sm" min={0} max={20} />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-neutral-400">Early-Stop Patience</label>
+                        <input type="number" value={patience} onChange={(e) => setPatience(Number(e.target.value))} className="input-cyber w-full py-1.5 text-sm" min={1} max={50} />
+                      </div>
+
+                      {/* ── Ultra-Pro Regularization ── */}
+                      <div className="border-t border-neutral-800/50 pt-3 mt-1">
+                        <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Ultra-Pro Regularization</p>
+                        <div className="space-y-3">
+                          <div className="space-y-1">
+                            <label className="text-xs font-semibold text-neutral-400">Dropout Rate: <span className="text-green-400 font-mono">{dropoutRate.toFixed(2)}</span></label>
+                            <input type="range" min={0} max={0.8} step={0.05} value={dropoutRate} onChange={(e) => setDropoutRate(Number(e.target.value))} className="w-full h-1.5 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-green-500" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-xs font-semibold text-neutral-400">Gradient Clip: <span className="text-amber-400 font-mono">{gradientClip.toFixed(1)}</span></label>
+                            <input type="range" min={0.5} max={10} step={0.5} value={gradientClip} onChange={(e) => setGradientClip(Number(e.target.value))} className="w-full h-1.5 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-amber-500" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-xs font-semibold text-neutral-400">Label Smoothing: <span className="text-violet-400 font-mono">{labelSmoothing.toFixed(2)}</span></label>
+                            <input type="range" min={0} max={0.3} step={0.01} value={labelSmoothing} onChange={(e) => setLabelSmoothing(Number(e.target.value))} className="w-full h-1.5 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-violet-500" />
+                          </div>
+                          <div className="flex items-center justify-between rounded-xl bg-neutral-950/40 p-3 border border-neutral-850">
+                            <div>
+                              <span className="text-xs text-neutral-300 font-medium">Batch Normalization</span>
+                              <p className="text-[10px] text-neutral-600">Normalizes activations per-batch</p>
+                            </div>
+                            <input type="checkbox" checked={useBatchNorm} onChange={(e) => setUseBatchNorm(e.target.checked)} className="h-4 w-4 accent-green-500 cursor-pointer" />
+                          </div>
+                          <div className="flex items-center justify-between rounded-xl bg-neutral-950/40 p-3 border border-neutral-850">
+                            <div>
+                              <span className="text-xs text-neutral-300 font-medium">Early Stopping</span>
+                              <p className="text-[10px] text-neutral-600">Halts when val_loss stagnates</p>
+                            </div>
+                            <input type="checkbox" checked={earlyStopping} onChange={(e) => setEarlyStopping(e.target.checked)} className="h-4 w-4 accent-green-500 cursor-pointer" />
+                          </div>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

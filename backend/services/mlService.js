@@ -57,20 +57,29 @@ export function buildPythonConfig(experiment) {
   return {
     model_type: cfg.modelType || 'neural_network',
     task: cfg.task || 'regression',
-    layers: cfg.layers || [64, 32, 1],
+    layers: cfg.layers || [128, 64, 32, 1],
     batch_size: cfg.batchSize || 32,
     epochs: cfg.epochs || 100,
     learning_rate: cfg.learningRate || 0.001,
-    optimizer: cfg.optimizer || 'adam',
+    optimizer: (cfg.optimizer || 'adamw').toLowerCase(),
     data_path: cfg.dataPath || null,
     dataset_name: cfg.datasetName || 'cyber_intrusion',
     selected_features: cfg.selectedFeatures || [],
     target_feature: cfg.targetFeature || '',
-    test_split: cfg.testSplit || 0.2,
+    test_split: cfg.testSplit || 0.1,
     validation_split: cfg.validationSplit || 0.2,
     custom_data: cfg.customData || null,
     activations: cfg.activations || [],
     seed: cfg.seed || 42,
+    // ── Ultra-Max-Pro advanced config ──────────────────────────────
+    dropout_rate: cfg.dropoutRate || 0.0,
+    use_batch_norm: cfg.useBatchNorm ?? false,
+    gradient_clip: cfg.gradientClip ?? 5.0,
+    label_smoothing: cfg.labelSmoothing ?? 0.0,
+    weight_decay: cfg.weightDecay ?? 1e-4,
+    patience: cfg.patience || 15,
+    lr_schedule: cfg.lrSchedule || 'cosine',
+    warmup_epochs: cfg.warmupEpochs || 5,
   };
 }
 
@@ -111,7 +120,16 @@ export async function finalizeExperiment(experimentId, job) {
       epochs: job.metrics.epochs,
       trainLoss: job.metrics.train_loss,
       valLoss: job.metrics.val_loss,
+      accuracy: job.metrics.accuracy || [],
+      f1: job.metrics.f1 || [],
+      precision: job.metrics.precision || [],
+      recall: job.metrics.recall || [],
+      learningRates: job.metrics.learning_rates || [],
       modelPath: job.metrics.model_path,
+      ensembleSize: job.metrics.ensemble_size || 0,
+      peakF1: job.metrics.peak_f1 || 0,
+      peakAccuracy: job.metrics.peak_accuracy || 0,
+      deadNeuronPct: job.metrics.dead_neurons_pct ?? null,
       completedAt: new Date(),
     };
     await experiment.save();
@@ -178,12 +196,28 @@ function processOutputLine(job, jobId, line) {
       job.metrics.epochs.push(parsed.epoch);
       job.metrics.train_loss.push(parsed.train_loss);
       job.metrics.val_loss.push(parsed.val_loss ?? null);
+
+      // ── New ultra-pro metrics ──────────────────────────────────────────
+      if (parsed.lr != null) job.metrics.learning_rates.push(parsed.lr);
+      if (parsed.accuracy != null) { job.metrics.accuracy.push(parsed.accuracy); }
+      if (parsed.f1 != null) { job.metrics.f1.push(parsed.f1); }
+      if (parsed.precision != null) job.metrics.precision.push(parsed.precision);
+      if (parsed.recall != null) job.metrics.recall.push(parsed.recall);
+      if (parsed.dead_neurons_pct != null) job.metrics.dead_neurons_pct = parsed.dead_neurons_pct;
+
       if (parsed.val_loss != null && parsed.val_loss < job.metrics.best_val_loss) {
         job.metrics.best_val_loss = parsed.val_loss;
       }
       if (parsed.train_loss != null && parsed.train_loss < job.metrics.best_train_loss) {
         job.metrics.best_train_loss = parsed.train_loss;
       }
+      if (parsed.f1 != null && parsed.f1 > (job.metrics.peak_f1 || 0)) {
+        job.metrics.peak_f1 = parsed.f1;
+      }
+      if (parsed.accuracy != null && parsed.accuracy > (job.metrics.peak_accuracy || 0)) {
+        job.metrics.peak_accuracy = parsed.accuracy;
+      }
+
       void persistJob(job);
       if (global.broadcastToExperiment) {
         global.broadcastToExperiment(jobId, {
@@ -197,6 +231,7 @@ function processOutputLine(job, jobId, line) {
       job.metrics.final_train_loss = parsed.final_train_loss;
       job.metrics.final_val_loss = parsed.final_val_loss;
       job.metrics.model_path = parsed.model_path;
+      job.metrics.ensemble_size = parsed.ensemble_size ?? 0;
     } else if (parsed.type === 'log') {
       logger.info(`ML [${jobId.slice(-6)}]: ${parsed.message}`);
     }
@@ -320,8 +355,17 @@ export async function startTraining(experiment) {
       epochs: [],
       train_loss: [],
       val_loss: [],
+      learning_rates: [],
+      accuracy: [],
+      f1: [],
+      precision: [],
+      recall: [],
       best_val_loss: Infinity,
       best_train_loss: Infinity,
+      peak_f1: 0,
+      peak_accuracy: 0,
+      dead_neurons_pct: null,
+      ensemble_size: 0,
     },
     status: 'running',
     startedAt: new Date(),
