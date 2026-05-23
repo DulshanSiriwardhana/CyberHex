@@ -38,6 +38,7 @@ const ExperimentSchema = new Schema({
     earlyStopping: { type: Boolean, default: true },
     patience: { type: Number, default: 10 },
     dataPath: { type: String, default: null },
+    customData: { type: String, default: null },
     datasetName: { type: String, default: 'cyber_intrusion' },
     selectedFeatures: { type: [String], default: [] },
     targetFeature: { type: String, default: '' },

@@ -20,6 +20,8 @@ import {
   Sparkles,
   Info,
   CheckCircle2,
+  Upload,
+  Terminal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -102,6 +104,15 @@ const DATASETS: DatasetSpec[] = [
     ],
     targets: ["failure_severity", "device_fault_type"],
   },
+  {
+    id: "custom",
+    name: "Custom Data Matrix (CSV)",
+    description: "Upload a CSV or paste your own telemetry streams to train a specialized model on unique datasets.",
+    taskType: "classification",
+    totalRows: 0,
+    features: [],
+    targets: [],
+  },
 ];
 
 export default function ExperimentBuilderPage() {
@@ -118,7 +129,7 @@ export default function ExperimentBuilderPage() {
     "ack_flags",
   ]);
   const [targetFeature, setTargetFeature] = useState("is_intrusion");
-  
+
   // Pipeline Splitting States
   const [trainSplit, setTrainSplit] = useState(80);
   const [valSplit, setValSplit] = useState(10);
@@ -142,20 +153,79 @@ export default function ExperimentBuilderPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  // Custom Dataset States
+  const [customCsv, setCustomCsv] = useState("");
+  const [customFeatures, setCustomFeatures] = useState<{ name: string; type: string; min: number; max: number; mean: number }[]>([]);
+  const [customTargets, setCustomTargets] = useState<string[]>([]);
+  const [customTaskType, setCustomTaskType] = useState<"classification" | "regression">("classification");
+  const [isParsingCsv, setIsParsingCsv] = useState(false);
+
   const activeDataset = DATASETS.find((d) => d.id === selectedDatasetId) || DATASETS[0];
 
   // Adjust dataset fields when selection changes
   useEffect(() => {
+    if (selectedDatasetId === "custom") {
+      if (customFeatures.length > 0) {
+        setSelectedFeatures(customFeatures.slice(0, 6).map((f) => f.name));
+        setTargetFeature(customTargets[0] || "");
+        setLoss(customTaskType === "classification" ? "bce" : "mse");
+      }
+      return;
+    }
+
     setSelectedFeatures(activeDataset.features.slice(0, 6).map((f) => f.name));
     setTargetFeature(activeDataset.targets[0]);
-    
+
     // Automatically pre-configure default tasks, loss functions, and output layers
     if (activeDataset.taskType === "classification") {
       setLoss("bce");
     } else {
       setLoss("mse");
     }
-  }, [selectedDatasetId]);
+  }, [selectedDatasetId, customFeatures, customTargets, customTaskType]);
+
+  const handleCsvInput = (csv: string) => {
+    setCustomCsv(csv);
+    if (!csv.trim()) return;
+
+    setIsParsingCsv(true);
+    try {
+      const lines = csv.trim().split("\n");
+      if (lines.length < 2) return;
+
+      const headers = lines[0].split(",").map(h => h.trim());
+      if (headers.length < 2) return;
+
+      const features = headers.slice(0, -1).map(h => ({
+        name: h,
+        type: "float",
+        min: 0,
+        max: 1,
+        mean: 0.5
+      }));
+      const target = headers[headers.length - 1];
+
+      setCustomFeatures(features);
+      setCustomTargets([target]);
+      setFeedbackMsg({ type: "success", text: `Successfully parsed ${headers.length} columns from CSV.` });
+    } catch (e) {
+      setFeedbackMsg({ type: "error", text: "Failed to parse CSV. Ensure it has a header row." });
+    } finally {
+      setIsParsingCsv(false);
+    }
+  };
+
+  const activeDatasetObj = selectedDatasetId === "custom"
+    ? {
+      id: "custom",
+      name: "Custom Data Matrix",
+      description: "User provided dataset",
+      taskType: customTaskType,
+      totalRows: customCsv.split("\n").length - 1,
+      features: customFeatures,
+      targets: customTargets
+    }
+    : activeDataset;
 
   const addLayer = () => {
     const newLayer: Layer = {
@@ -206,14 +276,14 @@ export default function ExperimentBuilderPage() {
 
     const activations = layers.map((l) => l.activation);
     // Add activation for the final output layer (Sigmoid for binary classification, linear for regression)
-    activations.push(activeDataset.taskType === "classification" ? "sigmoid" : "linear");
+    activations.push(activeDatasetObj.taskType === "classification" ? "sigmoid" : "linear");
 
     return {
       name,
-      description: `Training pipeline for ${activeDataset.name} using custom input features.`,
+      description: `Training pipeline for ${activeDatasetObj.name} using custom input features.`,
       status: "draft" as const,
       config: {
-        task: activeDataset.taskType,
+        task: activeDatasetObj.taskType,
         modelType: "neural_network" as const,
         layers: [inputSize, ...hiddenUnits, outputSize],
         activations,
@@ -230,6 +300,7 @@ export default function ExperimentBuilderPage() {
         datasetName: selectedDatasetId,
         selectedFeatures,
         targetFeature,
+        customData: selectedDatasetId === "custom" ? customCsv : null,
         seed: 42,
       },
     };
@@ -347,20 +418,18 @@ export default function ExperimentBuilderPage() {
                 className="flex flex-col items-center relative z-10 cursor-pointer group"
               >
                 <div
-                  className={`h-11 w-11 rounded-xl flex items-center justify-center border font-mono font-bold text-sm transition-all duration-300 ${
-                    isActive
+                  className={`h-11 w-11 rounded-xl flex items-center justify-center border font-mono font-bold text-sm transition-all duration-300 ${isActive
                       ? "bg-green-500 border-green-400 text-neutral-950 shadow-[0_0_15px_rgba(34,197,94,0.35)]"
                       : isCompleted
-                      ? "bg-neutral-850 border-green-500/40 text-green-400"
-                      : "bg-neutral-900 border-neutral-800 text-neutral-500 group-hover:border-neutral-700"
-                  }`}
+                        ? "bg-neutral-850 border-green-500/40 text-green-400"
+                        : "bg-neutral-900 border-neutral-800 text-neutral-500 group-hover:border-neutral-700"
+                    }`}
                 >
                   {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : <Icon className="h-4 w-4" />}
                 </div>
                 <span
-                  className={`mt-2 text-xs font-semibold tracking-wide uppercase transition-colors hidden sm:block ${
-                    isActive ? "text-green-400" : "text-neutral-500 group-hover:text-neutral-400"
-                  }`}
+                  className={`mt-2 text-xs font-semibold tracking-wide uppercase transition-colors hidden sm:block ${isActive ? "text-green-400" : "text-neutral-500 group-hover:text-neutral-400"
+                    }`}
                 >
                   {st.label}
                 </span>
@@ -374,11 +443,10 @@ export default function ExperimentBuilderPage() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`mb-6 p-4 rounded-xl border flex items-center gap-3 text-sm font-medium ${
-            feedbackMsg.type === "success"
+          className={`mb-6 p-4 rounded-xl border flex items-center gap-3 text-sm font-medium ${feedbackMsg.type === "success"
               ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400"
               : "bg-rose-500/5 border-rose-500/20 text-rose-400"
-          }`}
+            }`}
         >
           <Info className="h-4 w-4 shrink-0" />
           {feedbackMsg.text}
@@ -405,11 +473,10 @@ export default function ExperimentBuilderPage() {
                   <Card
                     key={ds.id}
                     onClick={() => setSelectedDatasetId(ds.id)}
-                    className={`group cursor-pointer border transition-all duration-300 ${
-                      selectedDatasetId === ds.id
+                    className={`group cursor-pointer border transition-all duration-300 ${selectedDatasetId === ds.id
                         ? "border-green-500 bg-green-500/5 shadow-[0_0_20px_rgba(34,197,94,0.06)]"
                         : "border-neutral-850 bg-neutral-900/10 hover:border-neutral-700"
-                    }`}
+                      }`}
                   >
                     <CardHeader className="pb-2">
                       <Flex justify="between" className="mb-2">
@@ -421,7 +488,7 @@ export default function ExperimentBuilderPage() {
                         </span>
                       </Flex>
                       <CardTitle className="text-lg font-bold text-white group-hover:text-green-400 transition-colors">
-                        {ds.id === "cyber_intrusion" ? "Intrusion Packets" : ds.id === "ddos_traffic" ? "DDoS Traffic" : "IIoT Telemetry"}
+                        {ds.id === "cyber_intrusion" ? "Intrusion Packets" : ds.id === "ddos_traffic" ? "DDoS Traffic" : ds.id === "iiot_sensor" ? "IIoT Telemetry" : "My Custom Data"}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -429,13 +496,68 @@ export default function ExperimentBuilderPage() {
                         {ds.description}
                       </p>
                       <div className="border-t border-neutral-850 pt-3 flex justify-between items-center text-xs text-neutral-500">
-                        <span>Input Features: <strong className="text-neutral-300 font-mono">{ds.features.length}</strong></span>
-                        <span>Targets: <strong className="text-neutral-300 font-mono">{ds.targets.length}</strong></span>
+                        <span>Input Features: <strong className="text-neutral-300 font-mono">{ds.id === 'custom' ? customFeatures.length : ds.features.length}</strong></span>
+                        <span>Targets: <strong className="text-neutral-300 font-mono">{ds.id === 'custom' ? customTargets.length : ds.targets.length}</strong></span>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
               </Grid>
+
+              {selectedDatasetId === "custom" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-4"
+                >
+                  <Card className="border-green-500/30 bg-green-500/5">
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
+                          <Terminal className="h-4 w-4 text-green-400" />
+                          CSV Data Input
+                        </CardTitle>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-neutral-400">Task:</span>
+                            <select
+                              value={customTaskType}
+                              onChange={(e) => setCustomTaskType(e.target.value as any)}
+                              className="bg-neutral-900 border border-neutral-800 text-[10px] rounded px-2 py-1 text-white focus:outline-none focus:border-green-500"
+                            >
+                              <option value="classification">Classification</option>
+                              <option value="regression">Regression</option>
+                            </select>
+                          </div>
+                          <Button variant="ghost" size="sm" className="h-7 text-[10px] text-green-400 hover:text-green-300 hover:bg-green-500/10">
+                            <Upload className="h-3 w-3 mr-1" />
+                            Upload File
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <textarea
+                        value={customCsv}
+                        onChange={(e) => handleCsvInput(e.target.value)}
+                        placeholder="Paste your CSV here (first row as header, last column as target)..."
+                        className="w-full h-48 bg-neutral-950 border border-neutral-800 rounded-xl p-4 font-mono text-xs text-green-500/90 focus:outline-none focus:border-green-500/50 resize-none"
+                      />
+                      <div className="mt-2 flex justify-between items-center">
+                        <p className="text-[10px] text-neutral-500 italic">
+                          * Ensure the last column is the target variable (Y) and all other columns are numerical features (X).
+                        </p>
+                        {isParsingCsv && (
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full bg-green-500 animate-ping" />
+                            <span className="text-[10px] text-green-400">Parsing...</span>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
 
               {/* Summary of active dataset selection */}
               <Card className="mt-6 border-neutral-850 bg-neutral-900/20">
@@ -445,9 +567,9 @@ export default function ExperimentBuilderPage() {
                       <Database className="h-8 w-8 text-green-400" />
                     </div>
                     <div>
-                      <h4 className="text-lg font-bold text-white">{activeDataset.name}</h4>
+                      <h4 className="text-lg font-bold text-white">{activeDatasetObj.name}</h4>
                       <p className="text-sm text-neutral-400 mt-1 max-w-3xl">
-                        This dataset supports <strong>{activeDataset.taskType}</strong>. It will be loaded from secure storage into the C++ compiled runtime.
+                        This dataset supports <strong>{activeDatasetObj.taskType}</strong>. It will be loaded from {selectedDatasetId === 'custom' ? 'user input' : 'secure storage'} into the C++ compiled runtime.
                       </p>
                     </div>
                   </div>
@@ -466,27 +588,25 @@ export default function ExperimentBuilderPage() {
                 {/* Feature Selector checklist */}
                 <div className="col-span-2 space-y-4">
                   <h3 className="text-md font-bold text-white flex items-center gap-2">
-                    <Grid2X2 className="h-4.5 w-4.5 text-green-400" />
+                    <Grid2X2 className="h-4 w-4 text-green-400" />
                     Available Features ({selectedFeatures.length} selected)
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
-                    {activeDataset.features.map((feat) => {
+                    {activeDatasetObj.features.map((feat) => {
                       const isChecked = selectedFeatures.includes(feat.name);
                       return (
                         <div
                           key={feat.name}
                           onClick={() => toggleFeature(feat.name)}
-                          className={`flex items-center justify-between rounded-xl border p-3 cursor-pointer transition-all duration-200 ${
-                            isChecked
+                          className={`flex items-center justify-between rounded-xl border p-3 cursor-pointer transition-all duration-200 ${isChecked
                               ? "bg-green-500/5 border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.02)]"
                               : "bg-neutral-900/25 border-neutral-850 hover:border-neutral-800"
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center gap-3">
                             <div
-                              className={`h-4.5 w-4.5 rounded border flex items-center justify-center transition-colors ${
-                                isChecked ? "bg-green-500 border-green-400" : "border-neutral-700 bg-neutral-900"
-                              }`}
+                              className={`h-4.5 w-4.5 rounded border flex items-center justify-center transition-colors ${isChecked ? "bg-green-500 border-green-400" : "border-neutral-700 bg-neutral-900"
+                                }`}
                             >
                               {isChecked && <div className="h-2 w-2 rounded-sm bg-neutral-950" />}
                             </div>
@@ -520,7 +640,7 @@ export default function ExperimentBuilderPage() {
                           onChange={(e) => setTargetFeature(e.target.value)}
                           className="input-cyber w-full py-2 bg-neutral-900 border border-neutral-800 text-white rounded-lg focus:border-green-500 focus:outline-none text-sm px-3"
                         >
-                          {activeDataset.targets.map((tg) => (
+                          {activeDatasetObj.targets.map((tg) => (
                             <option key={tg} value={tg}>
                               {tg}
                             </option>
@@ -529,10 +649,10 @@ export default function ExperimentBuilderPage() {
                       </div>
                       <div className="rounded-xl bg-neutral-950/40 p-4 border border-neutral-850 space-y-3">
                         <p className="text-xs text-neutral-400 leading-relaxed">
-                          Choosing a target updates the loss and final layer metrics. Selecting <strong>{targetFeature}</strong> implies a <strong>{activeDataset.taskType}</strong> task with 1 output scalar node.
+                          Choosing a target updates the loss and final layer metrics. Selecting <strong>{targetFeature}</strong> implies a <strong>{activeDatasetObj.taskType}</strong> task with 1 output scalar node.
                         </p>
                         <Badge variant="secondary" className="w-fit">
-                          Recommended Loss: {activeDataset.taskType === "classification" ? "BCE" : "MSE"}
+                          Recommended Loss: {activeDatasetObj.taskType === "classification" ? "BCE" : "MSE"}
                         </Badge>
                       </div>
                     </CardContent>
@@ -556,7 +676,7 @@ export default function ExperimentBuilderPage() {
                       </div>
                       <div className="flex justify-between text-xs font-mono">
                         <span className="text-neutral-500">Task Mode</span>
-                        <span className="text-neutral-300 capitalize">{activeDataset.taskType}</span>
+                        <span className="text-neutral-300 capitalize">{activeDatasetObj.taskType}</span>
                       </div>
                     </CardContent>
                   </Card>
@@ -582,7 +702,7 @@ export default function ExperimentBuilderPage() {
                         </span>
                         <span className="text-lg font-bold text-green-400 font-mono">{trainSplit}%</span>
                       </Flex>
-                      
+
                       <div className="relative pt-1">
                         <input
                           type="range"
@@ -600,21 +720,21 @@ export default function ExperimentBuilderPage() {
                           <p className="text-xs text-neutral-400 uppercase tracking-wide">Training</p>
                           <p className="text-xl font-bold font-mono text-green-400 mt-1">{trainSplit}%</p>
                           <p className="text-xs text-neutral-500 mt-1">
-                            {Math.round((activeDataset.totalRows * trainSplit) / 100).toLocaleString()} samples
+                            {Math.round((activeDatasetObj.totalRows * trainSplit) / 100).toLocaleString()} samples
                           </p>
                         </div>
                         <div className="bg-amber-500/5 border border-amber-500/10 rounded-xl p-4 text-center">
                           <p className="text-xs text-neutral-400 uppercase tracking-wide">Validation</p>
                           <p className="text-xl font-bold font-mono text-amber-400 mt-1">{valSplit}%</p>
                           <p className="text-xs text-neutral-500 mt-1">
-                            {Math.round((activeDataset.totalRows * valSplit) / 100).toLocaleString()} samples
+                            {Math.round((activeDatasetObj.totalRows * valSplit) / 100).toLocaleString()} samples
                           </p>
                         </div>
                         <div className="bg-violet-500/5 border border-violet-500/10 rounded-xl p-4 text-center">
                           <p className="text-xs text-neutral-400 uppercase tracking-wide">Testing</p>
                           <p className="text-xl font-bold font-mono text-violet-400 mt-1">{testSplit}%</p>
                           <p className="text-xs text-neutral-500 mt-1">
-                            {Math.round((activeDataset.totalRows * testSplit) / 100).toLocaleString()} samples
+                            {Math.round((activeDatasetObj.totalRows * testSplit) / 100).toLocaleString()} samples
                           </p>
                         </div>
                       </Grid>
@@ -724,7 +844,7 @@ export default function ExperimentBuilderPage() {
                               {layers[lIdx + 1] && Array.from({ length: Math.min(ly.units, 4) }).map((_, i) =>
                                 Array.from({ length: Math.min(layers[lIdx + 1].units, 4) }).map((_, j) => (
                                   <line
-                                    key={`c-${lIdx}-${lIdx+1}-${i}-${j}`}
+                                    key={`c-${lIdx}-${lIdx + 1}-${i}-${j}`}
                                     x1={xPos + 8}
                                     y1={30 + i * 35}
                                     x2={xPos + 150 - 8}

@@ -4,8 +4,6 @@ import {
   ArrowRight,
   Terminal as TerminalIcon,
   Sparkles,
-  Heart,
-  Code2,
 } from "lucide-react";
 import Hero from "@/components/landingpage/hero";
 import Terminal from "@/components/terminal/Terminal";
@@ -183,7 +181,7 @@ function Footer() {
             &copy; {new Date().getFullYear()} CyberHex. All rights reserved.
           </p>
           <p className="text-xs text-neutral-700 flex items-center gap-1">
-            Built with <Heart className="h-3 w-3 text-rose-400" /> and <Code2 className="h-3 w-3 text-green-400" /> by the CyberHex team
+            Built with energy and passion by the CyberHex team
           </p>
         </div>
       </Container>

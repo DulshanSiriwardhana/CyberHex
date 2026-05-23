@@ -39,6 +39,7 @@ export function buildCppConfig(experiment) {
     datasetName: cfg.datasetName || 'cyber_intrusion',
     selectedFeatures: cfg.selectedFeatures || [],
     targetFeature: cfg.targetFeature || '',
+    customData: cfg.customData || null,
     seed: cfg.seed || 42,
     engine: cfg.engine || 'imperative',
     device: cfg.device || 'cpu',
@@ -68,6 +69,7 @@ export function buildPythonConfig(experiment) {
     target_feature: cfg.targetFeature || '',
     test_split: cfg.testSplit || 0.2,
     validation_split: cfg.validationSplit || 0.2,
+    custom_data: cfg.customData || null,
     seed: cfg.seed || 42,
   };
 }
@@ -292,6 +294,22 @@ export async function startTraining(experiment) {
   ensureOutputDir();
   const useCpp = process.env.ML_ENGINE === 'cpp';
   const config = useCpp ? buildCppConfig(experiment) : buildPythonConfig(experiment);
+
+  if (experiment.config && experiment.config.customData) {
+    const customDataPath = path.join(ensureOutputDir(), `custom_${jobId}.csv`);
+    try {
+      fs.writeFileSync(customDataPath, experiment.config.customData);
+      if (useCpp) {
+        config.dataPath = customDataPath;
+      } else {
+        config.data_path = customDataPath;
+      }
+      logger.info(`Saved custom dataset for job ${jobId} to ${customDataPath}`);
+    } catch (err) {
+      logger.error(`Failed to save custom dataset: ${err.message}`);
+    }
+  }
+
   const { command, args, cwd, env, engine } = resolveTrainingCommand(useCpp, config);
 
   const childProcess = spawnTraining(command, args, { env, cwd });

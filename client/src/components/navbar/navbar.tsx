@@ -5,7 +5,6 @@ import {
   Menu,
   X,
   Terminal,
-  User,
   LogOut,
   LayoutDashboard,
   ChevronDown,
@@ -92,8 +91,8 @@ const NavBar = () => {
           <Link
             to="/"
             className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/"
-                ? "text-green-400 bg-green-500/10"
-                : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
+              ? "text-green-400 bg-green-500/10"
+              : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
               }`}
           >
             Home
@@ -101,8 +100,8 @@ const NavBar = () => {
           <Link
             to="/about"
             className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/about"
-                ? "text-green-400 bg-green-500/10"
-                : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
+              ? "text-green-400 bg-green-500/10"
+              : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
               }`}
           >
             About
@@ -110,8 +109,8 @@ const NavBar = () => {
           <Link
             to="/contact"
             className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/contact"
-                ? "text-green-400 bg-green-500/10"
-                : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
+              ? "text-green-400 bg-green-500/10"
+              : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
               }`}
           >
             Contact
@@ -179,8 +178,8 @@ const NavBar = () => {
                             setThemeMenuOpen(false);
                           }}
                           className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${isActive
-                              ? 'bg-neutral-800 text-white'
-                              : 'text-neutral-300 hover:text-white hover:bg-neutral-800/60'
+                            ? 'bg-neutral-800 text-white'
+                            : 'text-neutral-300 hover:text-white hover:bg-neutral-800/60'
                             }`}
                         >
                           <span
@@ -317,8 +316,8 @@ const NavBar = () => {
                 to="/"
                 onClick={closeMobile}
                 className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/"
-                    ? "text-green-400 bg-green-500/10"
-                    : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
+                  ? "text-green-400 bg-green-500/10"
+                  : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
                   }`}
               >
                 Home
@@ -327,8 +326,8 @@ const NavBar = () => {
                 to="/about"
                 onClick={closeMobile}
                 className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/about"
-                    ? "text-green-400 bg-green-500/10"
-                    : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
+                  ? "text-green-400 bg-green-500/10"
+                  : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
                   }`}
               >
                 About
@@ -337,8 +336,8 @@ const NavBar = () => {
                 to="/contact"
                 onClick={closeMobile}
                 className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/contact"
-                    ? "text-green-400 bg-green-500/10"
-                    : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
+                  ? "text-green-400 bg-green-500/10"
+                  : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
                   }`}
               >
                 Contact
@@ -359,8 +358,8 @@ const NavBar = () => {
                           closeMobile();
                         }}
                         className={`flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${isActive
-                            ? 'bg-neutral-800 text-white ring-1 ring-green-500/30'
-                            : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                          ? 'bg-neutral-800 text-white ring-1 ring-green-500/30'
+                          : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                           }`}
                       >
                         <span

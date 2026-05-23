@@ -4,7 +4,7 @@ import SignIn from "@/components/signin";
 import SignUp from "@/components/signup/signup";
 
 export default function AuthModals() {
-    const { signInOpen, signUpOpen, closeAll, openSignIn, openSignUp } = useAuthModal();
+    const { signInOpen, signUpOpen, closeAll, openSignIn } = useAuthModal();
 
     return (
         <>
