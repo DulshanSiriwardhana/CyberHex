@@ -16,23 +16,23 @@ import { Badge } from "@/components/ui/badge";
 import { Container, Grid, Flex, SectionHeading } from "@/components/ui/layout";
 
 const leaderboard = [
-  { rank: 1, name: "neural_ninja", score: 9842, wins: 47 },
-  { rank: 2, name: "deep_dragon", score: 9120, wins: 42 },
-  { rank: 3, name: "tensor_titan", score: 8875, wins: 39 },
-  { rank: 4, name: "backprop_beast", score: 8450, wins: 35 },
-  { rank: 5, name: "gradient_ghost", score: 8012, wins: 31 },
+  { rank: 1, name: "zero_day_hero", score: 12450, wins: 52 },
+  { rank: 2, name: "packet_paladin", score: 11200, wins: 48 },
+  { rank: 3, name: "malware_maestro", score: 10875, wins: 41 },
+  { rank: 4, name: "botnet_buster", score: 9450, wins: 38 },
+  { rank: 5, name: "syn_flood_surfer", score: 8012, wins: 31 },
 ];
 
 const activeChallenges = [
-  { id: 1, name: "MNIST Speedrun", entries: 234, deadline: "3 days", prize: "500 Hex" },
-  { id: 2, name: "ImageNet Micro", entries: 156, deadline: "1 week", prize: "1,200 Hex" },
-  { id: 3, name: "RL Arena", entries: 89, deadline: "2 weeks", prize: "2,500 Hex" },
+  { id: 1, name: "DDoS Mitigation Arena", entries: 234, deadline: "3 days", prize: "2,500 Hex" },
+  { id: 2, name: "SQLi Pattern Detection", entries: 156, deadline: "1 week", prize: "5,000 Hex" },
+  { id: 3, name: "Botnet C&C Tracking", entries: 89, deadline: "2 weeks", prize: "10,000 Hex" },
 ];
 
 export default function CyberGames() {
   return (
     <Container className="py-8 pt-24">
-      {}
+      { }
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -56,7 +56,7 @@ export default function CyberGames() {
         </Flex>
       </motion.div>
 
-      {}
+      { }
       <Grid cols={3} gap="md" className="mb-8">
         {[
           { icon: Trophy, label: "Top Rank", value: "#42", color: "text-amber-400" },
@@ -85,7 +85,7 @@ export default function CyberGames() {
       </Grid>
 
       <Grid cols={2} gap="md">
-        {}
+        { }
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -106,9 +106,8 @@ export default function CyberGames() {
                     className="flex items-center justify-between rounded-xl px-4 py-2.5 hover:bg-neutral-800/50 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <span className={`w-6 text-center font-mono text-sm font-bold ${
-                        i === 0 ? "text-amber-400" : i === 1 ? "text-neutral-300" : i === 2 ? "text-amber-600" : "text-neutral-600"
-                      }`}>
+                      <span className={`w-6 text-center font-mono text-sm font-bold ${i === 0 ? "text-amber-400" : i === 1 ? "text-neutral-300" : i === 2 ? "text-amber-600" : "text-neutral-600"
+                        }`}>
                         #{player.rank}
                       </span>
                       <span className="text-sm font-medium text-white">{player.name}</span>
@@ -124,7 +123,7 @@ export default function CyberGames() {
           </Card>
         </motion.div>
 
-        {}
+        { }
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

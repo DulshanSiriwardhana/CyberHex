@@ -310,20 +310,22 @@ class NeuralNetwork:
         return act[-1]
 
 def generate_synthetic_data(task, n_samples=1000):
+    """Generates synthetic data that mimics Network Traffic (Cyber Intrusion)"""
     np.random.seed(42)
-    if task == 'regression':
-        X = np.random.randn(n_samples, 5)
-        true_weights = np.array([1.5, -2.0, 0.5, 3.0, -1.0])
-        y = np.dot(X, true_weights) + np.random.randn(n_samples) * 0.3
+    # Features: [duration, src_bytes, dst_bytes, count (connections), srv_count, serror_rate, rerror_rate, same_srv_rate, diff_srv_rate, srv_diff_host_rate]
+    X = np.random.rand(n_samples, 10) 
+    
+    if task == 'classification':
+        # Logic: (High connection rate + same_srv_rate anomaly) OR (Large src_bytes + specific connection flags)
+        y = ((X[:, 3] > 0.8) & (X[:, 7] < 0.2) | (X[:, 1] > 0.9)).astype(int)
+        # 5% noise injection for realistic non-separable data
+        mask = np.random.random(n_samples) < 0.05
+        y[mask] = 1 - y[mask]
         return X, y
-    elif task == 'classification':
-        n_classes = 3
-        X = np.random.randn(n_samples, 10)
-        true_weights = np.random.randn(10, n_classes)
-        logits = np.dot(X, true_weights)
-        y = np.argmax(logits, axis=1)
+    else:
+        # Regression: Predict Anomaly Probability Score (0-100)
+        y = (X[:, 0] * 20 + X[:, 3] * 50 + X[:, 5] * 30 + np.random.randn(n_samples) * 2)
         return X, y
-    return None, None
 
 class DataGenerator:
     def __init__(self, data_path, task='regression', batch_size=32):
