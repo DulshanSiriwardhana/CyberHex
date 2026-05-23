@@ -1,6 +1,3 @@
-/**
- * CyberHex Studio — Fluency & Live Transcription Panel
- */
 import React, { useEffect, useState } from 'react';
 import { MessageSquare, Sparkles } from 'lucide-react';
 import { audioEngine } from '@/hooks/useStudioBootstrap';

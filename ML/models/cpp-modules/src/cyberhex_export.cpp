@@ -1,6 +1,3 @@
-// CyberHex ONNX export CLI — writes manifest; run export_onnx.py for .onnx
-// CYBERHEX_EXPORT_CONFIG='{"weightsPrefix":"/path/model_123","onnxPath":"/path/out.onnx"}'
-
 #include "onnx_export.h"
 #include <cstdlib>
 #include <filesystem>
@@ -23,7 +20,7 @@ std::string extract_string(const std::string& json, const std::string& key) {
     return json.substr(pos + 1, end - pos - 1);
 }
 
-} // namespace
+}
 
 int main() {
     const char* raw = std::getenv("CYBERHEX_EXPORT_CONFIG");

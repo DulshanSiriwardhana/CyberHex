@@ -82,11 +82,9 @@ function drawHistogram(
   const maxCount = Math.max(...counts, 1);
   const barW = w / bins;
 
-  // Background
   ctx.fillStyle = 'rgba(15, 23, 42, 0.6)';
   ctx.fillRect(x, y, w, h);
 
-  // Bars
   for (let i = 0; i < bins; i++) {
     const barH = (counts[i] / maxCount) * (h - 20);
     const barX = x + i * barW;
@@ -102,18 +100,15 @@ function drawHistogram(
     ctx.fillRect(barX + 1, barY, barW - 2, barH);
   }
 
-  // Border
   ctx.strokeStyle = '#334155';
   ctx.lineWidth = 1;
   ctx.strokeRect(x, y, w, h);
 
-  // Title
   ctx.fillStyle = '#94a3b8';
   ctx.font = '10px sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText(title, x + w / 2, y - 6);
 
-  // X axis labels
   ctx.fillStyle = '#64748b';
   ctx.font = '8px monospace';
   ctx.textAlign = 'center';
@@ -124,7 +119,6 @@ function drawHistogram(
     ctx.fillText(val.toFixed(2), lx, y + h - 2);
   }
 
-  // Mean line
   const valuesMean = values.reduce((a, b) => a + b, 0) / values.length;
   const meanX = x + ((valuesMean - min) / range) * w;
   ctx.strokeStyle = '#f59e0b';
@@ -189,10 +183,8 @@ export default function DistributionView({ layers }: DistributionViewProps) {
       const plotW = (w - padLeft - padRight);
       const plotH = (h - padTop - padBottom - midGap) / 2;
 
-      // Weight histogram
       drawHistogram(ctx, allW, 50, padLeft, padTop, plotW, plotH, '#06b6d4', `Layer ${selectedLayer} Weights (n=${allW.length.toLocaleString()})`);
 
-      // Bias histogram
       drawHistogram(ctx, bias, Math.min(30, bias.length), padLeft, padTop + plotH + midGap, plotW, plotH, '#a855f7', `Layer ${selectedLayer} Biases (n=${bias.length.toLocaleString()})`);
     }
 
@@ -213,7 +205,7 @@ export default function DistributionView({ layers }: DistributionViewProps) {
     }
 
     if (mode === 'stats') {
-      // Table rendering on canvas
+
       ctx.fillStyle = 'rgba(15, 23, 42, 0.6)';
       ctx.fillRect(20, 20, w - 40, h - 40);
       ctx.strokeStyle = '#334155';
@@ -224,7 +216,6 @@ export default function DistributionView({ layers }: DistributionViewProps) {
       const rowH = 32;
       const startY = 44;
 
-      // Header row
       ctx.fillStyle = '#1e293b';
       ctx.fillRect(20, 20, w - 40, rowH);
       ctx.fillStyle = '#94a3b8';
@@ -234,7 +225,6 @@ export default function DistributionView({ layers }: DistributionViewProps) {
         ctx.fillText(hdr, 20 + i * colW + colW / 2, 20 + rowH / 2 + 3);
       });
 
-      // Data rows
       stats.forEach((s, ri) => {
         const ry = startY + ri * rowH;
         if (ri % 2 === 0) {
@@ -260,7 +250,6 @@ export default function DistributionView({ layers }: DistributionViewProps) {
         });
       });
 
-      // Total stats card
       const allWeights = layers.flatMap(l => l.weights.flat());
       const totalW = allWeights.length;
       const meanW = allWeights.reduce((a, b) => a + b, 0) / totalW;
@@ -290,7 +279,7 @@ export default function DistributionView({ layers }: DistributionViewProps) {
 
   return (
     <div className="w-full space-y-4">
-      {/* Controls */}
+      {}
       <div className="flex items-center gap-3 flex-wrap">
         <span className="text-[10px] text-slate-500 uppercase tracking-wider">View:</span>
         {(['histogram', 'compare', 'stats'] as const).map(m => (
@@ -327,12 +316,12 @@ export default function DistributionView({ layers }: DistributionViewProps) {
         )}
       </div>
 
-      {/* Canvas */}
+      {}
       <div ref={containerRef} className="w-full min-h-[520px] bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
         <canvas ref={canvasRef} className="w-full h-full" />
       </div>
 
-      {/* Quick stats row */}
+      {}
       {mode === 'histogram' && stats[selectedLayer] && (
         <div className="grid grid-cols-4 lg:grid-cols-8 gap-2 text-[10px]">
           {[

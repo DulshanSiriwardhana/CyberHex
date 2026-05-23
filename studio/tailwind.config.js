@@ -1,6 +1,6 @@
 var config = {
     darkMode: ['class'],
-    content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+    content: ['./index.html', './src*.{js,ts,jsx,tsx}'],
     theme: {
         container: {
             center: true,

@@ -4,8 +4,6 @@ import { motion } from 'framer-motion';
 import { X, Maximize2, Minimize2, Pin, PinOff, GripVertical } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
-/* ─── Panel Header ──────────────────────── */
-
 interface PanelHeaderProps {
   title: string;
   onClose?: () => void;
@@ -43,8 +41,6 @@ const PanelHeader: React.FC<PanelHeaderProps> = ({
     )}
   </div>
 );
-
-/* ─── ResizablePanel ────────────────────── */
 
 interface ResizablePanelProps {
   id: string;
@@ -97,20 +93,16 @@ const ResizablePanel = forwardRef<HTMLDivElement, ResizablePanelProps>(
 );
 ResizablePanel.displayName = 'ResizablePanel';
 
-/* ─── Resize Handle ─────────────────────── */
-
 const ResizeHandle: React.FC<{ className?: string; direction?: 'horizontal' | 'vertical' }> = ({ className, direction = 'horizontal' }) => (
   <PanelResizeHandle className={cn(
     'group relative flex items-center justify-center transition-colors hover:bg-neon-cyan/10',
     direction === 'horizontal' ? 'w-1.5 cursor-col-resize' : 'h-1.5 cursor-row-resize',
     className
   )}>
-    <div className="absolute rounded-full bg-white/10 group-hover:bg-neon-cyan/40 transition-colors" 
+    <div className="absolute rounded-full bg-white/10 group-hover:bg-neon-cyan/40 transition-colors"
       style={direction === 'horizontal' ? { width: 3, height: 32 } : { width: 32, height: 3 }} />
   </PanelResizeHandle>
 );
-
-/* ─── Floating Panel ────────────────────── */
 
 interface FloatingPanelProps {
   id: string;

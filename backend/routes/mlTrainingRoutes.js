@@ -21,7 +21,6 @@ router.post('/experiments/:id/train', asyncHandler(async (req, res) => {
     throw new ConflictError('Training already in progress or queued for this experiment');
   }
 
-
   experiment.status = 'training';
   await experiment.save();
 

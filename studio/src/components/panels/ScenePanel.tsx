@@ -1,6 +1,3 @@
-/**
- * CyberHex Studio — Scene & Layout Panel
- */
 import React from 'react';
 import { Layers, Plus, Monitor } from 'lucide-react';
 import { useStudioStore } from '@/stores/studioStore';

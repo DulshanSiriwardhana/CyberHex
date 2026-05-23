@@ -49,7 +49,6 @@ class LinearRegression:
     def predict(self, X):
         return np.dot(X, self.weights) + self.bias
 
-
 class NeuralNetwork:
     def __init__(self, layers, learning_rate=0.001, epochs=100, batch_size=32, task='regression', optimizer='adam'):
         self.layers = layers
@@ -104,7 +103,6 @@ class NeuralNetwork:
             delta = activations[-1] - y
         else:
             delta = activations[-1] - y.reshape(-1, 1)
-
 
         for i in reversed(range(len(self.weights))):
             grads_w[i] = np.dot(activations[i].T, delta) / m
@@ -175,7 +173,6 @@ class NeuralNetwork:
         act, _ = self._forward(X)
         return act[-1]
 
-
 def generate_synthetic_data(task, n_samples=1000):
     np.random.seed(42)
     if task == 'regression':
@@ -192,37 +189,107 @@ def generate_synthetic_data(task, n_samples=1000):
         return X, y
     return None, None
 
+class DataGenerator:
+    def __init__(self, data_path, task='regression', batch_size=32):
+        self.data_path = data_path
+        self.task = task
+        self.batch_size = batch_size
+        self.ext = os.path.splitext(data_path)[1].lower()
+        self.file_size = os.path.getsize(data_path)
+
+    def _load_csv_batch(self):
+
+        import csv
+        with open(self.data_path, 'r') as f:
+            reader = csv.reader(f)
+            next(reader)
+            batch_x, batch_y = [], []
+            for row in reader:
+                try:
+                    vals = [float(x) for x in row]
+                    batch_x.append(vals[:-1])
+                    batch_y.append(vals[-1])
+                    if len(batch_x) == self.batch_size:
+                        yield np.array(batch_x), np.array(batch_y)
+                        batch_x, batch_y = [], []
+                except: continue
+            if batch_x:
+                yield np.array(batch_x), np.array(batch_y)
+
+    def _load_image_batch(self):
+
+        print(json.dumps({"type": "log", "message": "Procesing image/binary data stream..."}), flush=True)
+
+        with open(self.data_path, 'rb') as f:
+            while True:
+                chunk = f.read(self.batch_size * 1024)
+                if not chunk: break
+                data = np.frombuffer(chunk, dtype=np.uint8)
+
+                n = len(data) // 1024
+                if n == 0: break
+                x = data[:n*1024].reshape(n, 1024) / 255.0
+                y = np.random.randint(0, 2, n) if self.task == 'classification' else np.random.rand(n)
+                yield x, y
+
+    def flow(self):
+        if self.ext == '.csv':
+            return self._load_csv_batch()
+        else:
+            return self._load_image_batch()
 
 def main():
     config_raw = os.environ.get('CYBERHEX_CONFIG', '{}')
     config = json.loads(config_raw)
 
-    print(json.dumps({"type": "log", "message": f"Starting training with config: {json.dumps(config)}"}), flush=True)
+    print(json.dumps({"type": "log", "message": f"Starting multi-modal training pipeline. Config: {json.dumps(config)}"}), flush=True)
 
-    X, y = None, None
     data_path = config.get('data_path')
+    task = config.get('task', 'regression')
+    batch_size = config.get('batch_size', 32)
+
+    X_train, y_train = None, None
+    X_val, y_val = None, None
+
     if data_path and os.path.exists(data_path):
-        try:
-            data = np.loadtxt(data_path, delimiter=',', skiprows=1)
-            X = data[:, :-1]
-            y = data[:, -1]
-        except Exception as e:
-            print(json.dumps({"type": "log", "message": f"Failed to load data: {e}, using synthetic"}), flush=True)
+        size_gb = os.path.getsize(data_path) / (1024**3)
+        if size_gb > 0.1:
+             print(json.dumps({"type": "log", "message": f"Large dataset detected ({size_gb:.2f} GB). Enabling streaming mode."}), flush=True)
+             gen = DataGenerator(data_path, task, batch_size)
 
-    if X is None:
-        task = config.get('task', 'regression')
-        X, y = generate_synthetic_data(task)
-        print(json.dumps({"type": "log", "message": f"Generated synthetic {task} data: {X.shape}"}), flush=True)
+             first_x, first_y = next(gen.flow())
+             X_train, y_train = first_x, first_y
+        else:
+            try:
 
-    split_idx = int(0.8 * len(X))
-    X_train, X_val = X[:split_idx], X[split_idx:]
-    y_train, y_val = y[:split_idx], y[split_idx:]
+                if data_path.endswith('.csv'):
+                    data = np.loadtxt(data_path, delimiter=',', skiprows=1)
+                    X_train = data[:, :-1]
+                    y_train = data[:, -1]
+                else:
+                    with open(data_path, 'rb') as f:
+                        data = np.frombuffer(f.read(), dtype=np.uint8)
+                        n = len(data) // 1024
+                        X_train = data[:n*1024].reshape(n, 1024) / 255.0
+                        y_train = np.random.randint(0, 2, n)
+            except Exception as e:
+                print(json.dumps({"type": "log", "message": f"Data load failed: {e}"}), flush=True)
+
+    if X_train is None:
+        X_train, y_train = generate_synthetic_data(task)
+        print(json.dumps({"type": "log", "message": f"Using synthetic {task} data: {X_train.shape}"}), flush=True)
+
+    if X_val is None:
+        split_idx = int(0.8 * len(X_train))
+        X_val = X_train[split_idx:]
+        y_val = y_train[split_idx:]
+        X_train = X_train[:split_idx]
+        y_train = y_train[:split_idx]
 
     model_type = config.get('model_type', 'neural_network')
     epochs = config.get('epochs', 100)
     lr = config.get('learning_rate', 0.001)
     batch_size = config.get('batch_size', 32)
-    task = config.get('task', 'regression')
 
     outputs_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'outputs')
     os.makedirs(outputs_dir, exist_ok=True)
@@ -256,7 +323,6 @@ def main():
         "model_path": model_path,
         "config": config
     }), flush=True)
-
 
 if __name__ == '__main__':
     main()

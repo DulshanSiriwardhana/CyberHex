@@ -1,12 +1,3 @@
-/**
- * CyberHex v3.0 — Redis-backed Asynchronous Task Queue
- *
- * Decouples heavy training child-processes from the main Express API Gateway.
- * Supports graceful fallback to local in-process execution when Redis is down.
- *
- * @module services/queueService
- */
-
 import { createClient } from 'redis';
 import { env } from '../utils/env.js';
 import logger from '../utils/logger.js';
@@ -18,9 +9,6 @@ export const UPDATE_CHANNEL = 'ml:updates:channel';
 let redisClient = null;
 let subClient = null;
 
-/**
- * Returns a connected Redis client for queue actions.
- */
 async function getQueueClient() {
   if (!env.REDIS_URL || process.env.REDIS_DISABLED === '1') return null;
   if (redisClient) return redisClient;
@@ -36,10 +24,6 @@ async function getQueueClient() {
   }
 }
 
-/**
- * Enqueues an ML training job to Redis queue.
- * @param {object} experiment - The mongoose experiment object
- */
 export async function enqueueJob(experiment) {
   const client = await getQueueClient();
   const jobId = experiment._id.toString();
@@ -51,7 +35,6 @@ export async function enqueueJob(experiment) {
 
   logger.info(`[QueueService] Enqueuing job ${jobId.slice(-6)} to Redis`);
 
-  // Set state in JobStore as queued
   await saveJobSnapshot(jobId, {
     experimentId: jobId,
     status: 'queued',
@@ -73,9 +56,6 @@ export async function enqueueJob(experiment) {
   }
 }
 
-/**
- * Subscribes to worker real-time pub/sub updates and broadcasts them to active web sockets.
- */
 export async function initPubSub() {
   if (!env.REDIS_URL || process.env.REDIS_DISABLED === '1') {
     logger.warn('[QueueService] Redis disabled or missing URL, pub/sub updates inactive');

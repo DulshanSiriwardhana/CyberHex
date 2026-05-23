@@ -1,11 +1,5 @@
-/**
- * CyberHex Studio — Media Device Hooks
- * Access webcam, screen sharing, microphone, and system audio.
- */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { FeedId } from '@/types';
-
-/* ─── Types ────────────────────────────── */
 
 interface DeviceInfo {
   deviceId: string;
@@ -62,8 +56,6 @@ interface UseMicrophoneResult {
   switchDevice: (deviceId: string) => Promise<MediaStream>;
 }
 
-/* ─── useWebcam ──────────────────────────── */
-
 export function useWebcam(options: UseWebcamOptions = {}): UseWebcamResult {
   const {
     deviceId,
@@ -92,7 +84,7 @@ export function useWebcam(options: UseWebcamOptions = {}): UseWebcamResult {
         }));
       setDevices(videoDevices);
     } catch {
-      // Silently fail - devices will be empty
+
     }
   }, []);
 
@@ -170,8 +162,6 @@ export function useWebcam(options: UseWebcamOptions = {}): UseWebcamResult {
   };
 }
 
-/* ─── useScreenShare ─────────────────────── */
-
 export function useScreenShare(): UseScreenShareResult {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -236,8 +226,6 @@ export function useScreenShare(): UseScreenShareResult {
   };
 }
 
-/* ─── useMicrophone ──────────────────────── */
-
 export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophoneResult {
   const {
     echoCancellation = true,
@@ -265,7 +253,7 @@ export function useMicrophone(options: UseMicrophoneOptions = {}): UseMicrophone
           kind: d.kind,
         }));
       setDevices(audioDevices);
-    } catch { /* fail silently */ }
+    } catch {  }
   }, []);
 
   const start = useCallback(async (targetDeviceId?: string): Promise<MediaStream> => {

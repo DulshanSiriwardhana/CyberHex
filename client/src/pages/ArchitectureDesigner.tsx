@@ -117,7 +117,7 @@ interface ModelLayer {
 export default function ArchitectureDesigner() {
   const navigate = useNavigate();
   const [modelName, setModelName] = useState("CyberHex-Custom-Net");
-  const [inputFeatures, setInputFeatures] = useState<number>(784); // Default e.g. MNIST
+  const [inputFeatures, setInputFeatures] = useState<number>(784);
   const [layers, setLayers] = useState<ModelLayer[]>([
     { id: "1", type: "Dense", params: { out_features: 128, init_type: "HE" } },
     { id: "2", type: "ReLU", params: {} },
@@ -131,7 +131,6 @@ export default function ArchitectureDesigner() {
 
   const [activeTab, setActiveTab] = useState<"visual" | "cpp" | "json" | "wasm">("visual");
 
-  // WASM simulation states
   const [wasmModule, setWasmModule] = useState<any>(null);
   const [wasmLoading, setWasmLoading] = useState<boolean>(false);
   const [wasmError, setWasmError] = useState<string | null>(null);
@@ -145,7 +144,6 @@ export default function ArchitectureDesigner() {
   const [wasmDatasetType, setWasmDatasetType] = useState<"xor" | "circle" | "sine">("xor");
   const [wasmPoints, setWasmPoints] = useState<any[]>([]);
 
-  // Cleanup WASM memory on unmount or replace
   useEffect(() => {
     return () => {
       if (wasmModel) {
@@ -160,7 +158,6 @@ export default function ArchitectureDesigner() {
     };
   }, [wasmModel, wasmXMatrix, wasmYMatrix]);
 
-  // Generate 2D dataset
   const generateDataset = (type: "xor" | "circle" | "sine", count: number = 200) => {
     const X: number[] = [];
     const y: number[] = [];
@@ -175,9 +172,9 @@ export default function ArchitectureDesigner() {
         label = (x1 > 0 && x2 > 0) || (x1 < 0 && x2 < 0) ? 1 : 0;
       } else if (type === "circle") {
         label = x1 * x1 + x2 * x2 < 0.64 ? 1 : 0;
-      } else { // sine
+      } else {
         const targetVal = Math.sin(x1 * 2) * 0.8;
-        label = x2 > targetVal ? 1 : 0; // Classify above/below sine curve
+        label = x2 > targetVal ? 1 : 0;
       }
 
       X.push(x1, x2);
@@ -195,11 +192,9 @@ export default function ArchitectureDesigner() {
 
     const width = canvas.width;
     const height = canvas.height;
-    
-    // Clear canvas
+
     ctx.clearRect(0, 0, width, height);
 
-    // Predict grid
     const gridSize = 40;
     const gridX: number[] = [];
     for (let r = 0; r < gridSize; r++) {
@@ -213,22 +208,20 @@ export default function ArchitectureDesigner() {
     try {
       const grid_mat = new module.Matrix(gridSize * gridSize, 2);
       grid_mat.setData(gridX);
-      
+
       const pred_mat = model.predict(grid_mat);
       const preds = pred_mat.getData();
-      
+
       grid_mat.delete();
       pred_mat.delete();
 
-      // Draw background pixels
       const cellW = width / gridSize;
       const cellH = height / gridSize;
 
       for (let r = 0; r < gridSize; r++) {
         for (let c = 0; c < gridSize; c++) {
           const val = preds[r * gridSize + c];
-          
-          // Interpolate colors
+
           let color = "";
           if (val > 0.5) {
             const alpha = Math.min((val - 0.5) * 1.5, 0.45);
@@ -246,7 +239,6 @@ export default function ArchitectureDesigner() {
       console.error("Boundary prediction failed:", e);
     }
 
-    // Draw grid lines
     ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
     ctx.lineWidth = 0.5;
     ctx.beginPath();
@@ -254,22 +246,21 @@ export default function ArchitectureDesigner() {
     ctx.moveTo(0, height / 2); ctx.lineTo(width, height / 2);
     ctx.stroke();
 
-    // Draw training data points
     points.forEach(pt => {
       const cx = ((pt.x1 + 1.5) / 3.0) * width;
       const cy = ((1.5 - pt.x2) / 3.0) * height;
 
       ctx.beginPath();
       ctx.arc(cx, cy, 3.5, 0, 2 * Math.PI);
-      
+
       if (pt.label === 1) {
-        ctx.fillStyle = "#22c55e"; // bright green
+        ctx.fillStyle = "#22c55e";
         ctx.strokeStyle = "#ffffff";
       } else {
-        ctx.fillStyle = "#8b5cf6"; // bright purple
+        ctx.fillStyle = "#8b5cf6";
         ctx.strokeStyle = "#ffffff";
       }
-      
+
       ctx.lineWidth = 1.0;
       ctx.fill();
       ctx.stroke();
@@ -320,7 +311,7 @@ export default function ArchitectureDesigner() {
           if (isLastDense) {
             out = 1;
           }
-          
+
           const initEnum = module.InitType[l.params.init_type || "HE"] || module.InitType.HE;
           const denseLayer = new module.Dense(prevOut, out, initEnum);
           model.add(denseLayer);
@@ -348,10 +339,10 @@ export default function ArchitectureDesigner() {
       } else if (lossFunction.includes("Absolute") || lossFunction.includes("MAE")) {
         lossName = "MAE";
       }
-      
+
       let optName = "Adam";
       if (optimizer === "SGD") optName = "SGD";
-      
+
       model.compileWithLossAndOptimizer(lossName, optName, learningRate);
 
       const data = generateDataset(datasetOverride || wasmDatasetType);
@@ -368,7 +359,7 @@ export default function ArchitectureDesigner() {
       setWasmLossHistory([]);
       setCurrentWasmEpoch(0);
       setWasmLoading(false);
-      
+
       setTimeout(() => drawDecisionBoundary(module, model, data.points), 50);
 
     } catch (e: any) {
@@ -378,13 +369,12 @@ export default function ArchitectureDesigner() {
     }
   };
 
-  // Run wasm training loop step
   useEffect(() => {
     let animationFrameId: number;
-    
+
     const runTrainingStep = () => {
       if (!isWasmTraining || !wasmModel || !wasmXMatrix || !wasmYMatrix) return;
-      
+
       if (currentWasmEpoch >= wasmEpochs) {
         setIsWasmTraining(false);
         return;
@@ -392,10 +382,10 @@ export default function ArchitectureDesigner() {
 
       try {
         const loss = wasmModel.trainStep(wasmXMatrix, wasmYMatrix, currentWasmEpoch);
-        
+
         const newEpoch = currentWasmEpoch + 1;
         setCurrentWasmEpoch(newEpoch);
-        
+
         setWasmLossHistory(prev => {
           const updated = [...prev, { epoch: newEpoch, loss: Number(loss.toFixed(6)) }];
           if (updated.length > 100) {
@@ -424,7 +414,6 @@ export default function ArchitectureDesigner() {
   }, [isWasmTraining, wasmModule, wasmModel, wasmXMatrix, wasmYMatrix, currentWasmEpoch, wasmEpochs, wasmPoints]);
 
   const selectedLayer = layers.find((l) => l.id === selectedLayerId) || null;
-
 
   const handleAddLayer = (type: string) => {
     const id = Math.random().toString(36).substring(2, 9);
@@ -464,7 +453,6 @@ export default function ArchitectureDesigner() {
     );
   };
 
-  // Dimensionality propagation display
   const getShapes = (): number[] => {
     const shapes: number[] = [inputFeatures];
     let current = inputFeatures;
@@ -479,9 +467,8 @@ export default function ArchitectureDesigner() {
 
   const shapes = getShapes();
 
-  // Code generator helper
   const generateCppCode = (): string => {
-    let code = `// Automatically generated by CyberHex Architecture Designer\n`;
+    let code = `
     code += `#include "model.h"\n`;
     code += `#include "dense.h"\n`;
     code += `#include "activations.h"\n`;
@@ -556,7 +543,7 @@ export default function ArchitectureDesigner() {
 
   return (
     <Container className="py-8 pt-24 min-h-screen">
-      {/* Header */}
+      {}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -590,7 +577,7 @@ export default function ArchitectureDesigner() {
             <Button
               size="sm"
               onClick={() => {
-                // Pre-populate experiment database or navigate with state
+
                 navigate("/experiments/new", {
                   state: {
                     prebuiltLayers: layers,
@@ -607,10 +594,10 @@ export default function ArchitectureDesigner() {
         </Flex>
       </motion.div>
 
-      {/* Workspace Grid */}
+      {}
       <Grid cols={4} gap="md" className="items-stretch">
-        
-        {/* Left Side: Layer Palette */}
+
+        {}
         <div className="col-span-1 space-y-4">
           <Card className="h-full border-neutral-800/80 bg-neutral-900/60 backdrop-blur-xl">
             <CardHeader className="pb-3 border-b border-neutral-800/40">
@@ -620,8 +607,8 @@ export default function ArchitectureDesigner() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-4 px-3 max-h-[70vh] overflow-y-auto space-y-4">
-              
-              {/* Category: Core */}
+
+              {}
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-2 px-1">
                   Core Layers
@@ -651,7 +638,7 @@ export default function ArchitectureDesigner() {
                 </div>
               </div>
 
-              {/* Category: Activations */}
+              {}
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-2 px-1">
                   Activations
@@ -681,7 +668,7 @@ export default function ArchitectureDesigner() {
                 </div>
               </div>
 
-              {/* Category: Advanced / Transformers */}
+              {}
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-2 px-1">
                   Transformers & Advanced
@@ -715,9 +702,9 @@ export default function ArchitectureDesigner() {
           </Card>
         </div>
 
-        {/* Center Pane: The Visual Canvas & Exporters */}
+        {}
         <div className="col-span-2 space-y-4 flex flex-col">
-          {/* Workspace Tabs */}
+          {}
           <Flex className="border-b border-neutral-800/80 pb-0.5" gap="sm">
             <button
               onClick={() => setActiveTab("visual")}
@@ -761,14 +748,14 @@ export default function ArchitectureDesigner() {
             </button>
           </Flex>
 
-          {/* Active Workspace View */}
+          {}
           <div className="flex-1 min-h-[500px]">
             {activeTab === "visual" && (
               <GlowCard className="p-6 h-full bg-neutral-950/40 relative overflow-hidden flex flex-col">
-                {/* Background Grid */}
+                {}
                 <div className="absolute inset-0 bg-cyber-grid opacity-15 pointer-events-none" />
 
-                {/* Input node */}
+                {}
                 <div className="relative z-10 mx-auto flex flex-col items-center mb-6">
                   <div className="rounded-xl border border-neutral-800 bg-neutral-900/90 px-4 py-2 flex items-center gap-3">
                     <div className="h-3 w-3 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
@@ -787,7 +774,7 @@ export default function ArchitectureDesigner() {
                   </div>
                 </div>
 
-                {/* Layers Container with Reorder.Group */}
+                {}
                 <div className="flex-1 overflow-y-auto max-h-[50vh] pr-2 z-10">
                   {layers.length === 0 ? (
                     <div className="h-40 flex flex-col items-center justify-center text-neutral-500">
@@ -810,7 +797,7 @@ export default function ArchitectureDesigner() {
                               isSelected ? "z-25" : "z-10"
                             }`}
                           >
-                            {/* Layer card wrapper */}
+                            {}
                             <div
                               className={`w-full max-w-md rounded-2xl border p-3.5 transition-all duration-300 ${
                                 isSelected
@@ -837,7 +824,7 @@ export default function ArchitectureDesigner() {
                                 </Flex>
 
                                 <Flex gap="sm">
-                                  {/* Trash */}
+                                  {}
                                   <button
                                     onClick={(e) => handleRemoveLayer(layer.id, e)}
                                     className="p-1.5 rounded-lg text-neutral-600 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
@@ -847,7 +834,7 @@ export default function ArchitectureDesigner() {
                                 </Flex>
                               </Flex>
 
-                              {/* Parameter micro-previews */}
+                              {}
                               {Object.keys(layer.params).length > 0 && (
                                 <div className="mt-2 flex flex-wrap gap-1.5 pt-2 border-t border-neutral-800/40">
                                   {Object.entries(layer.params).map(([k, v]) => (
@@ -859,7 +846,7 @@ export default function ArchitectureDesigner() {
                               )}
                             </div>
 
-                            {/* Connector line to next layer */}
+                            {}
                             <div className="h-4 w-0.5 bg-neutral-800/80 relative">
                               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 border-t-[5px] border-t-neutral-800 border-x-[5px] border-x-transparent" />
                             </div>
@@ -870,7 +857,7 @@ export default function ArchitectureDesigner() {
                   )}
                 </div>
 
-                {/* Output node */}
+                {}
                 <div className="relative z-10 mx-auto flex flex-col items-center mt-2">
                   <div className="rounded-xl border border-neutral-800 bg-neutral-900/90 px-4 py-2">
                     <p className="text-[10px] font-bold text-neutral-500 uppercase text-center">Output Dim</p>
@@ -949,11 +936,11 @@ export default function ArchitectureDesigner() {
 
             {activeTab === "wasm" && (
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full min-h-[500px]">
-                {/* Left Column: Canvas & Controls */}
+                {}
                 <div className="lg:col-span-3 space-y-4 flex flex-col">
                   <GlowCard className="p-6 bg-neutral-950/40 relative overflow-hidden flex flex-col flex-1">
                     <div className="absolute inset-0 bg-cyber-grid opacity-10 pointer-events-none" />
-                    
+
                     <Flex justify="between" align="center" className="relative z-10 mb-4 pb-3 border-b border-neutral-800/40">
                       <div className="flex items-center gap-2">
                         <Cpu className="h-5 w-5 text-green-400 animate-pulse" />
@@ -983,24 +970,24 @@ export default function ArchitectureDesigner() {
                       </div>
                     ) : (
                       <div className="flex-1 flex flex-col items-center justify-center relative z-10 py-2">
-                        {/* Canvas container with neon border */}
+                        {}
                         <div className="relative p-1 rounded-2xl bg-neutral-900 border border-neutral-800 shadow-[0_0_20px_rgba(0,0,0,0.8)]">
-                          <canvas 
-                            id="wasm-canvas" 
-                            width={380} 
-                            height={380} 
+                          <canvas
+                            id="wasm-canvas"
+                            width={380}
+                            height={380}
                             className="rounded-xl bg-neutral-950 block shadow-inner"
                           />
                         </div>
 
-                        {/* Controls Panel */}
+                        {}
                         <div className="w-full mt-6 bg-neutral-900/80 border border-neutral-800/80 rounded-xl p-3 backdrop-blur-md">
                           <Flex justify="between" align="center" gap="md" className="flex-wrap">
-                            {/* Action Buttons */}
+                            {}
                             <div className="flex items-center gap-2">
                               {isWasmTraining ? (
-                                <Button 
-                                  size="sm" 
+                                <Button
+                                  size="sm"
                                   className="bg-amber-600 hover:bg-amber-700 text-white font-mono flex items-center gap-1.5 shadow-[0_0_10px_rgba(217,119,6,0.3)] transition-all"
                                   onClick={() => setIsWasmTraining(false)}
                                 >
@@ -1008,8 +995,8 @@ export default function ArchitectureDesigner() {
                                   PAUSE
                                 </Button>
                               ) : (
-                                <Button 
-                                  size="sm" 
+                                <Button
+                                  size="sm"
                                   className="bg-green-600 hover:bg-green-700 text-white font-mono flex items-center gap-1.5 shadow-[0_0_10px_rgba(22,163,74,0.3)] transition-all"
                                   onClick={() => {
                                     if (currentWasmEpoch >= wasmEpochs) {
@@ -1024,9 +1011,9 @@ export default function ArchitectureDesigner() {
                                   {currentWasmEpoch >= wasmEpochs ? "RESTART" : "TRAIN"}
                                 </Button>
                               )}
-                              
-                              <Button 
-                                size="sm" 
+
+                              <Button
+                                size="sm"
                                 variant="outline"
                                 className="border-neutral-800 hover:bg-neutral-800 text-neutral-400 hover:text-white"
                                 onClick={() => {
@@ -1039,7 +1026,7 @@ export default function ArchitectureDesigner() {
                               </Button>
                             </div>
 
-                            {/* Dropdowns / Inputs */}
+                            {}
                             <div className="flex items-center gap-3">
                               <div className="flex flex-col gap-1">
                                 <label className="text-[9px] text-neutral-500 font-semibold tracking-wider uppercase">Dataset Pattern</label>
@@ -1049,7 +1036,7 @@ export default function ArchitectureDesigner() {
                                     const val = e.target.value as any;
                                     setIsWasmTraining(false);
                                     setWasmDatasetType(val);
-                                    // Trigger immediate re-simulation with the new dataset
+
                                     setTimeout(() => {
                                       startWasmSimulation(val);
                                     }, 0);
@@ -1079,9 +1066,9 @@ export default function ArchitectureDesigner() {
                   </GlowCard>
                 </div>
 
-                {/* Right Column: Loss curve & WASM Engine Stats */}
+                {}
                 <div className="lg:col-span-2 space-y-4 flex flex-col">
-                  {/* Live Stats */}
+                  {}
                   <Card className="border-neutral-800 bg-neutral-900/60 backdrop-blur-xl">
                     <CardHeader className="pb-2 border-b border-neutral-800/40">
                       <CardTitle className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
@@ -1105,7 +1092,7 @@ export default function ArchitectureDesigner() {
                     </CardContent>
                   </Card>
 
-                  {/* Real-time Loss Curve */}
+                  {}
                   <Card className="border-neutral-800 bg-neutral-900/60 backdrop-blur-xl flex-1 flex flex-col overflow-hidden">
                     <CardHeader className="pb-2 border-b border-neutral-800/40 flex flex-row justify-between items-center">
                       <CardTitle className="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -1113,7 +1100,7 @@ export default function ArchitectureDesigner() {
                         Loss Optimization Curve
                       </CardTitle>
                     </CardHeader>
-                    
+
                     <CardContent className="p-4 flex-1 flex flex-col justify-center min-h-[220px]">
                       {wasmLossHistory.length === 0 ? (
                         <div className="flex-1 flex items-center justify-center text-center">
@@ -1126,17 +1113,17 @@ export default function ArchitectureDesigner() {
                               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                               <XAxis dataKey="epoch" stroke="rgba(255,255,255,0.3)" fontSize={9} />
                               <YAxis stroke="rgba(255,255,255,0.3)" fontSize={9} />
-                              <Tooltip 
+                              <Tooltip
                                 contentStyle={{ backgroundColor: "#171717", borderColor: "#262626", borderRadius: "8px" }}
                                 labelStyle={{ color: "#a3a3a3", fontSize: "10px", fontFamily: "monospace" }}
                                 itemStyle={{ color: "#a855f7", fontSize: "11px", fontFamily: "monospace" }}
                               />
-                              <Line 
-                                type="monotone" 
-                                dataKey="loss" 
-                                stroke="#8b5cf6" 
-                                strokeWidth={2} 
-                                dot={false} 
+                              <Line
+                                type="monotone"
+                                dataKey="loss"
+                                stroke="#8b5cf6"
+                                strokeWidth={2}
+                                dot={false}
                                 activeDot={{ r: 4, strokeWidth: 0 }}
                               />
                             </LineChart>
@@ -1151,7 +1138,7 @@ export default function ArchitectureDesigner() {
           </div>
         </div>
 
-        {/* Right Side: Configuration Panel */}
+        {}
         <div className="col-span-1 space-y-4">
           <Card className="border-neutral-800 bg-neutral-900/60 backdrop-blur-xl h-full flex flex-col">
             <CardHeader className="pb-3 border-b border-neutral-800/40">
@@ -1161,8 +1148,8 @@ export default function ArchitectureDesigner() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-4 space-y-5 flex-1 overflow-y-auto">
-              
-              {/* Layer Selection Specific Controls */}
+
+              {}
               <AnimatePresence mode="wait">
                 {selectedLayer ? (
                   <motion.div
@@ -1186,7 +1173,7 @@ export default function ArchitectureDesigner() {
 
                     <div className="divider-cyber my-2" />
 
-                    {/* Parameter inputs based on type */}
+                    {}
                     <div className="space-y-3.5">
                       {selectedLayer.type === "Dense" && (
                         <>
@@ -1353,7 +1340,7 @@ export default function ArchitectureDesigner() {
 
               <div className="divider-cyber my-6" />
 
-              {/* Global Model training hyperparameters */}
+              {}
               <div className="space-y-4 pt-1">
                 <h4 className="text-xs font-extrabold text-neutral-400 uppercase tracking-wider">
                   Model Hyperparameters

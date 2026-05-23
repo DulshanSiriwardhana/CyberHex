@@ -131,7 +131,7 @@ export default function SignUp() {
         Step {step} of {steps.length} — {steps[step - 1].label}
       </p>
 
-      {/* Progress bar */}
+      {}
       <div className="flex gap-1.5 mb-8">
         {steps.map((s) => (
           <div
@@ -168,7 +168,7 @@ export default function SignUp() {
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="space-y-4 min-h-[180px]"
         >
-          {/* Step 1: Profile */}
+          {}
           {step === 1 && (
             <>
               <div className="space-y-1.5">
@@ -195,7 +195,7 @@ export default function SignUp() {
             </>
           )}
 
-          {/* Step 2: Email */}
+          {}
           {step === 2 && (
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-neutral-400">Email</label>
@@ -217,7 +217,7 @@ export default function SignUp() {
             </div>
           )}
 
-          {/* Step 3: Password */}
+          {}
           {step === 3 && (
             <>
               <div className="space-y-1.5">
@@ -255,7 +255,7 @@ export default function SignUp() {
             </>
           )}
 
-          {/* Step 4: Verify OTP */}
+          {}
           {step === 4 && (
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-neutral-400">
@@ -290,7 +290,7 @@ export default function SignUp() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation */}
+      {}
       <div className="flex items-center justify-between mt-8">
         <Button
           variant="ghost"

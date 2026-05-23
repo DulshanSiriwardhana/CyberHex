@@ -1,32 +1,24 @@
-/**
- * CyberHex v3.0 — Toast Notification Store
- *
- * Manages a queue of toast notifications with support for
- * different types, durations, and optional actions.
- */
-
 import { create } from 'zustand';
 
-// ──── Types ──────────────────────────────────────────────────────
 export type ToastType = 'info' | 'success' | 'warning' | 'error' | 'loading';
 
 export interface Toast {
-  /** Unique identifier for rendering keys and dismissal */
+
   id: string;
-  /** Visual variant */
+
   type: ToastType;
-  /** Main message text */
+
   message: string;
-  /** Optional subtitle / detail */
+
   description?: string;
-  /** Auto-dismiss duration in ms (0 = persistent) */
+
   duration?: number;
-  /** Optional action button */
+
   action?: {
     label: string;
     onClick: () => void;
   };
-  /** Timestamp for ordering */
+
   createdAt: number;
 }
 
@@ -42,7 +34,6 @@ interface ToastState {
   loading: (message: string, description?: string) => void;
 }
 
-// ──── Helpers ────────────────────────────────────────────────────
 let toastCounter = 0;
 
 function generateId(): string {
@@ -52,7 +43,6 @@ function generateId(): string {
 
 const MAX_TOASTS = 6;
 
-// ──── Store ──────────────────────────────────────────────────────
 export const useToastStore = create<ToastState>()((set, get) => ({
   toasts: [],
 
@@ -66,14 +56,13 @@ export const useToastStore = create<ToastState>()((set, get) => ({
 
     set((s) => {
       const updated = [...s.toasts, newToast];
-      // Remove oldest if exceeding max
+
       if (updated.length > MAX_TOASTS) {
         return { toasts: updated.slice(-MAX_TOASTS) };
       }
       return { toasts: updated };
     });
 
-    // Auto-dismiss
     if (toast.duration !== 0) {
       const duration = toast.duration ?? 5000;
       setTimeout(() => {
@@ -92,7 +81,6 @@ export const useToastStore = create<ToastState>()((set, get) => ({
 
   clearAll: () => set({ toasts: [] }),
 
-  // Convenience methods
   success: (message, description) => {
     get().addToast({ type: 'success', message, description });
   },
@@ -110,7 +98,7 @@ export const useToastStore = create<ToastState>()((set, get) => ({
       type: 'loading',
       message,
       description,
-      duration: 0, // Persistent until manually dismissed
+      duration: 0,
     });
   },
 }));

@@ -1,15 +1,9 @@
-/**
- * CyberHex Studio — GPU Resource Manager
- * Singleton managing WebGPU/WebGL2 contexts, texture pools, compute pipelines, and memory budgets.
- */
 import type {
   GPUInfo,
   MemoryUsage,
   BenchmarkResult,
 } from '@/types';
 import { GPUProvider } from '@/types';
-
-/* ─── Internal Types ──────────────────── */
 
 export interface GPUCapabilities {
   provider: GPUProvider;
@@ -75,8 +69,6 @@ interface TexturePoolEntry {
   lastAccessed: number;
 }
 
-/* ─── GPUManager Singleton ────────────── */
-
 export class GPUManager {
   private static _instance: GPUManager | null = null;
 
@@ -85,7 +77,6 @@ export class GPUManager {
     return GPUManager._instance;
   }
 
-  /* ── State ── */
   private _provider: GPUProvider = GPUProvider.CPU;
   private _adapter: GPUAdapter | null = null;
   private _device: GPUDevice | null = null;
@@ -105,8 +96,6 @@ export class GPUManager {
   private _deviceLostBound = false;
 
   private constructor() {}
-
-  /* ── Initialize ── */
 
   async initialize(): Promise<GPUInfo> {
     if (this._initialized) return this._toGPUInfo();
@@ -142,7 +131,7 @@ export class GPUManager {
       try {
         const adapter = await (navigator as any).gpu.requestAdapter();
         if (adapter) return GPUProvider.WEBGPU;
-      } catch { /* fall through */ }
+      } catch {  }
     }
 
     const testCanvas = document.createElement('canvas');
@@ -256,8 +245,6 @@ export class GPUManager {
     }
   }
 
-  /* ── Public API ── */
-
   getCapabilities(): GPUCapabilities {
     if (!this._capabilities) throw new Error('GPUManager not initialized');
     return { ...this._capabilities };
@@ -268,8 +255,6 @@ export class GPUManager {
   get glContext(): WebGL2RenderingContext | null { return this._gl; }
 
   onDeviceLost(cb: () => void): void { this._onDeviceLost = cb; }
-
-  /* ── Texture Pool ── */
 
   acquireTexture(size: TextureSize, format: TextureFormat): GPUTextureHandle {
     const poolKey = `${size.width}x${size.height}_${format}`;
@@ -322,12 +307,10 @@ export class GPUManager {
       if (this._provider === GPUProvider.WEBGL2) {
         (entry.handle.texture as WebGLTexture) && this._gl?.deleteTexture(entry.handle.texture as WebGLTexture);
       }
-      // WebGPU textures are GC'd automatically
+
       this._texturePool.delete(key);
     }
   }
-
-  /* ── Compute Pipelines ── */
 
   createComputePipeline(shaderCode: string, bindings: BindingLayout[]): ComputePipelineHandle {
     const hash = this._hashString(shaderCode + JSON.stringify(bindings));
@@ -421,12 +404,10 @@ export class GPUManager {
     return staging;
   }
 
-  /* ── Memory ── */
-
   getMemoryUsage(): MemoryUsage {
-    const tensorMB = 0; // Would integrate with TF memory tracking
+    const tensorMB = 0;
     const textureCount = [...this._texturePool.values()].filter((e) => e.handle.inUse).length;
-    const textureMB = textureCount * 4 * 1920 / 1024; // Rough estimate
+    const textureMB = textureCount * 4 * 1920 / 1024;
     const totalMB = (navigator as Navigator & { deviceMemory?: number }).deviceMemory
       ? (navigator as Navigator & { deviceMemory?: number }).deviceMemory! * 1024
       : 8192;
@@ -462,8 +443,6 @@ export class GPUManager {
     this._initialized = false;
     this._capabilities = null;
   }
-
-  /* ── Helpers ── */
 
   private _toGPUInfo(): GPUInfo {
     return {

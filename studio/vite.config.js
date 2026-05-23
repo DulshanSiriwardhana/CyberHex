@@ -29,10 +29,7 @@ export default defineConfig({
                 ],
             },
             workbox: {
-                globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm}'],
-                runtimeCaching: [
-                    {
-                        urlPattern: /^https:\/\/.*\.tensorflow\.org\/.*/i,
+                globPatterns: ['**i,
                         handler: 'CacheFirst',
                         options: {
                             cacheName: 'tf-models',

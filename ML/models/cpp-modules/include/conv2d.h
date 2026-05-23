@@ -5,14 +5,6 @@
 
 namespace cyberhex {
 
-/**
- * 2D convolution (NHWC-style layout flattened to 2D matrix).
- *
- * Input X:  (batch, in_channels * input_height * input_width)
- * Output:   (batch, out_channels * output_height * output_width)
- *
- * Weights: (kernel_h * kernel_w * in_channels, out_channels) for im2col matmul.
- */
 class Conv2D : public Layer {
 public:
     Conv2D(size_t in_channels, size_t out_channels,
@@ -58,6 +50,6 @@ private:
     void col2im(const Matrix<double>& col_grad, Matrix<double>& input_grad) const;
 };
 
-} // namespace cyberhex
+}
 
-#endif // CYBERHEX_CONV2D_H
+#endif

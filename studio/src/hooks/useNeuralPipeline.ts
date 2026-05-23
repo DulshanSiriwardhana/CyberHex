@@ -1,7 +1,3 @@
-/**
- * CyberHex Studio — Neural Pipeline Hook
- * Connects media feeds to FilterEngine with GPU-aware frame processing.
- */
 import { useEffect, useRef, useCallback } from 'react';
 import { FilterEngine } from '@/ai/video/filters/FilterEngine';
 import { useStudioStore } from '@/stores/studioStore';

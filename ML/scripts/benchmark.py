@@ -17,7 +17,6 @@ ROOT = Path(__file__).resolve().parents[1]
 CPP_BUILD = ROOT / "models" / "cpp-modules" / "build"
 BENCH_BIN = CPP_BUILD / "cyberhex_bench"
 
-
 def run_cpp_matmul_benchmark(n=1024, repeats=10):
     if not BENCH_BIN.exists():
         print(f"CyberHex bench binary not found at {BENCH_BIN}")
@@ -32,7 +31,6 @@ def run_cpp_matmul_benchmark(n=1024, repeats=10):
     )
     line = result.stdout.strip().splitlines()[-1]
     return json.loads(line)
-
 
 def benchmark_numpy_dot(size=1024, repeats=10):
     print(f"\n{'=' * 60}")
@@ -67,7 +65,6 @@ def benchmark_numpy_dot(size=1024, repeats=10):
             print(f"Speedup (CyberHex/NumPy GFLOPS): {cpp['gflops'] / np_gflops:.2f}x")
 
     return np_mean
-
 
 def benchmark_xor_training():
     print(f"\n{'=' * 60}")
@@ -122,7 +119,6 @@ def benchmark_xor_training():
 
     print(f"PyTorch (100 epochs): {np.mean(times) * 1000:.1f}ms")
     print("CyberHex C++: run ./build/app for XOR example comparison")
-
 
 if __name__ == "__main__":
     print("=" * 60)

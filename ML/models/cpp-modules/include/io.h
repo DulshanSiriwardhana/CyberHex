@@ -15,7 +15,7 @@ void print_array(T* array, int size){
         }
         else{
             cout << array[i] << ", ";
-        }  
+        }
     }
 }
 

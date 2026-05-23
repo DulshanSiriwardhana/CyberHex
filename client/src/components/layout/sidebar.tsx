@@ -1,11 +1,3 @@
-/**
- * CyberHex v3.0 — Animated Sidebar with Nested Navigation
- *
- * Premium collapsible sidebar with smooth animations, nested
- * menu items, active route highlighting, keyboard shortcuts,
- * and role-aware navigation.
- */
-
 import { useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,7 +19,6 @@ import {
 } from 'lucide-react';
 import { SPACING } from '@/lib/design-tokens';
 
-// ──── Types ──────────────────────────────────────────────────────
 export interface NavItem {
   id: string;
   label: string;
@@ -44,7 +35,6 @@ export interface SidebarProps {
   onToggle: () => void;
 }
 
-// ──── Navigation Configuration ───────────────────────────────────
 const NAV_ITEMS: NavItem[] = [
   {
     id: 'dashboard',
@@ -93,8 +83,6 @@ const NAV_ITEMS: NavItem[] = [
     shortcut: 'G S',
   },
 ];
-
-// ──── Nav Item Component ─────────────────────────────────────────
 
 function NavItemComponent({
   item,
@@ -210,8 +198,6 @@ function NavItemComponent({
   );
 }
 
-// ──── Main Sidebar Component ─────────────────────────────────────
-
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <motion.aside
@@ -222,7 +208,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       transition={{ type: 'spring', stiffness: 400, damping: 35 }}
       className="relative h-screen flex flex-col bg-[#0d0d14] border-r border-white/[0.04] shrink-0 overflow-hidden"
     >
-      {/* Collapse toggle */}
+      {}
       <button
         onClick={onToggle}
         className="absolute -right-3 top-6 z-10 w-6 h-6 rounded-full bg-[#181825] border border-white/[0.08] flex items-center justify-center hover:bg-[#1f1f2e] hover:border-white/[0.14] transition-all group"
@@ -234,7 +220,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         )}
       </button>
 
-      {/* Logo area */}
+      {}
       <div className="flex items-center gap-3 px-4 h-14 shrink-0 border-b border-white/[0.04]">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-violet-600 flex items-center justify-center shrink-0">
           <span className="text-xs font-bold text-white">CH</span>
@@ -253,14 +239,14 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         </AnimatePresence>
       </div>
 
-      {/* Navigation */}
+      {}
       <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
         {NAV_ITEMS.map((item) => (
           <NavItemComponent key={item.id} item={item} collapsed={collapsed} />
         ))}
       </nav>
 
-      {/* Footer */}
+      {}
       <div className="px-3 py-3 border-t border-white/[0.04]">
         {!collapsed && (
           <div className="flex items-center gap-2 px-2 py-2 rounded-xl bg-white/[0.02]">

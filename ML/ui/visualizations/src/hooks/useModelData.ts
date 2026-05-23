@@ -34,7 +34,7 @@ export function useModelData() {
             if (i === 0) {
               throw new Error(`Failed to load layer_${idx}.json: HTTP ${resp.status}`);
             }
-            // Some layer files might not exist — stop collecting
+
             break;
           }
           const json: LayerInfo = await resp.json();

@@ -9,10 +9,6 @@
 
 namespace cyberhex {
 
-/**
- * Scaled dot-product multi-head self-attention.
- * Input X: (batch, d_model). Output: (batch, d_model).
- */
 class MultiHeadSelfAttention : public Layer {
 public:
     MultiHeadSelfAttention(size_t d_model, size_t num_heads);
@@ -35,12 +31,9 @@ private:
     Matrix<double> dW_q_, dW_k_, dW_v_, dW_o_;
 
     Matrix<double> input_;
-    Matrix<double> context_;  // post-attention before W_o
+    Matrix<double> context_;
 };
 
-/**
- * Transformer encoder block: MHSA + residual LN + FFN (GELU) + residual LN.
- */
 class TransformerEncoderBlock : public Layer {
 public:
     TransformerEncoderBlock(size_t d_model, size_t num_heads, size_t ffn_dim);
@@ -68,6 +61,6 @@ private:
     Matrix<double> residual2_;
 };
 
-} // namespace cyberhex
+}
 
-#endif // CYBERHEX_TRANSFORMER_H
+#endif

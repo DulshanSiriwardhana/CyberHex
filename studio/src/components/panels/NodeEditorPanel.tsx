@@ -1,6 +1,3 @@
-/**
- * CyberHex Studio — Node-Based Visual Processing Editor
- */
 import React, { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Layers, Plus, Trash2 } from 'lucide-react';

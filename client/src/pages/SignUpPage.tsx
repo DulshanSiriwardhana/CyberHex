@@ -7,11 +7,11 @@ import SignUp from "@/components/signup/signup";
 export default function SignUpPage() {
   return (
     <div className="min-h-screen bg-neutral-950 bg-cyber-grid flex flex-col items-center justify-center px-4 py-12 relative">
-      {/* Radial glow */}
+      {}
       <div className="pointer-events-none fixed inset-0 bg-cyber-radial" />
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Logo */}
+        {}
         <Link
           to="/"
           className="flex items-center justify-center gap-2 mb-10 group"
@@ -24,7 +24,7 @@ export default function SignUpPage() {
           </span>
         </Link>
 
-        {/* Card */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -34,7 +34,7 @@ export default function SignUpPage() {
           <SignUp />
         </motion.div>
 
-        {/* Footer */}
+        {}
         <p className="mt-8 text-center text-sm text-neutral-500">
           Already have an account?{" "}
           <Link

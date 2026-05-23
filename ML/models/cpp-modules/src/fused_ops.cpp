@@ -41,4 +41,4 @@ FusedLinearReLUGrad fused_linear_relu_backward(const Matrix<double>& grad_out,
     return g;
 }
 
-} // namespace cyberhex
+}

@@ -8,9 +8,6 @@
 
 namespace cyberhex {
 
-// ============================================================================
-// Optimizer Types
-// ============================================================================
 enum class OptimizerType {
     SGD,
     MOMENTUM,
@@ -21,21 +18,15 @@ enum class OptimizerType {
     NADAM
 };
 
-// ============================================================================
-// Loss Function Types
-// ============================================================================
 enum class LossType {
     MSE,
     MAE,
     HUBER,
     BCE,
-    CCE,       // Categorical Cross-Entropy
+    CCE,
     BINARY_CCE
 };
 
-// ============================================================================
-// Initialization Types
-// ============================================================================
 enum class InitType {
     HE,
     XAVIER,
@@ -45,59 +36,40 @@ enum class InitType {
     ORTHOGONAL
 };
 
-// ============================================================================
-// Base Layer Class — extensible abstraction
-// ============================================================================
 class Layer {
 public:
     virtual ~Layer() = default;
 
-    // Forward pass: input → output
     virtual Matrix<double> forward(const Matrix<double>& input) = 0;
 
-    // Backward pass: gradient from upstream → gradient to downstream
-    // Returns gradient w.r.t. input
     virtual Matrix<double> backward(const Matrix<double>& grad_output) = 0;
 
-    // Parameter access for serialization / gradient checking
     virtual std::vector<Matrix<double>*> parameters() { return {}; }
     virtual std::vector<Matrix<double>*> parameter_gradients() { return {}; }
     virtual std::vector<std::string> parameter_names() { return {}; }
 
-    // Layer type name
     virtual std::string name() const = 0;
 
-    // Reset optimizer state (for new training run)
     virtual void reset_state() {}
 
-    // Training mode toggle (for Dropout, BatchNorm)
     virtual void set_training(bool training) { (void)training; }
 
-    // Get output shape after forward
     virtual size_t output_size() const = 0;
 };
 
-// ============================================================================
-// Loss Function Base Class
-// ============================================================================
 class LossFunction {
 public:
     virtual ~LossFunction() = default;
 
-    // Compute loss value
     virtual double forward(const Matrix<double>& predictions,
                            const Matrix<double>& targets) = 0;
 
-    // Compute gradient w.r.t. predictions
     virtual Matrix<double> backward(const Matrix<double>& predictions,
                                     const Matrix<double>& targets) = 0;
 
     virtual std::string name() const = 0;
 };
 
-// ============================================================================
-// Concrete Loss Functions
-// ============================================================================
 class MSELoss : public LossFunction {
 public:
     double forward(const Matrix<double>& pred, const Matrix<double>& target) override;
@@ -136,9 +108,6 @@ public:
     std::string name() const override { return "CCE"; }
 };
 
-// ============================================================================
-// Optimizer Base Class
-// ============================================================================
 class Optimizer {
 public:
     virtual ~Optimizer() = default;
@@ -150,13 +119,9 @@ public:
     virtual void set_lr(double lr) = 0;
     virtual std::string name() const = 0;
 
-    // Learning rate scheduling
     virtual void schedule(int epoch, int total_epochs) {}
 };
 
-// ============================================================================
-// Concrete Optimizers
-// ============================================================================
 class SGDOptimizer : public Optimizer {
 private:
     double lr_;
@@ -183,7 +148,7 @@ private:
     bool amsgrad_;
     std::vector<Matrix<double>> m_;
     std::vector<Matrix<double>> v_;
-    std::vector<Matrix<double>> v_max_; // for AMSGrad
+    std::vector<Matrix<double>> v_max_;
 public:
     AdamOptimizer(double lr = 0.001, double beta1 = 0.9, double beta2 = 0.999,
                   double epsilon = 1e-8, double weight_decay = 0.0, bool amsgrad = false);
@@ -214,9 +179,6 @@ public:
     std::string name() const override { return "RMSprop"; }
 };
 
-// ============================================================================
-// Learning Rate Schedulers
-// ============================================================================
 class LRScheduler {
 public:
     virtual ~LRScheduler() = default;
@@ -271,6 +233,6 @@ public:
     std::string name() const override { return "OneCycle"; }
 };
 
-} // namespace cyberhex
+}
 
-#endif // CYBERHEX_LAYER_H
+#endif

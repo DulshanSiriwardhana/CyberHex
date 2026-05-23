@@ -1,6 +1,3 @@
-/**
- * CyberHex Studio — Audio Enhancement Panel
- */
 import React, { useEffect, useState } from 'react';
 import { Volume2, Waves, Zap } from 'lucide-react';
 import { useStudioStore } from '@/stores/studioStore';
@@ -20,7 +17,7 @@ export const AudioPanel: React.FC = () => {
       try {
         setMetrics(audioEngine.getAudioMetrics());
       } catch {
-        /* engine not initialized */
+
       }
     }, 500);
     return () => clearInterval(id);

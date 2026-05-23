@@ -1,20 +1,11 @@
-/**
- * CyberHex Studio — Application Entry Point
- * Bootstraps React 18 with strict mode, initializes GPU detection,
- * and mounts the root application shell.
- */
 import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from '@/App';
 import '@/styles/globals.css';
 
-/* ─── Performance Mark ─────────────────── */
-
 if (performance?.mark) {
   performance.mark('studio:boot');
 }
-
-/* ─── GPU Early Detection ─────────────── */
 
 async function detectGPU(): Promise<boolean> {
   try {
@@ -30,8 +21,6 @@ async function detectGPU(): Promise<boolean> {
     return false;
   }
 }
-
-/* ─── Mount ─────────────────────────────── */
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

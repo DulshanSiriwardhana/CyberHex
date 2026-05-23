@@ -3,8 +3,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
-/* ─── Button Variants ───────────────────── */
-
 const buttonVariants = cva(
   'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/50 focus-visible:ring-offset-1 focus-visible:ring-offset-surface disabled:pointer-events-none disabled:opacity-40 select-none',
   {
@@ -40,8 +38,6 @@ const buttonVariants = cva(
   }
 );
 
-/* ─── Props ──────────────────────────────── */
-
 interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
@@ -50,8 +46,6 @@ interface ButtonProps
   rightIcon?: React.ReactNode;
   shortcut?: string;
 }
-
-/* ─── Button Component ──────────────────── */
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, loading, leftIcon, rightIcon, shortcut, children, disabled, ...props }, ref) => {
@@ -79,8 +73,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   }
 );
 Button.displayName = 'Button';
-
-/* ─── IconButton ─────────────────────────── */
 
 interface IconButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -118,8 +110,6 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   }
 );
 IconButton.displayName = 'IconButton';
-
-/* ─── ButtonGroup ────────────────────────── */
 
 interface ButtonGroupProps {
   children: React.ReactNode;

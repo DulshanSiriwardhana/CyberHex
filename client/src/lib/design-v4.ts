@@ -1,10 +1,3 @@
-/**
- * CyberHex v4.0 — Release No. 01: "The Word"
- *
- * First pillar of the v4 design lineage. Typography is the atomic brand unit;
- * every surface anchors on the CyberHex wordmark lockup and serial index.
- */
-
 export const V4_RELEASE = {
   version: '4.0',
   serial: '01',
@@ -13,7 +6,6 @@ export const V4_RELEASE = {
   fullLabel: 'v4.0 · Release No. 01 — The Word',
 } as const;
 
-/** Signal palette — refined from v3 green; adds hex-gold for the "Hex" syllable */
 export const V4_COLORS = {
   signal: {
     green: '#00e5ff',
@@ -30,7 +22,6 @@ export const V4_COLORS = {
   },
 } as const;
 
-/** Wordmark typography — engineered lockup metrics */
 export const V4_WORDMARK = {
   fontFamily: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
   tracking: {

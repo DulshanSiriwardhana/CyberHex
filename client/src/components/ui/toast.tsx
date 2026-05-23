@@ -1,11 +1,3 @@
-/**
- * CyberHex v3.0 — Toast Notification Component
- *
- * Premium animated toast notifications that render from the global
- * toast store. Supports info, success, warning, error, and loading
- * variants with auto-dismiss, manual close, and action buttons.
- */
-
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -18,7 +10,6 @@ import {
 } from 'lucide-react';
 import { useToastStore, type Toast, type ToastType } from '@/stores/toast';
 
-// ──── Per-type configuration ─────────────────────────────────────
 const TOAST_CONFIG: Record<ToastType, {
   icon: typeof CheckCircle2;
   bg: string;
@@ -69,7 +60,6 @@ const TOAST_CONFIG: Record<ToastType, {
   },
 };
 
-// ──── Individual Toast ───────────────────────────────────────────
 function ToastItem({ toast }: { toast: Toast }) {
   const removeToast = useToastStore((s) => s.removeToast);
   const config = TOAST_CONFIG[toast.type];
@@ -94,7 +84,7 @@ function ToastItem({ toast }: { toast: Toast }) {
       `}
       style={{ boxShadow: config.glow }}
     >
-      {/* Progress bar for auto-dismiss */}
+      {}
       {toast.duration !== 0 && toast.duration !== undefined && (
         <motion.div
           initial={{ scaleX: 1 }}
@@ -107,7 +97,7 @@ function ToastItem({ toast }: { toast: Toast }) {
         />
       )}
 
-      {/* Loading spinner */}
+      {}
       {toast.type === 'loading' && (
         <div className="shrink-0 mt-0.5">
           <Icon
@@ -117,14 +107,14 @@ function ToastItem({ toast }: { toast: Toast }) {
         </div>
       )}
 
-      {/* Icon */}
+      {}
       {toast.type !== 'loading' && (
         <div className="shrink-0 mt-0.5">
           <Icon className={`w-4.5 h-4.5 ${config.iconColor}`} strokeWidth={2.5} />
         </div>
       )}
 
-      {/* Content */}
+      {}
       <div className="flex-1 min-w-0">
         <p className="text-[13px] font-medium text-white/90 leading-tight">
           {toast.message}
@@ -147,7 +137,7 @@ function ToastItem({ toast }: { toast: Toast }) {
         )}
       </div>
 
-      {/* Close button */}
+      {}
       <button
         onClick={() => removeToast(toast.id)}
         className="shrink-0 rounded-lg p-1 text-white/25 hover:text-white/50 hover:bg-white/[0.06] transition-colors"
@@ -158,7 +148,6 @@ function ToastItem({ toast }: { toast: Toast }) {
   );
 }
 
-// ──── Toast Container ────────────────────────────────────────────
 export function ToastContainer() {
   const toasts = useToastStore((s) => s.toasts);
 

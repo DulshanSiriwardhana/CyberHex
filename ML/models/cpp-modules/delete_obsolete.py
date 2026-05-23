@@ -1,6 +1,5 @@
 import re
 
-
 with open("include/matrix.h", "r") as f:
     text = f.read()
 
@@ -14,10 +13,5 @@ text = re.sub(r"std::vector<std::vector<double>> multiply_matrices.*?\n", "", te
 with open("include/matrix.h", "w") as f:
     f.write(text)
 
-
 with open("src/matrix.cpp", "r") as f:
     cpp = f.read()
-
-
-
-

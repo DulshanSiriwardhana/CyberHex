@@ -1,6 +1,3 @@
-/**
- * CyberHex Studio — Main Application Shell
- */
 import React, { useEffect } from 'react';
 import { StudioShell } from '@/components/layout/StudioShell';
 import { GPUManager } from '@/engine/gpu/GPUManager';

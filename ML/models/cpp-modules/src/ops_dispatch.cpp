@@ -37,4 +37,4 @@ Matrix<double> dispatch_matmul(const Device& device,
     return A.dot(B);
 }
 
-} // namespace cyberhex
+}

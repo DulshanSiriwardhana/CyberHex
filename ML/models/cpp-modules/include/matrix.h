@@ -17,9 +17,6 @@
 
 namespace cyberhex {
 
-// ============================================================================
-// Exception Hierarchy
-// ============================================================================
 class CyberHexException : public std::runtime_error {
 public:
     explicit CyberHexException(const std::string& msg) : std::runtime_error(msg) {}
@@ -35,16 +32,13 @@ public:
     explicit NumericalException(const std::string& msg) : CyberHexException(msg) {}
 };
 
-// ============================================================================
-// Matrix<T> — Cache-friendly, row-major matrix with OpenMP parallelism
-// ============================================================================
 template <typename T = double>
 class Matrix {
     static_assert(std::is_arithmetic<T>::value,
         "Matrix<T>: T must be an arithmetic type (float, double, int, etc.).");
 
 public:
-    // --- Constructors / Destructor ---
+
     Matrix() noexcept : rows_(0), cols_(0), size_(0), data_(nullptr), owned_(true) {}
 
     explicit Matrix(size_t r, size_t c, T val = T(0))
@@ -60,11 +54,9 @@ public:
         owned_ = true;
     }
 
-    // View constructor (non-owning)
     Matrix(size_t r, size_t c, T* data, bool owned = false) noexcept
         : rows_(r), cols_(c), size_(r * c), data_(data), owned_(owned) {}
 
-    // Copy constructor
     Matrix(const Matrix& other) : rows_(other.rows_), cols_(other.cols_), size_(other.size_) {
         if (size_ > 0) {
             data_ = static_cast<T*>(aligned_alloc(64, size_ * sizeof(T)));
@@ -76,7 +68,6 @@ public:
         owned_ = true;
     }
 
-    // Move constructor
     Matrix(Matrix&& other) noexcept
         : rows_(other.rows_), cols_(other.cols_), size_(other.size_),
           data_(other.data_), owned_(other.owned_)
@@ -88,14 +79,12 @@ public:
         other.owned_ = true;
     }
 
-    // Destructor
     ~Matrix() {
         if (owned_ && data_) {
             std::free(data_);
         }
     }
 
-    // Copy-and-swap assignment
     Matrix& operator=(Matrix other) {
         swap(other);
         return *this;
@@ -109,7 +98,6 @@ public:
         std::swap(owned_, other.owned_);
     }
 
-    // --- Accessors ---
     size_t rows() const noexcept { return rows_; }
     size_t cols() const noexcept { return cols_; }
     size_t size() const noexcept { return size_; }
@@ -117,7 +105,6 @@ public:
     T* data() noexcept { return data_; }
     const T* data() const noexcept { return data_; }
 
-    // Element access with bounds checking (always active, not just debug)
     inline T& operator()(size_t r, size_t c) {
         if (r >= rows_) throw std::out_of_range("Row index " + std::to_string(r) + " >= " + std::to_string(rows_));
         if (c >= cols_) throw std::out_of_range("Col index " + std::to_string(c) + " >= " + std::to_string(cols_));
@@ -130,7 +117,6 @@ public:
         return data_[r * cols_ + c];
     }
 
-    // Flat indexing
     inline T& at(size_t i) {
         if (i >= size_) throw std::out_of_range("Flat index " + std::to_string(i) + " >= " + std::to_string(size_));
         return data_[i];
@@ -141,7 +127,6 @@ public:
         return data_[i];
     }
 
-    // Row access
     T* row(size_t r) {
         if (r >= rows_) throw std::out_of_range("Row index " + std::to_string(r) + " >= " + std::to_string(rows_));
         return data_ + r * cols_;
@@ -152,7 +137,6 @@ public:
         return data_ + r * cols_;
     }
 
-    // --- Reshape ---
     void reshape(size_t r, size_t c) {
         if (r * c != size_) {
             throw DimensionMismatchException(
@@ -163,7 +147,6 @@ public:
         cols_ = c;
     }
 
-    // --- Fill / Set ---
     void fill(T val) {
         std::fill(data_, data_ + size_, val);
     }
@@ -182,52 +165,43 @@ public:
         }
     }
 
-    // --- Matrix Operations ---
     Matrix dot(const Matrix& other) const;
     Matrix transpose() const;
-    // Transpose alias (used sparingly to avoid shadowing template param)
+
     Matrix transposed() const { return transpose(); }
 
-    // Element-wise operations
     Matrix operator+(const Matrix& other) const;
     Matrix operator-(const Matrix& other) const;
-    Matrix operator*(const Matrix& other) const;  // element-wise
-    Matrix operator/(const Matrix& other) const;  // element-wise
+    Matrix operator*(const Matrix& other) const;
+    Matrix operator/(const Matrix& other) const;
 
-    // Scalar operations
     Matrix operator+(T scalar) const;
     Matrix operator-(T scalar) const;
     Matrix operator*(T scalar) const;
     Matrix operator/(T scalar) const;
 
-    // In-place operations
     Matrix& operator+=(const Matrix& other);
     Matrix& operator-=(const Matrix& other);
     Matrix& operator*=(T scalar);
     Matrix& operator/=(T scalar);
 
-    // Unary operations
     Matrix operator-() const;
 
-    // Comparison
     bool operator==(const Matrix& other) const;
     bool operator!=(const Matrix& other) const { return !(*this == other); }
 
-    // --- Apply function ---
     void apply(T (*func)(T));
     void apply(const std::function<T(T)>& func);
     Matrix applied(T (*func)(T)) const;
     Matrix applied(const std::function<T(T)>& func) const;
 
-    // --- Reduction operations ---
     T sum() const;
     T mean() const;
     T max() const;
     T min() const;
-    T norm() const;        // Frobenius norm
+    T norm() const;
     T squared_norm() const;
 
-    // Row/column reductions
     Matrix row_sum() const;
     Matrix col_sum() const;
     Matrix row_mean() const;
@@ -235,19 +209,16 @@ public:
     Matrix row_max() const;
     Matrix col_max() const;
 
-    // --- Statistical operations ---
     static Matrix random(size_t r, size_t c, T mean = T(0), T stddev = T(1));
     static Matrix uniform(size_t r, size_t c, T low = T(0), T high = T(1));
     static Matrix identity(size_t n);
     static Matrix ones(size_t r, size_t c);
     static Matrix zeros(size_t r, size_t c);
 
-    // --- Submatrix / slicing ---
     Matrix slice(size_t row_start, size_t row_end, size_t col_start, size_t col_end) const;
     Matrix row_slice(size_t start, size_t count) const;
     Matrix col_slice(size_t start, size_t count) const;
 
-    // --- Debug ---
     void print(const std::string& name = "", int precision = 6) const;
     double relative_error(const Matrix& other) const;
 
@@ -258,7 +229,6 @@ private:
     T* data_ = nullptr;
     bool owned_ = true;
 
-    // Aligned allocation
     static void* aligned_alloc(size_t alignment, size_t size) {
         void* ptr = nullptr;
         if (posix_memalign(&ptr, alignment, size) != 0) {
@@ -268,9 +238,6 @@ private:
     }
 };
 
-// ============================================================================
-// Dot Product Implementation — Cache-blocked, OpenMP-parallelized
-// ============================================================================
 template <typename T>
 Matrix<T> Matrix<T>::dot(const Matrix<T>& other) const {
     if (cols_ != other.rows_) {
@@ -282,7 +249,6 @@ Matrix<T> Matrix<T>::dot(const Matrix<T>& other) const {
     Matrix<T> result(rows_, other.cols_, T(0));
     const size_t M = rows_, N = other.cols_, K = cols_;
 
-    // Cache blocking parameters
     const size_t BLOCK_M = 64;
     const size_t BLOCK_N = 64;
     const size_t BLOCK_K = 256;
@@ -316,9 +282,6 @@ Matrix<T> Matrix<T>::dot(const Matrix<T>& other) const {
     return result;
 }
 
-// ============================================================================
-// Transpose — Cache-blocked
-// ============================================================================
 template <typename T>
 Matrix<T> Matrix<T>::transpose() const {
     Matrix<T> t(cols_, rows_);
@@ -341,9 +304,6 @@ Matrix<T> Matrix<T>::transpose() const {
     return t;
 }
 
-// ============================================================================
-// Element-wise arithmetic operations
-// ============================================================================
 template <typename T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T>& other) const {
     if (rows_ != other.rows_ || cols_ != other.cols_) {
@@ -508,9 +468,6 @@ bool Matrix<T>::operator==(const Matrix<T>& other) const {
     return true;
 }
 
-// ============================================================================
-// Apply functions
-// ============================================================================
 template <typename T>
 void Matrix<T>::apply(T (*func)(T)) {
     #pragma omp parallel for simd if(size_ > 10000)
@@ -547,9 +504,6 @@ Matrix<T> Matrix<T>::applied(const std::function<T(T)>& func) const {
     return r;
 }
 
-// ============================================================================
-// Reduction operations
-// ============================================================================
 template <typename T>
 T Matrix<T>::sum() const {
     T s = T(0);
@@ -678,9 +632,6 @@ Matrix<T> Matrix<T>::col_max() const {
     return r;
 }
 
-// ============================================================================
-// Static factory methods
-// ============================================================================
 template <typename T>
 Matrix<T> Matrix<T>::random(size_t r, size_t c, T mean, T stddev) {
     Matrix<T> m(r, c);
@@ -724,9 +675,6 @@ Matrix<T> Matrix<T>::zeros(size_t r, size_t c) {
     return Matrix<T>(r, c, T(0));
 }
 
-// ============================================================================
-// Slicing
-// ============================================================================
 template <typename T>
 Matrix<T> Matrix<T>::slice(size_t row_start, size_t row_end,
                             size_t col_start, size_t col_end) const {
@@ -753,9 +701,6 @@ Matrix<T> Matrix<T>::col_slice(size_t start, size_t count) const {
     return slice(0, rows_, start, start + count);
 }
 
-// ============================================================================
-// Print
-// ============================================================================
 template <typename T>
 void Matrix<T>::print(const std::string& name, int precision) const {
     if (!name.empty()) {
@@ -790,13 +735,10 @@ double Matrix<T>::relative_error(const Matrix& other) const {
     return static_cast<double>(std::sqrt(diff_norm / norm_val));
 }
 
-// ============================================================================
-// Legacy helper functions (preserved for backwards compatibility)
-// ============================================================================
 std::vector<double> solve_AX_eq_B(std::vector<std::vector<double>> A, std::vector<double> B);
 double det(std::vector<std::vector<double>> A);
 void removeRowColumn(const std::vector<std::vector<double>>& A, size_t row, size_t column, std::vector<std::vector<double>>& ret);
 
-} // namespace cyberhex
+}
 
-#endif // CYBERHEX_MATRIX_H
+#endif

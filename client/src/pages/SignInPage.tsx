@@ -37,7 +37,7 @@ export default function SignInPage() {
       <div className="pointer-events-none fixed inset-0 bg-cyber-radial" />
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Logo */}
+        {}
         <Link to="/" className="flex items-center justify-center gap-2 mb-10 group">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-green-700 shadow-[0_0_20px_rgba(34, 197, 94,0.35)] group-hover:shadow-[0_0_30px_rgba(34, 197, 94,0.5)] transition-shadow duration-300">
             <Terminal className="h-5 w-5 text-white" />
@@ -47,7 +47,7 @@ export default function SignInPage() {
           </span>
         </Link>
 
-        {/* Card */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -129,7 +129,7 @@ export default function SignInPage() {
           </div>
         </motion.div>
 
-        {/* Back link */}
+        {}
         <div className="mt-8 text-center">
           <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-300 transition-colors">
             <ArrowLeft className="h-3.5 w-3.5" />

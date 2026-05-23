@@ -1,6 +1,3 @@
-/**
- * ONNX export: C++ manifest + Python onnx builder.
- */
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
@@ -36,9 +33,6 @@ function runProcess(cmd, args, env) {
   });
 }
 
-/**
- * @param {{ weightsPrefix: string, onnxPath?: string, task?: string }} params
- */
 export async function exportOnnx({ weightsPrefix, onnxPath, task = 'regression' }) {
   if (!weightsPrefix || !fs.existsSync(weightsPrefix)) {
     throw new Error(`Weights prefix not found: ${weightsPrefix}`);

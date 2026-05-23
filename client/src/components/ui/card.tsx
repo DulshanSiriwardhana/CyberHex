@@ -74,7 +74,6 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 );
 CardFooter.displayName = "CardFooter";
 
-// ---- Glow Card: card with a subtle neon border glow -------------------------
 const GlowCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div
@@ -92,7 +91,6 @@ const GlowCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
 );
 GlowCard.displayName = "GlowCard";
 
-// ---- Stat Card: for metric displays ----------------------------------------
 const StatCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div

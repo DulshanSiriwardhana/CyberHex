@@ -31,7 +31,6 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
   const isPanning = useRef(false);
   const lastPan = useRef({ x: 0, y: 0 });
 
-  // Subsample large layers for display
   const displayNeurons = layers.map(l =>
     Math.min(l.outputShape, MAX_DISPLAY_NEURONS)
   );
@@ -40,7 +39,6 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
   const maxNeurons = Math.max(...displayNeurons);
   const layerHeight = maxNeurons * (NEURON_RADIUS * 2 + 4) + VERTICAL_PADDING * 2;
 
-  // Resize
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -70,7 +68,6 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
 
     ctx.clearRect(0, 0, w, h);
 
-    // Background grid
     ctx.strokeStyle = '#1e293b';
     ctx.lineWidth = 0.5;
     for (let gx = 0; gx < w; gx += 40) {
@@ -89,7 +86,6 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
     const cx = w / 2 + offset.x;
     const cy = h / 2 + offset.y;
 
-    // Precompute neuron positions
     const allNeurons: NeuronPos[][] = [];
     for (let li = 0; li < layers.length; li++) {
       const lx = cx - (totalWidth * scale) / 2 + li * LAYER_GAP * scale + 60 * scale;
@@ -99,7 +95,7 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
       const neurons: NeuronPos[] = [];
       for (let ni = 0; ni < neuronCount; ni++) {
         const y = startY + ni * (NEURON_RADIUS * 2 + 4) * scale;
-        // Get representative weight (first input weight, or 0)
+
         const weight =
           layers[li].weights[0]?.[ni % layers[li].weights[0]?.length] ?? 0;
         neurons.push({ x: lx, y, layer: li, index: ni, weight });
@@ -107,7 +103,6 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
       allNeurons.push(neurons);
     }
 
-    // Draw connections (sampled for performance)
     for (let li = 0; li < allNeurons.length - 1; li++) {
       const src = allNeurons[li];
       const dst = allNeurons[li + 1];
@@ -132,7 +127,6 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
       }
     }
 
-    // Highlight hovered connections
     if (hoveredNeuron && hoveredNeuron.layer < allNeurons.length - 1) {
       const srcNeurons = allNeurons[hoveredNeuron.layer];
       const dstNeurons = allNeurons[hoveredNeuron.layer + 1];
@@ -158,7 +152,6 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
       }
     }
 
-    // Draw neurons
     for (const layerNeurons of allNeurons) {
       for (const n of layerNeurons) {
         const intensity = Math.min(1, Math.abs(n.weight) * 0.6 + 0.4);
@@ -166,7 +159,6 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
           hoveredNeuron?.layer === n.layer && hoveredNeuron?.index === n.index;
         const r = isHovered ? NEURON_RADIUS * 1.5 * scale : NEURON_RADIUS * scale;
 
-        // Glow
         const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r * 2.5);
         grad.addColorStop(0, n.weight >= 0
           ? `rgba(6,182,212,${0.6 * intensity})`
@@ -177,7 +169,6 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
         ctx.arc(n.x, n.y, r * 2.5, 0, Math.PI * 2);
         ctx.fill();
 
-        // Core
         ctx.fillStyle = n.weight >= 0
           ? `rgba(6,182,212,${intensity})`
           : `rgba(239,68,68,${intensity})`;
@@ -185,7 +176,6 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
         ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
         ctx.fill();
 
-        // Border for hovered
         if (isHovered) {
           ctx.strokeStyle = '#ffffff';
           ctx.lineWidth = 1.5;
@@ -194,7 +184,6 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
       }
     }
 
-    // Layer labels
     ctx.font = `${11 * scale}px monospace`;
     ctx.textAlign = 'center';
     for (let li = 0; li < allNeurons.length; li++) {
@@ -268,7 +257,7 @@ export default function NeuronNetwork2D({ layers }: NeuronNetwork2DProps) {
       onMouseLeave={() => { isPanning.current = false; setHoveredNeuron(null); }}
     >
       <canvas ref={canvasRef} className="w-full h-full" />
-      {/* Legend */}
+      {}
       <div className="absolute bottom-3 left-3 flex gap-4 text-[10px] bg-slate-900/80 backdrop-blur px-3 py-1.5 rounded border border-slate-700">
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" /> Excitatory (+)

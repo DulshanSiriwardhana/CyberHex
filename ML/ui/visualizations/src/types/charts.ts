@@ -12,5 +12,5 @@ export interface LineChartType {
             x: number,
             y: number
         }[];
-    
+
 }

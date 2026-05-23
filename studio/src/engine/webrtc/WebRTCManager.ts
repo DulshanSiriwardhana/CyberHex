@@ -1,8 +1,3 @@
-/**
- * CyberHex Studio — WebRTC Peer Connection Manager
- * Singleton managing RTCPeerConnection lifecycle, multi-peer orchestration,
- * stream attachment, data channels, and stats collection.
- */
 import type { RTCConfig, RTCPeer as RTCPeerType, RTCStream, RTCStats } from '@/types';
 import { ConnectionState } from '@/types';
 

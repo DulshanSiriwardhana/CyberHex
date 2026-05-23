@@ -1,11 +1,4 @@
-/**
- * CyberHex Studio — Neural Audio Processing Engine
- * Real-time audio enhancement: denoising, compression, isolation, mastering,
- * and English fluency correction.
- */
 import { AudioFilterType, FluencyAction, EmotionType, type AudioMetrics, type FluencyConfig, type CorrectionResult, type FluencyMetrics, type TranscriptSegment } from '@/types';
-
-/* ─── Types ────────────────────────────── */
 
 export interface AudioEngineConfig {
   sampleRate: number;
@@ -30,8 +23,6 @@ interface FluencyState {
   metrics: FluencyMetrics;
 }
 
-/* ─── AudioEngine ──────────────────────── */
-
 export class AudioEngine {
   private ctx: AudioContext | null = null;
   private config!: AudioEngineConfig;
@@ -43,7 +34,6 @@ export class AudioEngine {
   private scriptNode: ScriptProcessorNode | null = null;
   private initialized = false;
 
-  /* Fluency */
   private fluencyConfig: FluencyConfig = {
     enabled: false,
     mode: FluencyAction.CORRECTION,
@@ -72,8 +62,6 @@ export class AudioEngine {
   private fluencyListeners: Set<(result: CorrectionResult) => void> = new Set();
   private transcriptListeners: Set<(segment: TranscriptSegment) => void> = new Set();
   private metricsListeners: Set<(metrics: FluencyMetrics) => void> = new Set();
-
-  /* ── Initialize ── */
 
   async initialize(config: AudioEngineConfig, stream: MediaStream): Promise<void> {
     this.config = config;
@@ -118,8 +106,6 @@ export class AudioEngine {
     };
   }
 
-  /* ── Processors ── */
-
   addProcessor(processor: AudioProcessor): void {
     this.processors.push(processor);
 
@@ -162,7 +148,6 @@ export class AudioEngine {
   private _rebuildAudioGraph(): void {
     if (!this.ctx || !this.sourceNode || !this.gainNode || !this.destinationNode || !this.analyser) return;
 
-    // Disconnect everything
     this.sourceNode.disconnect();
     this.analyser.disconnect();
     this.gainNode.disconnect();
@@ -181,7 +166,7 @@ export class AudioEngine {
   }
 
   private _applyProcessors(input: Float32Array, output: Float32Array): void {
-    // CPU-based denoising: simple spectral gate
+
     const hasDenoiser = this.processors.some(
       (p) => p.enabled && p.type === AudioFilterType.DENOISER && !p.node
     );
@@ -195,22 +180,20 @@ export class AudioEngine {
       if (hasDenoiser) {
         const threshold = 0.01;
         if (Math.abs(sample) < threshold) {
-          sample *= 0.1; // Reduce noise
+          sample *= 0.1;
         }
       }
 
       if (hasEnhancer) {
-        // Simple harmonic enhancement
+
         const warmth = sample * 0.3;
         const clarity = Math.tanh(sample * 1.5) * 0.7;
         sample = warmth + clarity;
       }
 
-      output[i] = Math.max(-1, Math.min(1, sample)); // Clamp
+      output[i] = Math.max(-1, Math.min(1, sample));
     }
   }
-
-  /* ── Metrics ── */
 
   getAudioMetrics(): AudioMetrics {
     if (!this.analyser) {
@@ -246,8 +229,6 @@ export class AudioEngine {
   getOutputStream(): MediaStream | null {
     return this.destinationNode?.stream ?? null;
   }
-
-  /* ── English Fluency AI ── */
 
   private _initSpeechRecognition(): void {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -323,7 +304,6 @@ export class AudioEngine {
     const corrections: import('@/types').GrammarError[] = [];
     let corrected = text;
 
-    // Heuristic grammar rules
     const rules: [RegExp, string, string][] = [
       [/\bI goes?\b/i, 'I went', 'Incorrect verb form: "goes" → "went"'],
       [/\bI go (\w+ed)\b/i, 'I went to', 'Missing "to" after "go"'],
@@ -356,7 +336,6 @@ export class AudioEngine {
       }
     }
 
-    // Article corrections
     const articleRules: [RegExp, string, string][] = [
       [/\ba (\w*[aeiou])/gi, 'an $1', 'Article: a → an before vowel sound'],
     ];
@@ -375,10 +354,8 @@ export class AudioEngine {
       }
     }
 
-    // Calculate confidence
     const conf = corrections.length === 0 ? 0.95 : Math.max(0.3, 0.85 - corrections.length * 0.1);
 
-    // Generate alternatives
     const alternatives = corrections.length > 0
       ? [corrected]
       : [];
@@ -407,7 +384,7 @@ export class AudioEngine {
     const vocabularyRichness = words.length > 0 ? vocabSet.size / words.length : 0;
 
     const metrics: FluencyMetrics = {
-      wordsPerMinute: words.length / 2, // Rough estimate over 2 minutes window
+      wordsPerMinute: words.length / 2,
       fillerWordCount: fillerCount,
       grammarErrorsPerMinute: totalErrors / 2,
       vocabularyRichness: Math.round(vocabularyRichness * 100) / 100,
@@ -420,7 +397,6 @@ export class AudioEngine {
     this.metricsListeners.forEach((fn) => fn(metrics));
   }
 
-  /* Fluency API */
   setFluencyConfig(config: Partial<FluencyConfig>): void {
     Object.assign(this.fluencyConfig, config);
     if (this.fluencyConfig.enabled && !this.speechRecognition) {
@@ -452,8 +428,6 @@ export class AudioEngine {
   getFluencyMetrics(): FluencyMetrics {
     return { ...this.fluency.metrics };
   }
-
-  /* ── Dispose ── */
 
   dispose(): void {
     this.initialized = false;

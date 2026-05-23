@@ -9,7 +9,7 @@ export const ExperimentBuilder = () => {
     const addLayer = () => setLayers([...layers, { units: 32, activation: 'ReLU' }]);
 
     const startTraining = () => {
-        // Send request to backend to create and train
+
         fetch('/api/v1/experiments', {
             method: 'POST',
             body: JSON.stringify({ name: modelName, layers }),
@@ -22,7 +22,7 @@ export const ExperimentBuilder = () => {
             <h1 className="text-3xl font-bold">New Experiment</h1>
             <Card>
                 <div className="space-y-4">
-                    <input 
+                    <input
                         className="w-full bg-black border border-zinc-700 p-3 rounded-xl text-white"
                         placeholder="Experiment Name"
                         value={modelName}

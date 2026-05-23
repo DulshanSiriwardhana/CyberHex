@@ -17,7 +17,7 @@ float bits_to_float(uint32_t u) {
     return f;
 }
 
-} // namespace
+}
 
 Float16 Float16::from_float(float x) {
     uint32_t f = float_to_bits(x);
@@ -86,4 +86,4 @@ Matrix<double> matrix_from_fp16(const Fp16Matrix& src) {
     return out;
 }
 
-} // namespace cyberhex
+}

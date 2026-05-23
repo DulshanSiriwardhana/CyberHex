@@ -1,6 +1,3 @@
-/**
- * CyberHex Studio — AI Model Management Panel
- */
 import React from 'react';
 import { Brain, Download, Trash2, Zap } from 'lucide-react';
 import { useStudioStore } from '@/stores/studioStore';

@@ -1,6 +1,3 @@
-// CyberHex C++ inference CLI — cyberhex.infer.v1
-// CYBERHEX_INFER_CONFIG='{"model_path":"/path/prefix","features":[[...]],"task":"regression"}'
-
 #include "weight_io.h"
 #include "activations.h"
 #include <algorithm>
@@ -144,7 +141,7 @@ void emit_error(const std::string& msg) {
     std::cout << "{\"error\":\"" << msg << "\"}" << std::endl;
 }
 
-} // namespace
+}
 
 int main() {
     const char* raw = std::getenv("CYBERHEX_INFER_CONFIG");

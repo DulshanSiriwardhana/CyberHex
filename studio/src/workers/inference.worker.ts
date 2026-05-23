@@ -1,7 +1,3 @@
-/**
- * CyberHex Studio — Inference Web Worker
- * Offloads ONNX/TF.js inference from main thread.
- */
 import { WorkerMessageType, type InferenceRequest, type InferenceResult } from '@/types';
 
 self.onmessage = async (event: MessageEvent<InferenceRequest>) => {

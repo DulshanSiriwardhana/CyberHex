@@ -3,9 +3,6 @@
 
 namespace cyberhex {
 
-// ============================================================================
-// Numerical helpers
-// ============================================================================
 static inline double stable_sigmoid(double x) {
     if (x >= 0) {
         return 1.0 / (1.0 + std::exp(-x));
@@ -16,13 +13,10 @@ static inline double stable_sigmoid(double x) {
 }
 
 static inline double stable_sigmoid_deriv(double x) {
-    // x here is sigmoid output
+
     return x * (1.0 - x);
 }
 
-// ============================================================================
-// ReLU
-// ============================================================================
 Matrix<double> ReLU::forward(const Matrix<double>& X) {
     input = X;
     Matrix<double> out(X.rows(), X.cols());
@@ -40,9 +34,6 @@ Matrix<double> ReLU::backward(const Matrix<double>& grad) {
     return res;
 }
 
-// ============================================================================
-// Sigmoid (numerically stable)
-// ============================================================================
 Matrix<double> Sigmoid::forward(const Matrix<double>& X) {
     output = Matrix<double>(X.rows(), X.cols());
     for (size_t i = 0; i < X.size(); i++) {
@@ -60,21 +51,17 @@ Matrix<double> Sigmoid::backward(const Matrix<double>& grad) {
     return res;
 }
 
-// ============================================================================
-// Softmax (numerically stable — subtracts max per row)
-// ============================================================================
 Matrix<double> Softmax::forward(const Matrix<double>& X) {
     output = Matrix<double>(X.rows(), X.cols());
 
     #pragma omp parallel for if(X.rows() > 100)
     for (size_t i = 0; i < X.rows(); i++) {
-        // Find max for numerical stability
+
         double maxVal = X(i, 0);
         for (size_t j = 1; j < X.cols(); j++) {
             if (X(i, j) > maxVal) maxVal = X(i, j);
         }
 
-        // Compute exp(x - max) and sum
         double sum = 0.0;
         for (size_t j = 0; j < X.cols(); j++) {
             double v = std::exp(X(i, j) - maxVal);
@@ -82,7 +69,6 @@ Matrix<double> Softmax::forward(const Matrix<double>& X) {
             sum += v;
         }
 
-        // Normalize
         double inv_sum = 1.0 / sum;
         for (size_t j = 0; j < X.cols(); j++) {
             output(i, j) *= inv_sum;
@@ -93,19 +79,17 @@ Matrix<double> Softmax::forward(const Matrix<double>& X) {
 }
 
 Matrix<double> Softmax::backward(const Matrix<double>& grad) {
-    // Optimized O(n) per row: grad_input = s ⊙ (grad - (grad · s))
-    // instead of O(n²) Jacobian: J = diag(s) - s s^T
+
     Matrix<double> res(grad.rows(), grad.cols(), 0.0);
 
     #pragma omp parallel for if(grad.rows() > 100)
     for (size_t i = 0; i < grad.rows(); i++) {
-        // Compute dot product: sum_k(grad(i,k) * softmax(i,k))
+
         double dot = 0.0;
         for (size_t k = 0; k < grad.cols(); k++) {
             dot += grad(i, k) * output(i, k);
         }
 
-        // Compute each output element: s_j * (grad_ij - dot)
         for (size_t j = 0; j < grad.cols(); j++) {
             res(i, j) = output(i, j) * (grad(i, j) - dot);
         }
@@ -114,7 +98,7 @@ Matrix<double> Softmax::backward(const Matrix<double>& grad) {
 }
 
 Matrix<double> Softmax::log_softmax() const {
-    // log(softmax(x)) = x - max(x) - log(sum(exp(x - max(x))))
+
     Matrix<double> result = output;
     for (size_t i = 0; i < result.rows(); i++) {
         double maxVal = output(i, 0);
@@ -125,8 +109,7 @@ Matrix<double> Softmax::log_softmax() const {
         for (size_t j = 0; j < output.cols(); j++) {
             sum += output(i, j);
         }
-        // result(i, j) = log(softmax) = log(p_j)
-        // We stored probabilities in output, so log(p_j) = log(output(i,j))
+
         for (size_t j = 0; j < output.cols(); j++) {
             result(i, j) = std::log(std::max(output(i, j), 1e-15));
         }
@@ -134,9 +117,6 @@ Matrix<double> Softmax::log_softmax() const {
     return result;
 }
 
-// ============================================================================
-// Tanh
-// ============================================================================
 Matrix<double> Tanh::forward(const Matrix<double>& X) {
     output = Matrix<double>(X.rows(), X.cols());
     for (size_t i = 0; i < X.size(); i++) {
@@ -154,9 +134,6 @@ Matrix<double> Tanh::backward(const Matrix<double>& grad) {
     return res;
 }
 
-// ============================================================================
-// Leaky ReLU
-// ============================================================================
 LeakyReLU::LeakyReLU(double alpha) : alpha_(alpha) {}
 
 Matrix<double> LeakyReLU::forward(const Matrix<double>& X) {
@@ -175,9 +152,6 @@ Matrix<double> LeakyReLU::backward(const Matrix<double>& grad) {
     return res;
 }
 
-// ============================================================================
-// ELU
-// ============================================================================
 ELU::ELU(double alpha) : alpha_(alpha) {}
 
 Matrix<double> ELU::forward(const Matrix<double>& X) {
@@ -204,19 +178,12 @@ Matrix<double> ELU::backward(const Matrix<double>& grad) {
     return res;
 }
 
-// ============================================================================
-// Swish (SiLU) = x * sigmoid(x)
-// Numerically stable: clips x for large negative values
-// Swish'(x) = sigmoid(x) + swish(x) * (1 - sigmoid(x))
-// ============================================================================
 Matrix<double> Swish::forward(const Matrix<double>& X) {
     output = Matrix<double>(X.rows(), X.cols());
     input_sigmoid_ = Matrix<double>(X.rows(), X.cols());
     for (size_t i = 0; i < X.size(); i++) {
         double x = X.at(i);
-        // Numerical guard: for x < -88, sigmoid(x) underflows to 0
-        // Swish(x) = x * sigmoid(x) → 0 for x → -inf (correct behavior)
-        // For x > 88, sigmoid(x) ≈ 1, Swish(x) ≈ x (correct behavior)
+
         double s = stable_sigmoid(x);
         input_sigmoid_.at(i) = s;
         output.at(i) = x * s;
@@ -229,22 +196,19 @@ Matrix<double> Swish::backward(const Matrix<double>& grad) {
     for (size_t i = 0; i < grad.size(); i++) {
         double sigma = input_sigmoid_.at(i);
         double swish_val = output.at(i);
-        // Swish derivative: sigma(x) + swish(x) * (1 - sigma(x))
+
         double deriv = sigma + swish_val * (1.0 - sigma);
         res.at(i) = grad.at(i) * deriv;
     }
     return res;
 }
 
-// ============================================================================
-// GELU
-// ============================================================================
 Matrix<double> GELU::forward(const Matrix<double>& X) {
     input = X;
     Matrix<double> out(X.rows(), X.cols());
     for (size_t i = 0; i < X.size(); i++) {
         double x = X.at(i);
-        // GELU approximation: 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3)))
+
         double c = std::sqrt(2.0 / M_PI) * (x + 0.044715 * x * x * x);
         out.at(i) = 0.5 * x * (1.0 + std::tanh(c));
     }
@@ -266,16 +230,13 @@ Matrix<double> GELU::backward(const Matrix<double>& grad) {
     return res;
 }
 
-// ============================================================================
-// Softplus
-// ============================================================================
 Matrix<double> Softplus::forward(const Matrix<double>& X) {
     input = X;
     Matrix<double> out(X.rows(), X.cols());
     for (size_t i = 0; i < X.size(); i++) {
-        // log1p(exp(x)) is more stable for small x
+
         if (X.at(i) > 20.0) {
-            out.at(i) = X.at(i); // linear for large x
+            out.at(i) = X.at(i);
         } else {
             out.at(i) = std::log1p(std::exp(X.at(i)));
         }
@@ -286,15 +247,12 @@ Matrix<double> Softplus::forward(const Matrix<double>& X) {
 Matrix<double> Softplus::backward(const Matrix<double>& grad) {
     Matrix<double> res(grad.rows(), grad.cols());
     for (size_t i = 0; i < grad.size(); i++) {
-        // derivative = sigmoid(x)
+
         res.at(i) = grad.at(i) * stable_sigmoid(input.at(i));
     }
     return res;
 }
 
-// ============================================================================
-// Identity
-// ============================================================================
 Matrix<double> Identity::forward(const Matrix<double>& X) {
     return X;
 }
@@ -303,9 +261,6 @@ Matrix<double> Identity::backward(const Matrix<double>& grad) {
     return grad;
 }
 
-// ============================================================================
-// Dropout
-// ============================================================================
 Dropout::Dropout(double rate) : rate_(rate) {}
 
 Matrix<double> Dropout::forward(const Matrix<double>& X) {
@@ -340,9 +295,6 @@ Matrix<double> Dropout::backward(const Matrix<double>& grad) {
     return res;
 }
 
-// ============================================================================
-// Layer Normalization
-// ============================================================================
 LayerNormalization::LayerNormalization(size_t normalized_shape, double epsilon)
     : gamma(1, normalized_shape, 1.0), beta(1, normalized_shape, 0.0),
       d_gamma(1, normalized_shape, 0.0), d_beta(1, normalized_shape, 0.0),
@@ -390,7 +342,7 @@ Matrix<double> LayerNormalization::backward(const Matrix<double>& grad) {
     const size_t rows = grad.rows();
     const size_t cols = grad.cols();
     Matrix<double> input_grad(rows, cols, 0.0);
-    
+
     d_gamma.fill(0.0);
     d_beta.fill(0.0);
 
@@ -430,9 +382,6 @@ Matrix<double> LayerNormalization::backward(const Matrix<double>& grad) {
     return input_grad;
 }
 
-// ============================================================================
-// Batch Normalization
-// ============================================================================
 BatchNormalization::BatchNormalization(size_t input_size, double epsilon, double momentum)
     : gamma(1, input_size, 1.0), beta(1, input_size, 0.0),
       d_gamma(1, input_size, 0.0), d_beta(1, input_size, 0.0),
@@ -452,8 +401,7 @@ void BatchNormalization::reset_state() {
 Matrix<double> BatchNormalization::forward(const Matrix<double>& X) {
     input_cache = X;
     Matrix<double> output(X.rows(), X.cols(), 0.0);
-    
-    // Dynamically resize internal caches to match batch size
+
     if (x_hat.rows() != X.rows() || x_hat.cols() != X.cols()) {
         x_hat = Matrix<double>(X.rows(), X.cols(), 0.0);
     }
@@ -462,7 +410,7 @@ Matrix<double> BatchNormalization::forward(const Matrix<double>& X) {
     }
 
     if (training_) {
-        // Compute batch mean and variance
+
         for (size_t j = 0; j < X.cols(); j++) {
             double mean = 0.0;
             for (size_t i = 0; i < X.rows(); i++) {
@@ -477,11 +425,9 @@ Matrix<double> BatchNormalization::forward(const Matrix<double>& X) {
             }
             var /= X.rows();
 
-            // Update running statistics
             running_mean(0, j) = momentum_ * running_mean(0, j) + (1.0 - momentum_) * mean;
             running_var(0, j) = momentum_ * running_var(0, j) + (1.0 - momentum_) * var;
 
-            // Normalize
             ivar(0, j) = 1.0 / std::sqrt(var + epsilon_);
             for (size_t i = 0; i < X.rows(); i++) {
                 x_hat(i, j) = (X(i, j) - mean) * ivar(0, j);
@@ -489,7 +435,7 @@ Matrix<double> BatchNormalization::forward(const Matrix<double>& X) {
             }
         }
     } else {
-        // Inference mode: use running statistics
+
         for (size_t j = 0; j < X.cols(); j++) {
             double inv_std = 1.0 / std::sqrt(running_var(0, j) + epsilon_);
             for (size_t i = 0; i < X.rows(); i++) {
@@ -522,11 +468,9 @@ Matrix<double> BatchNormalization::backward(const Matrix<double>& grad) {
             dBeta_val += grad(i, j);
         }
 
-        // Store computed gradients in member matrices to be consumed by optimizer
         d_gamma(0, j) = dGamma_val / N;
         d_beta(0, j) = dBeta_val / N;
 
-        // Gradient w.r.t. input
         double dxhat_sum = 0.0, dxhat_xhat_sum = 0.0;
         for (size_t i = 0; i < N; i++) {
             double dxhat = grad(i, j) * gamma(0, j);
@@ -545,4 +489,4 @@ Matrix<double> BatchNormalization::backward(const Matrix<double>& grad) {
     return dX;
 }
 
-} // namespace cyberhex
+}

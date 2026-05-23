@@ -47,7 +47,7 @@ export default function ArchitectureOverview({ architecture }: ArchitectureOverv
 
   return (
     <div className="space-y-5">
-      {/* Summary stat cards */}
+      {}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="stat-card">
           <div className="flex items-center gap-2 mb-1.5">
@@ -94,7 +94,7 @@ export default function ArchitectureOverview({ architecture }: ArchitectureOverv
         </div>
       </div>
 
-      {/* Parameter distribution bar */}
+      {}
       <div className="card-gradient rounded-xl p-5">
         <h3 className="text-xs font-medium text-slate-400 mb-3 uppercase tracking-wider">Parameter Distribution</h3>
         <div className="flex h-5 rounded-full overflow-hidden bg-slate-900 border border-slate-800">
@@ -126,7 +126,7 @@ export default function ArchitectureOverview({ architecture }: ArchitectureOverv
         </div>
       </div>
 
-      {/* Layer table */}
+      {}
       <div className="overflow-x-auto rounded-xl border border-slate-800/60">
         <table className="w-full text-xs">
           <thead>
@@ -171,7 +171,7 @@ export default function ArchitectureOverview({ architecture }: ArchitectureOverv
         </table>
       </div>
 
-      {/* Total row */}
+      {}
       <div className="flex justify-end items-center gap-2 text-xs text-slate-500">
         <span>Total parameters:</span>
         <span className="text-slate-200 font-mono font-medium">{totalParams.toLocaleString()}</span>

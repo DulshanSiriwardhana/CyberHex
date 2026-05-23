@@ -12,10 +12,8 @@ import { SkeletonPage } from "@/components/ui/skeleton";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import AuthModals from "@/components/auth-modals";
 
-// Eager: landing is the first thing everyone sees
 import LandingPage from "@/pages/LandingPage";
 
-// Lazy: everything else
 const AboutPage = lazy(() => import("@/pages/AboutPage"));
 const ContactPage = lazy(() => import("@/pages/ContactPage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
@@ -39,26 +37,26 @@ function PageFallback() {
 }
 
 function AppLayout() {
-  // Register global keyboard shortcuts (Ctrl+K, Ctrl+Shift+T, etc.)
+
   useKeyboardShortcuts();
 
   return (
     <div className="relative min-h-screen bg-neutral-950 font-spectral antialiased">
       <AmbientBackground />
 
-      {/* Content layer */}
+      {}
       <div className="relative" style={{ zIndex: 1 }}>
         <NavBar />
         <Suspense fallback={<PageFallback />}>
           <Routes>
-            {/* Public */}
+            {}
             <Route path="/" element={<LandingPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/signup" element={<SignUpPage />} />
 
-            {/* Protected */}
+            {}
             <Route
               path="/dashboard"
               element={
@@ -124,7 +122,7 @@ function AppLayout() {
               }
             />
 
-            {/* Catch-all */}
+            {}
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>

@@ -1,7 +1,3 @@
-/**
- * CyberHex Studio — Plugin Manager
- * Plugin loading, sandboxing, lifecycle management, permissions, hooks, and auto-update.
- */
 import type { PluginId, Plugin, PluginManifest, PluginHook, PluginAPI, FilterPipeline, PanelConfig, MediaFeed } from '@/types';
 import { PluginEvent, PluginPermission } from '@/types';
 import { eventBus } from '@/utils/eventBus';
@@ -25,15 +21,11 @@ export class PluginManager {
   private safelist: string[] = [];
   private enabled = true;
 
-  /* ── Config ── */
-
   configure(enabled: boolean, maxActive: number, safelist: string[] = []): void {
     this.enabled = enabled;
     this.maxActive = maxActive;
     this.safelist = safelist;
   }
-
-  /* ── Lifecycle ── */
 
   async installPlugin(manifest: PluginManifest, source: string): Promise<Plugin | null> {
     if (!this.enabled) return null;
@@ -56,7 +48,6 @@ export class PluginManager {
       active: false,
     };
 
-    // Validate permissions
     const validPermissions = new Set(Object.values(PluginPermission));
     for (const perm of manifest.permissions) {
       if (!validPermissions.has(perm)) {
@@ -64,7 +55,6 @@ export class PluginManager {
       }
     }
 
-    // Create sandboxed iframe
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
     iframe.sandbox.add('allow-scripts');
@@ -95,7 +85,6 @@ export class PluginManager {
     entry.plugin.active = true;
     eventBus.emit('plugin:activated', entry.plugin);
 
-    // Register hooks
     entry.plugin.manifest.permissions.forEach((perm) => {
       if (perm === PluginPermission.PIPELINE) {
         this._hookToEventBus(entry.plugin, PluginEvent.FRAME_BEFORE);
@@ -118,7 +107,7 @@ export class PluginManager {
     if (!entry || !entry.plugin.active) return;
 
     entry.plugin.active = false;
-    // Unregister all event bus hooks (they're cleaned up via the unsub functions stored on hooks)
+
     entry.plugin.hooks = [];
     eventBus.emit('plugin:deactivated', entry.plugin);
     console.log(`[PluginManager] Deactivated: ${entry.plugin.manifest.name}`);
@@ -136,8 +125,6 @@ export class PluginManager {
     console.log(`[PluginManager] Uninstalled: ${id}`);
   }
 
-  /* ── API ── */
-
   private _createPluginAPI(plugin: Plugin): PluginAPI {
     return {
       registerFilter: (filter: FilterPipeline) => {
@@ -146,7 +133,7 @@ export class PluginManager {
       },
       getActiveFeed: (): MediaFeed | null => {
         if (!plugin.manifest.permissions.includes(PluginPermission.MEDIA)) return null;
-        // In real impl, get from store
+
         return null;
       },
       getGPUManager: () => {
@@ -180,11 +167,9 @@ export class PluginManager {
           }
         });
     });
-    // Store unsub on plugin for cleanup
+
     (plugin as any).__unsubs = ((plugin as any).__unsubs || []).concat(unsub);
   }
-
-  /* ── Sandbox ── */
 
   private _sandboxBootstrap(): void {
     window.addEventListener('message', (event) => {

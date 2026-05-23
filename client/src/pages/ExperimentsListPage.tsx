@@ -44,7 +44,7 @@ export default function ExperimentsListPage() {
         setExperiments(data.experiments);
       })
       .catch(() => {
-        // Backend not available — load demo data
+
         setExperiments([
           { _id: '1', userId: '', name: 'MNIST Classifier v3', description: '', status: 'completed', config: {} as any, createdAt: '2h ago', updatedAt: '2h ago' },
           { _id: '2', userId: '', name: 'Sentiment LSTM', description: '', status: 'training', config: {} as any, createdAt: '5h ago', updatedAt: '5h ago' },
@@ -92,7 +92,7 @@ export default function ExperimentsListPage() {
         </Flex>
       </motion.div>
 
-      {/* Filters */}
+      {}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-6">
         <Flex gap="md" wrap>
           <div className="relative flex-1 max-w-sm">
@@ -126,7 +126,7 @@ export default function ExperimentsListPage() {
         </Flex>
       </motion.div>
 
-      {/* List */}
+      {}
       {filtered.length === 0 ? (
         <div className="text-center py-20">
           <FlaskConical className="h-16 w-16 text-neutral-800 mx-auto mb-4" />

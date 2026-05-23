@@ -1,7 +1,3 @@
-/**
- * CyberHex Studio — CyberHex C++ ML Engine Bridge
- * REST/WebSocket bridge for native inference, model loading, and streaming.
- */
 import { WebSocketService } from '@/services/WebSocketService';
 
 export interface EngineModelSpec {

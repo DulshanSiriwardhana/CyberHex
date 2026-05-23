@@ -42,18 +42,21 @@ A **public web showcase** (`/public-web`) is included in this repository: a stan
 
 ## Features
 
-### Core ML Engine (C++)
-- Custom `Matrix` implementation using `std::vector` with OpenMP parallelism
-- Dense (fully connected) layers with forward/backward propagation
-- Activation functions: **ReLU**, **Sigmoid**, **Softmax** (with Jacobian backprop)
-- Multiple optimizers: **SGD**, **Momentum**, **RMSProp**, **ADAM**
-- MSE loss function with epoch-based training loop
-- Best-model tracking with automatic checkpoint saving
-- Native C++ WebSocket server for real-time training data streaming
+### Core ML Engine (C++17)
+- Custom `Matrix` implementation using `std::vector` with OpenMP parallelism.
+- High-Performance Ingestion: Supports streaming of **massive 1GB+ datasets** via disk-buffered `DataGenerator`.
+- Multi-Modal Support: Native ingestion for **CSV, Binary, Image, and Audio** streams.
+- Dense (fully connected) layers with forward/backward propagation.
+- Activation functions: **ReLU**, **Sigmoid**, **Softmax** (with Jacobian backprop).
+- Multiple optimizers: **SGD**, **Momentum**, **RMSProp**, **ADAM**.
+- MSE loss function with epoch-based training loop.
+- Best-model tracking with automatic checkpoint saving.
+- Native C++ WebSocket server for real-time training data streaming.
 
 ### Python ML Suite
-- Linear regression and additional algorithm implementations
-- Modular commons library for statistical functions (mean, variance, etc.)
+- Linear regression and additional algorithm implementations.
+- Modular commons library for statistical functions (mean, variance, etc.).
+- Robust `DataGenerator` for memory-efficient streaming of large custom datasets.
 
 ### Backend (Node.js/Express)
 - RESTful API with **JWT-based authentication** (access + refresh tokens)

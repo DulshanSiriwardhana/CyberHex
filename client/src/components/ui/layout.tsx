@@ -6,7 +6,6 @@ interface PageLayoutProps {
   className?: string;
 }
 
-/** Full-page wrapper with cyber grid background and radial gradient */
 export function PageLayout({ children, className }: PageLayoutProps) {
   return (
     <div
@@ -15,7 +14,7 @@ export function PageLayout({ children, className }: PageLayoutProps) {
         className,
       )}
     >
-      {/* Radial glow at top */}
+      {}
       <div className="pointer-events-none fixed inset-0 bg-cyber-radial" />
       <div className="relative z-[1]">{children}</div>
     </div>
@@ -42,7 +41,7 @@ export function Section({ children, className, id }: SectionProps) {
 interface ContainerProps {
   children: ReactNode;
   className?: string;
-  /** Narrower max-width for content-heavy pages */
+
   narrow?: boolean;
 }
 
@@ -163,7 +162,6 @@ export function Flex({
   );
 }
 
-/** Glass panel with optional glow */
 interface PanelProps {
   children: ReactNode;
   className?: string;
@@ -184,7 +182,6 @@ export function Panel({ children, className, glow }: PanelProps) {
   );
 }
 
-/** A section heading with optional gradient line */
 interface SectionHeadingProps {
   title: string;
   description?: string;

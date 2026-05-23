@@ -5,9 +5,6 @@
 
 namespace cyberhex {
 
-// ============================================================================
-// ReLU Activation
-// ============================================================================
 class ReLU : public Layer {
 private:
     Matrix<double> input;
@@ -19,9 +16,6 @@ public:
     size_t output_size() const override { return input.cols(); }
 };
 
-// ============================================================================
-// Sigmoid Activation (numerically stable)
-// ============================================================================
 class Sigmoid : public Layer {
 private:
     Matrix<double> output;
@@ -33,9 +27,6 @@ public:
     size_t output_size() const override { return output.cols(); }
 };
 
-// ============================================================================
-// Softmax Activation (numerically stable, log-softmax variant)
-// ============================================================================
 class Softmax : public Layer {
 private:
     Matrix<double> output;
@@ -46,13 +37,9 @@ public:
     std::string name() const override { return "Softmax"; }
     size_t output_size() const override { return output.cols(); }
 
-    // Log-softmax for numerical stability with CCE
     Matrix<double> log_softmax() const;
 };
 
-// ============================================================================
-// Tanh Activation
-// ============================================================================
 class Tanh : public Layer {
 private:
     Matrix<double> output;
@@ -64,9 +51,6 @@ public:
     size_t output_size() const override { return output.cols(); }
 };
 
-// ============================================================================
-// Leaky ReLU Activation
-// ============================================================================
 class LeakyReLU : public Layer {
 private:
     Matrix<double> output;
@@ -79,9 +63,6 @@ public:
     size_t output_size() const override { return output.cols(); }
 };
 
-// ============================================================================
-// ELU Activation
-// ============================================================================
 class ELU : public Layer {
 private:
     Matrix<double> output;
@@ -94,16 +75,10 @@ public:
     size_t output_size() const override { return output.cols(); }
 };
 
-// ============================================================================
-// Swish / SiLU Activation (x * sigmoid(x))
-// Numerically stable: uses sigmoid output cache for fast backward
-// Swish'(x) = sigmoid(x) + x * sigmoid(x) * (1 - sigmoid(x))
-//           = sigmoid(x) + output(x) * (1 - sigmoid(x))
-// ============================================================================
 class Swish : public Layer {
 private:
     Matrix<double> output;
-    Matrix<double> input_sigmoid_;  // cached sigmoid(x) for backward
+    Matrix<double> input_sigmoid_;
 public:
     Swish() = default;
     Matrix<double> forward(const Matrix<double>& X) override;
@@ -112,9 +87,6 @@ public:
     size_t output_size() const override { return output.cols(); }
 };
 
-// ============================================================================
-// GELU Activation (Gaussian Error Linear Unit)
-// ============================================================================
 class GELU : public Layer {
 private:
     Matrix<double> input;
@@ -126,9 +98,6 @@ public:
     size_t output_size() const override { return input.cols(); }
 };
 
-// ============================================================================
-// Softplus Activation (log(1 + exp(x)))
-// ============================================================================
 class Softplus : public Layer {
 private:
     Matrix<double> input;
@@ -140,21 +109,15 @@ public:
     size_t output_size() const override { return input.cols(); }
 };
 
-// ============================================================================
-// Identity (linear) Activation
-// ============================================================================
 class Identity : public Layer {
 public:
     Identity() = default;
     Matrix<double> forward(const Matrix<double>& X) override;
     Matrix<double> backward(const Matrix<double>& grad) override;
     std::string name() const override { return "Identity"; }
-    size_t output_size() const override { return 0; } // depends on input
+    size_t output_size() const override { return 0; }
 };
 
-// ============================================================================
-// Dropout Layer
-// ============================================================================
 class Dropout : public Layer {
 private:
     double rate_;
@@ -169,12 +132,6 @@ public:
     size_t output_size() const override { return mask.cols(); }
 };
 
-// ============================================================================
-// Batch Normalization Layer
-// ============================================================================
-// ============================================================================
-// Layer Normalization (per sample, across features)
-// ============================================================================
 class LayerNormalization : public Layer {
 private:
     Matrix<double> gamma;
@@ -224,6 +181,6 @@ public:
     void reset_state() override;
 };
 
-} // namespace cyberhex
+}
 
-#endif // CYBERHEX_ACTIVATIONS_H
+#endif

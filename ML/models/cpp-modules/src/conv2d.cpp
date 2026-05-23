@@ -11,7 +11,7 @@ size_t conv_out_dim(size_t in, size_t kernel, size_t stride, size_t pad) {
     return (in + 2 * pad - kernel) / stride + 1;
 }
 
-} // namespace
+}
 
 Conv2D::Conv2D(size_t in_channels, size_t out_channels,
                size_t input_h, size_t input_w,
@@ -31,7 +31,6 @@ Conv2D::Conv2D(size_t in_channels, size_t out_channels,
         throw DimensionMismatchException("Conv2D: invalid output dimensions");
     }
 
-  // He initialization on fan-in per output channel
     std::random_device rd;
     std::mt19937 gen(rd());
     double stddev = std::sqrt(2.0 / static_cast<double>(patch_size_));
@@ -177,4 +176,4 @@ void Conv2D::reset_state() {
     grad_B_.fill(0.0);
 }
 
-} // namespace cyberhex
+}

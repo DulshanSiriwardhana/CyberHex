@@ -37,13 +37,11 @@
   }
 }
 
-/* Scrollbars */
 ::-webkit-scrollbar { @apply w-1.5 h-1.5; }
 ::-webkit-scrollbar-track { @apply bg-transparent; }
 ::-webkit-scrollbar-thumb { @apply bg-white/10 rounded-full; }
 ::-webkit-scrollbar-thumb:hover { @apply bg-white/15; }
 
-/* Glass Panel Utility */
 @layer components {
   .glass-panel {
     @apply rounded-lg border border-white/10;
@@ -95,7 +93,6 @@
   }
 }
 
-/* Keyframes */
 @keyframes gradientShift {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -130,7 +127,6 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Resize handle */
 .resize-handle {
   @apply absolute z-50;
   &-n { @apply top-0 left-0 right-0 h-1 cursor-n-resize; }
@@ -144,7 +140,6 @@
   &-nw { @apply top-0 left-0 cursor-nw-resize; }
 }
 
-/* Performance monitor styling */
 .perf-monitor {
   @apply font-mono text-xs;
 }

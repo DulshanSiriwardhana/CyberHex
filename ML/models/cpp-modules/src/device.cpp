@@ -35,7 +35,7 @@ DeviceType parse_device_type(const char* raw) {
     if (s == "cuda" || s == "gpu") return DeviceType::CUDA;
     return DeviceType::CPU;
 }
-} // namespace
+}
 
 void init_device_from_env() {
     if (const char* d = std::getenv("CYBERHEX_DEVICE")) {
@@ -51,4 +51,4 @@ std::string Device::name() const {
     return "unknown";
 }
 
-} // namespace cyberhex
+}

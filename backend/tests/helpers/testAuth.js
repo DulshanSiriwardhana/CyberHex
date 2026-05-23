@@ -2,9 +2,6 @@ import jwt from 'jsonwebtoken';
 import User from '../../models/User.js';
 import Otp from '../../models/Otp.js';
 
-/**
- * Create a verified user directly in the database (bypasses OTP email flow).
- */
 export async function createTestUser(overrides = {}) {
   const email = overrides.email ?? `test-${Date.now()}@cyberhex.test`;
   const username = overrides.username ?? `user_${Date.now()}`;

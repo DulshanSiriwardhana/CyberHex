@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -27,7 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Container, Grid, Stack, Flex, SectionHeading } from "@/components/ui/layout";
-import { experimentsApi } from "@/lib/api";
+import { experimentsApi, datasetsApi } from "@/lib/api";
 
 interface Layer {
   id: string;
@@ -130,18 +130,15 @@ export default function ExperimentBuilderPage() {
   ]);
   const [targetFeature, setTargetFeature] = useState("is_intrusion");
 
-  // Pipeline Splitting States
   const [trainSplit, setTrainSplit] = useState(80);
   const [valSplit, setValSplit] = useState(10);
   const [testSplit, setTestSplit] = useState(10);
 
-  // Hidden Layers Architecture
   const [layers, setLayers] = useState<Layer[]>([
     { id: "1", type: "Dense", units: 32, activation: "relu" },
     { id: "2", type: "Dense", units: 16, activation: "relu" },
   ]);
 
-  // Hyperparameters
   const [epochs, setEpochs] = useState(100);
   const [learningRate, setLearningRate] = useState(0.001);
   const [batchSize, setBatchSize] = useState(32);
@@ -149,20 +146,22 @@ export default function ExperimentBuilderPage() {
   const [loss, setLoss] = useState("bce");
   const [earlyStopping, setEarlyStopping] = useState(true);
 
-  // Saving / Training States
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Custom Dataset States
   const [customCsv, setCustomCsv] = useState("");
   const [customFeatures, setCustomFeatures] = useState<{ name: string; type: string; min: number; max: number; mean: number }[]>([]);
   const [customTargets, setCustomTargets] = useState<string[]>([]);
   const [customTaskType, setCustomTaskType] = useState<"classification" | "regression">("classification");
   const [isParsingCsv, setIsParsingCsv] = useState(false);
 
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const activeDataset = DATASETS.find((d) => d.id === selectedDatasetId) || DATASETS[0];
 
-  // Adjust dataset fields when selection changes
   useEffect(() => {
     if (selectedDatasetId === "custom") {
       if (customFeatures.length > 0) {
@@ -176,7 +175,6 @@ export default function ExperimentBuilderPage() {
     setSelectedFeatures(activeDataset.features.slice(0, 6).map((f) => f.name));
     setTargetFeature(activeDataset.targets[0]);
 
-    // Automatically pre-configure default tasks, loss functions, and output layers
     if (activeDataset.taskType === "classification") {
       setLoss("bce");
     } else {
@@ -215,6 +213,43 @@ export default function ExperimentBuilderPage() {
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+    setFeedbackMsg(null);
+
+    try {
+      const res = await datasetsApi.upload(file, (progress) => {
+        setUploadProgress(Math.round(progress));
+      });
+
+      setUploadedFilePath(res.data.path);
+      setCustomCsv("");
+      setFeedbackMsg({ type: "success", text: `File "${file.name}" uploaded successfully. Ready for training.` });
+
+      if (file.name.endsWith('.csv')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const text = event.target?.result as string;
+          const firstLine = text.split('\n')[0];
+          const headers = firstLine.split(',').map(h => h.trim());
+          if (headers.length >= 2) {
+            setCustomFeatures(headers.slice(0, -1).map(h => ({ name: h, type: "float", min: 0, max: 1, mean: 0.5 })));
+            setCustomTargets([headers[headers.length - 1]]);
+          }
+        };
+        reader.readAsText(file.slice(0, 1024 * 10));
+      }
+    } catch (err: any) {
+      setFeedbackMsg({ type: "error", text: err.message || "Upload failed." });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const activeDatasetObj = selectedDatasetId === "custom"
     ? {
       id: "custom",
@@ -238,7 +273,7 @@ export default function ExperimentBuilderPage() {
   };
 
   const removeLayer = (id: string) => {
-    if (layers.length <= 1) return; // Keep at least one hidden layer
+    if (layers.length <= 1) return;
     setLayers(layers.filter((l) => l.id !== id));
   };
 
@@ -252,7 +287,7 @@ export default function ExperimentBuilderPage() {
 
   const toggleFeature = (featName: string) => {
     if (selectedFeatures.includes(featName)) {
-      if (selectedFeatures.length <= 1) return; // Must select at least one feature
+      if (selectedFeatures.length <= 1) return;
       setSelectedFeatures(selectedFeatures.filter((f) => f !== featName));
     } else {
       setSelectedFeatures([...selectedFeatures, featName]);
@@ -260,7 +295,7 @@ export default function ExperimentBuilderPage() {
   };
 
   const handleSplitChange = (val: number) => {
-    // Standardize Train + Val + Test = 100%
+
     setTrainSplit(val);
     const remainder = 100 - val;
     setValSplit(Math.round(remainder / 2));
@@ -268,14 +303,13 @@ export default function ExperimentBuilderPage() {
   };
 
   const getExperimentPayload = () => {
-    // Generate final layer manifest matching mongoose schema requirements
-    // C++ modules expect input size, hidden layers units, and final single output unit (e.g. 1)
+
     const hiddenUnits = layers.map((l) => l.units);
     const inputSize = selectedFeatures.length;
-    const outputSize = 1; // BCE or MSE prediction scalar
+    const outputSize = 1;
 
     const activations = layers.map((l) => l.activation);
-    // Add activation for the final output layer (Sigmoid for binary classification, linear for regression)
+
     activations.push(activeDatasetObj.taskType === "classification" ? "sigmoid" : "linear");
 
     return {
@@ -296,11 +330,11 @@ export default function ExperimentBuilderPage() {
         testSplit: testSplit / 100,
         earlyStopping,
         patience: 10,
-        dataPath: null,
+        dataPath: selectedDatasetId === "custom" ? uploadedFilePath : null,
         datasetName: selectedDatasetId,
         selectedFeatures,
         targetFeature,
-        customData: selectedDatasetId === "custom" ? customCsv : null,
+        customData: selectedDatasetId === "custom" && !uploadedFilePath ? customCsv : null,
         seed: 42,
       },
     };
@@ -339,19 +373,17 @@ export default function ExperimentBuilderPage() {
     }
   };
 
-  // Calculates estimated training weight parameter count
   const calculateParameters = () => {
     let params = 0;
     let prev = selectedFeatures.length;
     for (const l of layers) {
-      params += prev * l.units + l.units; // w * x + b
+      params += prev * l.units + l.units;
       prev = l.units;
     }
-    params += prev * 1 + 1; // Final output neuron parameters
+    params += prev * 1 + 1;
     return params;
   };
 
-  // Stepper Header
   const steps = [
     { num: 1, label: "Dataset Selection", icon: Database },
     { num: 2, label: "Features & Targets", icon: Grid2X2 },
@@ -361,7 +393,7 @@ export default function ExperimentBuilderPage() {
 
   return (
     <Container className="py-8 pt-24 max-w-7xl">
-      {/* Upper Navigation */}
+      {}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -403,7 +435,7 @@ export default function ExperimentBuilderPage() {
         </div>
       </motion.div>
 
-      {/* Stepper Wizard Bar */}
+      {}
       <div className="mb-10 bg-neutral-900/30 border border-neutral-850 rounded-2xl p-4 backdrop-blur-sm">
         <div className="flex justify-between items-center relative">
           <div className="absolute left-6 right-6 top-1/2 h-0.5 bg-neutral-800 -translate-y-1/2 z-0" />
@@ -419,10 +451,10 @@ export default function ExperimentBuilderPage() {
               >
                 <div
                   className={`h-11 w-11 rounded-xl flex items-center justify-center border font-mono font-bold text-sm transition-all duration-300 ${isActive
-                      ? "bg-green-500 border-green-400 text-neutral-950 shadow-[0_0_15px_rgba(34,197,94,0.35)]"
-                      : isCompleted
-                        ? "bg-neutral-850 border-green-500/40 text-green-400"
-                        : "bg-neutral-900 border-neutral-800 text-neutral-500 group-hover:border-neutral-700"
+                    ? "bg-green-500 border-green-400 text-neutral-950 shadow-[0_0_15px_rgba(34,197,94,0.35)]"
+                    : isCompleted
+                      ? "bg-neutral-850 border-green-500/40 text-green-400"
+                      : "bg-neutral-900 border-neutral-800 text-neutral-500 group-hover:border-neutral-700"
                     }`}
                 >
                   {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : <Icon className="h-4 w-4" />}
@@ -444,8 +476,8 @@ export default function ExperimentBuilderPage() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className={`mb-6 p-4 rounded-xl border flex items-center gap-3 text-sm font-medium ${feedbackMsg.type === "success"
-              ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400"
-              : "bg-rose-500/5 border-rose-500/20 text-rose-400"
+            ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400"
+            : "bg-rose-500/5 border-rose-500/20 text-rose-400"
             }`}
         >
           <Info className="h-4 w-4 shrink-0" />
@@ -453,7 +485,7 @@ export default function ExperimentBuilderPage() {
         </motion.div>
       )}
 
-      {/* Stepper Forms */}
+      {}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentStep}
@@ -474,8 +506,8 @@ export default function ExperimentBuilderPage() {
                     key={ds.id}
                     onClick={() => setSelectedDatasetId(ds.id)}
                     className={`group cursor-pointer border transition-all duration-300 ${selectedDatasetId === ds.id
-                        ? "border-green-500 bg-green-500/5 shadow-[0_0_20px_rgba(34,197,94,0.06)]"
-                        : "border-neutral-850 bg-neutral-900/10 hover:border-neutral-700"
+                      ? "border-green-500 bg-green-500/5 shadow-[0_0_20px_rgba(34,197,94,0.06)]"
+                      : "border-neutral-850 bg-neutral-900/10 hover:border-neutral-700"
                       }`}
                   >
                     <CardHeader className="pb-2">
@@ -529,28 +561,74 @@ export default function ExperimentBuilderPage() {
                               <option value="regression">Regression</option>
                             </select>
                           </div>
-                          <Button variant="ghost" size="sm" className="h-7 text-[10px] text-green-400 hover:text-green-300 hover:bg-green-500/10">
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileUpload}
+                            className="hidden"
+                          />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 text-[10px] text-green-400 hover:text-green-300 hover:bg-green-500/10"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploading}
+                          >
                             <Upload className="h-3 w-3 mr-1" />
-                            Upload File
+                            {isUploading ? `Uploading ${uploadProgress}%` : "Upload File"}
                           </Button>
                         </div>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <textarea
-                        value={customCsv}
-                        onChange={(e) => handleCsvInput(e.target.value)}
-                        placeholder="Paste your CSV here (first row as header, last column as target)..."
-                        className="w-full h-48 bg-neutral-950 border border-neutral-800 rounded-xl p-4 font-mono text-xs text-green-500/90 focus:outline-none focus:border-green-500/50 resize-none"
-                      />
+                      {uploadedFilePath ? (
+                        <div className="flex flex-col items-center justify-center h-48 bg-neutral-950 border border-neutral-800 rounded-xl border-dashed border-green-500/30">
+                          <CheckCircle2 className="h-12 w-12 text-green-500 mb-2" />
+                          <p className="text-sm font-medium text-white">File Uploaded Successfully</p>
+                          <p className="text-xs text-neutral-500 mt-1">{uploadedFilePath.split('/').pop()}</p>
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="text-green-400 text-[10px] mt-2"
+                            onClick={() => setUploadedFilePath(null)}
+                          >
+                            Remove and use text input
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          <textarea
+                            value={customCsv}
+                            onChange={(e) => handleCsvInput(e.target.value)}
+                            placeholder="Paste your CSV here (first row as header, last column as target)..."
+                            className="w-full h-48 bg-neutral-950 border border-neutral-800 rounded-xl p-4 font-mono text-xs text-green-500/90 focus:outline-none focus:border-green-500/50 resize-none"
+                            disabled={isUploading}
+                          />
+                          {isUploading && (
+                            <div className="absolute inset-x-8 bottom-20">
+                              <div className="h-1 w-full bg-neutral-800 rounded-full overflow-hidden">
+                                <motion.div
+                                  className="h-full bg-green-500"
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${uploadProgress}%` }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
                       <div className="mt-2 flex justify-between items-center">
                         <p className="text-[10px] text-neutral-500 italic">
-                          * Ensure the last column is the target variable (Y) and all other columns are numerical features (X).
+                          {uploadedFilePath
+                            ? "* File data will be streamed directly to the ML engine."
+                            : "* Ensure the last column is the target variable (Y) and all other columns are numerical features (X)."}
                         </p>
-                        {isParsingCsv && (
+                        {(isParsingCsv || isUploading) && (
                           <div className="flex items-center gap-2">
                             <div className="h-2 w-2 rounded-full bg-green-500 animate-ping" />
-                            <span className="text-[10px] text-green-400">Parsing...</span>
+                            <span className="text-[10px] text-green-400">
+                              {isUploading ? `Uploading ${uploadProgress}%` : "Parsing..."}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -559,7 +637,7 @@ export default function ExperimentBuilderPage() {
                 </motion.div>
               )}
 
-              {/* Summary of active dataset selection */}
+              {}
               <Card className="mt-6 border-neutral-850 bg-neutral-900/20">
                 <CardContent className="p-6">
                   <div className="flex flex-col md:flex-row gap-6 items-center">
@@ -585,7 +663,7 @@ export default function ExperimentBuilderPage() {
                 description="Check columns to allocate them as features inside the network input vector, and select your target output."
               />
               <Grid cols={3} gap="lg">
-                {/* Feature Selector checklist */}
+                {}
                 <div className="col-span-2 space-y-4">
                   <h3 className="text-md font-bold text-white flex items-center gap-2">
                     <Grid2X2 className="h-4 w-4 text-green-400" />
@@ -599,8 +677,8 @@ export default function ExperimentBuilderPage() {
                           key={feat.name}
                           onClick={() => toggleFeature(feat.name)}
                           className={`flex items-center justify-between rounded-xl border p-3 cursor-pointer transition-all duration-200 ${isChecked
-                              ? "bg-green-500/5 border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.02)]"
-                              : "bg-neutral-900/25 border-neutral-850 hover:border-neutral-800"
+                            ? "bg-green-500/5 border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.02)]"
+                            : "bg-neutral-900/25 border-neutral-850 hover:border-neutral-800"
                             }`}
                         >
                           <div className="flex items-center gap-3">
@@ -621,7 +699,7 @@ export default function ExperimentBuilderPage() {
                   </div>
                 </div>
 
-                {/* Target Column configuration */}
+                {}
                 <div className="space-y-6">
                   <Card className="border-neutral-850">
                     <CardHeader className="pb-3">
@@ -658,7 +736,7 @@ export default function ExperimentBuilderPage() {
                     </CardContent>
                   </Card>
 
-                  {/* Schema stats card */}
+                  {}
                   <Card className="border-neutral-850 bg-neutral-900/10">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-xs font-bold uppercase tracking-wider text-neutral-400">
@@ -693,7 +771,7 @@ export default function ExperimentBuilderPage() {
               />
               <Grid cols={3} gap="lg">
                 <div className="col-span-2 space-y-6">
-                  {/* Slider Control */}
+                  {}
                   <Card className="border-neutral-850 p-6">
                     <div className="space-y-6">
                       <Flex justify="between" className="mb-2">
@@ -714,7 +792,7 @@ export default function ExperimentBuilderPage() {
                         />
                       </div>
 
-                      {/* Split allocation display */}
+                      {}
                       <Grid cols={3} gap="md" className="pt-4 border-t border-neutral-850">
                         <div className="bg-green-500/5 border border-green-500/10 rounded-xl p-4 text-center">
                           <p className="text-xs text-neutral-400 uppercase tracking-wide">Training</p>
@@ -770,7 +848,7 @@ export default function ExperimentBuilderPage() {
           {currentStep === 4 && (
             <div className="space-y-6">
               <Grid cols={3} gap="lg">
-                {/* Visual SVG Network Node Graph */}
+                {}
                 <div className="col-span-2 space-y-6">
                   <SectionHeading
                     title="Engine Network Architecture"
@@ -788,10 +866,10 @@ export default function ExperimentBuilderPage() {
                       </Button>
                     </Flex>
 
-                    {/* Node Visual Graph SVG */}
+                    {}
                     <div className="bg-neutral-950 rounded-2xl p-4 border border-neutral-850 flex items-center justify-center overflow-x-auto min-h-[220px]">
                       <svg width="600" height="200" className="max-w-full">
-                        {/* Render Input Features */}
+                        {}
                         {selectedFeatures.slice(0, 4).map((_, i) => (
                           <g key={`in-${i}`}>
                             <circle cx="50" cy={40 + i * 40} r="7" className="fill-green-500/80 stroke-green-400 stroke-2 animate-pulse" />
@@ -802,7 +880,7 @@ export default function ExperimentBuilderPage() {
                         ))}
                         <text x="30" y="20" className="fill-neutral-400 font-mono text-[10px] uppercase font-semibold">Inputs ({selectedFeatures.length})</text>
 
-                        {/* Connections from Input -> Layer 1 */}
+                        {}
                         {selectedFeatures.slice(0, 4).map((_, i) =>
                           layers[0] && Array.from({ length: Math.min(layers[0].units, 4) }).map((_, j) => (
                             <line
@@ -817,7 +895,7 @@ export default function ExperimentBuilderPage() {
                           ))
                         )}
 
-                        {/* Render Hidden Layers */}
+                        {}
                         {layers.map((ly, lIdx) => {
                           const xPos = 200 + lIdx * 150;
                           return (
@@ -840,7 +918,7 @@ export default function ExperimentBuilderPage() {
                                 </text>
                               )}
 
-                              {/* Connections to Next Layer */}
+                              {}
                               {layers[lIdx + 1] && Array.from({ length: Math.min(ly.units, 4) }).map((_, i) =>
                                 Array.from({ length: Math.min(layers[lIdx + 1].units, 4) }).map((_, j) => (
                                   <line
@@ -858,7 +936,7 @@ export default function ExperimentBuilderPage() {
                           );
                         })}
 
-                        {/* Connect Last Hidden Layer to Output Node */}
+                        {}
                         {layers.length > 0 && Array.from({ length: Math.min(layers[layers.length - 1].units, 4) }).map((_, i) => {
                           const lastX = 200 + (layers.length - 1) * 150;
                           return (
@@ -874,13 +952,13 @@ export default function ExperimentBuilderPage() {
                           );
                         })}
 
-                        {/* Render Output Node */}
+                        {}
                         <circle cx="520" cy="90" r="9" className="fill-violet-500/20 stroke-violet-400 stroke-2" />
                         <text x="490" y="20" className="fill-neutral-400 font-mono text-[10px] uppercase font-semibold">Output (1)</text>
                       </svg>
                     </div>
 
-                    {/* Layer Editor List */}
+                    {}
                     <div className="space-y-3 mt-4">
                       {layers.map((layer, idx) => (
                         <div
@@ -934,7 +1012,7 @@ export default function ExperimentBuilderPage() {
                 </div>
 
                 <div className="space-y-6">
-                  {/* Optimizer / Loss settings */}
+                  {}
                   <Card className="border-neutral-850">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-sm font-bold text-white flex items-center gap-2">
@@ -996,7 +1074,7 @@ export default function ExperimentBuilderPage() {
                     </CardContent>
                   </Card>
 
-                  {/* Summary Card */}
+                  {}
                   <Card className="border-neutral-850 bg-neutral-900/10">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-xs font-bold uppercase tracking-wider text-neutral-400">
@@ -1025,7 +1103,7 @@ export default function ExperimentBuilderPage() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Stepper Footer Navigation */}
+      {}
       <div className="mt-8 pt-6 border-t border-neutral-800/40 flex justify-between">
         <Button
           variant="outline"

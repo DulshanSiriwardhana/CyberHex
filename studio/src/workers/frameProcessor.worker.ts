@@ -1,7 +1,3 @@
-/**
- * CyberHex Studio — Frame Preprocessing Worker
- * OffscreenCanvas-compatible frame extraction and batching.
- */
 import { WorkerMessageType } from '@/types';
 
 interface PreprocessMessage {

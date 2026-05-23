@@ -1,13 +1,3 @@
-/**
- * CyberHex v3.0 — Health Diagnostics Routes
- *
- * Provides health check, readiness probe, and diagnostic endpoints
- * for Kubernetes liveness/readiness probes, load balancers, and
- * monitoring systems.
- *
- * @module routes/healthRoutes
- */
-
 import express from 'express';
 import mongoose from 'mongoose';
 import os from 'os';
@@ -16,8 +6,6 @@ import { logger } from '../utils/logger.js';
 import { isRedisAvailable } from '../services/cacheService.js';
 
 const router = express.Router();
-
-// ──── Helpers ────────────────────────────────────────────────────
 
 function formatUptime(seconds) {
   const d = Math.floor(seconds / 86400);
@@ -44,8 +32,6 @@ function getMemoryUsage() {
   };
 }
 
-// ──── Simple Health Check (Liveness Probe) ───────────────────────
-// Responds quickly — only verifies the process is alive.
 router.get('/live', (_req, res) => {
   res.status(200).json({
     status: 'ok',
@@ -54,8 +40,6 @@ router.get('/live', (_req, res) => {
   });
 });
 
-// ──── Readiness Probe ────────────────────────────────────────────
-// Verifies that critical dependencies (DB, Redis) are healthy.
 router.get('/ready', async (_req, res) => {
   const checks = {
     database: false,
@@ -63,16 +47,15 @@ router.get('/ready', async (_req, res) => {
   };
 
   try {
-    // Check MongoDB connection
+
     if (mongoose.connection.readyState === 1) {
       await mongoose.connection.db.admin().ping();
       checks.database = true;
     }
   } catch {
-    // database check failed
+
   }
 
-  // Check Redis if configured
   try {
     checks.redis = isRedisAvailable();
   } catch {
@@ -89,8 +72,6 @@ router.get('/ready', async (_req, res) => {
   });
 });
 
-// ──── Full Diagnostics ───────────────────────────────────────────
-// Internal endpoint (should be protected in production).
 router.get('/diagnostics', (_req, res) => {
   const mem = getMemoryUsage();
   const cpuLoad = os.loadavg();

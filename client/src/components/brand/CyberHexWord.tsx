@@ -1,17 +1,12 @@
-/**
- * CyberHex v4.0 — The Word (Release No. 01)
- *
- * Canonical brand wordmark: CYBER + Hex syllable + serial stamp "01".
- */
 import { cn } from '@/lib/utils';
 import { V4_RELEASE, type WordmarkSize } from '@/lib/design-v4';
 
 export interface CyberHexWordProps {
   size?: WordmarkSize;
-  /** Show rotated serial stamp (default true for md+) */
+
   showSerial?: boolean;
   className?: string;
-  /** Render as link wrapper content only (no extra wrapper semantics) */
+
   as?: 'span' | 'div';
 }
 

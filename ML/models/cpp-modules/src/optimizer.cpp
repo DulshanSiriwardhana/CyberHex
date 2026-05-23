@@ -4,15 +4,12 @@
 
 namespace cyberhex {
 
-// ============================================================================
-// SGD Optimizer
-// ============================================================================
 SGDOptimizer::SGDOptimizer(double lr, double momentum, double weight_decay)
     : lr_(lr), momentum_(momentum), weight_decay_(weight_decay) {}
 
 void SGDOptimizer::update(Matrix<double>& param, const Matrix<double>& grad,
                           size_t param_idx, int timestep) {
-    // Ensure velocities vector is large enough
+
     if (velocities_.size() <= param_idx) {
         velocities_.resize(param_idx + 1);
     }
@@ -42,9 +39,6 @@ void SGDOptimizer::reset() {
     velocities_.clear();
 }
 
-// ============================================================================
-// Adam Optimizer
-// ============================================================================
 AdamOptimizer::AdamOptimizer(double lr, double beta1, double beta2,
                               double epsilon, double weight_decay, bool amsgrad)
     : lr_(lr), beta1_(beta1), beta2_(beta2), epsilon_(epsilon),
@@ -52,7 +46,7 @@ AdamOptimizer::AdamOptimizer(double lr, double beta1, double beta2,
 
 void AdamOptimizer::update(Matrix<double>& param, const Matrix<double>& grad,
                            size_t param_idx, int timestep) {
-    // Ensure state vectors are large enough
+
     if (m_.size() <= param_idx) {
         m_.resize(param_idx + 1);
         v_.resize(param_idx + 1);
@@ -74,13 +68,10 @@ void AdamOptimizer::update(Matrix<double>& param, const Matrix<double>& grad,
     for (size_t i = 0; i < param.size(); i++) {
         double g = grad.at(i) + weight_decay_ * param.at(i);
 
-        // Update biased first moment estimate
         m.at(i) = beta1_ * m.at(i) + (1.0 - beta1_) * g;
 
-        // Update biased second raw moment estimate
         v.at(i) = beta2_ * v.at(i) + (1.0 - beta2_) * g * g;
 
-        // Compute bias-corrected estimates
         double m_hat = m.at(i) / bias_corr1;
         double v_hat = v.at(i) / bias_corr2;
 
@@ -100,14 +91,11 @@ void AdamOptimizer::reset() {
 }
 
 void AdamOptimizer::schedule(int epoch, int total_epochs) {
-    // Simple cosine decay schedule
+
     double progress = static_cast<double>(epoch) / total_epochs;
     lr_ = lr_ * 0.5 * (1.0 + std::cos(M_PI * progress));
 }
 
-// ============================================================================
-// RMSprop Optimizer
-// ============================================================================
 RMSpropOptimizer::RMSpropOptimizer(double lr, double beta, double epsilon,
                                     double weight_decay)
     : lr_(lr), beta_(beta), epsilon_(epsilon), weight_decay_(weight_decay) {}
@@ -135,9 +123,6 @@ void RMSpropOptimizer::reset() {
     v_.clear();
 }
 
-// ============================================================================
-// Learning Rate Schedulers
-// ============================================================================
 StepDecayScheduler::StepDecayScheduler(double initial_lr, double decay_rate, int step_size)
     : initial_lr_(initial_lr), decay_rate_(decay_rate), step_size_(step_size) {}
 
@@ -186,4 +171,4 @@ double OneCycleScheduler::get_lr(int epoch) const {
     }
 }
 
-} // namespace cyberhex
+}

@@ -32,7 +32,7 @@ const activeChallenges = [
 export default function CyberGames() {
   return (
     <Container className="py-8 pt-24">
-      {/* Header */}
+      {}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -56,7 +56,7 @@ export default function CyberGames() {
         </Flex>
       </motion.div>
 
-      {/* Stats */}
+      {}
       <Grid cols={3} gap="md" className="mb-8">
         {[
           { icon: Trophy, label: "Top Rank", value: "#42", color: "text-amber-400" },
@@ -85,7 +85,7 @@ export default function CyberGames() {
       </Grid>
 
       <Grid cols={2} gap="md">
-        {/* Leaderboard */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -124,7 +124,7 @@ export default function CyberGames() {
           </Card>
         </motion.div>
 
-        {/* Active challenges */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

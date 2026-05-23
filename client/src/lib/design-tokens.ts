@@ -1,24 +1,15 @@
-/**
- * CyberHex Design Tokens — Multi-Theme Foundation (v3+) + v4 Word System
- *
- * Theme registry and scales for the platform. For v4.0 Release No. 01
- * wordmark typography and serial badges, see `@/lib/design-v4`.
- */
-
-// ──── Theme Variants ─────────────────────────────────────────────
 export type ThemeVariant = 'cyber' | 'nebula' | 'aurora' | 'midnight' | 'plasma' | 'emerald';
 
 export interface ThemeConfig {
   id: ThemeVariant;
   name: string;
   description: string;
-  preview: string; // CSS gradient for preview swatch
+  preview: string;
   colors: ThemeColors;
 }
 
-// ──── Color Palette Architecture ──────────────────────────────────
 export interface ThemeColors {
-  // Core backgrounds
+
   bg: {
     root: string;
     surface: string;
@@ -26,7 +17,7 @@ export interface ThemeColors {
     overlay: string;
     field: string;
   };
-  // Semantic accents
+
   accent: {
     primary: string;
     secondary: string;
@@ -36,7 +27,7 @@ export interface ThemeColors {
     danger: string;
     info: string;
   };
-  // Text hierarchy
+
   text: {
     primary: string;
     secondary: string;
@@ -44,14 +35,14 @@ export interface ThemeColors {
     inverse: string;
     link: string;
   };
-  // Borders & dividers
+
   border: {
     subtle: string;
     default: string;
     strong: string;
     accent: string;
   };
-  // Gradient presets
+
   gradient: {
     hero: string;
     card: string;
@@ -59,18 +50,17 @@ export interface ThemeColors {
     accent: string;
     surface: string;
   };
-  // Glow / shadow
+
   glow: {
     primary: string;
     secondary: string;
     accent: string;
     card: string;
   };
-  // Chart palette
+
   chart: string[];
 }
 
-// ──── Cyber Theme (Default Dark) ──────────────────────────────────
 const cyberColors: ThemeColors = {
   bg: {
     root: '#0a0a0f',
@@ -117,7 +107,6 @@ const cyberColors: ThemeColors = {
   chart: ['#00f0ff', '#7c3aed', '#f472b6', '#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#06b6d4'],
 };
 
-// ──── Nebula Theme ────────────────────────────────────────────────
 const nebulaColors: ThemeColors = {
   bg: {
     root: '#0d0221',
@@ -164,7 +153,6 @@ const nebulaColors: ThemeColors = {
   chart: ['#c084fc', '#818cf8', '#f9a8d4', '#34d399', '#fbbf24', '#60a5fa', '#f87171', '#a78bfa'],
 };
 
-// ──── Aurora Theme (Light) ───────────────────────────────────────
 const auroraColors: ThemeColors = {
   bg: {
     root: '#f8fafc',
@@ -211,7 +199,6 @@ const auroraColors: ThemeColors = {
   chart: ['#0ea5e9', '#8b5cf6', '#ec4899', '#059669', '#d97706', '#2563eb', '#dc2626', '#06b6d4'],
 };
 
-// ──── Midnight Theme ──────────────────────────────────────────────
 const midnightColors: ThemeColors = {
   bg: {
     root: '#020617',
@@ -258,7 +245,6 @@ const midnightColors: ThemeColors = {
   chart: ['#38bdf8', '#6366f1', '#a78bfa', '#34d399', '#fbbf24', '#60a5fa', '#f87171', '#06b6d4'],
 };
 
-// ──── Emerald Theme (Green) ───────────────────────────────────────
 const emeraldColors: ThemeColors = {
   bg: {
     root: '#060e09',
@@ -305,7 +291,6 @@ const emeraldColors: ThemeColors = {
   chart: ['#00e676', '#00bfa5', '#a0f0a0', '#00c853', '#ffb300', '#448aff', '#ff5252', '#69f0ae'],
 };
 
-// ──── Plasma Theme ───────────────────────────────────────────────
 const plasmaColors: ThemeColors = {
   bg: {
     root: '#0f0f1a',
@@ -352,7 +337,6 @@ const plasmaColors: ThemeColors = {
   chart: ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff8a8a', '#ff922b', '#845ef7', '#20c997'],
 };
 
-// ──── Theme Registry ──────────────────────────────────────────────
 export const THEME_REGISTRY: Record<ThemeVariant, ThemeConfig> = {
   cyber: {
     id: 'cyber',
@@ -398,7 +382,6 @@ export const THEME_REGISTRY: Record<ThemeVariant, ThemeConfig> = {
   },
 };
 
-// ──── Typography Scale ───────────────────────────────────────────
 export const TYPOGRAPHY = {
   fontFamily: {
     sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
@@ -407,18 +390,18 @@ export const TYPOGRAPHY = {
     ui: ['Inter', 'system-ui', 'sans-serif'],
   },
   fontSize: {
-    // Using Tailwind-compatible scale
-    xs: '0.75rem',     // 12px
-    sm: '0.875rem',    // 14px
-    base: '1rem',      // 16px
-    lg: '1.125rem',    // 18px
-    xl: '1.25rem',     // 20px
-    '2xl': '1.5rem',   // 24px
-    '3xl': '1.875rem', // 30px
-    '4xl': '2.25rem',  // 36px
-    '5xl': '3rem',     // 48px
-    '6xl': '3.75rem',  // 60px
-    '7xl': '4.5rem',   // 72px
+
+    xs: '0.75rem',
+    sm: '0.875rem',
+    base: '1rem',
+    lg: '1.125rem',
+    xl: '1.25rem',
+    '2xl': '1.5rem',
+    '3xl': '1.875rem',
+    '4xl': '2.25rem',
+    '5xl': '3rem',
+    '6xl': '3.75rem',
+    '7xl': '4.5rem',
   },
   fontWeight: {
     light: 300,
@@ -442,11 +425,10 @@ export const TYPOGRAPHY = {
     wide: '0.025em',
     wider: '0.05em',
     widest: '0.1em',
-    mono: '0.05em', // Code-specific
+    mono: '0.05em',
   },
 } as const;
 
-// ──── Spacing & Layout Scale ─────────────────────────────────────
 export const SPACING = {
   panel: {
     sidebarWidth: 280,
@@ -458,11 +440,11 @@ export const SPACING = {
   },
   radius: {
     none: '0',
-    sm: '0.25rem',    // 4px
-    md: '0.5rem',     // 8px
-    lg: '0.75rem',    // 12px
-    xl: '1rem',       // 16px
-    '2xl': '1.5rem',  // 24px
+    sm: '0.25rem',
+    md: '0.5rem',
+    lg: '0.75rem',
+    xl: '1rem',
+    '2xl': '1.5rem',
     full: '9999px',
   },
   shadow: {
@@ -473,7 +455,6 @@ export const SPACING = {
   },
 } as const;
 
-// ──── Animation Tokens ───────────────────────────────────────────
 export const ANIMATION = {
   duration: {
     instant: 75,
@@ -484,13 +465,13 @@ export const ANIMATION = {
     slowest: 1000,
   },
   easing: {
-    // Custom cubic-bezier curves for premium feel
-    spring: [0.34, 1.56, 0.64, 1] as const,       // Bouncy spring
-    smooth: [0.4, 0, 0.2, 1] as const,             // Material-style smooth
-    decelerate: [0.0, 0, 0.2, 1] as const,         // Entering screen
-    accelerate: [0.4, 0, 1, 1] as const,           // Exiting screen
-    sharp: [0.4, 0, 0.6, 1] as const,              // Standard in-out
-    bounce: [0.68, -0.55, 0.265, 1.55] as const,   // Strong bounce
+
+    spring: [0.34, 1.56, 0.64, 1] as const,
+    smooth: [0.4, 0, 0.2, 1] as const,
+    decelerate: [0.0, 0, 0.2, 1] as const,
+    accelerate: [0.4, 0, 1, 1] as const,
+    sharp: [0.4, 0, 0.6, 1] as const,
+    bounce: [0.68, -0.55, 0.265, 1.55] as const,
   },
   spring: {
     gentle: { type: 'spring' as const, stiffness: 200, damping: 25 },
@@ -500,7 +481,6 @@ export const ANIMATION = {
   },
 } as const;
 
-// ──── Z-Index Scale ──────────────────────────────────────────────
 export const Z_INDEX = {
   base: 0,
   dropdown: 1000,
@@ -514,7 +494,6 @@ export const Z_INDEX = {
   commandPalette: 1800,
 } as const;
 
-// ──── Breakpoint Definitions ─────────────────────────────────────
 export const BREAKPOINTS = {
   xs: 480,
   sm: 640,
@@ -525,7 +504,6 @@ export const BREAKPOINTS = {
   '3xl': 1920,
 } as const;
 
-// ──── Glass Effect Presets ───────────────────────────────────────
 export const GLASS_EFFECTS = {
   subtle: {
     background: 'rgba(255, 255, 255, 0.03)',
@@ -549,10 +527,8 @@ export const GLASS_EFFECTS = {
   },
 } as const;
 
-// ──── Utility: Get Current Theme Colors ─────────────────────────
 export function getThemeColors(variant: ThemeVariant): ThemeColors {
   return THEME_REGISTRY[variant]?.colors ?? cyberColors;
 }
 
-// ──── Default export for convenience ─────────────────────────────
 export default THEME_REGISTRY;

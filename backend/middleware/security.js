@@ -1,21 +1,6 @@
-/**
- * CyberHex v3.0 — Security Hardening Middleware
- *
- * Production-grade security middleware that extends Helmet with:
- * - Strict CSP headers
- * - CSRF protection via double-submit cookie pattern
- * - XSS sanitization headers
- * - Security response headers
- * - Request size limiting
- * - Parameter pollution prevention
- *
- * @module middleware/security
- */
-
 import helmet from 'helmet';
 import { config } from '../utils/env.js';
 
-// ──── CSP Configuration ──────────────────────────────────────────
 const PRODUCTION_CSP = {
   directives: {
     defaultSrc: ["'self'"],
@@ -43,9 +28,6 @@ const DEVELOPMENT_CSP = {
   },
 };
 
-/**
- * Configure Helmet with production-grade security policies.
- */
 export function securityHeaders() {
   const isProduction = config.NODE_ENV === 'production';
 
@@ -69,19 +51,9 @@ export function securityHeaders() {
   });
 }
 
-// ──── CSRF Protection (Double-Submit Cookie Pattern) ─────────────
-
-/**
- * CSRF protection middleware.
- * Uses the double-submit cookie pattern: a random token is set in
- * a cookie, and the client must send the same token in an
- * X-CSRF-Token header for state-changing requests.
- *
- * Safe methods (GET, HEAD, OPTIONS) are excluded.
- */
 export function csrfProtection() {
   return (req, res, next) => {
-    // Skip for safe methods
+
     const safeMethods = ['GET', 'HEAD', 'OPTIONS'];
     if (safeMethods.includes(req.method)) {
       return next();
@@ -101,38 +73,27 @@ export function csrfProtection() {
   };
 }
 
-/**
- * Middleware to set the CSRF token cookie on every response.
- * The client reads this cookie and sends it back as X-CSRF-Token.
- */
 export function csrfTokenCookie() {
   return (req, res, next) => {
-    // Only set if not already present
+
     if (!req.cookies?.['csrf-token']) {
       const token = require('crypto').randomBytes(32).toString('hex');
       res.cookie('csrf-token', token, {
-        httpOnly: false, // Client must be able to read it
+        httpOnly: false,
         secure: config.NODE_ENV === 'production',
         sameSite: 'strict',
         path: '/',
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        maxAge: 24 * 60 * 60 * 1000,
       });
     }
     next();
   };
 }
 
-// ──── Request Size Limiting ──────────────────────────────────────
-
-/**
- * Limit request body size to prevent memory exhaustion.
- * Configured via express.json/urlencoded limits in app.js;
- * this provides additional protection against oversized payloads.
- */
 export function sizeLimiter() {
   return (req, _res, next) => {
     const contentLength = parseInt(req.headers['content-length'] || '0', 10);
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 10 * 1024 * 1024;
 
     if (contentLength > maxSize) {
       return _res.status(413).json({
@@ -144,15 +105,9 @@ export function sizeLimiter() {
   };
 }
 
-// ──── Parameter Pollution Prevention ─────────────────────────────
-
-/**
- * Prevent HTTP parameter pollution by using only the first value
- * for each query parameter. Duplicate parameters are discarded.
- */
 export function parameterPollutionProtection() {
   return (req, _res, next) => {
-    // Detect duplicate query parameters
+
     const rawQuery = req.url.split('?')[1] || '';
     const paramCounts = {};
     rawQuery.split('&').forEach((pair) => {
@@ -172,16 +127,9 @@ export function parameterPollutionProtection() {
   };
 }
 
-// ──── Trust Proxy Configuration ──────────────────────────────────
-
-/**
- * Configure Express to trust the reverse proxy.
- * Required for accurate client IP when behind Nginx/K8s ingress.
- */
 export function trustProxy() {
   return (req, _res, next) => {
-    // The 'trust proxy' setting should be on the app itself,
-    // but we provide this as a documented configuration point
+
     next();
   };
 }

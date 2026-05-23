@@ -1,7 +1,3 @@
-/**
- * CyberHex Studio — AI Model Registry
- * Manages ONNX/TF.js model catalog, loading, caching, and hot-swap.
- */
 import type { AIModel, ModelId } from '@/types';
 import { ModelArchitecture, ModelStatus } from '@/types';
 import { EngineBridge } from '@/services/EngineBridge';

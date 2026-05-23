@@ -74,7 +74,7 @@ const NavBar = () => {
       `}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Logo */}
+        {}
         <Link
           to="/"
           className="flex items-center gap-2 group"
@@ -86,7 +86,7 @@ const NavBar = () => {
           <CyberHexWord size="sm" showSerial={false} />
         </Link>
 
-        {/* Desktop nav */}
+        {}
         <div className="hidden md:flex items-center gap-1">
           <Link
             to="/"
@@ -117,11 +117,11 @@ const NavBar = () => {
           </Link>
         </div>
 
-        {/* Desktop actions */}
+        {}
         <div className="hidden md:flex items-center gap-3">
-          {/* ── Theme Controls ── */}
+          {}
           <div className="flex items-center gap-0.5 rounded-xl border border-neutral-700/50 bg-neutral-800/30 p-0.5 mr-1">
-            {/* Dark / Light toggle */}
+            {}
             <button
               onClick={toggle}
               className="relative rounded-lg p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-all duration-200"
@@ -145,7 +145,7 @@ const NavBar = () => {
                 </motion.span>
               </AnimatePresence>
             </button>
-            {/* Theme variant dropdown */}
+            {}
             <div className="relative" ref={themeMenuRef}>
               <button
                 onClick={() => setThemeMenuOpen(!themeMenuOpen)}
@@ -274,7 +274,7 @@ const NavBar = () => {
           )}
         </div>
 
-        {/* Mobile theme toggle + hamburger */}
+        {}
         <div className="flex md:hidden items-center gap-1">
           <button
             onClick={toggle}
@@ -301,7 +301,7 @@ const NavBar = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {}
       <AnimatePresence>
         {isMobileOpen && (
           <motion.div
@@ -342,7 +342,7 @@ const NavBar = () => {
               >
                 Contact
               </Link>
-              {/* ── Mobile Theme Variants ── */}
+              {}
               <div className="pt-3 border-t border-neutral-800/50">
                 <p className="px-3 pt-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-neutral-500">
                   Color Theme

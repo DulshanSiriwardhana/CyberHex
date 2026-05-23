@@ -245,3 +245,43 @@ export const experimentsApi = {
   getActiveJobs: () =>
     api.get<{ jobs: ActiveJob[] }>('/api/v1/ml/jobs/active'),
 };
+
+export const datasetsApi = {
+  upload: (file: File, onProgress?: (progress: number) => void) => {
+    return new Promise<{ status: string; data: { filename: string; path: string; size: number; mimetype: string } }>((resolve, reject) => {
+      const formData = new FormData();
+      formData.append('dataset', file);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `${API_BASE}/api/v1/datasets/upload`);
+
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      }
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable && onProgress) {
+          const percentComplete = (event.loaded / event.total) * 100;
+          onProgress(percentComplete);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(JSON.parse(xhr.response));
+        } else {
+          try {
+            const err = JSON.parse(xhr.response);
+            reject(new Error(err.message || 'Upload failed'));
+          } catch {
+            reject(new Error('Upload failed'));
+          }
+        }
+      };
+
+      xhr.onerror = () => reject(new Error('Network error'));
+      xhr.send(formData);
+    });
+  }
+};

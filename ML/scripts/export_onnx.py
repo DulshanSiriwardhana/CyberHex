@@ -7,7 +7,6 @@ import sys
 
 import numpy as np
 
-
 def load_layer_json(path):
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
@@ -15,14 +14,12 @@ def load_layer_json(path):
     b = np.array(data["bias"], dtype=np.float64).reshape(1, -1)
     return w, b
 
-
 def load_param_bin(path):
     with open(path, "rb") as f:
         rows = struct.unpack("<Q", f.read(8))[0]
         cols = struct.unpack("<Q", f.read(8))[0]
         data = np.frombuffer(f.read(rows * cols * 8), dtype=np.float64)
     return data.reshape(rows, cols)
-
 
 def build_mlp_onnx(manifest, onnx_path):
     try:
@@ -91,7 +88,6 @@ def build_mlp_onnx(manifest, onnx_path):
     onnx.save(model, onnx_path)
     return {"success": True, "onnx_path": onnx_path, "backend": "onnx-python", "kind": "mlp"}
 
-
 def build_graph_mlp_onnx(manifest, onnx_path):
     try:
         import onnx
@@ -159,7 +155,6 @@ def build_graph_mlp_onnx(manifest, onnx_path):
     onnx.save(model, onnx_path)
     return {"success": True, "onnx_path": onnx_path, "backend": "onnx-python", "kind": "graph_mlp"}
 
-
 def build_onnx(manifest_path, onnx_path):
     with open(manifest_path, encoding="utf-8") as f:
         manifest = json.load(f)
@@ -168,7 +163,6 @@ def build_onnx(manifest_path, onnx_path):
     if kind == "graph_mlp":
         return build_graph_mlp_onnx(manifest, onnx_path)
     return build_mlp_onnx(manifest, onnx_path)
-
 
 def main():
     raw = os.environ.get("CYBERHEX_EXPORT_CONFIG", "{}")
@@ -190,7 +184,6 @@ def main():
     result = build_onnx(manifest, onnx_path)
     print(json.dumps(result), flush=True)
     sys.exit(0 if result.get("success") else 1)
-
 
 if __name__ == "__main__":
     main()

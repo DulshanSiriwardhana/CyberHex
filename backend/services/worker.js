@@ -1,13 +1,3 @@
-/**
- * CyberHex v3.0 — Asynchronous ML Training Queue Worker
- *
- * Dedicated background worker that pulls training tasks from Redis queue,
- * spawns the C++ or Python child process, monitors metrics in real time,
- * and publishes events to Redis Pub/Sub to inform the gateway API.
- *
- * Run with: node backend/services/worker.js
- */
-
 import { createClient } from 'redis';
 import mongoose from 'mongoose';
 import { env } from '../utils/env.js';
@@ -32,9 +22,6 @@ let activeChildProcess = null;
 let activeJobId = null;
 let activeJob = null;
 
-/**
- * Handle stdout line metric parsing and broadcast to gateway via Redis Pub/Sub.
- */
 async function processWorkerOutputLine(job, line) {
   if (!line.trim()) return;
   const jobId = job.experimentId;
@@ -52,7 +39,6 @@ async function processWorkerOutputLine(job, line) {
         job.metrics.best_train_loss = parsed.train_loss;
       }
 
-      // Persist status in Redis so REST api can query the snapshot
       await saveJobSnapshot(jobId, {
         experimentId: jobId,
         status: job.status,
@@ -61,7 +47,6 @@ async function processWorkerOutputLine(job, line) {
         engine: job.engine,
       });
 
-      // Publish update to API Gateway over Redis Pub/Sub
       await pubClient.publish(
         UPDATE_CHANNEL,
         JSON.stringify({
@@ -83,9 +68,6 @@ async function processWorkerOutputLine(job, line) {
   }
 }
 
-/**
- * Process active stdout streams without missing fragments.
- */
 async function drainStdoutBuffer(job) {
   const lines = job.buffer.split('\n');
   job.buffer = lines.pop() ?? '';
@@ -94,9 +76,6 @@ async function drainStdoutBuffer(job) {
   }
 }
 
-/**
- * Setup process monitoring for spawned training command.
- */
 function runTrainingProcess(job, command, args, options) {
   return new Promise((resolve) => {
     const jobId = job.experimentId;
@@ -126,8 +105,7 @@ function runTrainingProcess(job, command, args, options) {
       }
 
       logger.info(`[Worker-ML] Job ${jobId.slice(-6)} ended with code ${code}`);
-      
-      // Save state to Redis
+
       await saveJobSnapshot(jobId, {
         experimentId: jobId,
         status: job.status,
@@ -136,10 +114,8 @@ function runTrainingProcess(job, command, args, options) {
         engine: job.engine,
       });
 
-      // Synchronize back to MongoDB
       await finalizeExperiment(jobId, job);
 
-      // Publish final update
       await pubClient.publish(
         UPDATE_CHANNEL,
         JSON.stringify({
@@ -161,7 +137,7 @@ function runTrainingProcess(job, command, args, options) {
     childProcess.on('error', async (err) => {
       job.status = 'failed';
       logger.error(`[Worker-ML] Job ${jobId.slice(-6)} failed to spawn: ${err.message}`);
-      
+
       await saveJobSnapshot(jobId, {
         experimentId: jobId,
         status: 'failed',
@@ -191,14 +167,10 @@ function runTrainingProcess(job, command, args, options) {
   });
 }
 
-/**
- * Main worker loop.
- */
 async function startWorker() {
-  // 1. Initialize MongoDB
+
   await DBinitialize();
 
-  // 2. Setup Redis Clients
   const redisUrl = env.REDIS_URL || 'redis://localhost:6379';
   logger.info(`[Worker] Connecting to Redis at ${redisUrl}...`);
 
@@ -214,13 +186,12 @@ async function startWorker() {
 
   logger.info('[Worker] Successfully connected to Redis queues and command buses');
 
-  // 3. Listen to stop commands
   await commandSubClient.subscribe('ml:commands:channel', async (message) => {
     try {
       const { command, experimentId } = JSON.parse(message);
       if (command === 'stop' && activeChildProcess && activeJobId === experimentId) {
         logger.info(`[Worker] Received remote STOP command for active job ${experimentId.slice(-6)}`);
-        
+
         activeJob.status = 'stopped';
         activeChildProcess.kill('SIGTERM');
       }
@@ -229,17 +200,15 @@ async function startWorker() {
     }
   });
 
-  // Ensure outputs folder exists
   ensureOutputDir();
 
   logger.info('[Worker] Background queue worker is active. Listening for jobs...');
 
-  // 4. Polling loop
   while (true) {
     try {
-      // Blocking pop from right of the queue with 10s timeout
+
       const result = await redisClient.brPop(QUEUE_KEY, 10);
-      if (!result) continue; // Timeout, repeat loop
+      if (!result) continue;
 
       const { key, element } = result;
       const { experimentId, experiment } = JSON.parse(element);
@@ -265,7 +234,6 @@ async function startWorker() {
         engine,
       };
 
-      // Set running status in JobStore Redis
       await saveJobSnapshot(experimentId, {
         experimentId,
         status: 'running',
@@ -274,18 +242,16 @@ async function startWorker() {
         engine,
       });
 
-      // Run training process to completion (blocks this loop till done)
       await runTrainingProcess(activeJob, command, args, { env: processEnv, cwd });
 
     } catch (err) {
       logger.error(`[Worker] Error during worker task cycle: ${err.message}`);
-      // Sleep for a second on error to avoid tight error looping
+
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
 }
 
-// Start worker process
 startWorker().catch((err) => {
   logger.error(`[Worker] FATAL startup error: ${err.message}`);
   process.exit(1);

@@ -1,11 +1,4 @@
-/**
- * CyberHex Studio — Neural Rendering Pipeline
- * Real-time frame processing engine with ring buffer, WebGL/WebGPU rendering,
- * multi-stage filter chaining, and performance monitoring.
- */
 import { GPUManager } from '@/engine/gpu/GPUManager';
-
-/* ─── Types ────────────────────────────── */
 
 export type PipelineStageType = 'preprocess' | 'inference' | 'postprocess' | 'render';
 
@@ -57,8 +50,6 @@ export interface PipelineMetrics {
   ringBufferUtilisation: number;
 }
 
-/* ─── Ring Buffer ──────────────────────── */
-
 interface FrameEntry {
   id: number;
   source: FrameSource;
@@ -79,7 +70,7 @@ class RingBuffer {
   }
 
   push(source: FrameSource): FrameEntry | null {
-    if (this.count >= this.capacity) return null; // full, frame skipped
+    if (this.count >= this.capacity) return null;
     const entry: FrameEntry = {
       id: ++this.seq,
       source,
@@ -118,8 +109,6 @@ class RingBuffer {
   }
 }
 
-/* ─── NeuralPipeline ───────────────────── */
-
 export class NeuralPipeline {
   private config!: PipelineConfig;
   private ringBuffer!: RingBuffer;
@@ -130,7 +119,6 @@ export class NeuralPipeline {
   private lastFrameTime = 0;
   private targetFrameInterval = 0;
 
-  /* Metrics */
   private fpsSamples: number[] = [];
   private totalTimeSamples: number[] = [];
   private stageTimeSamples: Map<string, number[]> = new Map();
@@ -138,7 +126,6 @@ export class NeuralPipeline {
   private processedCount = 0;
   private frameId = 0;
 
-  /* GPU */
   private gpu: GPUManager;
   private offscreenCanvas: HTMLCanvasElement | null = null;
   private offscreenCtx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null = null;
@@ -146,8 +133,6 @@ export class NeuralPipeline {
   constructor() {
     this.gpu = GPUManager.getInstance();
   }
-
-  /* ── Initialize ── */
 
   async initialize(config: PipelineConfig): Promise<void> {
     this.config = config;
@@ -172,8 +157,6 @@ export class NeuralPipeline {
     console.log(`[NeuralPipeline] Initialized ${config.width}x${config.height} @ ${config.maxFPS}fps`);
   }
 
-  /* ── Stages ── */
-
   addStage(stage: PipelineStage): void {
     this.stages.push(stage);
     this.stageTimeSamples.set(stage.id, []);
@@ -193,8 +176,6 @@ export class NeuralPipeline {
     const stage = this.stages.find((s) => s.id === stageId);
     if (stage) Object.assign(stage.config, config);
   }
-
-  /* ── Frame Processing ── */
 
   async processFrame(source: FrameSource): Promise<FrameResult> {
     const start = performance.now();
@@ -259,8 +240,6 @@ export class NeuralPipeline {
     return ctx.getImageData(0, 0, this.config.width, this.config.height);
   }
 
-  /* ── Render Loop ── */
-
   startRenderLoop(onFrame: (result: FrameResult) => void): void {
     if (this.running) return;
     this.running = true;
@@ -292,8 +271,6 @@ export class NeuralPipeline {
     this.running = false;
     if (this.rafId) cancelAnimationFrame(this.rafId);
   }
-
-  /* ── Metrics ── */
 
   private _updateFPS(): void {
     const now = performance.now();
@@ -329,8 +306,6 @@ export class NeuralPipeline {
       ringBufferUtilisation: this.ringBuffer.utilisation,
     };
   }
-
-  /* ── Dispose ── */
 
   dispose(): void {
     this.stopRenderLoop();

@@ -1,9 +1,3 @@
-/**
- * CyberHex Studio — Task Scheduler
- * Priority-based async task scheduling with frame-budget awareness,
- * idle callback integration, cancellation, and timeout handling.
- */
-
 export enum TaskPriority {
   CRITICAL = 0,
   HIGH = 1,
@@ -32,13 +26,11 @@ export class TaskScheduler {
 
   private queue: ScheduledTask[] = [];
   private running = false;
-  private frameBudgetMs = 8; // 8ms per frame for tasks
+  private frameBudgetMs = 8;
   private idleCallbackId: number | null = null;
   private counter = 0;
   private activeTasks = 0;
   private maxConcurrent = 4;
-
-  /* ── Schedule ── */
 
   schedule<T>(execute: () => Promise<T>, priority: TaskPriority = TaskPriority.NORMAL, timeout = 5000): Promise<T> {
     return new Promise((resolve, reject) => {
@@ -64,8 +56,6 @@ export class TaskScheduler {
     const task = this.queue.find((t) => t.id === taskId);
     if (task) task.cancelled = true;
   }
-
-  /* ── Run Loop ── */
 
   private _runLoop(): void {
     if (this.running) return;
@@ -118,8 +108,6 @@ export class TaskScheduler {
       this.activeTasks--;
     }
   }
-
-  /* ── Stats ── */
 
   get queueSize(): number { return this.queue.length; }
   get activeCount(): number { return this.activeTasks; }

@@ -1,7 +1,3 @@
-/**
- * CyberHex Studio — Main Shell
- * Dockable panel layout with scene stage, neural HUD, and multi-view modes.
- */
 import React, { useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -159,7 +155,7 @@ export const StudioShell: React.FC<StudioShellProps> = () => {
 
   return (
     <motion.div className="h-screen w-screen flex flex-col bg-[#09090b] text-white overflow-hidden select-none">
-      {/* Top bar */}
+      {}
       <header className="h-12 glass-panel-heavy border-b border-white/5 flex items-center justify-between px-4 shrink-0 z-30">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-neon-cyan to-neon-magenta flex items-center justify-center">
@@ -196,7 +192,7 @@ export const StudioShell: React.FC<StudioShellProps> = () => {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar */}
+        {}
         <AnimatePresence>
           {sidebarOpen && (
             <motion.aside
@@ -240,7 +236,7 @@ export const StudioShell: React.FC<StudioShellProps> = () => {
           </button>
         )}
 
-        {/* Main dock */}
+        {}
         <PanelGroup direction="horizontal" className="flex-1">
           <Panel defaultSize={72} minSize={50}>
             <div className="h-full flex flex-col bg-neural-gradient relative overflow-hidden">
@@ -302,7 +298,7 @@ export const StudioShell: React.FC<StudioShellProps> = () => {
         </PanelGroup>
       </div>
 
-      {/* Bottom bar */}
+      {}
       <footer className="h-9 glass-panel-heavy border-t border-white/5 flex items-center justify-between px-4 shrink-0 text-[10px] font-mono text-white/40">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-neon-green/60" />RENDER</span>
@@ -317,7 +313,7 @@ export const StudioShell: React.FC<StudioShellProps> = () => {
         <span>CyberHex Engine • ONNX / TensorRT-ready</span>
       </footer>
 
-      {/* Command palette */}
+      {}
       <AnimatePresence>
         {commandPaletteOpen && (
           <>

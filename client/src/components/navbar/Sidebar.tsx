@@ -24,7 +24,7 @@ export const Sidebar = () => {
             {isActive && (
               <span className="absolute left-0 top-2 bottom-2 w-0.5 bg-gradient-to-b from-green-400 to-green-600 rounded-full" />
             )}
-            {/* Tooltip on hover */}
+            {}
             <span className="absolute left-14 tooltip-cyber opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
               {item.name}
             </span>

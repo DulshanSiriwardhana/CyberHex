@@ -1,13 +1,6 @@
-/**
- * CyberHex Studio — Neural Video Filter Engine
- * Real-time AI-powered video transformation system.
- * Applies neural style transfer, segmentation, enhancement, and artistic filters.
- */
 import * as tf from '@tensorflow/tfjs';
 import type { FilterConfig } from '@/types';
 import { NeuralFilterType } from '@/types';
-
-/* ─── Types ────────────────────────────── */
 
 export interface VideoFrameInput {
   data: ImageData;
@@ -30,8 +23,6 @@ export interface FilterPipelineStage {
   params: Record<string, number>;
 }
 
-/* ─── CPU Filter Utilities ─────────────── */
-
 function getPixels(data: ImageData): Float32Array {
   const pixels = new Float32Array(data.width * data.height * 4);
   const src = data.data;
@@ -47,8 +38,6 @@ function setPixels(data: ImageData, pixels: Float32Array): void {
 function lum(r: number, g: number, b: number): number {
   return 0.299 * r + 0.587 * g + 0.114 * b;
 }
-
-/* ─── Filter Implementations ────────────── */
 
 function applyCartoon(input: VideoFrameInput, intensity: number): VideoFrameInput {
   const out = new ImageData(input.width, input.height);
@@ -180,16 +169,14 @@ function applyCyberpunk(input: VideoFrameInput, intensity: number): VideoFrameIn
     const g = px[i + 1];
     const b = px[i + 2];
 
-    // Split tone: blues/cyans in shadows, magenta/pink in highlights
     const l = lum(r, g, b);
     const cyan = Math.max(0, (1 - l) * intensity);
     const magenta = Math.max(0, l * intensity);
 
-    op[i] = r * (1 - magenta * 0.3) + magenta * 0.6;       // R
-    op[i + 1] = g * (1 - cyan * 0.2) + cyan * 0.4;           // G
-    op[i + 2] = b * (1 - cyan * 0.2) + cyan * 0.7 + magenta * 0.3; // B
+    op[i] = r * (1 - magenta * 0.3) + magenta * 0.6;
+    op[i + 1] = g * (1 - cyan * 0.2) + cyan * 0.4;
+    op[i + 2] = b * (1 - cyan * 0.2) + cyan * 0.7 + magenta * 0.3;
 
-    // Glow effect
     const glow = Math.pow(l, 2) * intensity * 0.4;
     op[i] += glow * 0.1;
     op[i + 1] += glow * 0.2;
@@ -210,7 +197,6 @@ function applyBackgroundBlur(input: VideoFrameInput, intensity: number): VideoFr
   const op = new Float32Array(px.length);
   const blurRadius = Math.round(3 + intensity * 20);
 
-  // Simple center-weighted blur (simulates face detection with center focus)
   for (let y = 0; y < input.height; y++) {
     for (let x = 0; x < input.width; x++) {
       const idx = (y * input.width + x) * 4;
@@ -244,11 +230,11 @@ function applyBackgroundBlur(input: VideoFrameInput, intensity: number): VideoFr
 }
 
 function applyBackgroundReplacement(input: VideoFrameInput, intensity: number): VideoFrameInput {
-  // Simplified: replace darker/similar edges with green tint (simulated chroma key)
+
   const out = new ImageData(input.width, input.height);
   const px = getPixels(input.data);
   const op = new Float32Array(px.length);
-  const bgColor = [0.05, 0.1, 0.1] as const; // dark cyber blue
+  const bgColor = [0.05, 0.1, 0.1] as const;
 
   for (let y = 0; y < input.height; y++) {
     for (let x = 0; x < input.width; x++) {
@@ -313,7 +299,7 @@ function applyLowLight(input: VideoFrameInput, intensity: number): VideoFrameInp
   for (let i = 0; i < px.length; i += 4) {
     for (let c = 0; c < 3; c++) {
       const val = Math.pow(px[i + c] * boost, gamma);
-      // Denoise: clamp low values
+
       op[i + c] = val < 0.02 ? 0 : Math.min(1, val);
     }
     op[i + 3] = 1;
@@ -323,8 +309,7 @@ function applyLowLight(input: VideoFrameInput, intensity: number): VideoFrameInp
 }
 
 function applySuperResolution(input: VideoFrameInput, intensity: number): VideoFrameInput {
-  // Simple bicubic-like upscaling simulation via sharpening
-  // For true super-res, an ONNX/TF.js model would be loaded
+
   const out = new ImageData(input.width, input.height);
   const px = getPixels(input.data);
   const op = new Float32Array(px.length);
@@ -350,7 +335,7 @@ function applySuperResolution(input: VideoFrameInput, intensity: number): VideoF
 }
 
 function applyFaceRelighting(input: VideoFrameInput, intensity: number): VideoFrameInput {
-  // Simulated face-aware relighting: brighten center, vignette edges
+
   const out = new ImageData(input.width, input.height);
   const px = getPixels(input.data);
   const op = new Float32Array(px.length);
@@ -377,8 +362,7 @@ function applyFaceRelighting(input: VideoFrameInput, intensity: number): VideoFr
 }
 
 function applyMotionSmoothing(input: VideoFrameInput, intensity: number): VideoFrameInput {
-  // Frame temporal smoothing — in a real implementation this would use frame buffering
-  // Here we apply a spatial equivalent (bilateral-style smoothing)
+
   const out = new ImageData(input.width, input.height);
   const px = getPixels(input.data);
   const op = new Float32Array(px.length);
@@ -411,8 +395,6 @@ function applyMotionSmoothing(input: VideoFrameInput, intensity: number): VideoF
   setPixels(out, op);
   return { data: out, width: input.width, height: input.height };
 }
-
-/* ─── FilterEngine ──────────────────────── */
 
 export class FilterEngine {
   private filters: Map<NeuralFilterType, FilterModule> = new Map();
@@ -547,8 +529,6 @@ export class FilterEngine {
       dispose: () => {},
     });
   }
-
-  /* ── Public API ── */
 
   async applyFilter(
     type: NeuralFilterType,

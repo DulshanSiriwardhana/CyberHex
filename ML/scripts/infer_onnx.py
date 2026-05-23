@@ -6,7 +6,6 @@ import sys
 
 import numpy as np
 
-
 def resolve_onnx_path(model_path):
     if model_path.endswith(".onnx") and os.path.isfile(model_path):
         return model_path
@@ -17,7 +16,6 @@ def resolve_onnx_path(model_path):
     if os.path.isfile(candidate):
         return candidate
     return None
-
 
 def run_inference(onnx_path, features, task="regression"):
     try:
@@ -43,7 +41,6 @@ def run_inference(onnx_path, features, task="regression"):
         "predictions": pred.tolist(),
     }
 
-
 def main():
     raw = os.environ.get("CYBERHEX_INFER_CONFIG", "{}")
     cfg = json.loads(raw)
@@ -59,7 +56,6 @@ def main():
     result = run_inference(onnx_path, features, task)
     print(json.dumps(result), flush=True)
     sys.exit(0 if result.get("success") else 1)
-
 
 if __name__ == "__main__":
     main()

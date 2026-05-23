@@ -64,7 +64,6 @@ export default function ExperimentDetailPage() {
     startedAt: '2 hours ago',
   };
 
-  // Fetch initial training status
   useEffect(() => {
     if (!id) return;
     experimentsApi.getTrainingStatus(id)
@@ -84,7 +83,7 @@ export default function ExperimentDetailPage() {
         if (mp) setModelPath(mp);
       })
       .catch(() => {
-        // Backend may not be running — use demo data
+
         generateDemoData();
       });
   }, [id]);
@@ -134,7 +133,6 @@ export default function ExperimentDetailPage() {
     }
   }
 
-  // WebSocket for live updates
   const handleWsMessage = useCallback((data: any) => {
     if (
       data.type === 'training_metrics' ||
@@ -217,7 +215,7 @@ export default function ExperimentDetailPage() {
 
   return (
     <Container className="py-8 pt-24">
-      {/* Header */}
+      {}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -287,7 +285,7 @@ export default function ExperimentDetailPage() {
         </Flex>
       </motion.div>
 
-      {/* Stats row */}
+      {}
       <Grid cols={4} gap="md" className="mb-8">
         {[
           { icon: BarChart3, label: 'Best Loss', value: bestLoss?.toFixed(4) ?? '—', color: 'text-emerald-400' },
@@ -307,7 +305,7 @@ export default function ExperimentDetailPage() {
         ))}
       </Grid>
 
-      {/* Training charts */}
+      {}
       <Grid cols={2} gap="md">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Card>
@@ -400,7 +398,7 @@ export default function ExperimentDetailPage() {
         </motion.div>
       )}
 
-      {/* Architecture */}
+      {}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-8">
         <Card>
           <CardHeader>

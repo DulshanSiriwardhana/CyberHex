@@ -1,6 +1,4 @@
-
 import { body, validationResult } from 'express-validator';
-
 
 export const schemas = {
   register: [
@@ -24,7 +22,6 @@ export const schemas = {
     body('hyperparameters.lossFunction').optional().isIn(['MSE', 'BCE', 'CCE']),
   ],
 };
-
 
 export const validate = (req, res, next) => {
   const errors = validationResult(req);

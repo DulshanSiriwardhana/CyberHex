@@ -31,7 +31,7 @@ void he_matrix(Matrix<double>& W) {
     for (size_t i = 0; i < W.size(); i++) W.at(i) = dist(gen);
 }
 
-} // namespace
+}
 
 MultiHeadSelfAttention::MultiHeadSelfAttention(size_t d_model, size_t num_heads)
     : d_model_(d_model), num_heads_(num_heads) {
@@ -94,28 +94,22 @@ Matrix<double> MultiHeadSelfAttention::backward(const Matrix<double>& grad) {
     const Device dev = default_device();
     const size_t rows = input_.rows();
 
-    // 1. dW_o = context_.transpose() * grad
     dW_o_ = dispatch_matmul(dev, context_.transpose(), grad);
 
-    // 2. dC = grad * W_o_.transpose()
     Matrix<double> dC = dispatch_matmul(dev, grad, W_o_.transpose());
 
-    // 3. Setup gradients for input components
     Matrix<double> dQ(rows, d_model_, 0.0);
     Matrix<double> dK(rows, d_model_, 0.0);
     Matrix<double> dV(rows, d_model_, 0.0);
 
-    // Recompute Q, K, V from forward pass inputs
     Matrix<double> Q = dispatch_matmul(dev, input_, W_q_);
     Matrix<double> K = dispatch_matmul(dev, input_, W_k_);
     Matrix<double> V = dispatch_matmul(dev, input_, W_v_);
 
-    // Backprop through self attention scores
     for (size_t i = 0; i < rows; i++) {
         for (size_t h = 0; h < num_heads_; h++) {
             const size_t off = h * head_dim_;
 
-            // Recompute attention scores for head h, row i
             std::vector<double> scores(rows, 0.0);
             for (size_t j = 0; j < rows; j++) {
                 double dot = 0.0;
@@ -126,8 +120,6 @@ Matrix<double> MultiHeadSelfAttention::backward(const Matrix<double>& grad) {
             }
             softmax_inplace(scores);
 
-            // Compute dA and dV for head h
-            // dA(i, j) = sum_{d} dC(i, off + d) * V(j, off + d)
             std::vector<double> dA(rows, 0.0);
             for (size_t j = 0; j < rows; j++) {
                 double dot_dA = 0.0;
@@ -136,14 +128,11 @@ Matrix<double> MultiHeadSelfAttention::backward(const Matrix<double>& grad) {
                 }
                 dA[j] = dot_dA;
 
-                // dV(j, off + d) += scores[j] * dC(i, off + d)
                 for (size_t d = 0; d < head_dim_; d++) {
                     dV(j, off + d) += scores[j] * dC(i, off + d);
                 }
             }
 
-            // Backprop through softmax:
-            // dS(i, j) = scores[j] * (dA[j] - sum_{k} dA[k] * scores[k])
             double sum_dA_scores = 0.0;
             for (size_t k = 0; k < rows; k++) {
                 sum_dA_scores += dA[k] * scores[k];
@@ -154,8 +143,6 @@ Matrix<double> MultiHeadSelfAttention::backward(const Matrix<double>& grad) {
                 dS[j] = scores[j] * (dA[j] - sum_dA_scores);
             }
 
-            // Backprop through scaled dot product:
-            // dS[j] / sqrt(head_dim_) is the gradient of Q(i, off+d)*K(j, off+d)
             double scale = 1.0 / std::sqrt(static_cast<double>(head_dim_));
             for (size_t j = 0; j < rows; j++) {
                 double factor = dS[j] * scale;
@@ -167,12 +154,10 @@ Matrix<double> MultiHeadSelfAttention::backward(const Matrix<double>& grad) {
         }
     }
 
-    // 4. Compute weight gradients
     dW_q_ = dispatch_matmul(dev, input_.transpose(), dQ);
     dW_k_ = dispatch_matmul(dev, input_.transpose(), dK);
     dW_v_ = dispatch_matmul(dev, input_.transpose(), dV);
 
-    // 5. Compute input gradient: dX = dQ * W_q^T + dK * W_k^T + dV * W_v^T
     Matrix<double> dX = dispatch_matmul(dev, dQ, W_q_.transpose());
     Matrix<double> dX_k = dispatch_matmul(dev, dK, W_k_.transpose());
     Matrix<double> dX_v = dispatch_matmul(dev, dV, W_v_.transpose());
@@ -244,15 +229,11 @@ Matrix<double> TransformerEncoderBlock::forward(const Matrix<double>& X) {
 
 Matrix<double> TransformerEncoderBlock::backward(const Matrix<double>& grad) {
     const Device dev = default_device();
-    
-    // 1. Backward through norm2
+
     Matrix<double> g2 = norm2_->backward(grad);
 
-    // 2. Backward through ffn_out projection: ffn_out = ffn_hidden * W2 + b2
-    // dW2 = ffn_hidden^T * g2
     dW2_ = dispatch_matmul(dev, ffn_hidden_.transpose(), g2);
 
-    // db2 = sum(g2, axis=0)
     db2_.fill(0.0);
     for (size_t j = 0; j < g2.cols(); j++) {
         for (size_t i = 0; i < g2.rows(); i++) {
@@ -260,10 +241,8 @@ Matrix<double> TransformerEncoderBlock::backward(const Matrix<double>& grad) {
         }
     }
 
-    // g_hidden = g2 * W2^T
     Matrix<double> g_hidden = dispatch_matmul(dev, g2, W2_.transpose());
 
-    // 3. Backward through GELU activation
     Matrix<double> g_gelu(g_hidden.rows(), g_hidden.cols());
     for (size_t i = 0; i < g_hidden.size(); i++) {
         double x = ffn_linear_.at(i);
@@ -276,11 +255,8 @@ Matrix<double> TransformerEncoderBlock::backward(const Matrix<double>& grad) {
         g_gelu.at(i) = g_hidden.at(i) * dgelu;
     }
 
-    // 4. Backward through ffn_linear projection: ffn_linear = x1 * W1 + b1
-    // dW1 = x1^T * g_gelu (where x1 is residual2_)
     dW1_ = dispatch_matmul(dev, residual2_.transpose(), g_gelu);
 
-    // db1 = sum(g_gelu, axis=0)
     db1_.fill(0.0);
     for (size_t j = 0; j < g_gelu.cols(); j++) {
         for (size_t i = 0; i < g_gelu.rows(); i++) {
@@ -288,22 +264,17 @@ Matrix<double> TransformerEncoderBlock::backward(const Matrix<double>& grad) {
         }
     }
 
-    // g_x1 = g_gelu * W1^T
     Matrix<double> g_x1 = dispatch_matmul(dev, g_gelu, W1_.transpose());
 
-    // 5. Total gradient w.r.t x1 is g_x1 + g2 (direct residual path)
     Matrix<double> g_x1_total(g_x1.rows(), g_x1.cols());
     for (size_t i = 0; i < g_x1.size(); i++) {
         g_x1_total.at(i) = g_x1.at(i) + g2.at(i);
     }
 
-    // 6. Backward through norm1
     Matrix<double> g_attn_path = norm1_->backward(g_x1_total);
 
-    // 7. Backward through attention
     Matrix<double> g_attn_input = attention_->backward(g_attn_path);
 
-    // 8. Total gradient w.r.t layer input is g_attn_input + g_attn_path (residual path)
     Matrix<double> g_input(g_attn_input.rows(), g_attn_input.cols());
     for (size_t i = 0; i < g_attn_input.size(); i++) {
         g_input.at(i) = g_attn_input.at(i) + g_attn_path.at(i);
@@ -351,4 +322,4 @@ std::vector<std::string> TransformerEncoderBlock::parameter_names() {
   return names;
 }
 
-} // namespace cyberhex
+}

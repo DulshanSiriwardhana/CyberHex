@@ -1,7 +1,3 @@
-/**
- * CyberHex Studio — Training Manager
- * Orchestrates custom filter training with epoch tracking and engine sync.
- */
 import { WebSocketService } from '@/services/WebSocketService';
 import { ModelArchitecture } from '@/types';
 import { eventBus } from '@/utils/eventBus';

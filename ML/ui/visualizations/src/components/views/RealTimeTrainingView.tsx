@@ -60,7 +60,7 @@ export default function RealTimeTrainingView(_props: RealTimeTrainingViewProps) 
         });
         setCurrentEpoch(metric.epoch);
       } catch {
-        // non-JSON messages ignored
+
       }
     };
 
@@ -96,7 +96,7 @@ export default function RealTimeTrainingView(_props: RealTimeTrainingViewProps) 
 
   return (
     <div className="space-y-6">
-      {/* Connection controls */}
+      {}
       <div className="flex items-center gap-4 flex-wrap">
         <input
           type="text"
@@ -123,7 +123,7 @@ export default function RealTimeTrainingView(_props: RealTimeTrainingViewProps) 
           </button>
         )}
 
-        {/* Status indicator */}
+        {}
         <span className="flex items-center gap-2 text-xs">
           <span
             className={`w-2 h-2 rounded-full ${
@@ -146,7 +146,7 @@ export default function RealTimeTrainingView(_props: RealTimeTrainingViewProps) 
         )}
       </div>
 
-      {/* Live metric cards */}
+      {}
       {latest && (
         <div className="grid grid-cols-4 gap-3">
           <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-3">
@@ -180,7 +180,7 @@ export default function RealTimeTrainingView(_props: RealTimeTrainingViewProps) 
         </div>
       )}
 
-      {/* Chart */}
+      {}
       <div className="bg-slate-950 rounded-lg border border-slate-800 p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-medium text-slate-300">
@@ -193,7 +193,7 @@ export default function RealTimeTrainingView(_props: RealTimeTrainingViewProps) 
         <LossChartView data={metrics.map(m => ({ epoch: m.epoch, loss: m.loss }))} />
       </div>
 
-      {/* Simulate button for testing without WebSocket */}
+      {}
       {!isLive && connectionState !== 'connected' && (
         <div className="text-center">
           <button

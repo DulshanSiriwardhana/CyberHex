@@ -133,7 +133,7 @@ void mpi_allreduce_mean(Matrix<double>& grad, const DistributedContext& ctx) {
 }
 #endif
 
-} // namespace
+}
 
 void allreduce_mean_collective(Matrix<double>& grad,
                                const DistributedContext& ctx,
@@ -166,4 +166,4 @@ void allreduce_mean(std::vector<Matrix<double>*>& grads,
     }
 }
 
-} // namespace cyberhex
+}

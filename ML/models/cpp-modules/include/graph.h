@@ -25,7 +25,7 @@ enum class GraphOpType {
     Add,
     BiasAdd,
     ReLU,
-    FusedLinearReLU,  // X·W + b → ReLU (operator fusion)
+    FusedLinearReLU,
     Identity
 };
 
@@ -36,7 +36,6 @@ struct GraphNode {
     Matrix<double> grad;
     bool requires_grad = true;
 
-    // Parameter / fused op storage
     Matrix<double> weight;
     Matrix<double> bias;
     Matrix<double> grad_weight;
@@ -44,10 +43,6 @@ struct GraphNode {
     MixedPrecisionState mp;
 };
 
-/**
- * Static computational graph with reverse-mode automatic differentiation.
- * Coexists with imperative Model — use for research and fused execution.
- */
 class ComputationGraph {
 public:
     NodeId add_input();
@@ -56,7 +51,7 @@ public:
     NodeId add_bias_add(NodeId x, NodeId bias_param);
     NodeId add_add(NodeId a, NodeId b);
     NodeId add_relu(NodeId x);
-    /** Fused: ReLU(X·W + b). weight_param: (in, out), bias_param: (1, out) */
+
     NodeId add_fused_linear_relu(NodeId input, NodeId weight_param, NodeId bias_param);
 
     void bind_input(NodeId id, const Matrix<double>& value);
@@ -74,7 +69,6 @@ public:
 
     size_t num_nodes() const { return nodes_.size(); }
 
-    /** Topological order from inputs to output (cached). */
     std::vector<NodeId> topo_order(NodeId output_id) const;
 
 private:
@@ -87,9 +81,6 @@ private:
     Matrix<double> param_as_compute(const GraphNode& p) const;
 };
 
-/**
- * High-level trainer: build graph, compile loss, run Adam on Parameter nodes.
- */
 class GraphTrainer {
 public:
     void set_device(Device d) { graph_.set_device(d); }
@@ -107,7 +98,6 @@ public:
 
     using EpochCallback = std::function<void(int epoch, double train_loss, double val_loss, bool has_val)>;
 
-    /** Full training loop with validation split and optional early stopping. */
     double fit(const Matrix<double>& X, const Matrix<double>& y,
                NodeId output_id,
                LossFunction& loss,
@@ -130,6 +120,6 @@ private:
     NodeId input_id_ = kInvalidNode;
 };
 
-} // namespace cyberhex
+}
 
-#endif // CYBERHEX_GRAPH_H
+#endif

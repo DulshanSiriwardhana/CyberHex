@@ -1,4 +1,3 @@
-
 import mongoose from 'mongoose';
 import logger from './logger.js';
 
@@ -25,7 +24,7 @@ const DBinitialize = async () => {
         await mongoose.connect(uri, MONGO_OPTIONS);
     } catch (err) {
         logger.error('MongoDB initial connection failed:', err);
-        
+
         setTimeout(() => DBinitialize(), 5000);
     }
 };

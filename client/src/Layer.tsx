@@ -11,7 +11,6 @@ const Layer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation()
   const { user } = useAuth()
 
-  // Scroll to top on route change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }, [location.pathname])

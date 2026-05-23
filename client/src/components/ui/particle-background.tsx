@@ -1,17 +1,7 @@
-/**
- * CyberHex v3.0 — Particle Background System
- *
- * GPU-accelerated canvas particle animation that renders floating
- * particles with theme-aware colors, dynamic connections, and
- * parallax mouse interaction. Uses requestAnimationFrame for
- * smooth 60fps rendering with adaptive quality based on device.
- */
-
 import { useRef, useEffect, useCallback } from 'react';
 import { useThemeStore } from '@/stores/theme';
 import { THEME_REGISTRY } from '@/lib/design-tokens';
 
-// ──── Configuration ──────────────────────────────────────────────
 const PARTICLE_COUNT = 42;
 const CONNECTION_DISTANCE = 120;
 const PARTICLE_SPEED = 0.3;
@@ -27,7 +17,6 @@ interface Particle {
   radius: number;
 }
 
-// ──── Component ──────────────────────────────────────────────────
 export function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
@@ -60,13 +49,12 @@ export function ParticleBackground() {
     let height = 0;
     let dpr = window.devicePixelRatio || 1;
 
-    // Reduce quality on low-end devices
     const isMobile = window.innerWidth < 768;
     const particleCount = isMobile ? PARTICLE_COUNT / 2 : PARTICLE_COUNT;
 
     function resize() {
       if (!canvas) return;
-      dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2x for perf
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = window.innerWidth;
       height = window.innerHeight;
       canvas.width = width * dpr;
@@ -83,18 +71,15 @@ export function ParticleBackground() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Mouse tracking
     function handleMouse(e: MouseEvent) {
       mouseRef.current = { x: e.clientX, y: e.clientY };
     }
     window.addEventListener('mousemove', handleMouse);
 
-    // Get theme accent color
     const colors = THEME_REGISTRY[variant]?.colors || THEME_REGISTRY.cyber.colors;
     const accentColor = colors.accent.primary;
     const bgColor = colors.bg.root;
 
-    // Parse hex to RGB
     function hexToRgb(hex: string): [number, number, number] {
       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
       return result
@@ -114,17 +99,14 @@ export function ParticleBackground() {
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
-        // Move
         p.x += p.vx;
         p.y += p.vy;
 
-        // Bounce edges
         if (p.x < 0 || p.x > width) p.vx *= -1;
         if (p.y < 0 || p.y > height) p.vy *= -1;
         p.x = Math.max(0, Math.min(width, p.x));
         p.y = Math.max(0, Math.min(height, p.y));
 
-        // Mouse repulsion
         const dx = p.x - mouse.x;
         const dy = p.y - mouse.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -132,7 +114,7 @@ export function ParticleBackground() {
           const force = (MOUSE_RADIUS - dist) / MOUSE_RADIUS;
           p.vx += (dx / dist) * force * MOUSE_FORCE;
           p.vy += (dy / dist) * force * MOUSE_FORCE;
-          // Dampen speed
+
           const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
           if (speed > 1.5) {
             p.vx = (p.vx / speed) * 1.5;
@@ -140,13 +122,11 @@ export function ParticleBackground() {
           }
         }
 
-        // Draw particle
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.22)`;
         ctx.fill();
 
-        // Draw connections
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const cdx = p.x - p2.x;

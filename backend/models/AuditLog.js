@@ -1,12 +1,3 @@
-/**
- * CyberHex v3.0 — Audit Log Model
- *
- * MongoDB schema for security and compliance audit events.
- * Each document captures who did what, when, from where,
- * and the outcome. Used for forensics, monitoring, and
- * compliance reporting.
- */
-
 import mongoose from 'mongoose';
 
 const auditLogSchema = new mongoose.Schema(
@@ -97,22 +88,13 @@ const auditLogSchema = new mongoose.Schema(
   }
 );
 
-// ──── Indexes ────────────────────────────────────────────────────
 auditLogSchema.index({ createdAt: -1 });
 auditLogSchema.index({ userId: 1, createdAt: -1 });
 auditLogSchema.index({ eventType: 1, createdAt: -1 });
 auditLogSchema.index({ resourceType: 1, resourceId: 1 });
 
-// ──── TTL: Auto-delete audit logs older than 90 days ─────────────
 auditLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 90 * 24 * 60 * 60 });
 
-// ──── Static Methods ─────────────────────────────────────────────
-
-/**
- * Get recent audit events for a user.
- * @param {string} userId
- * @param {number} limit
- */
 auditLogSchema.statics.getForUser = function (userId, limit = 50) {
   return this.find({ userId })
     .sort({ createdAt: -1 })
@@ -120,12 +102,6 @@ auditLogSchema.statics.getForUser = function (userId, limit = 50) {
     .lean();
 };
 
-/**
- * Get audit events by type within a time range.
- * @param {string} eventType
- * @param {Date} since
- * @param {Date} until
- */
 auditLogSchema.statics.getByType = function (eventType, since, until) {
   return this.find({
     eventType,

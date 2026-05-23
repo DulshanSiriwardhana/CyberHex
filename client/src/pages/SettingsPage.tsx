@@ -36,7 +36,7 @@ export default function SettingsPage() {
       </motion.div>
 
       <Grid cols={2} gap="md">
-        {/* Profile */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -85,7 +85,7 @@ export default function SettingsPage() {
           </Card>
         </motion.div>
 
-        {/* Preferences */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

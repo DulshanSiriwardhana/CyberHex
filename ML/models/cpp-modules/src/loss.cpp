@@ -4,16 +4,13 @@
 
 namespace cyberhex {
 
-// ============================================================================
-// MSE Loss
-// ============================================================================
 double MSELoss::forward(const Matrix<double>& pred, const Matrix<double>& target) {
     double loss = 0.0;
     for (size_t i = 0; i < pred.size(); i++) {
         double diff = pred.at(i) - target.at(i);
         loss += diff * diff;
     }
-    loss /= static_cast<double>(pred.rows()); // mean over batch
+    loss /= static_cast<double>(pred.rows());
     return loss;
 }
 
@@ -23,9 +20,6 @@ Matrix<double> MSELoss::backward(const Matrix<double>& pred, const Matrix<double
     return grad * scale;
 }
 
-// ============================================================================
-// MAE Loss
-// ============================================================================
 double MAELoss::forward(const Matrix<double>& pred, const Matrix<double>& target) {
     double loss = 0.0;
     for (size_t i = 0; i < pred.size(); i++) {
@@ -45,9 +39,6 @@ Matrix<double> MAELoss::backward(const Matrix<double>& pred, const Matrix<double
     return grad;
 }
 
-// ============================================================================
-// Huber Loss
-// ============================================================================
 HuberLoss::HuberLoss(double delta) : delta_(delta) {}
 
 double HuberLoss::forward(const Matrix<double>& pred, const Matrix<double>& target) {
@@ -79,9 +70,6 @@ Matrix<double> HuberLoss::backward(const Matrix<double>& pred, const Matrix<doub
     return grad;
 }
 
-// ============================================================================
-// Binary Cross-Entropy Loss
-// ============================================================================
 double BinaryCrossEntropyLoss::forward(const Matrix<double>& pred,
                                         const Matrix<double>& target) {
     double loss = 0.0;
@@ -103,8 +91,7 @@ Matrix<double> BinaryCrossEntropyLoss::backward(const Matrix<double>& pred,
     for (size_t i = 0; i < pred.size(); i++) {
         double p = std::max(eps, std::min(1.0 - eps, pred.at(i)));
         double t = target.at(i);
-        // BCE derivative: dL/dp = (p - t) / (p * (1 - p))
-        // Guard denominator against underflow near 0 or 1
+
         double denom = p * (1.0 - p);
         if (denom < eps) denom = eps;
         grad.at(i) = scale * (p - t) / denom;
@@ -112,9 +99,6 @@ Matrix<double> BinaryCrossEntropyLoss::backward(const Matrix<double>& pred,
     return grad;
 }
 
-// ============================================================================
-// Categorical Cross-Entropy Loss (for one-hot or class indices)
-// ============================================================================
 double CategoricalCrossEntropyLoss::forward(const Matrix<double>& pred,
                                              const Matrix<double>& target) {
     double loss = 0.0;
@@ -144,4 +128,4 @@ Matrix<double> CategoricalCrossEntropyLoss::backward(const Matrix<double>& pred,
     return grad;
 }
 
-} // namespace cyberhex
+}

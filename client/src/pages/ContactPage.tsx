@@ -54,7 +54,7 @@ export default function ContactPage() {
       </motion.div>
 
       <Grid cols={2} gap="lg" className="max-w-5xl mx-auto">
-        {/* Contact form */}
+        {}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -125,7 +125,7 @@ export default function ContactPage() {
           </form>
         </motion.div>
 
-        {/* Info */}
+        {}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}

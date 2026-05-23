@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-// ─── Nav ──────────────────────────────────────────────────────────────────────
 export function Nav() {
     const [scrolled, setScrolled] = useState(false)
 
@@ -43,7 +42,6 @@ export function Nav() {
     )
 }
 
-// ─── Hero ─────────────────────────────────────────────────────────────────────
 export function Hero() {
     return (
         <section className="hero" id="home">
@@ -108,15 +106,14 @@ export function Hero() {
     )
 }
 
-// ─── Features ─────────────────────────────────────────────────────────────────
 const FEATURES = [
     {
         icon: '⚙️',
         color: 'green',
         badge: 'badge-green',
-        title: 'C++ ML Engine',
-        desc: 'Custom Matrix implementation using std::vector with OpenMP parallelism. Dense layers with forward/backward propagation, ReLU, Sigmoid, Softmax activations — all built from scratch.',
-        tags: ['C++17', 'OpenMP', 'Neural Net', 'Backprop'],
+        title: 'C++17 ML Engine',
+        desc: 'Custom Matrix implementation with OpenMP parallelism. Supports streaming massive 1GB+ datasets via disk-buffered DataGenerators. Built for native speed and deterministic efficiency.',
+        tags: ['C++17', 'OpenMP', '1GB+ Scale', 'Streaming'],
     },
     {
         icon: '🐍',
@@ -193,8 +190,6 @@ export function Features() {
     )
 }
 
-// ─── Architecture ─────────────────────────────────────────────────────────────
-
 function ArchNode({
     x, y, w, h, label, sublabel, color, icon,
 }: {
@@ -234,7 +229,7 @@ function Lane({
         <g>
             <rect x={x} y={y} width={w} height={h} rx={16} fill={`${color}06`} stroke={color} strokeWidth={1} strokeOpacity={0.18} />
             <text x={x + 16} y={y + 20} fontSize={10} fontWeight={700} letterSpacing={2}
-                textTransform="uppercase" fill={color} opacity={0.55} fontFamily="JetBrains Mono, monospace">
+                style={{ textTransform: 'uppercase' }} fill={color} opacity={0.55} fontFamily="JetBrains Mono, monospace">
                 {label}
             </text>
         </g>
@@ -298,49 +293,49 @@ export function Architecture() {
                         width="100%"
                         style={{ display: 'block', maxWidth: W, margin: '0 auto', fontFamily: 'Inter, sans-serif' }}
                     >
-                        {/* ── Layer 1: Client ── */}
+                        { }
                         <Lane x={20} y={16} w={W - 40} h={118} label="CLIENT LAYER" color="#22c55e" />
                         <ArchNode x={40} y={40} w={220} h={76} icon="⚛" label="React Dashboard" sublabel="Port 80 / 443 · Nginx" color="#22c55e" />
                         <ArchNode x={290} y={40} w={240} h={76} icon="📊" label="ML Visualization UI" sublabel="Vite Dev · WebSocket" color="#34d399" />
-                        {/* public web badge */}
+                        { }
                         <ArchNode x={560} y={40} w={200} h={76} icon="🌐" label="Public Web Showcase" sublabel="Static · Vite + React" color="#86efac" />
 
-                        {/* ── Arrows: Client → Backend ── */}
+                        { }
                         <Arrow x1={150} y1={134} x2={150} y2={196} label="HTTP/WS" color="#22c55e" />
                         <Arrow x1={410} y1={134} x2={410} y2={196} label="WebSocket" color="#34d399" />
 
-                        {/* ── Layer 2: Backend ── */}
+                        { }
                         <Lane x={20} y={160} w={W - 40} h={116} label="BACKEND LAYER" color="#3b82f6" />
                         <ArchNode x={40} y={184} w={160} h={72} icon="🔑" label="Auth (JWT)" sublabel="Register · Login · Refresh" color="#60a5fa" />
                         <ArchNode x={216} y={184} w={160} h={72} icon="🚦" label="REST API" sublabel="Express 5 · OpenAPI 3.0" color="#3b82f6" />
                         <ArchNode x={392} y={184} w={180} h={72} icon="⚡" label="WebSocket Gateway" sublabel="Real-time training feed" color="#818cf8" />
                         <ArchNode x={588} y={184} w={172} h={72} icon="🛡" label="Middleware" sublabel="Rate limit · Helmet · Zod" color="#a78bfa" />
 
-                        {/* ── Arrows: Backend → Data Layer ── */}
+                        { }
                         <Arrow x1={220} y1={276} x2={160} y2={342} label="MongoDB driver" color="#f59e0b" />
                         <Arrow x1={480} y1={276} x2={540} y2={342} label="WS / CLI" color="#a78bfa" />
 
-                        {/* ── Layer 3: Data / ML ── */}
+                        { }
                         <Lane x={20} y={308} w={W - 40} h={194} label="DATA / ML LAYER" color="#f59e0b" />
 
-                        {/* MongoDB */}
+                        { }
                         <ArchNode x={40} y={336} w={220} h={76} icon="🍃" label="MongoDB 7" sublabel="Users · Experiments · Logs" color="#f59e0b" />
 
-                        {/* C++ Engine */}
+                        { }
                         <ArchNode x={300} y={336} w={240} h={76} icon="⚙" label="C++ ML Engine" sublabel="Matrix · Dense · Optimizers" color="#fb923c" />
 
-                        {/* WS Server inside C++ */}
+                        { }
                         <ArchNode x={300} y={428} w={240} h={52} icon="📡" label="C++ WS Server" sublabel="Streams training metrics" color="#fdba74" />
 
-                        {/* Python modules */}
+                        { }
                         <ArchNode x={574} y={336} w={206} h={76} icon="🐍" label="Python ML Modules" sublabel="Linear Regression · Commons" color="#4ade80" />
 
-                        {/* Arrow C++ → WS Server */}
+                        { }
                         <Arrow x1={420} y1={412} x2={420} y2={428} color="#fb923c" />
-                        {/* Arrow C++ → Python */}
+                        { }
                         <Arrow x1={540} y1={374} x2={574} y2={374} label="invokes" color="#4ade80" />
 
-                        {/* ── Legend ── */}
+                        { }
                         <g transform={`translate(${W - 220}, ${H - 52})`}>
                             {[
                                 { color: '#22c55e', label: 'Client' },
@@ -360,7 +355,6 @@ export function Architecture() {
     )
 }
 
-// ─── Tech Stack ──────────────────────────────────────────────────────────────
 const STACK = [
     { icon: '⚡', name: 'C++17', desc: 'ML Engine core' },
     { icon: '🧵', name: 'OpenMP', desc: 'Parallel matrix ops' },
@@ -439,7 +433,6 @@ export function Stack() {
     )
 }
 
-// ─── ML Engine ───────────────────────────────────────────────────────────────
 const CPP_COMPONENTS = [
     { name: 'Matrix', desc: 'Generic 2D matrix with vectorized operations and OpenMP support' },
     { name: 'Layer (base)', desc: 'Abstract base class for all neural network layers' },
@@ -526,7 +519,6 @@ python main.py`}</div>
     )
 }
 
-// ─── API Reference ────────────────────────────────────────────────────────────
 const API_ROUTES = [
     { method: 'POST', methodClass: 'method-post', path: '/api/v1/auth/register', desc: 'Register a new user', auth: false },
     { method: 'POST', methodClass: 'method-post', path: '/api/v1/auth/login', desc: 'Login user', auth: false },
@@ -597,7 +589,6 @@ export function APIReference() {
     )
 }
 
-// ─── Getting Started ──────────────────────────────────────────────────────────
 export function GettingStarted() {
     return (
         <section id="getting-started" style={{ background: 'rgba(0,0,0,0.15)' }}>
@@ -688,7 +679,6 @@ export function GettingStarted() {
     )
 }
 
-// ─── Testing ──────────────────────────────────────────────────────────────────
 export function Testing() {
     return (
         <section id="testing">
@@ -725,7 +715,6 @@ export function Testing() {
     )
 }
 
-// ─── Author ───────────────────────────────────────────────────────────────────
 export function Author() {
     return (
         <section id="author" style={{ background: 'rgba(0,0,0,0.2)' }}>
@@ -773,7 +762,6 @@ export function Author() {
     )
 }
 
-// ─── Footer ───────────────────────────────────────────────────────────────────
 export function Footer() {
     return (
         <footer className="footer">
@@ -797,7 +785,6 @@ export function Footer() {
     )
 }
 
-// ─── Animate Card ─────────────────────────────────────────────────────────────
 export function AnimateCard({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
     const ref = useRef<HTMLDivElement>(null)
     const [visible, setVisible] = useState(false)

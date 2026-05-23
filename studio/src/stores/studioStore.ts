@@ -1,7 +1,3 @@
-/**
- * CyberHex Studio — Main Application Store
- * Zustand + Immer — production-grade state management
- */
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { devtools } from 'zustand/middleware';
@@ -45,10 +41,8 @@ import {
   ModelStatus,
 } from '@/types';
 
-/* ─── State Interface ────────────────── */
-
 interface StudioState {
-  /* Media */
+
   feeds: MediaFeed[];
   activeFeedId: FeedId | null;
   webcamStream: MediaStream | null;
@@ -56,56 +50,44 @@ interface StudioState {
   microphoneStream: MediaStream | null;
   systemAudioStream: MediaStream | null;
 
-  /* Scenes */
   scenes: Scene[];
   currentSceneId: SceneId | null;
   workspacePresets: WorkspacePreset[];
 
-  /* Panels */
   panels: PanelConfig[];
   dockLayout: DockLayout;
 
-  /* Neural Filters */
   filterPresets: FilterPreset[];
   activeFilterPipeline: Record<FeedId, FilterAssignment[]>;
 
-  /* AI Models */
   models: Record<ModelId, AIModel>;
   loadedModels: ModelId[];
 
-  /* Audio Pipeline */
   audioPipeline: AudioPipeline | null;
   fluencyConfig: FluencyConfig;
 
-  /* Training */
   trainingSessions: Record<string, TrainingSession>;
 
-  /* Performance */
   performance: PerformanceMetrics;
   gpuSupported: boolean;
   gpuReady: boolean;
 
-  /* UI */
   theme: 'dark' | 'light';
   sidebarOpen: boolean;
   commandPaletteOpen: boolean;
   modal: string | null;
   toasts: Toast[];
 
-  /* Connection */
   webrtcPeers: RTCPeer[];
   wsConnected: boolean;
   wsLatency: number;
 
-  /* Plugins */
   plugins: Plugin[];
   studioConfig: StudioConfig;
 }
 
-/* ─── Action Interface ───────────────── */
-
 interface StudioActions {
-  /* Media */
+
   addFeed: (feed: Omit<MediaFeed, 'id'>) => FeedId;
   removeFeed: (id: FeedId) => void;
   updateFeedPosition: (id: FeedId, position: Partial<FeedPosition>) => void;
@@ -116,7 +98,6 @@ interface StudioActions {
   muteFeed: (id: FeedId) => void;
   unmuteFeed: (id: FeedId) => void;
 
-  /* Scenes */
   addScene: (scene: Omit<Scene, 'id'>) => SceneId;
   removeScene: (id: SceneId) => void;
   switchScene: (id: SceneId) => void;
@@ -124,14 +105,12 @@ interface StudioActions {
   loadWorkspacePreset: (presetId: string) => void;
   deleteWorkspacePreset: (presetId: string) => void;
 
-  /* Panels */
   openPanel: (panel: Omit<PanelConfig, 'id'>) => PanelId;
   closePanel: (id: PanelId) => void;
   movePanel: (id: PanelId, position: { x: number; y: number }) => void;
   resizePanel: (id: PanelId, size: { width: number; height: number }) => void;
   setDockLayout: (layout: Partial<DockLayout>) => void;
 
-  /* Neural Filters */
   setFilter: (feedId: FeedId, assignment: FilterAssignment) => void;
   removeFilter: (feedId: FeedId, filterType: NeuralFilterType) => void;
   updateFilterIntensity: (feedId: FeedId, filterType: NeuralFilterType, intensity: number) => void;
@@ -139,28 +118,23 @@ interface StudioActions {
   deleteFilterPreset: (presetId: string) => void;
   applyFilterPreset: (feedId: FeedId, presetId: string) => void;
 
-  /* AI Models */
   loadModel: (model: AIModel) => void;
   unloadModel: (id: ModelId) => void;
   setModelStatus: (id: ModelId, status: ModelStatus, error?: string) => void;
   setModelPerformance: (id: ModelId, performance: ModelPerformance) => void;
 
-  /* Audio */
   setAudioPipeline: (pipeline: AudioPipeline) => void;
   addAudioStage: (stage: AudioEnhancer) => void;
   removeAudioStage: (stageId: string) => void;
   updateFluencyConfig: (config: Partial<FluencyConfig>) => void;
 
-  /* Training */
   startTraining: (session: Omit<TrainingSession, 'id'>) => string;
   updateEpoch: (sessionId: string, epochData: unknown) => void;
   endTraining: (sessionId: string, success: boolean) => void;
 
-  /* Performance */
   updatePerformance: (metrics: Partial<PerformanceMetrics>) => void;
   setGpuStatus: (supported: boolean, ready: boolean) => void;
 
-  /* UI */
   toggleSidebar: () => void;
   openCommandPalette: () => void;
   closeCommandPalette: () => void;
@@ -168,23 +142,18 @@ interface StudioActions {
   addToast: (toast: Omit<Toast, 'id'>) => string;
   removeToast: (id: string) => void;
 
-  /* Connection */
   addRTCPeer: (peer: RTCPeer) => void;
   removeRTCPeer: (id: string) => void;
   setWsConnected: (connected: boolean, latency?: number) => void;
 
-  /* Plugins */
   installPlugin: (plugin: Plugin) => void;
   activatePlugin: (id: PluginId) => void;
   deactivatePlugin: (id: PluginId) => void;
   removePlugin: (id: PluginId) => void;
 
-  /* Studio */
   setStudioConfig: (config: Partial<StudioConfig>) => void;
   resetStudio: () => void;
 }
-
-/* ─── Default State ───────────────────── */
 
 const defaultPerformance: PerformanceMetrics = {
   fps: 60,
@@ -266,14 +235,11 @@ const initialState: StudioState = {
   studioConfig: defaultStudioConfig,
 };
 
-/* ─── Store ────────────────────────────── */
-
 export const useStudioStore = create<StudioState & StudioActions>()(
   devtools(
     immer((set) => ({
       ...initialState,
 
-      /* ── Media ── */
       addFeed: (feed) => {
         const id = uuid() as FeedId;
         set((s) => {
@@ -300,7 +266,6 @@ export const useStudioStore = create<StudioState & StudioActions>()(
       muteFeed: (id) => set((s) => { const f = s.feeds.find((x) => x.id === id); if (f) f.muted = true; }),
       unmuteFeed: (id) => set((s) => { const f = s.feeds.find((x) => x.id === id); if (f) f.muted = false; }),
 
-      /* ── Scenes ── */
       addScene: (scene) => {
         const id = uuid() as SceneId;
         set((s) => {
@@ -340,7 +305,6 @@ export const useStudioStore = create<StudioState & StudioActions>()(
       deleteWorkspacePreset: (presetId) =>
         set((s) => { s.workspacePresets = s.workspacePresets.filter((p) => p.id !== presetId); }),
 
-      /* ── Panels ── */
       openPanel: (panel) => {
         const id = uuid() as PanelId;
         set((s) => {
@@ -363,7 +327,6 @@ export const useStudioStore = create<StudioState & StudioActions>()(
       setDockLayout: (layout) =>
         set((s) => { Object.assign(s.dockLayout, layout); }),
 
-      /* ── Neural Filters ── */
       setFilter: (feedId, assignment) =>
         set((s) => {
           if (!s.activeFilterPipeline[feedId]) s.activeFilterPipeline[feedId] = [];
@@ -391,7 +354,6 @@ export const useStudioStore = create<StudioState & StudioActions>()(
           if (preset) s.activeFilterPipeline[feedId] = [...preset.filters];
         }),
 
-      /* ── AI Models ── */
       loadModel: (model) =>
         set((s) => {
           s.models[model.id] = { ...model, status: model.status ?? ModelStatus.READY, loadedAt: model.loadedAt ?? Date.now() };
@@ -404,7 +366,6 @@ export const useStudioStore = create<StudioState & StudioActions>()(
       setModelPerformance: (id, perf) =>
         set((s) => { if (s.models[id]) s.models[id].performance = perf; }),
 
-      /* ── Audio ── */
       setAudioPipeline: (pipeline) => set((s) => { s.audioPipeline = pipeline; }),
       addAudioStage: (stage) =>
         set((s) => { if (s.audioPipeline) s.audioPipeline.stages.push(stage); }),
@@ -413,7 +374,6 @@ export const useStudioStore = create<StudioState & StudioActions>()(
       updateFluencyConfig: (config) =>
         set((s) => { Object.assign(s.fluencyConfig, config); }),
 
-      /* ── Training ── */
       startTraining: (session) => {
         const id = uuid();
         set((s) => { s.trainingSessions[id] = { ...session, id } as TrainingSession; });
@@ -424,13 +384,11 @@ export const useStudioStore = create<StudioState & StudioActions>()(
       endTraining: (sessionId, success) =>
         set((s) => { if (s.trainingSessions[sessionId]) { s.trainingSessions[sessionId].status = success ? 'completed' : 'failed'; } }),
 
-      /* ── Performance ── */
       updatePerformance: (metrics) =>
         set((s) => { Object.assign(s.performance, metrics); }),
       setGpuStatus: (supported, ready) =>
         set((s) => { s.gpuSupported = supported; s.gpuReady = ready; }),
 
-      /* ── UI ── */
       toggleSidebar: () => set((s) => { s.sidebarOpen = !s.sidebarOpen; }),
       openCommandPalette: () => set((s) => { s.commandPaletteOpen = true; }),
       closeCommandPalette: () => set((s) => { s.commandPaletteOpen = false; }),
@@ -443,7 +401,6 @@ export const useStudioStore = create<StudioState & StudioActions>()(
       removeToast: (id) =>
         set((s) => { s.toasts = s.toasts.filter((t) => t.id !== id); }),
 
-      /* ── Connection ── */
       addRTCPeer: (peer) =>
         set((s) => { s.webrtcPeers.push(peer); }),
       removeRTCPeer: (id) =>
@@ -451,7 +408,6 @@ export const useStudioStore = create<StudioState & StudioActions>()(
       setWsConnected: (connected, latency = 0) =>
         set((s) => { s.wsConnected = connected; s.wsLatency = latency; }),
 
-      /* ── Plugins ── */
       installPlugin: (plugin) =>
         set((s) => { s.plugins.push(plugin); }),
       activatePlugin: (id) =>
@@ -461,11 +417,9 @@ export const useStudioStore = create<StudioState & StudioActions>()(
       removePlugin: (id) =>
         set((s) => { s.plugins = s.plugins.filter((x) => x.id !== id); }),
 
-      /* ── Studio Config ── */
       setStudioConfig: (config) =>
         set((s) => { Object.assign(s.studioConfig, config); }),
 
-      /* ── Reset ── */
       resetStudio: () => set(() => ({ ...initialState })),
     })),
     { name: 'cyberhex-studio' }

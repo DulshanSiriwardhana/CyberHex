@@ -35,6 +35,6 @@ void allreduce_mean(std::vector<Matrix<double>*>& grads,
                     const DistributedContext& ctx,
                     int step = 0);
 
-} // namespace cyberhex
+}
 
-#endif // CYBERHEX_DISTRIBUTED_H
+#endif

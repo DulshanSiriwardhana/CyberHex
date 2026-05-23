@@ -1,21 +1,5 @@
-/**
- * CyberHex v3.0 — RBAC Authorization Middleware
- *
- * Role-based access control with hierarchical roles:
- *   admin > moderator > researcher > user > viewer
- *
- * Higher roles inherit permissions of lower roles.
- *
- * Usage:
- *   router.get('/admin-only', requireRole('admin'), handler);
- *   router.get('/researcher+', requireRole('researcher'), handler);
- *
- * @module middleware/rbac
- */
-
 import { AuthorizationError } from './errorHandler.js';
 
-// ──── Role Hierarchy ─────────────────────────────────────────────
 const ROLE_HIERARCHY = {
   admin: 5,
   moderator: 4,
@@ -24,23 +8,12 @@ const ROLE_HIERARCHY = {
   viewer: 1,
 };
 
-/**
- * Check if a role meets the minimum required level.
- * @param {string} userRole - The user's actual role
- * @param {string} requiredRole - The minimum required role
- * @returns {boolean}
- */
 function hasMinimumRole(userRole, requiredRole) {
   const userLevel = ROLE_HIERARCHY[userRole] || 0;
   const requiredLevel = ROLE_HIERARCHY[requiredRole] || Infinity;
   return userLevel >= requiredLevel;
 }
 
-/**
- * Create middleware that requires a minimum role level.
- * @param {string} requiredRole - Minimum role name
- * @returns {import('express').RequestHandler}
- */
 export function requireRole(requiredRole) {
   return (req, _res, next) => {
     if (!req.user) {
@@ -59,11 +32,6 @@ export function requireRole(requiredRole) {
   };
 }
 
-/**
- * Create middleware that requires one of several roles.
- * @param {string[]} allowedRoles
- * @returns {import('express').RequestHandler}
- */
 export function requireAnyRole(...allowedRoles) {
   return (req, _res, next) => {
     if (!req.user) {
@@ -84,11 +52,6 @@ export function requireAnyRole(...allowedRoles) {
   };
 }
 
-/**
- * Check if the authenticated user owns the resource or is admin.
- * Expects req.resourceOwnerId to be set by the route handler.
- * @returns {import('express').RequestHandler}
- */
 export function requireOwnership() {
   return (req, _res, next) => {
     if (!req.user) {
@@ -108,11 +71,6 @@ export function requireOwnership() {
   };
 }
 
-/**
- * Utility: check if user has a role (synchronous, for use outside middleware).
- * @param {object} user - { role: string }
- * @param {string} requiredRole
- */
 export function userHasRole(user, requiredRole) {
   return hasMinimumRole(user?.role, requiredRole);
 }

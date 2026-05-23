@@ -78,7 +78,6 @@ export default function App() {
 
   const layers = architecture?.layers ?? [];
 
-  // Keyboard shortcuts
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       const keyMap: Record<string, TabId> = {
@@ -140,15 +139,15 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-200">
-      {/* Animated background */}
+      {}
       <div className="fixed inset-0 bg-grid z-0" aria-hidden="true" />
       <FloatingParticles />
 
-      {/* Ambient glow orbs */}
+      {}
       <div className="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-cyan-500/3 blur-[120px] z-0 pointer-events-none" aria-hidden="true" />
       <div className="fixed bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full bg-purple-500/3 blur-[120px] z-0 pointer-events-none" aria-hidden="true" />
 
-      {/* Header */}
+      {}
       <header className="relative z-10 border-b border-slate-800/60 bg-slate-950/60 backdrop-blur-xl sticky top-0">
         <div className="max-w-[1600px] mx-auto px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -202,7 +201,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Tab navigation */}
+        {}
         <nav className="max-w-[1600px] mx-auto px-6 pb-2 flex gap-1 overflow-x-auto">
           {TABS.map(tab => {
             const isActive = activeTab === tab.id;
@@ -226,7 +225,7 @@ export default function App() {
         </nav>
       </header>
 
-      {/* Main content */}
+      {}
       <main className="relative z-10 max-w-[1600px] mx-auto px-6 py-6">
         {isLoading && <Spinner />}
         {isError && <ErrorScreen message={errorMessage} onRetry={() => window.location.reload()} />}
@@ -337,7 +336,7 @@ export default function App() {
         )}
       </main>
 
-      {/* Keyboard shortcuts modal */}
+      {}
       {showShortcuts && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowShortcuts(false)}>
           <div
@@ -372,7 +371,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Footer */}
+      {}
       <footer className="relative z-10 border-t border-slate-800/60 mt-12">
         <div className="max-w-[1600px] mx-auto px-6 py-4 text-[10px] text-slate-600 flex items-center justify-between">
           <span>

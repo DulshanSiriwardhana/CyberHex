@@ -53,12 +53,11 @@ void Dense::initialize(InitType type) {
                 return;
             }
         case InitType::ORTHOGONAL:
-            // Simplified: use normal then QR
+
             variance = 1.0;
             break;
     }
 
-    // Normal initialization
     std::normal_distribution<double> dist(0.0, std::sqrt(variance));
     for (size_t i = 0; i < weights.size(); i++)
         weights.at(i) = dist(gen);
@@ -67,10 +66,8 @@ void Dense::initialize(InitType type) {
 Matrix<double> Dense::forward(const Matrix<double>& X) {
     input = X;
 
-    // y = X · W + bias
     Matrix<double> out = X.dot(weights);
 
-    // Broadcast bias
     for (size_t i = 0; i < out.rows(); i++) {
         for (size_t j = 0; j < out.cols(); j++) {
             out(i, j) += bias(0, j);
@@ -85,10 +82,9 @@ std::vector<Matrix<double>*> Dense::parameter_gradients() {
 }
 
 Matrix<double> Dense::backward(const Matrix<double>& grad) {
-    // dW = input^T · grad
+
     dW = input.transpose().dot(grad);
 
-    // dB = sum(grad, axis=0)
     dB.fill(0.0);
     for (size_t j = 0; j < grad.cols(); j++) {
         for (size_t i = 0; i < grad.rows(); i++) {
@@ -96,7 +92,6 @@ Matrix<double> Dense::backward(const Matrix<double>& grad) {
         }
     }
 
-    // Add regularization gradients
     if (l1_lambda_ > 0.0 || l2_lambda_ > 0.0) {
         for (size_t i = 0; i < weights.size(); i++) {
             double w = weights.at(i);
@@ -109,7 +104,6 @@ Matrix<double> Dense::backward(const Matrix<double>& grad) {
         }
     }
 
-    // Gradient w.r.t. input: grad · W^T
     Matrix<double> grad_input = grad.dot(weights.transpose());
 
     return grad_input;
@@ -134,7 +128,7 @@ void Dense::reset_state() {
 }
 
 void Dense::save(std::ofstream& file) const {
-    // Write dimensions
+
     size_t rows = weights.rows(), cols = weights.cols();
     file.write(reinterpret_cast<const char*>(&rows), sizeof(size_t));
     file.write(reinterpret_cast<const char*>(&cols), sizeof(size_t));
@@ -165,4 +159,4 @@ Dense Dense::load(std::ifstream& file) {
     return layer;
 }
 
-} // namespace cyberhex
+}

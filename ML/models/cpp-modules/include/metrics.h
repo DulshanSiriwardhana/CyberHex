@@ -1,5 +1,3 @@
-
-
 #ifndef METRICS_H
 #define METRICS_H
 
@@ -7,13 +5,11 @@
 #include <cmath>
 #include <stdexcept>
 
-
 class Metric {
 public:
     virtual double compute(const Matrix<double>& y_true, const Matrix<double>& y_pred) const = 0;
     virtual ~Metric() = default;
 };
-
 
 class Accuracy : public Metric {
 public:
@@ -27,7 +23,6 @@ public:
         return static_cast<double>(correct) / (y_true.rows * y_true.cols);
     }
 };
-
 
 class Precision : public Metric {
 public:
@@ -46,7 +41,6 @@ public:
     }
 };
 
-
 class Recall : public Metric {
 public:
     double compute(const Matrix<double>& y_true, const Matrix<double>& y_pred) const override {
@@ -64,7 +58,6 @@ public:
     }
 };
 
-
 class F1Score : public Metric {
 public:
     double compute(const Matrix<double>& y_true, const Matrix<double>& y_pred) const override {
@@ -76,4 +69,4 @@ public:
     }
 };
 
-#endif 
+#endif

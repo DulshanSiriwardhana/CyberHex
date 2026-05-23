@@ -1,12 +1,3 @@
-/**
- * CyberHex v3.0 — Command Palette
- *
- * Premium Ctrl+K command palette with fuzzy search, category
- * grouping, keyboard navigation, and lucide icon rendering.
- * Commands are pulled from the global command store, allowing
- * any feature to register actions dynamically.
- */
-
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -36,7 +27,6 @@ import { useThemeStore, type ThemeMode } from '@/stores/theme';
 import type { ThemeVariant } from '@/lib/design-tokens';
 import { THEME_REGISTRY } from '@/lib/design-tokens';
 
-// ──── Icon Map ───────────────────────────────────────────────────
 const ICON_MAP: Record<string, LucideIcon> = {
   Layers,
   FlaskConical,
@@ -58,7 +48,6 @@ function getIcon(iconName?: string): LucideIcon {
   return (iconName && ICON_MAP[iconName]) || Command;
 }
 
-// ──── Category Display Names ─────────────────────────────────────
 const CATEGORY_LABELS: Record<CommandCategory, string> = {
   navigation: 'Navigate',
   experiments: 'Experiments',
@@ -79,20 +68,17 @@ const CATEGORY_ORDER: CommandCategory[] = [
   'help',
 ];
 
-// ──── Fuzzy Search ───────────────────────────────────────────────
 function fuzzyScore(query: string, target: string): number {
   if (!query) return 0;
   const q = query.toLowerCase();
   const t = target.toLowerCase();
 
-  // Exact match bonus
   if (t === q) return 100;
-  // Starts with bonus
+
   if (t.startsWith(q)) return 80;
-  // Contains bonus
+
   if (t.includes(q)) return 60;
 
-  // Character-by-character fuzzy match
   let score = 0;
   let qIdx = 0;
   let consecutive = 0;
@@ -110,7 +96,6 @@ function fuzzyScore(query: string, target: string): number {
   return qIdx === q.length ? score : 0;
 }
 
-// ──── Component ──────────────────────────────────────────────────
 export default function CommandPalette() {
   const {
     isOpen,
@@ -126,7 +111,6 @@ export default function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // ── Built-in theme commands ────────────────────────────────────
   useEffect(() => {
     const themeCommands: Cmd[] = [
       ...(['dark', 'light', 'system'] as ThemeMode[]).map((mode) => ({
@@ -159,9 +143,8 @@ export default function CommandPalette() {
     ];
 
     registerCommands(themeCommands);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
-  // ── Fuzzy-filtered & sorted commands ───────────────────────────
   const filtered = useMemo(() => {
     if (!query.trim()) return commands;
 
@@ -181,7 +164,6 @@ export default function CommandPalette() {
     return scored.map((item) => item.cmd);
   }, [commands, query]);
 
-  // ── Group by category with ordering ────────────────────────────
   const grouped = useMemo(() => {
     const map = new Map<CommandCategory, Cmd[]>();
     for (const cmd of filtered) {
@@ -189,20 +171,19 @@ export default function CommandPalette() {
       list.push(cmd);
       map.set(cmd.category, list);
     }
-    // Sort categories
+
     const sorted = new Map<CommandCategory, Cmd[]>();
     for (const cat of CATEGORY_ORDER) {
       const cmds = map.get(cat);
       if (cmds && cmds.length > 0) sorted.set(cat, cmds);
     }
-    // Include any categories not in the order list
+
     for (const [cat, cmds] of map) {
       if (!CATEGORY_ORDER.includes(cat)) sorted.set(cat, cmds);
     }
     return sorted;
   }, [filtered]);
 
-  // ── Flatten for index-based navigation ─────────────────────────
   const flatCommands = useMemo(() => {
     const flat: { cmd: Cmd; category: CommandCategory }[] = [];
     for (const [cat, cmds] of grouped) {
@@ -213,22 +194,19 @@ export default function CommandPalette() {
     return flat;
   }, [grouped]);
 
-  // ── Reset selection on query change ────────────────────────────
   useEffect(() => {
     setSelectedIndex(0);
   }, [query]);
 
-  // ── Auto-focus input on open ───────────────────────────────────
   useEffect(() => {
     if (isOpen) {
       setQuery('');
       setSelectedIndex(0);
-      // Small delay to let the animation start
+
       requestAnimationFrame(() => inputRef.current?.focus());
     }
   }, [isOpen]);
 
-  // ── Scroll selected into view ──────────────────────────────────
   useEffect(() => {
     if (listRef.current) {
       const selected = listRef.current.querySelector(
@@ -238,7 +216,6 @@ export default function CommandPalette() {
     }
   }, [selectedIndex]);
 
-  // ── Execute command ────────────────────────────────────────────
   const execute = useCallback(
     (cmd: Cmd) => {
       close();
@@ -256,7 +233,7 @@ export default function CommandPalette() {
         className="fixed inset-0 flex items-start justify-center pt-[12vh] px-4"
         style={{ zIndex: 1800 }}
       >
-        {/* Backdrop */}
+        {}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -266,7 +243,7 @@ export default function CommandPalette() {
           onClick={close}
         />
 
-        {/* Palette */}
+        {}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: -16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -278,7 +255,7 @@ export default function CommandPalette() {
               '0 0 40px rgba(0, 240, 255, 0.06), 0 25px 50px -12px rgba(0, 0, 0, 0.5)',
           }}
         >
-          {/* Search input */}
+          {}
           <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/[0.06]">
             <Search className="w-4 h-4 text-white/40 shrink-0" />
             <input
@@ -296,7 +273,7 @@ export default function CommandPalette() {
             </kbd>
           </div>
 
-          {/* Results */}
+          {}
           <div ref={listRef} className="max-h-72 overflow-y-auto p-2">
             {flatCommands.length === 0 ? (
               <div className="flex flex-col items-center gap-2 py-10 text-center">
@@ -364,7 +341,7 @@ export default function CommandPalette() {
             )}
           </div>
 
-          {/* Footer */}
+          {}
           <div className="flex items-center gap-5 px-4 py-2.5 border-t border-white/[0.06]">
             <span className="inline-flex items-center gap-1.5 text-[10px] text-white/25">
               <ArrowUp className="w-2.5 h-2.5" />

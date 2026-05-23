@@ -1,10 +1,3 @@
-/**
- * CyberHex Studio — Complete TypeScript Type Definitions
- * AI-Powered Neural Communication & Rendering Platform
- * @module @studio/types
- */
-
-/* ─── Identifiers ─────────────────────────────────────── */
 export type FeedId = string & { readonly __brand: 'FeedId' };
 export type SceneId = string & { readonly __brand: 'SceneId' };
 export type PanelId = string & { readonly __brand: 'PanelId' };
@@ -15,9 +8,6 @@ export type StageId = string & { readonly __brand: 'StageId' };
 export type TextureId = string & { readonly __brand: 'TextureId' };
 export type BufferId = string & { readonly __brand: 'BufferId' };
 
-/* ─── Enums ──────────────────────────────────────────── */
-
-/** Neural filter categories */
 export enum NeuralFilterType {
   CARTOON = 'cartoon',
   ANIME = 'anime',
@@ -140,8 +130,6 @@ export enum TextureFormat {
   R8 = 'r8',
 }
 
-/* ─── Media Types ────────────────────────────────────── */
-
 export interface VideoSource {
   deviceId: string;
   label: string;
@@ -207,8 +195,6 @@ export interface FilterAssignment {
   order: number;
 }
 
-/* ─── Filter Configuration ────────────────────────────── */
-
 export interface FilterConfig {
   type: NeuralFilterType;
   intensity: number;
@@ -239,8 +225,6 @@ export interface FilterStage {
   config: FilterConfig;
   enabled: boolean;
 }
-
-/* ─── AI Models ──────────────────────────────────────── */
 
 export interface AIModel {
   id: ModelId;
@@ -289,8 +273,6 @@ export interface ModelRegistry {
   totalMemoryMB: number;
   availableMemoryMB: number;
 }
-
-/* ─── Video AI ────────────────────────────────────────── */
 
 export interface VideoFilter {
   id: string;
@@ -351,8 +333,6 @@ export interface FaceTrackingData {
   expressions: Record<EmotionType, number>;
 }
 
-/* ─── Audio AI ────────────────────────────────────────── */
-
 export interface AudioEnhancer {
   id: string;
   type: AudioFilterType;
@@ -402,8 +382,6 @@ export interface AudioMetrics {
   voiceActivity: number;
   confidence: number;
 }
-
-/* ─── English Fluency AI ──────────────────────────────── */
 
 export interface FluencyConfig {
   enabled: boolean;
@@ -463,8 +441,6 @@ export interface FluencyMetrics {
   fluencyScore: number;
   clarityScore: number;
 }
-
-/* ─── Training System ─────────────────────────────────── */
 
 export interface TrainingConfig {
   modelArchitecture: ModelArchitecture;
@@ -540,8 +516,6 @@ export interface TrainingMetrics {
   epochs: EpochData[];
 }
 
-/* ─── Scene System ────────────────────────────────────── */
-
 export interface Scene {
   id: SceneId;
   name: string;
@@ -599,8 +573,6 @@ export interface WorkspacePreset {
   createdAt: number;
 }
 
-/* ─── Panel / Docking System ──────────────────────────── */
-
 export interface PanelConfig {
   id: PanelId;
   type: string;
@@ -644,8 +616,6 @@ export enum ViewMode {
   PERFORMANCE = 'performance',
   SETTINGS = 'settings',
 }
-
-/* ─── WebRTC ──────────────────────────────────────────── */
 
 export interface RTCConfig {
   iceServers: RTCIceServer[];
@@ -698,8 +668,6 @@ export interface RTCStats {
   frameRate: number;
   resolution: string;
 }
-
-/* ─── Performance ─────────────────────────────────────── */
 
 export interface PerformanceMetrics {
   fps: number;
@@ -781,8 +749,6 @@ export interface BenchmarkResult {
   memoryMB: number;
 }
 
-/* ─── Plugins ─────────────────────────────────────────── */
-
 export interface Plugin {
   id: PluginId;
   manifest: PluginManifest;
@@ -835,8 +801,6 @@ export interface PluginAPI {
   emitEvent: (event: string, data: unknown) => void;
 }
 
-/* ─── AI Avatar ────────────────────────────────────────── */
-
 export interface AvatarPose {
   landmarks: number[][];
   rotation: { x: number; y: number; z: number };
@@ -858,8 +822,6 @@ export interface EmotionData {
   fatigue: number;
   engagement: number;
 }
-
-/* ─── Studio Configuration ────────────────────────────── */
 
 export interface StudioConfig {
   theme: ThemeConfig;
@@ -909,8 +871,6 @@ export interface PluginConfig {
   safelist: string[];
 }
 
-/* ─── Keyboard Shortcuts ──────────────────────────────── */
-
 export interface KeyboardShortcut {
   id: string;
   keys: string;
@@ -919,8 +879,6 @@ export interface KeyboardShortcut {
   action: () => void;
   global: boolean;
 }
-
-/* ─── Toast / Notifications ───────────────────────────── */
 
 export interface Toast {
   id: string;
@@ -936,8 +894,6 @@ export interface ToastAction {
   label: string;
   onClick: () => void;
 }
-
-/* ─── Event Bus ───────────────────────────────────────── */
 
 export enum StudioEvent {
   FRAME_PROCESSED = 'frame:processed',
@@ -961,8 +917,6 @@ export interface StudioEventData {
   payload: unknown;
   source?: string;
 }
-
-/* ─── Worker Messages ─────────────────────────────────── */
 
 export enum WorkerMessageType {
   INFERENCE_REQUEST = 'inference:request',
@@ -1002,8 +956,6 @@ export interface InferenceResult extends WorkerMessage {
     memoryUsedMB: number;
   };
 }
-
-/* ─── Utility Types ───────────────────────────────────── */
 
 export type DeepPartial<T> = { [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P] };
 

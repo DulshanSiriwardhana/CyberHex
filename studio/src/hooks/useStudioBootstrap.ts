@@ -1,7 +1,3 @@
-/**
- * CyberHex Studio — Application Bootstrap Hook
- * Initializes engines, default scenes, keyboard shortcuts, and performance monitoring.
- */
 import { useEffect, useCallback } from 'react';
 import { useStudioStore } from '@/stores/studioStore';
 import { useWebcam, useScreenShare, useMicrophone } from '@/hooks/useMediaDevices';

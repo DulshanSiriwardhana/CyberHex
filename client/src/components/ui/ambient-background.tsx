@@ -1,7 +1,3 @@
-/**
- * Route-aware ambient layer: subtle gradient everywhere;
- * particle mesh only on marketing/auth pages.
- */
 import { useLocation } from "react-router-dom";
 import { ParticleBackground } from "@/components/ui/particle-background";
 

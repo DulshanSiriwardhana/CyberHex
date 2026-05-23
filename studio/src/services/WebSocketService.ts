@@ -1,10 +1,4 @@
-/**
- * CyberHex Studio — WebSocket Communication Service
- * Handles signaling, model streaming, training updates, and real-time events.
- */
 import { io, Socket } from 'socket.io-client';
-
-/* ─── Types ────────────────────────────── */
 
 export interface WSConfig {
   url: string;
@@ -50,8 +44,6 @@ export interface WSMessage {
 
 type EventHandler = (payload: unknown) => void;
 
-/* ─── WebSocketService ──────────────────── */
-
 export class WebSocketService {
   private static _instance: WebSocketService | null = null;
 
@@ -70,8 +62,6 @@ export class WebSocketService {
   private reconnectCount = 0;
 
   private constructor() {}
-
-  /* ── Connection ── */
 
   connect(config: WSConfig): void {
     this.config = {
@@ -92,7 +82,7 @@ export class WebSocketService {
     this.socket = io(this.config.url, {
       path: this.config.path,
       auth: this.config.auth,
-      reconnection: false, // Handled manually
+      reconnection: false,
       transports: ['websocket'],
       timeout: 10000,
     });
@@ -120,7 +110,6 @@ export class WebSocketService {
       }
     });
 
-    /* ── Application events ── */
     const appEvents: WSEvent[] = [
       'frame:processed', 'filter:changed', 'scene:switched',
       'model:loaded', 'model:unloaded', 'model:error',
@@ -170,8 +159,6 @@ export class WebSocketService {
     this.reconnectCount = 0;
   }
 
-  /* ── Event Handling ── */
-
   on(event: WSEvent, handler: EventHandler): () => void {
     if (!this.handlers.has(event)) {
       this.handlers.set(event, new Set());
@@ -197,8 +184,6 @@ export class WebSocketService {
     });
   }
 
-  /* ── Send ── */
-
   send(event: WSEvent, payload: unknown): void {
     if (!this.socket?.connected) {
       console.warn(`[WebSocketService] Cannot send "${event}" — not connected`);
@@ -212,8 +197,6 @@ export class WebSocketService {
       timestamp: Date.now(),
     });
   }
-
-  /* ── Stream-specific ── */
 
   sendInferenceRequest(modelId: string, input: ArrayBuffer, shape: number[]): void {
     this.send('inference:request', {
@@ -239,14 +222,12 @@ export class WebSocketService {
     this.send('training:epoch', { sessionId, data });
   }
 
-  /* ── State ── */
-
   get isConnected(): boolean {
     return this.connected;
   }
 
   get latency(): number {
-    // Socket.io doesn't expose ping directly; use 0
+
     return 0;
   }
 }

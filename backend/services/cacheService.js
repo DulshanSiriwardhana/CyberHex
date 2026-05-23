@@ -1,18 +1,7 @@
-/**
- * CyberHex v3.0 — Redis Cache Service
- *
- * Provides a unified caching layer with TTL, prefix namespacing,
- * JSON serialization, and graceful degradation when Redis is
- * unavailable (falls back to in-memory LRU cache).
- *
- * @module services/cacheService
- */
-
 import { createClient } from 'redis';
 import { config } from '../utils/env.js';
 import { logger } from '../utils/logger.js';
 
-// ──── In-Memory LRU Fallback ─────────────────────────────────────
 class MemoryCache {
   constructor(maxSize = 1000) {
     this.store = new Map();
@@ -26,14 +15,14 @@ class MemoryCache {
       this.store.delete(key);
       return null;
     }
-    // Move to end (most recently used)
+
     this.store.delete(key);
     this.store.set(key, entry);
     return entry.value;
   }
 
   set(key, value, ttlSeconds = 300) {
-    // Evict oldest if full
+
     if (this.store.size >= this.maxSize) {
       const oldest = this.store.keys().next().value;
       this.store.delete(oldest);
@@ -53,7 +42,6 @@ class MemoryCache {
   }
 }
 
-// ──── Redis Client Setup ─────────────────────────────────────────
 const REDIS_URL = config.REDIS_URL;
 function isRedisDisabled() {
   return process.env.REDIS_DISABLED === '1';
@@ -105,16 +93,8 @@ async function getRedisClient() {
   }
 }
 
-// ──── Memory fallback instance ───────────────────────────────────
 const memoryCache = new MemoryCache(2000);
 
-// ──── Public API ─────────────────────────────────────────────────
-
-/**
- * Get a cached value by key. Automatically deserializes JSON.
- * @param {string} key - Cache key (prefix:name format recommended)
- * @returns {Promise<any|null>}
- */
 export async function cacheGet(key) {
   try {
     const redis = await getRedisClient();
@@ -129,12 +109,6 @@ export async function cacheGet(key) {
   }
 }
 
-/**
- * Set a cached value with optional TTL.
- * @param {string} key
- * @param {any} value
- * @param {number} ttlSeconds - Default 300 (5 minutes)
- */
 export async function cacheSet(key, value, ttlSeconds = 300) {
   try {
     const redis = await getRedisClient();
@@ -155,10 +129,6 @@ export async function cacheSet(key, value, ttlSeconds = 300) {
   }
 }
 
-/**
- * Delete a cached key.
- * @param {string} key
- */
 export async function cacheDel(key) {
   try {
     const redis = await getRedisClient();
@@ -173,10 +143,6 @@ export async function cacheDel(key) {
   }
 }
 
-/**
- * Delete all keys matching a pattern.
- * @param {string} pattern - Redis glob pattern (e.g., "user:*")
- */
 export async function cacheDelPattern(pattern) {
   try {
     const redis = await getRedisClient();
@@ -191,7 +157,7 @@ export async function cacheDelPattern(pattern) {
       } while (cursor !== 0);
       return;
     }
-    // Simple prefix match for in-memory
+
     const prefix = pattern.replace('*', '');
     for (const key of memoryCache.store.keys()) {
       if (key.startsWith(prefix)) {
@@ -203,9 +169,6 @@ export async function cacheDelPattern(pattern) {
   }
 }
 
-/**
- * Clear all cached data.
- */
 export async function cacheFlush() {
   try {
     const redis = await getRedisClient();
@@ -220,13 +183,6 @@ export async function cacheFlush() {
   }
 }
 
-/**
- * Get or set cache (read-through pattern).
- * @param {string} key
- * @param {() => Promise<any>} fetchFn - Function to call on cache miss
- * @param {number} ttlSeconds
- * @returns {Promise<any>}
- */
 export async function cacheGetOrSet(key, fetchFn, ttlSeconds = 300) {
   const cached = await cacheGet(key);
   if (cached !== null && cached !== undefined) return cached;
@@ -238,9 +194,6 @@ export async function cacheGetOrSet(key, fetchFn, ttlSeconds = 300) {
   return fresh;
 }
 
-/**
- * Check if Redis is connected.
- */
 export function isRedisAvailable() {
   return isRedisConnected;
 }

@@ -1,6 +1,3 @@
-/**
- * CyberHex Studio — Custom Filter Training Dashboard
- */
 import React, { useEffect, useState } from 'react';
 import { Brain, Upload, Play, Pause, BarChart3 } from 'lucide-react';
 import { useStudioStore } from '@/stores/studioStore';

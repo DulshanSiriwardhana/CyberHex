@@ -13,11 +13,10 @@
 using namespace emscripten;
 
 EMSCRIPTEN_BINDINGS(cyberhex_module) {
-    // Register standard vectors so they can be passed/returned
+
     register_vector<double>("VectorDouble");
     register_vector<std::string>("VectorString");
 
-    // InitType enum
     enum_<cyberhex::InitType>("InitType")
         .value("HE", cyberhex::InitType::HE)
         .value("XAVIER", cyberhex::InitType::XAVIER)
@@ -27,7 +26,6 @@ EMSCRIPTEN_BINDINGS(cyberhex_module) {
         .value("ORTHOGONAL", cyberhex::InitType::ORTHOGONAL)
         ;
 
-    // Matrix
     class_<cyberhex::Matrix<double>>("Matrix")
         .constructor<size_t, size_t>()
         .function("rows", &cyberhex::Matrix<double>::rows)
@@ -60,13 +58,11 @@ EMSCRIPTEN_BINDINGS(cyberhex_module) {
         .function("norm", &cyberhex::Matrix<double>::norm)
         ;
 
-    // Layer (Base class)
     class_<cyberhex::Layer>("Layer")
         .function("name", &cyberhex::Layer::name)
         .function("output_size", &cyberhex::Layer::output_size)
         ;
 
-    // Dense Layer
     class_<cyberhex::Dense, base<cyberhex::Layer>>("Dense")
         .constructor<size_t, size_t>()
         .constructor<size_t, size_t, cyberhex::InitType>()
@@ -74,7 +70,6 @@ EMSCRIPTEN_BINDINGS(cyberhex_module) {
         .function("getBias", &cyberhex::Dense::getBias)
         ;
 
-    // Activations
     class_<cyberhex::ReLU, base<cyberhex::Layer>>("ReLU")
         .constructor<>()
         ;
@@ -96,7 +91,6 @@ EMSCRIPTEN_BINDINGS(cyberhex_module) {
         .constructor<size_t, double>()
         ;
 
-    // Transformers
     class_<cyberhex::MultiHeadSelfAttention, base<cyberhex::Layer>>("MultiHeadSelfAttention")
         .constructor<size_t, size_t>()
         ;
@@ -105,7 +99,6 @@ EMSCRIPTEN_BINDINGS(cyberhex_module) {
         .constructor<size_t, size_t, size_t>()
         ;
 
-    // Model
     class_<cyberhex::Model>("Model")
         .constructor<>()
         .function("add", select_overload<void(cyberhex::Layer*)>(&cyberhex::Model::add), allow_raw_pointers())
@@ -144,19 +137,17 @@ EMSCRIPTEN_BINDINGS(cyberhex_module) {
             self.compile(std::move(loss_fn), std::move(optimizer), nullptr);
         }))
         .function("trainStep", optional_override([](cyberhex::Model& self, const cyberhex::Matrix<double>& X, const cyberhex::Matrix<double>& y, int epoch) {
-            // Forward pass
+
             cyberhex::Matrix<double> pred = self.forward(X);
-            // Compute loss value
+
             double loss_val = self.compute_loss(pred, y);
-            // Gradient of loss w.r.t predictions
+
             cyberhex::Matrix<double> grad = self.compute_loss_grad(pred, y);
 
-            // Backward pass through layers in reverse
             for (int i = (int)self.num_layers() - 1; i >= 0; i--) {
                 grad = self.get_layer(i)->backward(grad);
             }
 
-            // Centralized Optimizer Step
             cyberhex::Optimizer* optimizer = self.get_optimizer();
             if (optimizer) {
                 size_t param_idx = 0;

@@ -1,8 +1,3 @@
-/**
- * Model inference — ONNX Runtime, C++ MLP weights, or Python NumPy (.npz).
- * @module services/inferenceService
- */
-
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
@@ -169,10 +164,6 @@ function runPythonInference({ modelPath, features, task }) {
   });
 }
 
-/**
- * Run inference on a saved model.
- * @param {{ modelPath: string, features: number[][], task?: string }} params
- */
 export function runInference({ modelPath, features, task = 'regression' }) {
   if (!modelPath) {
     return Promise.reject(new Error('modelPath is required'));

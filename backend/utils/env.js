@@ -27,5 +27,5 @@ if (!result.success) {
 }
 
 export const env = result.data;
-/** Alias used by security, cache, and health modules */
+
 export const config = env;

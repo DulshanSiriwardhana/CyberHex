@@ -17,7 +17,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '../../');
 
-/** @type {Map<string, { process: import('child_process').ChildProcess, experimentId: string, metrics: object, status: string, startedAt: Date, buffer: string, engine: string }>} */
 const activeJobs = new Map();
 
 export function buildCppConfig(experiment) {
@@ -284,7 +283,6 @@ export async function startTraining(experiment) {
     throw new Error('Training already running or queued for this experiment');
   }
 
-  // Graceful degradation: Check if Redis queue is available
   if (isRedisAvailable()) {
     const { enqueueJob } = await import('./queueService.js');
     await enqueueJob(experiment);
@@ -352,7 +350,6 @@ export async function stopTraining(jobId) {
     await saveJobSnapshot(jobId, snapshot);
     await finalizeExperiment(jobId, { status: 'stopped', metrics: snapshot.metrics || {} });
 
-    // Publish command to remote background workers
     if (isRedisAvailable()) {
       try {
         const { createClient } = await import('redis');
@@ -402,13 +399,12 @@ export async function getAllActiveJobs() {
   return jobs;
 }
 
-/** Test helper — clear in-memory runners without touching Redis. */
 export function _resetActiveJobsForTests() {
   for (const [, job] of activeJobs) {
     try {
       job.process.kill('SIGTERM');
     } catch {
-      /* ignore */
+
     }
   }
   activeJobs.clear();

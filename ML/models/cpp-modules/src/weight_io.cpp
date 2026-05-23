@@ -36,7 +36,7 @@ std::vector<double> parse_number_list(const std::string& block) {
     return values;
 }
 
-} // namespace
+}
 
 bool load_dense_json(const std::string& path, Matrix<double>& weights, Matrix<double>& bias) {
     std::ifstream file(path);
@@ -97,4 +97,4 @@ bool load_dense_json(const std::string& path, Matrix<double>& weights, Matrix<do
     return true;
 }
 
-} // namespace cyberhex
+}

@@ -51,8 +51,8 @@ export const errorHandler = (err, req, res, _next) => {
     }
 
     const status = statusCode < 500 ? 'fail' : 'error';
-    
-    logger.error(`${req.method} ${req.originalUrl} - ${message}`, { 
+
+    logger.error(`${req.method} ${req.originalUrl} - ${message}`, {
         stack: err.stack,
         code,
         userId: req.user?.userId
@@ -109,4 +109,3 @@ export class ConflictError extends AppError {
         super(message, 409, 'CONFLICT');
     }
 }
-

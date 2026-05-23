@@ -11,10 +11,9 @@ namespace cyberhex {
 enum class ComputePrecision {
     Float64,
     Float32,
-    Mixed  // parameters in FP16, compute in FP32/FP64
+    Mixed
 };
 
-/** IEEE-754 binary16 helpers (software implementation). */
 class Float16 {
 public:
     uint16_t bits = 0;
@@ -41,6 +40,6 @@ struct MixedPrecisionState {
     Fp16Matrix fp16_cache;
 };
 
-} // namespace cyberhex
+}
 
-#endif // CYBERHEX_PRECISION_H
+#endif

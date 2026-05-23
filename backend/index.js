@@ -62,7 +62,6 @@ global.broadcastToExperiment = (experimentId, data) => {
   });
 };
 
-// Initialize Redis pub/sub queue subscription
 void initPubSub();
 
 let studioSocketShutdown = () => {};

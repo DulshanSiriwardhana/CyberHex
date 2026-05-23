@@ -35,7 +35,6 @@ body,
   background-color: #475569;
 }
 
-/* ====== Neon Glow Utilities ====== */
 .glow-cyan {
   box-shadow: 0 0 15px rgba(6, 182, 212, 0.15), 0 0 45px rgba(6, 182, 212, 0.05);
 }
@@ -52,7 +51,6 @@ body,
   text-shadow: 0 0 10px rgba(168, 85, 247, 0.4), 0 0 30px rgba(168, 85, 247, 0.1);
 }
 
-/* ====== Gradient Border Cards ====== */
 .card-gradient {
   position: relative;
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.6));
@@ -80,7 +78,6 @@ body,
   pointer-events: none;
 }
 
-/* ====== Stat Card ====== */
 .stat-card {
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.5));
   border: 1px solid rgba(51, 65, 85, 0.4);
@@ -106,7 +103,6 @@ body,
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 30px rgba(6, 182, 212, 0.05);
 }
 
-/* ====== Animated Background Grid ====== */
 @keyframes grid-scroll {
   0% { background-position: 0 0; }
   100% { background-position: 50px 50px; }
@@ -120,7 +116,6 @@ body,
   animation: grid-scroll 20s linear infinite;
 }
 
-/* ====== Floating Particles ====== */
 @keyframes float-up {
   0% {
     transform: translateY(0) translateX(0) scale(1);
@@ -165,7 +160,6 @@ body,
   animation: float-up-delayed 8s ease-in infinite;
 }
 
-/* ====== Number counter animation ====== */
 @keyframes count-up {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -175,7 +169,6 @@ body,
   animation: count-up 0.6s ease-out forwards;
 }
 
-/* ====== Pulse ring ====== */
 @keyframes pulse-ring {
   0% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4); }
   70% { box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); }
@@ -186,7 +179,6 @@ body,
   animation: pulse-ring 2s ease-out infinite;
 }
 
-/* ====== Gradient text ====== */
 .gradient-text {
   background: linear-gradient(135deg, #22d3ee 0%, #a855f7 50%, #22d3ee 100%);
   background-size: 200% 200%;
@@ -201,7 +193,6 @@ body,
   50% { background-position: 100% 50%; }
 }
 
-/* ====== Tab indicator ====== */
 .tab-active-glow {
   position: relative;
 }
@@ -218,7 +209,6 @@ body,
   border-radius: 2px;
 }
 
-/* ====== Skeleton pulse ====== */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }

@@ -1,6 +1,3 @@
-/**
- * CyberHex Studio — Layout Templates
- */
 import { LayoutTemplateType, type LayoutTemplate } from '@/types';
 
 export const LAYOUT_TEMPLATES: LayoutTemplate[] = [

@@ -7,20 +7,15 @@ interface Command {
 }
 
 const commands: Record<string, string> = {
-  help: "Available commands: help, about, projects, skills, contact, clear, whoami, train, status",
-  about:
-    "CyberHex - Next-Gen ML Platform. \nVisual neural network builder with a C++ inference engine.\nTrain models in your browser. Deploy anywhere.",
-  whoami: "guest@cyberhex",
-  projects:
-    "• MNIST Classifier — 98.7% accuracy\n• Sentiment LSTM — 87.2% accuracy\n• Price Predictor — 94.1% accuracy\n• Image GAN — 76.4% FID",
-  skills:
-    "• Visual Layer Editor\n• C++ Inference Engine (native speed)\n• WebSocket Live Training\n• Experiment Tracking\n• Model Export (C++ / WASM)",
-  contact:
-    "Email: hello@cyberhex.dev\nGitHub: github.com/dulshansiriwardhana/cyberhex",
-  train:
-    "Launching training session...\n> Epoch 1/50 — loss: 0.8932 — acc: 42.1%\n> Epoch 2/50 — loss: 0.7214 — acc: 58.3%\n...\nTraining complete. Model saved.",
-  status:
-    "System: ONLINE\nEngine: C++ (native)\nActive users: 3,200+\nModels trained: 12,847\nUptime: 99.99%",
+  help: "Available: help, about, projects, datasets, skills, train, status, clear",
+  about: "CyberHex — High-performance ML with a C++17 core. Neural networking without complexity.",
+  whoami: "engineer@cyberhex",
+  projects: "• Intrusion Packets (Class.) • DDoS Flow (Class.) • Sensor Telemetry (Reg.)",
+  datasets: "• Standard: MNIST, CIFAR, Iris\n• Custom: Uploaded CSV/Binary (Supports 1GB+ files)\n• Modalities: Text, Image, Audio, Video",
+  skills: "• C++17 Inference (Native)\n• Streaming Large Datasets (1GB+)\n• Multi-Modal Ingestion\n• WebSocket Live Monitoring",
+  contact: "github.com/dulshansiriwardhana/cyberhex",
+  train: "Allocating buffers for multi-modal stream...\n> Chunk 1/256 — [################----] 12% — Loss: 0.421\n> Stream synced. Epoch 1 complete.",
+  status: "Core: C++17 (Native)\nWorker: Active\nStorage: 1GB Capable\nUptime: 100%",
 };
 
 export default function Terminal() {
@@ -94,7 +89,7 @@ export default function Terminal() {
 
   return (
     <div className="terminal-window w-full max-w-2xl mx-auto" onClick={focusInput}>
-      {/* Header bar */}
+      { }
       <div className="terminal-header">
         <div className="terminal-dot red" />
         <div className="terminal-dot amber" />
@@ -105,7 +100,7 @@ export default function Terminal() {
         </div>
       </div>
 
-      {/* Body */}
+      { }
       <div ref={terminalRef} className="terminal-body">
         {history.map((cmd, i) => (
           <div key={i}>
@@ -122,7 +117,7 @@ export default function Terminal() {
             )}
           </div>
         ))}
-        {/* Current input line */}
+        { }
         <div className="terminal-input-line">
           <span className="terminal-prompt">guest@cyberhex:~$</span>
           <input

@@ -1,7 +1,3 @@
-/**
- * CyberHex Studio — Neural Video Feed Component
- * Renders live media through the neural filter pipeline on canvas.
- */
 import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Video, Wand2 } from 'lucide-react';

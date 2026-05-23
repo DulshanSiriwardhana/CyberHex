@@ -112,7 +112,7 @@ export default function AboutPage() {
         ))}
       </Grid>
 
-      {/* CTA */}
+      {}
       <div className="text-center py-12">
         <h2 className="text-2xl font-extrabold text-white mb-4">
           Ready to <span className="text-green-400">build</span>?

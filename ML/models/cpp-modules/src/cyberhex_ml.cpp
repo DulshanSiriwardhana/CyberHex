@@ -1,10 +1,3 @@
-// ============================================================================
-// CyberHex ML Training CLI — backend integration (cyberhex.train.v1)
-// ============================================================================
-// Build: cmake --build build --target cyberhex_ml
-// Run:   CYBERHEX_CONFIG='{"epochs":10,...}' ./build/cyberhex_ml
-// ============================================================================
-
 #include "training_protocol.h"
 #include "model.h"
 #include "dense.h"
@@ -49,7 +42,7 @@ void add_activation(Model& model, const std::string& name) {
     } else if (act == "elu") {
         model.add(std::make_unique<ELU>());
     }
-    // linear / none — no extra layer
+
 }
 
 void build_model(Model& model, const TrainingConfig& cfg, size_t input_dim, size_t output_dim) {
@@ -306,7 +299,7 @@ int run_transformer_training(const TrainingConfig& cfg, Matrix<double>& X, Matri
     return 0;
 }
 
-} // namespace
+}
 
 int main() {
     TrainingConfig cfg = load_config_from_env();

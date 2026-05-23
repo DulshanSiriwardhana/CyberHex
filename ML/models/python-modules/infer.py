@@ -6,7 +6,6 @@ import sys
 
 import numpy as np
 
-
 def load_model(model_path):
     data = np.load(model_path)
     weights = []
@@ -17,7 +16,6 @@ def load_model(model_path):
         biases.append(data[f"bias_{i}"])
         i += 1
     return weights, biases
-
 
 def forward(weights, biases, X, task="regression"):
     act = X
@@ -32,7 +30,6 @@ def forward(weights, biases, X, task="regression"):
         else:
             act = np.maximum(0, z)
     return act
-
 
 def main():
     raw = os.environ.get("CYBERHEX_INFER_CONFIG", "{}")
@@ -63,7 +60,6 @@ def main():
         ),
         flush=True,
     )
-
 
 if __name__ == "__main__":
     main()

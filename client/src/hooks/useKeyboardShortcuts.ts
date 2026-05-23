@@ -1,15 +1,3 @@
-/**
- * CyberHex v3.0 — Global Keyboard Shortcuts Hook
- *
- * Registers application-wide keyboard shortcuts:
- * - Ctrl+K / Cmd+K: Toggle command palette
- * - Ctrl+Shift+T: Toggle theme
- * - Ctrl+Shift+V: Cycle theme variant
- * - Escape: Close command palette
- *
- * Only activates when no input/textarea/select/[contenteditable] is focused.
- */
-
 import { useEffect } from 'react';
 import { useCommandPaletteStore } from '@/stores/commandPalette';
 import { useThemeStore } from '@/stores/theme';
@@ -32,33 +20,29 @@ export function useKeyboardShortcuts() {
     }
 
     function handleKeyDown(e: KeyboardEvent) {
-      // Don't intercept when user is typing in an input
+
       if (isEditable(e.target)) return;
 
       const mod = e.ctrlKey || e.metaKey;
 
-      // Ctrl+K / Cmd+K: Toggle command palette
       if (mod && e.key === 'k') {
         e.preventDefault();
         togglePalette();
         return;
       }
 
-      // Ctrl+Shift+T: Toggle dark/light theme
       if (mod && e.shiftKey && e.key === 'T') {
         e.preventDefault();
         themeToggle();
         return;
       }
 
-      // Ctrl+Shift+V: Cycle theme variant
       if (mod && e.shiftKey && e.key === 'V') {
         e.preventDefault();
         cycleVariant();
         return;
       }
 
-      // Escape: Close command palette
       if (e.key === 'Escape' && isPaletteOpen) {
         e.preventDefault();
         closePalette();

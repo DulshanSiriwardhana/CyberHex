@@ -151,7 +151,7 @@ std::string json_escape(const std::string& s) {
     return oss.str();
 }
 
-} // namespace
+}
 
 TrainingConfig parse_training_config(const std::string& json) {
     TrainingConfig cfg;
@@ -269,4 +269,4 @@ void emit_training_complete(double final_train_loss, double final_val_loss,
               << ",\"model_path\":\"" << json_escape(model_path) << "\"}" << std::endl;
 }
 
-} // namespace cyberhex
+}

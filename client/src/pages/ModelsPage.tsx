@@ -116,7 +116,7 @@ export default function ModelsPage() {
         ))}
       </Grid>
 
-      {/* Empty state */}
+      {}
       {models.length === 0 && (
         <div className="text-center py-20">
           <Brain className="h-16 w-16 text-neutral-800 mx-auto mb-4" />

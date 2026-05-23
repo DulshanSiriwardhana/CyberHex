@@ -1,4 +1,3 @@
-// CyberHex micro-benchmarks — matrix dot product GFLOPS
 #include "matrix.h"
 #include <chrono>
 #include <iostream>
@@ -21,7 +20,6 @@ int main(int argc, char** argv) {
         b.at(i) = static_cast<double>(i % 53) * 0.02;
     }
 
-    // Warmup
     for (int i = 0; i < 3; i++) {
         auto c = a.dot(b);
         (void)c;

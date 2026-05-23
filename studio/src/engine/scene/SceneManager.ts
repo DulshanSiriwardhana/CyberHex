@@ -1,8 +1,3 @@
-/**
- * CyberHex Studio — Scene Manager
- * Manages scene CRUD, switching with transitions, layout,
- * feed assignment, duplication, import/export, and preview.
- */
 import type { SceneId, Scene, SceneLayout, SceneTransition, LayoutTemplateType, FeedId } from '@/types';
 import { eventBus } from '@/utils/eventBus';
 
@@ -21,8 +16,6 @@ export class SceneManager {
   get activeSceneId(): SceneId | null { return this._activeSceneId; }
   get activeScene(): Scene | undefined { return this._activeSceneId ? this.scenes.get(this._activeSceneId) : undefined; }
   get isTransitioning(): boolean { return this._transitioning; }
-
-  /* ── CRUD ── */
 
   createScene(name: string, template: LayoutTemplateType = 'zoom_speaker' as LayoutTemplateType, layout?: Partial<SceneLayout>): Scene {
     const id = `scene_${Date.now()}_${Math.random().toString(36).slice(2, 7)}` as SceneId;
@@ -67,7 +60,7 @@ export class SceneManager {
   }
 
   deleteScene(id: SceneId): void {
-    if (this.scenes.size <= 1) return; // Keep at least one scene
+    if (this.scenes.size <= 1) return;
     this.scenes.delete(id);
     this.order = this.order.filter((oid) => oid !== id);
     if (this._activeSceneId === id) {
@@ -82,8 +75,6 @@ export class SceneManager {
     return this.createScene(`${source.name} (Copy)`, source.template, source.layout);
   }
 
-  /* ── Feeds ── */
-
   addFeedToScene(sceneId: SceneId, feedId: FeedId): void {
     const scene = this.scenes.get(sceneId);
     if (!scene || scene.feeds.includes(feedId)) return;
@@ -97,8 +88,6 @@ export class SceneManager {
     scene.feeds = scene.feeds.filter((f) => f !== feedId);
     eventBus.emit('scene:feed:removed', { sceneId, feedId });
   }
-
-  /* ── Switching ── */
 
   async switchScene(id: SceneId, transition?: SceneTransition): Promise<void> {
     if (!this.scenes.has(id) || this._activeSceneId === id) return;
@@ -128,8 +117,6 @@ export class SceneManager {
     eventBus.emit('scene:transition:end', { from: fromId, to: toId });
   }
 
-  /* ── Layout ── */
-
   setSceneLayout(id: SceneId, layout: Partial<SceneLayout>): void {
     const scene = this.scenes.get(id);
     if (!scene) return;
@@ -147,8 +134,6 @@ export class SceneManager {
     eventBus.emit('scene:reordered', this.order);
   }
 
-  /* ── Import/Export ── */
-
   exportScene(id: SceneId): string | null {
     const scene = this.scenes.get(id);
     if (!scene) return null;
@@ -163,8 +148,6 @@ export class SceneManager {
       return;
     }
   }
-
-  /* ── Helpers ── */
 
   private _delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));

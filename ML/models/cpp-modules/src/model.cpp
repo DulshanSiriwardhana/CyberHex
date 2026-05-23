@@ -12,9 +12,6 @@
 
 namespace cyberhex {
 
-// ============================================================================
-// TensorDataset
-// ============================================================================
 TensorDataset::TensorDataset(const Matrix<double>& X, const Matrix<double>& y)
     : X_(X), y_(y) {}
 
@@ -39,9 +36,6 @@ TensorDataset::get_batch(size_t start, size_t end) const {
     return {std::move(X_batch), std::move(y_batch)};
 }
 
-// ============================================================================
-// SyntheticDataset
-// ============================================================================
 SyntheticDataset::SyntheticDataset(size_t num_samples, size_t input_size,
                                     size_t output_size,
                                     std::function<double(const double*, size_t)> func,
@@ -92,7 +86,7 @@ SyntheticDataset::get_batch(size_t start, size_t end) const {
     std::normal_distribution<double> noise_dist(0.0, noise_);
 
     for (size_t i = 0; i < batch_size; i++) {
-        double x_vals[32]; // max input size for synthetic
+        double x_vals[32];
         for (size_t j = 0; j < input_size_; j++) {
             double val = dist(gen);
             X_batch(i, j) = val;
@@ -106,9 +100,6 @@ SyntheticDataset::get_batch(size_t start, size_t end) const {
     return {std::move(X_batch), std::move(y_batch)};
 }
 
-// ============================================================================
-// CSV Loading
-// ============================================================================
 Matrix<double> load_csv(const std::string& filename, bool has_header, char delimiter) {
     std::ifstream file(filename);
     if (!file.is_open()) {
@@ -156,9 +147,6 @@ Matrix<double> load_csv(const std::string& filename, bool has_header, char delim
     return result;
 }
 
-// ============================================================================
-// DataLoader
-// ============================================================================
 DataLoader::DataLoader(std::shared_ptr<Dataset> dataset, size_t batch_size, bool shuffle)
     : dataset_(dataset), batch_size_(batch_size), shuffle_(shuffle), current_idx_(0) {
     indices_.resize(dataset_->num_samples());
@@ -196,9 +184,6 @@ void DataLoader::shuffle_indices() {
     std::shuffle(indices_.begin(), indices_.end(), gen);
 }
 
-// ============================================================================
-// Checkpoint
-// ============================================================================
 void Checkpoint::save(const std::string& path) {
     std::ofstream file(path, std::ios::binary);
     if (!file.is_open()) {
@@ -209,7 +194,6 @@ void Checkpoint::save(const std::string& path) {
     file.write(reinterpret_cast<const char*>(&loss), sizeof(double));
     file.write(reinterpret_cast<const char*>(&best_loss), sizeof(double));
 
-    // Layer types
     size_t num_layers = layer_types.size();
     file.write(reinterpret_cast<const char*>(&num_layers), sizeof(size_t));
     for (const auto& type : layer_types) {
@@ -218,21 +202,18 @@ void Checkpoint::save(const std::string& path) {
         file.write(type.c_str(), len);
     }
 
-    // Shapes
     for (const auto& shape : shapes) {
         size_t dims = shape.size();
         file.write(reinterpret_cast<const char*>(&dims), sizeof(size_t));
         file.write(reinterpret_cast<const char*>(shape.data()), dims * sizeof(size_t));
     }
 
-    // Weights
     for (const auto& w : weights_flat) {
         size_t len = w.size();
         file.write(reinterpret_cast<const char*>(&len), sizeof(size_t));
         file.write(reinterpret_cast<const char*>(w.data()), len * sizeof(double));
     }
 
-    // Biases
     for (const auto& b : bias_flat) {
         size_t len = b.size();
         file.write(reinterpret_cast<const char*>(&len), sizeof(size_t));
@@ -258,7 +239,6 @@ Checkpoint Checkpoint::load(const std::string& path) {
     cp.weights_flat.resize(num_layers);
     cp.bias_flat.resize(num_layers);
 
-    // Must match Checkpoint::save() section order: types → shapes → weights → biases
     for (size_t i = 0; i < num_layers; i++) {
         size_t len = 0;
         file.read(reinterpret_cast<char*>(&len), sizeof(size_t));
@@ -301,9 +281,6 @@ Checkpoint Checkpoint::load(const std::string& path) {
     return cp;
 }
 
-// ============================================================================
-// Model
-// ============================================================================
 void Model::add(std::unique_ptr<Layer> layer) {
     layers_.push_back(std::move(layer));
 }
@@ -369,12 +346,11 @@ void Model::fit(const Matrix<double>& X, const Matrix<double>& y,
         int batches = 0;
 
         if (batch_size <= 0 || batch_size >= (int)train_samples) {
-            // Full batch gradient descent
+
             Matrix<double> pred = forward(X.row_slice(0, train_samples));
             double loss_val = compute_loss(pred, y.row_slice(0, train_samples));
             Matrix<double> grad = compute_loss_grad(pred, y.row_slice(0, train_samples));
 
-            // Clip gradients
             if (max_grad_norm_ > 0.0) {
                 double grad_norm = grad.norm();
                 if (grad_norm > max_grad_norm_) {
@@ -382,12 +358,10 @@ void Model::fit(const Matrix<double>& X, const Matrix<double>& y,
                 }
             }
 
-            // Backward pass
             for (int i = (int)layers_.size() - 1; i >= 0; i--) {
                 grad = layers_[i]->backward(grad);
             }
 
-            // Centralized Optimizer Step (Option A)
             if (optimizer_) {
                 size_t param_idx = 0;
                 for (auto& layer : layers_) {
@@ -402,7 +376,7 @@ void Model::fit(const Matrix<double>& X, const Matrix<double>& y,
             total_loss = loss_val;
             batches = 1;
         } else {
-            // Mini-batch gradient descent
+
             for (size_t start = 0; start < train_samples; start += batch_size) {
                 size_t end = std::min(start + batch_size, train_samples);
                 size_t actual_batch = end - start;
@@ -418,12 +392,10 @@ void Model::fit(const Matrix<double>& X, const Matrix<double>& y,
 
                 total_loss += loss_val;
 
-                // Backward pass
                 for (int i = (int)layers_.size() - 1; i >= 0; i--) {
                     grad = layers_[i]->backward(grad);
                 }
 
-                // Centralized Optimizer Step (Option A)
                 if (optimizer_) {
                     size_t param_idx = 0;
                     for (auto& layer : layers_) {
@@ -437,7 +409,6 @@ void Model::fit(const Matrix<double>& X, const Matrix<double>& y,
 
                 batches++;
 
-                // Batch callback
                 if (on_batch_end_) {
                     TrainingMetrics m;
                     m.loss = loss_val;
@@ -450,13 +421,11 @@ void Model::fit(const Matrix<double>& X, const Matrix<double>& y,
 
         double avg_loss = total_loss / batches;
 
-        // Update learning rate schedule
         if (scheduler_) {
             double new_lr = scheduler_->get_lr(epoch_);
             if (optimizer_) optimizer_->set_lr(new_lr);
         }
 
-        // Validation metrics
         double val_accuracy = 0.0;
         double val_loss = -1.0;
         if (validation_split > 0.0 && val_samples > 0) {
@@ -476,12 +445,9 @@ void Model::fit(const Matrix<double>& X, const Matrix<double>& y,
                       << " - lr: " << (optimizer_ ? optimizer_->get_lr() : 0.01)
                       << " - time: " << elapsed << "s" << std::endl;
 
-            // WebSocket broadcast (requires ws_server.h include for full definition)
-            // Skipped - ws_server_ is a forward-declared pointer, cannot call methods
             (void)ws_server_;
         }
 
-        // Callback
         if (on_epoch_end_) {
             TrainingMetrics m;
             m.loss = avg_loss;
@@ -494,7 +460,6 @@ void Model::fit(const Matrix<double>& X, const Matrix<double>& y,
             on_epoch_end_(m);
         }
 
-        // Early stopping
         if (early_stopping_patience > 0) {
             if (avg_loss < best_loss_) {
                 best_loss_ = avg_loss;
@@ -545,7 +510,6 @@ void Model::fit_dataloader(DataLoader& train_loader, int epochs,
                 grad = layers_[i]->backward(grad);
             }
 
-            // Centralized Optimizer Step (Option A)
             if (optimizer_) {
                 size_t param_idx = 0;
                 for (auto& layer : layers_) {
@@ -780,25 +744,21 @@ void Model::reset() {
 
 bool Model::check_gradients(const Matrix<double>& X, const Matrix<double>& y,
                             double epsilon, double tolerance) {
-    // Forward pass + backward pass to get analytical gradients
+
     Matrix<double> pred = forward(X);
     Matrix<double> grad = compute_loss_grad(pred, y);
 
-    // Store analytical gradients for each parameter
     std::vector<Matrix<double>> analytical_grads;
 
-    // Backward pass through all layers
     Matrix<double> current_grad = grad;
     for (int i = (int)layers_.size() - 1; i >= 0; i--) {
         Dense* d = dynamic_cast<Dense*>(layers_[i].get());
         if (d) {
-            // Get the gradient w.r.t. weights (we'll compute numerically)
-            // For simplicity, we store current_grad as the gradient we're tracking
+
         }
         current_grad = layers_[i]->backward(current_grad);
     }
 
-    // Numerical gradient checking (simplified)
     bool all_pass = true;
 
     for (size_t layer_idx = 0; layer_idx < layers_.size(); layer_idx++) {
@@ -807,14 +767,12 @@ bool Model::check_gradients(const Matrix<double>& X, const Matrix<double>& y,
 
         const auto& W = d->getWeights();
 
-        // Check a sample of weights
         size_t check_count = std::min(W.size(), size_t(10));
         for (size_t p = 0; p < check_count; p++) {
             size_t idx = (p * W.size()) / check_count;
             size_t i = idx / W.cols();
             size_t j = idx % W.cols();
 
-            // Numerical gradient for W[i,j]
             double orig = const_cast<Matrix<double>&>(W)(i, j);
 
             const_cast<Matrix<double>&>(W)(i, j) = orig + epsilon;
@@ -829,8 +787,6 @@ bool Model::check_gradients(const Matrix<double>& X, const Matrix<double>& y,
 
             double numerical_grad = (loss_plus - loss_minus) / (2.0 * epsilon);
 
-            // Analytical gradient would come from dW matrix
-            // For now, just verify the shape is correct
             if (std::abs(numerical_grad) > 1e10) {
                 std::cout << "Warning: Numerical gradient explosion at layer "
                           << layer_idx << " weight [" << i << "," << j << "]" << std::endl;
@@ -842,9 +798,6 @@ bool Model::check_gradients(const Matrix<double>& X, const Matrix<double>& y,
     return all_pass;
 }
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
 std::pair<Matrix<double>, Matrix<double>>
 train_test_split(const Matrix<double>& X, const Matrix<double>& y,
                  double test_size, bool shuffle) {
@@ -883,7 +836,7 @@ train_test_split(const Matrix<double>& X, const Matrix<double>& y,
     }
 
     return {std::move(X_train), std::move(y_train)};
-    // Note: X_test, y_test are lost in this simplified version
+
 }
 
 double accuracy(const Matrix<double>& predictions, const Matrix<double>& targets) {
@@ -892,7 +845,6 @@ double accuracy(const Matrix<double>& predictions, const Matrix<double>& targets
     double correct = 0.0;
     size_t n = predictions.rows();
 
-    // Classification accuracy (argmax)
     if (predictions.cols() > 1) {
         for (size_t i = 0; i < n; i++) {
             size_t pred_class = 0;
@@ -914,7 +866,7 @@ double accuracy(const Matrix<double>& predictions, const Matrix<double>& targets
             if (pred_class == true_class) correct += 1.0;
         }
     } else {
-        // Regression: treat within 1% of range as "correct"
+
         double range = targets.max() - targets.min();
         double threshold = range * 0.1;
         if (threshold < 1e-10) threshold = 1e-10;
@@ -929,4 +881,4 @@ double accuracy(const Matrix<double>& predictions, const Matrix<double>& targets
     return correct / n;
 }
 
-} // namespace cyberhex
+}

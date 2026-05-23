@@ -16,7 +16,6 @@ const NEURON_RADIUS = 0.2;
 function NeuronParticles({ layers }: { layers: LayerInfo[] }) {
   const displayCounts = layers.map(l => Math.min(l.outputShape, MAX_NEURONS));
 
-  // Compute positions and colors
   const neurons = useMemo(() => {
     const result: { pos: [number, number, number]; color: string; layer: number; index: number }[] = [];
     const totalWidth = (layers.length - 1) * LAYER_SPACING;
@@ -102,7 +101,7 @@ function Connections({ layers }: { layers: LayerInfo[] }) {
 
   useFrame(() => {
     if (ref.current) {
-      // Subtle pulse
+
       ref.current.children.forEach((child, i) => {
         if (child instanceof THREE.Line) {
           const mat = child.material as THREE.LineBasicMaterial;

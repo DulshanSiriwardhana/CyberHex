@@ -20,30 +20,42 @@ import { SkeletonPage } from "@/components/ui/skeleton";
 import { Container, Grid, Stack, Flex, SectionHeading } from "@/components/ui/layout";
 import { useAuth } from "@/contexts/auth";
 
-const recentExperiments = [
-  { id: 1, name: "MNIST Classifier v3", status: "completed", accuracy: 98.7, date: "2h ago" },
-  { id: 2, name: "Sentiment LSTM", status: "running", accuracy: 87.2, date: "5h ago" },
-  { id: 3, name: "Image GAN", status: "failed", accuracy: 0, date: "1d ago" },
-  { id: 4, name: "Price Predictor", status: "completed", accuracy: 94.1, date: "2d ago" },
-];
+
+
+import { useExperimentsStore } from "@/stores/experiments";
+import { useEffect } from "react";
 
 const statusColors: Record<string, string> = {
   completed: "success",
-  running: "default",
+  training: "default",
   failed: "destructive",
-  queued: "warning",
+  stopped: "warning",
+  draft: "secondary",
 };
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { experiments, fetchExperiments } = useExperimentsStore();
+
+  useEffect(() => {
+    fetchExperiments();
+  }, [fetchExperiments]);
 
   if (!user) {
     return <SkeletonPage rows={4} />;
   }
 
+  const recentExperiments = experiments.slice(0, 5);
+
+  const stats = [
+    { icon: Brain, label: "Total Models", value: experiments.filter(e => e.status === 'completed').length.toString(), change: "Released" },
+    { icon: FlaskConical, label: "Experiments", value: experiments.length.toString(), change: "Total Runs" },
+    { icon: TrendingUp, label: "Avg Loss", value: (experiments.filter(e => e.results?.finalTrainLoss).reduce((acc, e) => acc + (e.results?.finalTrainLoss || 0), 0) / (experiments.filter(e => e.results?.finalTrainLoss).length || 1)).toFixed(3), change: "Training Metric" },
+    { icon: Clock, label: "Active Jobs", value: experiments.filter(e => e.status === 'training').length.toString(), change: "Running Now" },
+  ];
+
   return (
     <Container className="py-8 pt-24">
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -54,7 +66,7 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-white">
               Welcome back,{" "}
-              <span className="bg-gradient-to-r from-green-400 to-violet-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
                 {user.username}
               </span>
             </h1>
@@ -77,14 +89,8 @@ export default function DashboardPage() {
         </Flex>
       </motion.div>
 
-      {/* Stats */}
       <Grid cols={4} gap="md" className="mb-8">
-        {[
-          { icon: Brain, label: "Total Models", value: "12", change: "+3 this week" },
-          { icon: FlaskConical, label: "Experiments", value: "47", change: "+8 today" },
-          { icon: TrendingUp, label: "Avg Accuracy", value: "94.2%", change: "+2.1%" },
-          { icon: Clock, label: "Training Hours", value: "128h", change: "12h active" },
-        ].map((stat, i) => (
+        {stats.map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
@@ -107,7 +113,6 @@ export default function DashboardPage() {
         ))}
       </Grid>
 
-      {/* Recent experiments */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -130,29 +135,28 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-1">
-              {recentExperiments.map((exp, i) => (
+              {recentExperiments.map((exp) => (
                 <Link
-                  key={exp.id}
-                  to={`/experiments/${exp.id}`}
+                  key={exp._id}
+                  to={`/experiments/${exp._id}`}
                   className="flex items-center justify-between rounded-xl px-4 py-3 hover:bg-neutral-800/50 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${
-                      exp.status === "running" ? "bg-green-500/10 text-green-400" :
+                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${exp.status === "training" ? "bg-green-500/10 text-green-400" :
                       exp.status === "completed" ? "bg-emerald-500/10 text-emerald-400" :
-                      "bg-neutral-800 text-neutral-500"
-                    }`}>
+                        "bg-neutral-800 text-neutral-500"
+                      }`}>
                       <FlaskConical className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-white truncate">{exp.name}</p>
-                      <p className="text-xs text-neutral-500">{exp.date}</p>
+                      <p className="text-xs text-neutral-500">{new Date(exp.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 shrink-0">
-                    {exp.status !== "failed" && (
+                    {exp.results?.finalTrainLoss !== undefined && (
                       <span className="text-sm font-mono text-neutral-300">
-                        {exp.accuracy.toFixed(1)}%
+                        {exp.results.finalTrainLoss.toFixed(4)}
                       </span>
                     )}
                     <Badge variant={statusColors[exp.status] as any} size="sm">
@@ -161,12 +165,17 @@ export default function DashboardPage() {
                   </div>
                 </Link>
               ))}
+              {recentExperiments.length === 0 && (
+                <div className="py-12 text-center">
+                  <FlaskConical className="h-12 w-12 text-neutral-700 mx-auto mb-4" />
+                  <p className="text-neutral-500 italic">No experiments found. Start by creating a new one!</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
       </motion.div>
 
-      {/* Quick actions */}
       <Grid cols={3} gap="md" className="mt-8">
         <Link to="/experiments/new">
           <Card className="group border-green-500/10 hover:border-green-500/30 hover:shadow-[0_0_25px_rgba(34, 197, 94,0.1)] cursor-pointer transition-all duration-300">

@@ -1,6 +1,3 @@
-/**
- * CyberHex v4.0 — Release badge (No. 01)
- */
 import { cn } from '@/lib/utils';
 import { V4_BADGE_COPY, V4_RELEASE } from '@/lib/design-v4';
 

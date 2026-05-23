@@ -6,10 +6,6 @@
 
 namespace cyberhex {
 
-/**
- * Non-owning view into a row-major Matrix (Phase 2 tensor ABI foundation).
- * Supports sub-matrix windows without copying underlying storage.
- */
 template <typename T = double>
 class TensorView {
 public:
@@ -48,7 +44,6 @@ public:
         return out;
     }
 
-    /** View a contiguous row block inside the parent matrix. */
     TensorView row_view(size_t start, size_t count) const {
         return TensorView(*matrix_, row_offset_ + start, col_offset_, count, cols_);
     }
@@ -61,7 +56,6 @@ private:
     size_t cols_ = 0;
 };
 
-/** Element-wise add with NumPy-style broadcasting (2D only). */
 template <typename T>
 Matrix<T> broadcast_add(const Matrix<T>& a, const Matrix<T>& b) {
     if (a.rows() == b.rows() && a.cols() == b.cols()) {
@@ -94,6 +88,6 @@ Matrix<T> broadcast_add(const Matrix<T>& a, const Matrix<T>& b) {
         std::to_string(b.cols()) + ")");
 }
 
-} // namespace cyberhex
+}
 
-#endif // CYBERHEX_TENSOR_H
+#endif

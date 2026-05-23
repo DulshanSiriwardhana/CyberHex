@@ -27,7 +27,7 @@ void he_init(Matrix<double>& W) {
     (void)fan_out;
 }
 
-} // namespace
+}
 
 NodeId ComputationGraph::add_input() {
     GraphNode n;
@@ -147,7 +147,7 @@ void ComputationGraph::forward_node(GraphNode& n) {
             auto& Bnode = nodes_.at(n.inputs[2]);
             Matrix<double> W = Wnode.op == GraphOpType::Parameter ? param_as_compute(Wnode) : Wnode.value;
             Matrix<double> b = Bnode.op == GraphOpType::Parameter ? param_as_compute(Bnode) : Bnode.value;
-            n.weight = Matrix<double>(); // pre_activation cache in weight slot
+            n.weight = Matrix<double>();
             n.value = fused_linear_relu_forward(X, W, b, n.weight);
             break;
         }
@@ -281,10 +281,6 @@ void ComputationGraph::zero_grad() {
 const Matrix<double>& ComputationGraph::value(NodeId id) const {
     return nodes_.at(id).value;
 }
-
-// ============================================================================
-// GraphTrainer
-// ============================================================================
 
 NodeId GraphTrainer::build_mlp(const std::vector<size_t>& layers,
                                const std::vector<std::string>& activations) {
@@ -440,4 +436,4 @@ bool GraphTrainer::save_weights(const std::string& prefix) const {
     return true;
 }
 
-} // namespace cyberhex
+}

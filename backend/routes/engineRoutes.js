@@ -1,6 +1,3 @@
-/**
- * CyberHex ML Engine REST API — model registry, inference, ONNX export.
- */
 import express from 'express';
 import { asyncHandler, ValidationError, NotFoundError } from '../middleware/errorHandler.js';
 import { runInference } from '../services/inferenceService.js';

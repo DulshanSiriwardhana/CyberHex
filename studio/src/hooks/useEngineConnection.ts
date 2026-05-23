@@ -1,6 +1,3 @@
-/**
- * CyberHex Studio — Engine WebSocket connection hook
- */
 import { useEffect } from 'react';
 import { WebSocketService } from '@/services/WebSocketService';
 import { useStudioStore } from '@/stores/studioStore';

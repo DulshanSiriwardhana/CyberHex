@@ -1,24 +1,16 @@
 @import "tailwindcss";
 
-/* ========================================================================== */
-/*  CyberHex v4.0 — Release No. 01: "The Word" + v3 Multi-Theme Foundation   */
-/* ========================================================================== */
-
 @theme {
-  /* ── Brand: True Green ──────────────────────────────────────── */
 
-  /* ── Purple / Violet ───────────────────────────────────────────────────── */
   --color-violet-300: #c4b5fd;
   --color-violet-400: #a78bfa;
   --color-violet-500: #8b5cf6;
   --color-violet-600: #7c3aed;
   --color-violet-700: #6d28d9;
 
-  /* ── Pink / Rose ───────────────────────────────────────────────────────── */
   --color-pink-400: #f472b6;
   --color-pink-500: #ec4899;
 
-  /* ── Neutrals — extended deep scale ────────────────────────────────────── */
   --color-neutral-0: #ffffff;
   --color-neutral-50: #fafafa;
   --color-neutral-100: #f4f4f5;
@@ -36,7 +28,6 @@
   --color-neutral-950: #09090b;
   --color-neutral-1000: #050508;
 
-  /* ── Semantic colors ───────────────────────────────────────────────────── */
   --color-green-300: #86efac;
   --color-green-400: #4ade80;
   --color-green-500: #22c55e;
@@ -54,27 +45,23 @@
   --color-amber-500: #f59e0b;
   --color-amber-600: #d97706;
 
-  /* ── Typography ─────────────────────────────────────────────────────────── */
   --font-spectral: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
   --font-display: "Spectral", "Georgia", serif;
   --font-spectral: "Spectral", "Georgia", serif;
   --font-wordmark: "Outfit", "Inter", system-ui, sans-serif;
 
-  /* v4.0 — Release No. 01 (The Word) */
   --v4-signal-green: #00e5ff;
   --v4-signal-violet: #8b5cf6;
   --v4-hex-gold: #d4a017;
   --v4-word-underline: linear-gradient(90deg, #00e5ff 0%, #d4a017 50%, #8b5cf6 100%);
 
-  /* ── Radii ─────────────────────────────────────────────────────────────── */
   --radius: 0.5rem;
   --radius-sm: 0.25rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
 
-  /* ── Animation durations ────────────────────────────────────────────────── */
   --duration-instant: 75ms;
   --duration-fast: 150ms;
   --duration-normal: 250ms;
@@ -83,7 +70,7 @@
 }
 
 :root {
-  /* ── Core palette ─────────────────────────────────────────────────────── */
+
   --color-green-400: #4ade80;
   --color-green-500: #22c55e;
   --color-green-600: #16a34a;
@@ -104,7 +91,6 @@
   --color-neutral-925: #111115;
   --color-neutral-950: #09090b;
 
-  /* ── Typography ──────────────────────────────────────────────────────── */
   --font-spectral: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
   --font-display: "Spectral", "Georgia", serif;
@@ -119,7 +105,6 @@
   --duration-slow: 400ms;
 }
 
-/* ── Light theme overrides ──────────────────────────────────────────────── */
 .light {
   --color-neutral-950: #f8fafc;
   --color-neutral-925: #f1f5f9;
@@ -139,8 +124,6 @@
   color-scheme: light;
 }
 
-/* ---- Base Styles ---------------------------------------------------------- */
-
 * {
   border-color: var(--color-neutral-750);
 }
@@ -157,13 +140,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Selection color */
 ::selection {
   background-color: rgba(34, 197, 94, 0.3);
   color: var(--color-neutral-0);
 }
 
-/* Scrollbar — cyber */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -182,8 +163,6 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-green-500);
 }
-
-/* ---- Custom Animations ---------------------------------------------------- */
 
 @keyframes pulse-glow {
   0%,
@@ -296,8 +275,6 @@ body {
   }
 }
 
-/* ---- Animation Utility Classes -------------------------------------------- */
-
 .animate-pulse-glow {
   animation: pulse-glow 3s ease-in-out infinite;
 }
@@ -340,8 +317,6 @@ body {
   animation: data-flow 20s linear infinite;
 }
 
-/* ---- Glass Variants ------------------------------------------------------- */
-
 .glass-subtle {
   background-color: color-mix(in srgb, var(--color-neutral-900) 40%, transparent);
   backdrop-filter: blur(4px);
@@ -378,8 +353,6 @@ body {
   box-shadow: 0 0 15px rgba(34, 197, 94, 0.15);
 }
 
-/* ---- Neon Text Effects ---------------------------------------------------- */
-
 .neon-text-green {
   text-shadow: 0 0 7px rgba(74, 222, 128, 0.45), 0 0 20px rgba(34, 197, 94, 0.2),
     0 0 40px rgba(22, 163, 74, 0.12);
@@ -389,8 +362,6 @@ body {
   text-shadow: 0 0 7px rgba(167, 139, 250, 0.5),
     0 0 20px rgba(139, 92, 246, 0.25), 0 0 40px rgba(124, 58, 237, 0.15);
 }
-
-/* ---- Cyber Grid Background ------------------------------------------------ */
 
 .bg-cyber-grid {
   background-image: linear-gradient(
@@ -409,8 +380,6 @@ body {
     linear-gradient(90deg, rgba(34, 197, 94, 0.04) 1px, transparent 1px);
   background-size: 30px 30px;
 }
-
-/* ---- Gradient Backgrounds ------------------------------------------------- */
 
 .bg-cyber-gradient {
   background: linear-gradient(
@@ -431,8 +400,6 @@ body {
     transparent 60%
   );
 }
-
-/* ---- Terminal styles ------------------------------------------------------ */
 
 .terminal-window {
   background-color: color-mix(in srgb, var(--color-neutral-950) 95%, transparent);
@@ -508,8 +475,6 @@ body {
   color: var(--color-neutral-600);
 }
 
-/* ---- Hexagon decorative elements ------------------------------------------ */
-
 .hex-decoration {
   position: absolute;
   width: 400px;
@@ -518,8 +483,6 @@ body {
   border-radius: 50%;
   transform: rotate(30deg) skew(-20deg);
 }
-
-/* ---- Input Styles --------------------------------------------------------- */
 
 .input-cyber {
   width: 100%;
@@ -565,8 +528,6 @@ body {
     0 0 15px rgba(244, 63, 94, 0.15);
 }
 
-/* ---- Badge variants ------------------------------------------------------- */
-
 .badge-cyber {
   display: inline-flex;
   align-items: center;
@@ -591,8 +552,6 @@ body {
   color: var(--color-violet-400);
 }
 
-/* ---- Divider -------------------------------------------------------------- */
-
 .divider-cyber {
   height: 1px;
   width: 100%;
@@ -616,8 +575,6 @@ body {
   );
 }
 
-/* ---- Tooltip -------------------------------------------------------------- */
-
 .tooltip-cyber {
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-neutral-700);
@@ -629,8 +586,6 @@ body {
   -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
-
-/* ---- Skeleton loading ----------------------------------------------------- */
 
 .skeleton-cyber {
   border-radius: var(--radius-lg);
@@ -653,8 +608,6 @@ body {
   }
 }
 
-/* ---- Focus ring ----------------------------------------------------------- */
-
 .focus-ring-cyber:focus {
   outline: none;
 }
@@ -664,8 +617,6 @@ body {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-green-500) 50%, transparent),
     0 0 0 4px var(--color-neutral-950);
 }
-
-/* ---- Particle / noise overlay (optional) ---------------------------------- */
 
 .noise-overlay::before {
   content: "";
@@ -677,8 +628,6 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ---- Card hover lift ------------------------------------------------------ */
-
 .card-hover-lift {
   transition: all 0.3s ease;
 }
@@ -688,13 +637,9 @@ body {
   box-shadow: 0 8px 30px rgba(34, 197, 94, 0.1);
 }
 
-/* ---- 3D perspective ------------------------------------------------------- */
-
 .perspective-1000 {
   perspective: 1000px;
 }
-
-/* ---- Glitch text effect --------------------------------------------------- */
 
 .glitch-text {
   position: relative;
@@ -719,8 +664,6 @@ body {
   clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
 }
 
-/* ---- Scanline overlay for terminal areas ---------------------------------- */
-
 .scanline-overlay::after {
   content: "";
   position: absolute;
@@ -734,8 +677,6 @@ body {
   );
   pointer-events: none;
 }
-
-/* ---- Transitions (used by framer-motion and CSS) -------------------------- */
 
 .transition-cyber-fast {
   transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -752,10 +693,6 @@ body {
 .transition-cyber-spring {
   transition: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-
-/* ========================================================================== */
-/*  RESPONSIVE ADJUSTMENTS                                                  */
-/* ========================================================================== */
 
 @media (max-width: 768px) {
   .bg-cyber-grid {
@@ -778,8 +715,6 @@ body {
   }
 }
 
-/* ---- App shell ------------------------------------------------------------- */
-
 .app-surface {
   background-color: var(--color-neutral-950);
   color: var(--color-neutral-300);
@@ -799,10 +734,6 @@ body {
   color: var(--color-green-400);
 }
 
-/* ========================================================================== */
-/*  FONT FACE — Override for Spectral (already loaded via Google Fonts)     */
-/* ========================================================================== */
-
 .font-spectral {
   font-family: var(--font-spectral);
 }
@@ -810,10 +741,6 @@ body {
 .font-mono {
   font-family: var(--font-mono);
 }
-
-/* ========================================================================== */
-/*  v4.0 — Release No. 01: The Word (wordmark system)                         */
-/* ========================================================================== */
 
 .wordmark-v4 {
   font-family: var(--font-wordmark);

@@ -1,11 +1,6 @@
-/**
- * CyberHex Studio — Socket.IO bridge
- * Real-time events for neural studio (inference, training, performance).
- */
 import { Server } from 'socket.io';
 import logger from '../utils/logger.js';
 
-/** @param {import('http').Server} httpServer */
 export function attachStudioSocket(httpServer) {
   const origins = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:5174')
     .split(',')

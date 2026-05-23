@@ -15,6 +15,7 @@ import mlTrainingRoutes from './routes/mlTrainingRoutes.js';
 import engineRoutes from './routes/engineRoutes.js';
 import otpRoutes from './routes/otpRoutes.js';
 import healthRoutes from './routes/healthRoutes.js';
+import datasetRoutes from './routes/datasetRoutes.js';
 import logger from './utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,10 +25,8 @@ dotenv.config();
 
 const app = express();
 
-// Trust proxy for accurate client IP behind Nginx/K8s
 app.set('trust proxy', 1);
 
-// Production-grade security headers (replaces raw helmet())
 app.use(securityHeaders());
 
 const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173').split(',');
@@ -46,7 +45,6 @@ app.use(cookieParser());
 
 app.use(rateLimiter);
 
-// Audit logging on all authenticated requests
 app.use(auditMiddleware());
 
 app.use((req, _res, next) => {
@@ -54,18 +52,16 @@ app.use((req, _res, next) => {
     next();
 });
 
-// Health / diagnostics endpoints (unauthenticated)
 app.use('/health', healthRoutes);
 
-// API v1 routes
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/experiments', experimentRoutes);
 app.use('/api/v1/ml', mlTrainingRoutes);
 app.use('/api/v1/engine', engineRoutes);
 app.use('/api/v1/otp', otpRoutes);
+app.use('/api/v1/datasets', datasetRoutes);
 
-// Legacy health aliases
 app.get('/api/v1/health', (_req, res) =>
     res.json({ status: 'ok', version: '3.0.0', timestamp: new Date().toISOString() })
 );

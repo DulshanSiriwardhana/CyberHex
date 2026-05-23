@@ -24,7 +24,7 @@ std::string json_escape(const std::string& s) {
     return oss.str();
 }
 
-} // namespace
+}
 
 bool write_export_manifest(const std::string& weights_prefix,
                            const std::string& manifest_path,
@@ -108,4 +108,4 @@ void emit_export_complete(const std::string& manifest_path,
               << std::endl;
 }
 
-} // namespace cyberhex
+}
