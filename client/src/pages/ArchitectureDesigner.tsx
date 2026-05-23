@@ -147,13 +147,13 @@ export default function ArchitectureDesigner() {
   useEffect(() => {
     return () => {
       if (wasmModel) {
-        try { wasmModel.delete(); } catch(e) {}
+        try { wasmModel.delete(); } catch (e) { }
       }
       if (wasmXMatrix) {
-        try { wasmXMatrix.delete(); } catch(e) {}
+        try { wasmXMatrix.delete(); } catch (e) { }
       }
       if (wasmYMatrix) {
-        try { wasmYMatrix.delete(); } catch(e) {}
+        try { wasmYMatrix.delete(); } catch (e) { }
       }
     };
   }, [wasmModel, wasmXMatrix, wasmYMatrix]);
@@ -291,13 +291,13 @@ export default function ArchitectureDesigner() {
       }
 
       if (wasmModel) {
-        try { wasmModel.delete(); } catch(e) {}
+        try { wasmModel.delete(); } catch (e) { }
       }
       if (wasmXMatrix) {
-        try { wasmXMatrix.delete(); } catch(e) {}
+        try { wasmXMatrix.delete(); } catch (e) { }
       }
       if (wasmYMatrix) {
-        try { wasmYMatrix.delete(); } catch(e) {}
+        try { wasmYMatrix.delete(); } catch (e) { }
       }
 
       const model = new module.Model();
@@ -468,7 +468,7 @@ export default function ArchitectureDesigner() {
   const shapes = getShapes();
 
   const generateCppCode = (): string => {
-    let code = `
+    let code = "";
     code += `#include "model.h"\n`;
     code += `#include "dense.h"\n`;
     code += `#include "activations.h"\n`;
@@ -543,7 +543,7 @@ export default function ArchitectureDesigner() {
 
   return (
     <Container className="py-8 pt-24 min-h-screen">
-      {}
+      { }
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -594,10 +594,10 @@ export default function ArchitectureDesigner() {
         </Flex>
       </motion.div>
 
-      {}
+      { }
       <Grid cols={4} gap="md" className="items-stretch">
 
-        {}
+        { }
         <div className="col-span-1 space-y-4">
           <Card className="h-full border-neutral-800/80 bg-neutral-900/60 backdrop-blur-xl">
             <CardHeader className="pb-3 border-b border-neutral-800/40">
@@ -608,7 +608,7 @@ export default function ArchitectureDesigner() {
             </CardHeader>
             <CardContent className="pt-4 px-3 max-h-[70vh] overflow-y-auto space-y-4">
 
-              {}
+              { }
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-2 px-1">
                   Core Layers
@@ -638,7 +638,7 @@ export default function ArchitectureDesigner() {
                 </div>
               </div>
 
-              {}
+              { }
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-2 px-1">
                   Activations
@@ -668,7 +668,7 @@ export default function ArchitectureDesigner() {
                 </div>
               </div>
 
-              {}
+              { }
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-2 px-1">
                   Transformers & Advanced
@@ -702,60 +702,56 @@ export default function ArchitectureDesigner() {
           </Card>
         </div>
 
-        {}
+        { }
         <div className="col-span-2 space-y-4 flex flex-col">
-          {}
+          { }
           <Flex className="border-b border-neutral-800/80 pb-0.5" gap="sm">
             <button
               onClick={() => setActiveTab("visual")}
-              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${
-                activeTab === "visual"
+              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${activeTab === "visual"
                   ? "text-green-400 border-green-500 bg-green-500/5"
                   : "text-neutral-500 border-transparent hover:text-neutral-300"
-              }`}
+                }`}
             >
               Visual Canvas
             </button>
             <button
               onClick={() => setActiveTab("cpp")}
-              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${
-                activeTab === "cpp"
+              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${activeTab === "cpp"
                   ? "text-green-400 border-green-500 bg-green-500/5"
                   : "text-neutral-500 border-transparent hover:text-neutral-300"
-              }`}
+                }`}
             >
               C++ Code
             </button>
             <button
               onClick={() => setActiveTab("json")}
-              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${
-                activeTab === "json"
+              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${activeTab === "json"
                   ? "text-green-400 border-green-500 bg-green-500/5"
                   : "text-neutral-500 border-transparent hover:text-neutral-300"
-              }`}
+                }`}
             >
               JSON Manifest
             </button>
             <button
               onClick={() => { setActiveTab("wasm"); startWasmSimulation(); }}
-              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${
-                activeTab === "wasm"
+              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${activeTab === "wasm"
                   ? "text-green-400 border-green-500 bg-green-500/5"
                   : "text-neutral-500 border-transparent hover:text-neutral-300"
-              }`}
+                }`}
             >
               Live WASM Simulation
             </button>
           </Flex>
 
-          {}
+          { }
           <div className="flex-1 min-h-[500px]">
             {activeTab === "visual" && (
               <GlowCard className="p-6 h-full bg-neutral-950/40 relative overflow-hidden flex flex-col">
-                {}
+                { }
                 <div className="absolute inset-0 bg-cyber-grid opacity-15 pointer-events-none" />
 
-                {}
+                { }
                 <div className="relative z-10 mx-auto flex flex-col items-center mb-6">
                   <div className="rounded-xl border border-neutral-800 bg-neutral-900/90 px-4 py-2 flex items-center gap-3">
                     <div className="h-3 w-3 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
@@ -774,7 +770,7 @@ export default function ArchitectureDesigner() {
                   </div>
                 </div>
 
-                {}
+                { }
                 <div className="flex-1 overflow-y-auto max-h-[50vh] pr-2 z-10">
                   {layers.length === 0 ? (
                     <div className="h-40 flex flex-col items-center justify-center text-neutral-500">
@@ -793,17 +789,15 @@ export default function ArchitectureDesigner() {
                             key={layer.id}
                             value={layer}
                             onClick={() => setSelectedLayerId(layer.id)}
-                            className={`cursor-grab active:cursor-grabbing relative flex flex-col items-center transition-all ${
-                              isSelected ? "z-25" : "z-10"
-                            }`}
+                            className={`cursor-grab active:cursor-grabbing relative flex flex-col items-center transition-all ${isSelected ? "z-25" : "z-10"
+                              }`}
                           >
-                            {}
+                            { }
                             <div
-                              className={`w-full max-w-md rounded-2xl border p-3.5 transition-all duration-300 ${
-                                isSelected
+                              className={`w-full max-w-md rounded-2xl border p-3.5 transition-all duration-300 ${isSelected
                                   ? "border-green-500/50 bg-green-500/5 shadow-[0_0_20px_rgba(34,197,94,0.1)]"
                                   : "border-neutral-800 bg-neutral-900/60 hover:border-neutral-700"
-                              }`}
+                                }`}
                             >
                               <Flex justify="between" align="center">
                                 <Flex gap="sm">
@@ -824,7 +818,7 @@ export default function ArchitectureDesigner() {
                                 </Flex>
 
                                 <Flex gap="sm">
-                                  {}
+                                  { }
                                   <button
                                     onClick={(e) => handleRemoveLayer(layer.id, e)}
                                     className="p-1.5 rounded-lg text-neutral-600 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
@@ -834,7 +828,7 @@ export default function ArchitectureDesigner() {
                                 </Flex>
                               </Flex>
 
-                              {}
+                              { }
                               {Object.keys(layer.params).length > 0 && (
                                 <div className="mt-2 flex flex-wrap gap-1.5 pt-2 border-t border-neutral-800/40">
                                   {Object.entries(layer.params).map(([k, v]) => (
@@ -846,7 +840,7 @@ export default function ArchitectureDesigner() {
                               )}
                             </div>
 
-                            {}
+                            { }
                             <div className="h-4 w-0.5 bg-neutral-800/80 relative">
                               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 border-t-[5px] border-t-neutral-800 border-x-[5px] border-x-transparent" />
                             </div>
@@ -857,7 +851,7 @@ export default function ArchitectureDesigner() {
                   )}
                 </div>
 
-                {}
+                { }
                 <div className="relative z-10 mx-auto flex flex-col items-center mt-2">
                   <div className="rounded-xl border border-neutral-800 bg-neutral-900/90 px-4 py-2">
                     <p className="text-[10px] font-bold text-neutral-500 uppercase text-center">Output Dim</p>
@@ -936,7 +930,7 @@ export default function ArchitectureDesigner() {
 
             {activeTab === "wasm" && (
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full min-h-[500px]">
-                {}
+                { }
                 <div className="lg:col-span-3 space-y-4 flex flex-col">
                   <GlowCard className="p-6 bg-neutral-950/40 relative overflow-hidden flex flex-col flex-1">
                     <div className="absolute inset-0 bg-cyber-grid opacity-10 pointer-events-none" />
@@ -970,7 +964,7 @@ export default function ArchitectureDesigner() {
                       </div>
                     ) : (
                       <div className="flex-1 flex flex-col items-center justify-center relative z-10 py-2">
-                        {}
+                        { }
                         <div className="relative p-1 rounded-2xl bg-neutral-900 border border-neutral-800 shadow-[0_0_20px_rgba(0,0,0,0.8)]">
                           <canvas
                             id="wasm-canvas"
@@ -980,10 +974,10 @@ export default function ArchitectureDesigner() {
                           />
                         </div>
 
-                        {}
+                        { }
                         <div className="w-full mt-6 bg-neutral-900/80 border border-neutral-800/80 rounded-xl p-3 backdrop-blur-md">
                           <Flex justify="between" align="center" gap="md" className="flex-wrap">
-                            {}
+                            { }
                             <div className="flex items-center gap-2">
                               {isWasmTraining ? (
                                 <Button
@@ -1026,7 +1020,7 @@ export default function ArchitectureDesigner() {
                               </Button>
                             </div>
 
-                            {}
+                            { }
                             <div className="flex items-center gap-3">
                               <div className="flex flex-col gap-1">
                                 <label className="text-[9px] text-neutral-500 font-semibold tracking-wider uppercase">Dataset Pattern</label>
@@ -1066,9 +1060,9 @@ export default function ArchitectureDesigner() {
                   </GlowCard>
                 </div>
 
-                {}
+                { }
                 <div className="lg:col-span-2 space-y-4 flex flex-col">
-                  {}
+                  { }
                   <Card className="border-neutral-800 bg-neutral-900/60 backdrop-blur-xl">
                     <CardHeader className="pb-2 border-b border-neutral-800/40">
                       <CardTitle className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
@@ -1092,7 +1086,7 @@ export default function ArchitectureDesigner() {
                     </CardContent>
                   </Card>
 
-                  {}
+                  { }
                   <Card className="border-neutral-800 bg-neutral-900/60 backdrop-blur-xl flex-1 flex flex-col overflow-hidden">
                     <CardHeader className="pb-2 border-b border-neutral-800/40 flex flex-row justify-between items-center">
                       <CardTitle className="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -1138,7 +1132,7 @@ export default function ArchitectureDesigner() {
           </div>
         </div>
 
-        {}
+        { }
         <div className="col-span-1 space-y-4">
           <Card className="border-neutral-800 bg-neutral-900/60 backdrop-blur-xl h-full flex flex-col">
             <CardHeader className="pb-3 border-b border-neutral-800/40">
@@ -1149,7 +1143,7 @@ export default function ArchitectureDesigner() {
             </CardHeader>
             <CardContent className="pt-4 space-y-5 flex-1 overflow-y-auto">
 
-              {}
+              { }
               <AnimatePresence mode="wait">
                 {selectedLayer ? (
                   <motion.div
@@ -1173,7 +1167,7 @@ export default function ArchitectureDesigner() {
 
                     <div className="divider-cyber my-2" />
 
-                    {}
+                    { }
                     <div className="space-y-3.5">
                       {selectedLayer.type === "Dense" && (
                         <>
@@ -1340,7 +1334,7 @@ export default function ArchitectureDesigner() {
 
               <div className="divider-cyber my-6" />
 
-              {}
+              { }
               <div className="space-y-4 pt-1">
                 <h4 className="text-xs font-extrabold text-neutral-400 uppercase tracking-wider">
                   Model Hyperparameters

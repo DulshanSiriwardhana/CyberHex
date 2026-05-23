@@ -1,0 +1,23 @@
+file,column,dtype,description
+hantavirus_country_yearly.csv,year,int,Calendar year (1993-2026)
+hantavirus_country_yearly.csv,iso3,str,ISO 3166-1 alpha-3 country code
+hantavirus_country_yearly.csv,country,str,Country name
+hantavirus_country_yearly.csv,who_region,str,WHO regional office (AMRO/EURO/WPRO)
+hantavirus_country_yearly.csv,syndrome,str,Disease syndrome: HPS or HFRS
+hantavirus_country_yearly.csv,confirmed_cases,int,Annual confirmed hantavirus cases
+hantavirus_country_yearly.csv,deaths,int,Annual deaths from hantavirus
+hantavirus_country_yearly.csv,case_fatality_rate,float,Case fatality rate (deaths/cases)
+hantavirus_country_yearly.csv,hospitalized,int,Number of hospitalized patients
+hantavirus_country_yearly.csv,icu_admissions,int,ICU admissions count
+hantavirus_country_yearly.csv,human_to_human_cases,int,Documented human-to-human transmission cases
+hantavirus_clinical.csv,patient_id,str,Unique synthetic patient identifier
+hantavirus_clinical.csv,severity,str,Clinical severity: Mild/Moderate/Severe/Critical
+hantavirus_clinical.csv,outcome,str,Patient outcome: Recovered/Deceased
+hantavirus_clinical.csv,ecmo_used,int,Whether ECMO was used (0/1)
+hantavirus_clinical.csv,exposure_type,str,Type of rodent/environmental exposure
+hantavirus_environmental.csv,rodent_abundance_index,float,Normalized rodent population index (0-1)
+hantavirus_environmental.csv,ndvi,float,Normalized Difference Vegetation Index (0-1)
+hantavirus_environmental.csv,deforestation_rate_pct,float,Annual deforestation rate percentage
+hantavirus_outbreaks.csv,trigger,str,Environmental or social trigger for outbreak
+hantavirus_virus_strains.csv,h2h_transmission,str,Whether human-to-human transmission is documented
+hantavirus_virus_strains.csv,reservoir_host,str,Primary rodent reservoir host species

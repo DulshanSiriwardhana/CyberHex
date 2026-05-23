@@ -39,18 +39,18 @@ export const useWebSocket = (
     const connect = useCallback(() => {
         try {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = url.startsWith('ws') ? url : `${protocol}
+            const wsUrl = url.startsWith('ws') ? url : `${protocol}//${window.location.host}${url}`;
+            const currentWs = new WebSocket(wsUrl);
+            ws.current = currentWs;
 
-            ws.current = new WebSocket(wsUrl);
-
-            ws.current.onopen = () => {
+            currentWs.onopen = () => {
                 console.log('WebSocket connected');
                 setIsConnected(true);
                 setError(null);
                 reconnectAttempts.current = 0;
             };
 
-            ws.current.onmessage = (event) => {
+            currentWs.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
                     onMessageRef.current(data);
@@ -60,7 +60,7 @@ export const useWebSocket = (
                 }
             };
 
-            ws.current.onclose = () => {
+            currentWs.onclose = () => {
                 console.log('WebSocket disconnected');
                 setIsConnected(false);
 
@@ -78,7 +78,7 @@ export const useWebSocket = (
                 }
             };
 
-            ws.current.onerror = (err) => {
+            currentWs.onerror = (err) => {
                 console.error('WebSocket error:', err);
                 setError('WebSocket connection error');
             };

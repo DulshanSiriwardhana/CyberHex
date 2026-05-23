@@ -33,7 +33,7 @@ import { Badge } from '@/components/ui/badge';
 import { Container, Grid, Stack, Flex } from '@/components/ui/layout';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useToast } from '@/components/ui/toaster';
-import { experimentsApi, engineApi, type TrainingStatus } from '@/lib/api';
+import { experimentsApi, engineApi, type TrainingStatus, type Experiment } from '@/lib/api';
 
 interface LivePoint {
   epoch: number;
@@ -54,15 +54,27 @@ export default function ExperimentDetailPage() {
   const [engineBusy, setEngineBusy] = useState<'export' | 'infer' | null>(null);
   const [lastPredictions, setLastPredictions] = useState<string | null>(null);
 
-  const exp = {
-    id,
-    name: `Experiment #${id}`,
-    dataset: 'MNIST',
-    layers: ['Dense(128, relu)', 'Dense(64, relu)', 'Dense(10, softmax)'],
-    learningRate: 0.001,
-    batchSize: 32,
-    startedAt: '2 hours ago',
-  };
+  const [experiment, setExperiment] = useState<Experiment | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchExperiment = useCallback(async () => {
+    if (!id) return;
+    try {
+      setLoading(true);
+      const data = await experimentsApi.get(id);
+      setExperiment(data.experiment);
+      setTotalEpochs(data.experiment.config.epochs);
+    } catch (err) {
+      console.error('Failed to fetch experiment:', err);
+      toast('error', 'Error', 'Failed to load experiment details');
+    } finally {
+      setLoading(false);
+    }
+  }, [id, toast]);
+
+  useEffect(() => {
+    fetchExperiment();
+  }, [fetchExperiment]);
 
   useEffect(() => {
     if (!id) return;
@@ -215,7 +227,7 @@ export default function ExperimentDetailPage() {
 
   return (
     <Container className="py-8 pt-24">
-      {}
+      { }
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -230,7 +242,7 @@ export default function ExperimentDetailPage() {
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
               <FlaskConical className="h-7 w-7 text-green-400" />
-              {exp.name}
+              {experiment?.name || `Experiment #${id}`}
             </h1>
             <div className="flex items-center gap-3 mt-2">
               <Badge variant={status === 'training' ? 'default' : status === 'completed' ? 'success' : status === 'failed' ? 'destructive' : 'muted'}>
@@ -242,7 +254,7 @@ export default function ExperimentDetailPage() {
                 )}
                 {status}
               </Badge>
-              <span className="text-xs text-neutral-500">{exp.dataset}</span>
+              <span className="text-xs text-neutral-500">{experiment?.config.datasetName || 'Custom Dataset'}</span>
               {wsConnected && (
                 <span className="flex items-center gap-1 text-xs text-emerald-400">
                   <Activity className="h-3 w-3" /> Live
@@ -285,7 +297,7 @@ export default function ExperimentDetailPage() {
         </Flex>
       </motion.div>
 
-      {}
+      { }
       <Grid cols={4} gap="md" className="mb-8">
         {[
           { icon: BarChart3, label: 'Best Loss', value: bestLoss?.toFixed(4) ?? '—', color: 'text-emerald-400' },
@@ -305,7 +317,7 @@ export default function ExperimentDetailPage() {
         ))}
       </Grid>
 
-      {}
+      { }
       <Grid cols={2} gap="md">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Card>
@@ -398,7 +410,7 @@ export default function ExperimentDetailPage() {
         </motion.div>
       )}
 
-      {}
+      { }
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-8">
         <Card>
           <CardHeader>
@@ -408,21 +420,40 @@ export default function ExperimentDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Flex gap="sm" wrap>
-              {exp.layers.map((layer, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <div className="rounded-lg border border-green-500/20 bg-green-500/5 px-3 py-2 text-sm font-mono text-green-400">
-                    {layer}
-                  </div>
-                  {i < exp.layers.length - 1 && <ArrowLeft className="h-4 w-4 text-neutral-700 rotate-180" />}
+            {experiment?.config.modelType === 'neural_network' ? (
+              <>
+                <Flex gap="sm" wrap>
+                  {experiment.config.layers.map((units, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="rounded-lg border border-green-500/20 bg-green-500/5 px-3 py-2 text-sm font-mono text-green-400">
+                        <div className="text-[10px] text-neutral-500 uppercase mb-0.5">{i === 0 ? 'Input' : i === experiment.config.layers.length - 1 ? 'Output' : `Layer ${i}`}</div>
+                        {units} units {i > 0 && <span className="text-[10px] text-neutral-500">[{experiment.config.activations[i - 1] || 'relu'}]</span>}
+                      </div>
+                      {i < experiment.config.layers.length - 1 && <ArrowLeft className="h-4 w-4 text-neutral-700 rotate-180" />}
+                    </div>
+                  ))}
+                </Flex>
+                <Grid cols={3} gap="sm" className="mt-6 border-t border-white/5 pt-4">
+                  <div className="text-xs text-neutral-500">Learning Rate: <span className="text-neutral-300 font-mono">{experiment.config.learningRate}</span></div>
+                  <div className="text-xs text-neutral-500">Batch Size: <span className="text-neutral-300 font-mono">{experiment.config.batchSize}</span></div>
+                  <div className="text-xs text-neutral-500">Optimizer: <span className="text-neutral-200 capitalize">{experiment.config.optimizer}</span></div>
+                </Grid>
+              </>
+            ) : (
+              <div className="py-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <Badge variant="outline" className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
+                    {experiment?.config.modelType.replace('_', ' ')}
+                  </Badge>
+                  <span className="text-sm text-neutral-400 font-medium">Statistical Model Pipeline</span>
                 </div>
-              ))}
-            </Flex>
-            <Grid cols={3} gap="sm" className="mt-4">
-              <div className="text-xs text-neutral-500">Learning Rate: <span className="text-neutral-300 font-mono">{exp.learningRate}</span></div>
-              <div className="text-xs text-neutral-500">Batch Size: <span className="text-neutral-300 font-mono">{exp.batchSize}</span></div>
-              <div className="text-xs text-neutral-500">Dataset: <span className="text-neutral-300 font-mono">{exp.dataset}</span></div>
-            </Grid>
+                <Grid cols={3} gap="sm">
+                  <div className="text-xs text-neutral-500">Learning Rate: <span className="text-neutral-300 font-mono">{experiment?.config.learningRate}</span></div>
+                  <div className="text-xs text-neutral-500">Batch Size: <span className="text-neutral-300 font-mono">{experiment?.config.batchSize}</span></div>
+                  <div className="text-xs text-neutral-500">Task: <span className="text-neutral-300 capitalize">{experiment?.config.task}</span></div>
+                </Grid>
+              </div>
+            )}
           </CardContent>
         </Card>
       </motion.div>
