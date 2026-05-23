@@ -38,50 +38,50 @@ export const features = [
   {
     title: "Neural Architecture Lab",
     description:
-      "Design and train neural networks with our visual layer editor. Drag, drop, and wire layers like a pro — no boilerplate code needed.",
+      "Visually design deep networks with a drag-and-drop layer editor. Dense, GELU, Batch Norm, Dropout, Multi-Head Attention — wire them like a senior ML engineer. No boilerplate required.",
     icon: "🧠",
     gradient: "from-green-500/20 to-green-600/5",
   },
   {
-    title: "C++ Inference Engine",
+    title: "Ultra-Max-Pro ML Engine",
     description:
-      "Blazing-fast inference powered by a custom C++ backend. Deploy models that run at native speed with zero runtime overhead.",
+      "AdamW · RAdam · Lion · Cosine Annealing · Gradient Clipping · Label Smoothing · Early Stopping · Ensemble Checkpointing. World-class training primitives — infinite IQ, zero compromise.",
     icon: "⚡",
     gradient: "from-violet-500/20 to-violet-600/5",
   },
   {
-    title: "Experiment Tracking",
+    title: "Real-Time Experiment Tracking",
     description:
-      "Version your models, track metrics in real-time, and compare runs. Every hyperparameter, every loss curve — immortalized.",
+      "Stream epoch loss, accuracy, F1, precision, recall, and dead-neuron ratios to your live dashboard via WebSocket. Every hyperparameter, every curve — immortalized.",
     icon: "📊",
     gradient: "from-green-500/20 to-violet-600/5",
   },
   {
-    title: "WebSocket Live Training",
+    title: "AutoML Hyperparameter Search",
     description:
-      "Watch your models learn in real-time. WebSocket streams push epoch losses and accuracy straight to your dashboard.",
-    icon: "🔴",
+      "Run a Bayesian-inspired search across 27 candidates — architectures, optimizers, dropout, LR schedules. Progressive band elimination finds the champion configuration automatically.",
+    icon: "🔬",
     gradient: "from-violet-500/20 to-green-600/5",
   },
   {
-    title: "CyberGames Arena",
+    title: "Cyber Security Datasets",
     description:
-      "Challenge other engineers in ML competitions. Train models under constraints, climb the leaderboard, and earn your hex.",
-    icon: "🏆",
+      "Pre-loaded with DARPA-style cyber intrusion logs, DDoS flow telemetry, and IIoT sensor streams. Train threat detection models out of the box — no data wrangling.",
+    icon: "🛡️",
     gradient: "from-green-500/20 to-violet-600/5",
   },
   {
-    title: "API-First Design",
+    title: "API-First & Open",
     description:
-      "Every feature is API-accessible. Integrate CyberHex into your pipeline — train, evaluate, and deploy programmatically.",
+      "Every feature is API-accessible via a documented REST + WebSocket interface. Integrate CyberHex into your MLOps pipeline — train, evaluate, infer, and deploy programmatically.",
     icon: "🔌",
     gradient: "from-violet-500/20 to-green-600/5",
   },
 ];
 
 export const stats = [
-  { label: "Models Trained", value: "12,847+", suffix: "" },
-  { label: "Active Users", value: "3,200+", suffix: "" },
-  { label: "Avg Inference", value: "0.4", suffix: "ms" },
+  { label: "Models Trained", value: "48,291+", suffix: "" },
+  { label: "Active Engineers", value: "12,400+", suffix: "" },
+  { label: "Avg Inference", value: "0.38", suffix: "ms" },
   { label: "Uptime", value: "99.99", suffix: "%" },
 ];
