@@ -192,13 +192,24 @@ class NeuralNetwork:
         vs_w = [np.zeros_like(w) for w in self.weights]
         ms_b = [np.zeros_like(b) for b in self.biases]
         vs_b = [np.zeros_like(b) for b in self.biases]
-        beta1, beta2 = 0.9, 0.999
-        epsilon = 1e-8
+        beta1, beta2, epsilon = 0.9, 0.999, 1e-8
         t = 0
         l2_lambda = 0.01
 
+        # Pro features: Early Stopping & Best Model
+        best_val_loss = float('inf')
+        best_weights = [w.copy() for w in self.weights]
+        best_biases = [b.copy() for b in self.biases]
+        patience_counter = 0
+        patience = 10
+
         n_samples = X.shape[0]
+        current_lr = self.lr
+
         for epoch in range(self.epochs):
+            # LR Decay: Pro optimization
+            current_lr = self.lr * (1.0 / (1.0 + 0.01 * epoch))
+
             indices = np.random.permutation(n_samples)
             X_shuffled = X[indices]
             y_shuffled = y[indices]
@@ -213,11 +224,10 @@ class NeuralNetwork:
 
                 t += 1
                 for j in range(len(self.weights)):
-                    # Add L2 Regularization to gradients
+                    # L2 Regularization
                     grads_w[j] += l2_lambda * self.weights[j]
 
                     if self.optimizer.lower() == 'adam':
-                        # Adam Update Rule
                         ms_w[j] = beta1 * ms_w[j] + (1 - beta1) * grads_w[j]
                         vs_w[j] = beta2 * vs_w[j] + (1 - beta2) * (grads_w[j]**2)
                         ms_b[j] = beta1 * ms_b[j] + (1 - beta1) * grads_b[j]
@@ -228,33 +238,59 @@ class NeuralNetwork:
                         m_hat_b = ms_b[j] / (1 - beta1**t)
                         v_hat_b = vs_b[j] / (1 - beta2**t)
 
-                        self.weights[j] -= self.lr * m_hat_w / (np.sqrt(v_hat_w) + epsilon)
-                        self.biases[j] -= self.lr * m_hat_b / (np.sqrt(v_hat_b) + epsilon)
+                        self.weights[j] -= current_lr * m_hat_w / (np.sqrt(v_hat_w) + epsilon)
+                        self.biases[j] -= current_lr * m_hat_b / (np.sqrt(v_hat_b) + epsilon)
                     else:
-                        # Vanilla SGD
-                        self.weights[j] -= self.lr * grads_w[j]
-                        self.biases[j] -= self.lr * grads_b[j]
+                        self.weights[j] -= current_lr * grads_w[j]
+                        self.biases[j] -= current_lr * grads_b[j]
 
+            # Validation and Metrics
             act_all, _ = self._forward(X)
             train_loss = float(self._compute_loss(act_all[-1], y))
 
             val_loss = None
             if X_val is not None and y_val is not None:
+                # Prepare y_val matching fit's internal state
                 if self.task == 'classification' and self.layers[-1] > 1:
-                    yv_onehot = np.zeros((y_val.shape[0], self.layers[-1]))
-                    yv_onehot[np.arange(y_val.shape[0]), y_val.astype(int)] = 1
-                    yv = yv_onehot
+                    yv = np.zeros((y_val.shape[0], self.layers[-1]))
+                    yv[np.arange(y_val.shape[0]), y_val.astype(int)] = 1
                 elif self.task == 'classification' and self.layers[-1] == 1:
                     yv = y_val.reshape(-1, 1)
                 else:
                     yv = y_val
+
                 act_val, _ = self._forward(X_val)
                 val_loss = float(self._compute_loss(act_val[-1], yv))
 
-            payload = {"type": "epoch", "epoch": epoch + 1, "train_loss": train_loss}
-            if val_loss is not None:
-                payload["val_loss"] = val_loss
+                # Early Stopping Logic: Pro Level
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    best_weights = [w.copy() for w in self.weights]
+                    best_biases = [b.copy() for b in self.biases]
+                    patience_counter = 0
+                else:
+                    patience_counter += 1
+
+                if patience_counter >= patience:
+                    print(json.dumps({"type": "log", "message": f"Early stopping at epoch {epoch+1}"}), flush=True)
+                    break
+
+            # Metrics Payload
+            payload = {"type": "epoch", "epoch": epoch + 1, "train_loss": train_loss, "lr": current_lr}
+            if val_loss is not None: payload["val_loss"] = val_loss
+
+            if self.task == 'classification':
+                preds = (act_all[-1] > 0.5).astype(int) if self.layers[-1] == 1 else np.argmax(act_all[-1], axis=1).reshape(-1, 1)
+                target_labels = y if y.ndim > 1 else y.reshape(-1, 1)
+                acc = float(np.mean(preds == target_labels))
+                payload["accuracy"] = acc
+
             print(json.dumps(payload), flush=True)
+
+        # Restore Best Model
+        self.weights = best_weights
+        self.biases = best_biases
+        return best_val_loss if X_val is not None else train_loss, best_val_loss if X_val is not None else train_loss
 
         act_final, _ = self._forward(X)
         final_train_loss = float(self._compute_loss(act_final[-1], y))
