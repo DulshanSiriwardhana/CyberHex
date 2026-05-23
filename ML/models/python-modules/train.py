@@ -5,6 +5,33 @@ import math
 import random
 import numpy as np
 
+def softmax(x):
+    exp_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
+    return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
+
+class MultiHeadAttention:
+    def __init__(self, d_model, num_heads):
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.head_dim = d_model // num_heads
+        assert d_model % num_heads == 0
+
+        self.w_q = np.random.randn(d_model, d_model) * 0.01
+        self.w_k = np.random.randn(d_model, d_model) * 0.01
+        self.w_v = np.random.randn(d_model, d_model) * 0.01
+        self.w_o = np.random.randn(d_model, d_model) * 0.01
+
+    def forward(self, x):
+        batch_size, seq_len, d_model = x.shape
+        q = np.dot(x, self.w_q).reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(0, 2, 1, 3)
+        k = np.dot(x, self.w_k).reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(0, 2, 1, 3)
+        v = np.dot(x, self.w_v).reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(0, 2, 1, 3)
+
+        scores = np.matmul(q, k.transpose(0, 1, 3, 2)) / math.sqrt(self.head_dim)
+        attn = softmax(scores)
+        context = np.matmul(attn, v).transpose(0, 2, 1, 3).reshape(batch_size, seq_len, d_model)
+        return np.dot(context, self.w_o)
+
 class LinearRegression:
     def __init__(self, learning_rate=0.001, epochs=100, batch_size=32):
         self.lr = learning_rate
@@ -160,6 +187,16 @@ class NeuralNetwork:
         elif self.task == 'classification' and self.layers[-1] == 1:
             y = y.reshape(-1, 1)
 
+        # Adam state
+        ms_w = [np.zeros_like(w) for w in self.weights]
+        vs_w = [np.zeros_like(w) for w in self.weights]
+        ms_b = [np.zeros_like(b) for b in self.biases]
+        vs_b = [np.zeros_like(b) for b in self.biases]
+        beta1, beta2 = 0.9, 0.999
+        epsilon = 1e-8
+        t = 0
+        l2_lambda = 0.01
+
         n_samples = X.shape[0]
         for epoch in range(self.epochs):
             indices = np.random.permutation(n_samples)
@@ -174,9 +211,29 @@ class NeuralNetwork:
                 activations, zs = self._forward(X_batch)
                 grads_w, grads_b = self._backward(activations, zs, X_batch, y_batch)
 
+                t += 1
                 for j in range(len(self.weights)):
-                    self.weights[j] -= self.lr * grads_w[j]
-                    self.biases[j] -= self.lr * grads_b[j]
+                    # Add L2 Regularization to gradients
+                    grads_w[j] += l2_lambda * self.weights[j]
+
+                    if self.optimizer.lower() == 'adam':
+                        # Adam Update Rule
+                        ms_w[j] = beta1 * ms_w[j] + (1 - beta1) * grads_w[j]
+                        vs_w[j] = beta2 * vs_w[j] + (1 - beta2) * (grads_w[j]**2)
+                        ms_b[j] = beta1 * ms_b[j] + (1 - beta1) * grads_b[j]
+                        vs_b[j] = beta2 * vs_b[j] + (1 - beta2) * (grads_b[j]**2)
+
+                        m_hat_w = ms_w[j] / (1 - beta1**t)
+                        v_hat_w = vs_w[j] / (1 - beta2**t)
+                        m_hat_b = ms_b[j] / (1 - beta1**t)
+                        v_hat_b = vs_b[j] / (1 - beta2**t)
+
+                        self.weights[j] -= self.lr * m_hat_w / (np.sqrt(v_hat_w) + epsilon)
+                        self.biases[j] -= self.lr * m_hat_b / (np.sqrt(v_hat_b) + epsilon)
+                    else:
+                        # Vanilla SGD
+                        self.weights[j] -= self.lr * grads_w[j]
+                        self.biases[j] -= self.lr * grads_b[j]
 
             act_all, _ = self._forward(X)
             train_loss = float(self._compute_loss(act_all[-1], y))

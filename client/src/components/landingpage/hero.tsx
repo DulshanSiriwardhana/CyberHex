@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { CyberHexWord, ReleaseBadge } from "@/components/brand";
 import { stats } from "@/const/data";
 import { useAuthModal } from "@/stores/authModal";
+import DigitalCortex from "./DigitalCortex";
 
 const floatingIcons = [
   { Icon: Cpu, x: "10%", y: "20%", delay: 0, duration: 5 },
@@ -40,6 +41,7 @@ export default function Hero() {
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-16">
       <div className="absolute inset-0 bg-cyber-radial pointer-events-none" />
       <div className="absolute inset-0 bg-cyber-grid pointer-events-none opacity-[0.35]" />
+      <DigitalCortex />
 
       {floatingIcons.map(({ Icon, x, y, delay, duration }, i) => (
         <motion.div
