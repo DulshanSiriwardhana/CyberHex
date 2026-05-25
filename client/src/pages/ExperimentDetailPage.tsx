@@ -44,6 +44,7 @@ import { Container, Grid, Stack, Flex } from '@/components/ui/layout';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useToast } from '@/components/ui/toaster';
 import { experimentsApi, engineApi, type TrainingStatus, type Experiment } from '@/lib/api';
+import Terminal from '@/components/terminal/Terminal';
 
 interface LivePoint {
   epoch: number;
@@ -615,7 +616,7 @@ export default function ExperimentDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm text-green-400">
-                <Terminal className="h-4 w-4" /> Manual Inference Input
+                <Terminal />
               </CardTitle>
             </CardHeader>
             <CardContent>
