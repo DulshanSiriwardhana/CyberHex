@@ -56,7 +56,7 @@ interface LivePoint {
   lr?: number;
 }
 
-// ── Chart theme ──────────────────────────────────────────────────────────────
+
 const TOOLTIP_STYLE = {
   backgroundColor: '#18181b',
   border: '1px solid #3f3f46',
@@ -68,7 +68,7 @@ const TOOLTIP_STYLE = {
 const AXIS_TICK = { fontSize: 10, fill: '#71717a' };
 const GRID_COLOR = '#27272a';
 
-// ── Status badge config ──────────────────────────────────────────────────────
+
 const STATUS_VARIANT: Record<string, string> = {
   training: 'default',
   completed: 'success',
@@ -77,7 +77,7 @@ const STATUS_VARIANT: Record<string, string> = {
   idle: 'muted',
 };
 
-// ── Live pulse dot ───────────────────────────────────────────────────────────
+
 function PulseDot({ color = 'bg-green-400' }: { color?: string }) {
   return (
     <span className="relative flex h-2 w-2">
@@ -87,7 +87,7 @@ function PulseDot({ color = 'bg-green-400' }: { color?: string }) {
   );
 }
 
-// ── Metric stat card ─────────────────────────────────────────────────────────
+
 function MetricCard({
   icon: Icon,
   label,
@@ -127,7 +127,7 @@ function MetricCard({
   );
 }
 
-// ── Tab switcher ─────────────────────────────────────────────────────────────
+
 type TabKey = 'loss' | 'accuracy' | 'lr' | 'radar';
 
 function TabBar({
@@ -150,8 +150,8 @@ function TabBar({
           key={t.key}
           onClick={() => onChange(t.key)}
           className={`flex-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all duration-200 ${active === t.key
-              ? 'bg-green-500/15 text-green-400 shadow-[0_0_8px_rgba(34,197,94,0.15)]'
-              : 'text-neutral-500 hover:text-neutral-300'
+            ? 'bg-green-500/15 text-green-400 shadow-[0_0_8px_rgba(34,197,94,0.15)]'
+            : 'text-neutral-500 hover:text-neutral-300'
             }`}
         >
           {t.label}
@@ -161,7 +161,7 @@ function TabBar({
   );
 }
 
-// ── Main page ────────────────────────────────────────────────────────────────
+
 export default function ExperimentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
@@ -175,11 +175,12 @@ export default function ExperimentDetailPage() {
   const [modelPath, setModelPath] = useState<string | null>(null);
   const [engineBusy, setEngineBusy] = useState<'export' | 'infer' | null>(null);
   const [lastPredictions, setLastPredictions] = useState<string | null>(null);
+  const [inferenceInputs, setInferenceInputs] = useState<string>('');
   const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabKey>('loss');
 
-  // ── Derived metrics ────────────────────────────────────────────────────────
+
   const latest = lossData[lossData.length - 1];
   const initialLoss = lossData[0]?.loss ?? 0;
   const improvement = initialLoss > 0
@@ -190,7 +191,7 @@ export default function ExperimentDetailPage() {
   const peakPrecision = Math.max(...lossData.map(d => d.precision ?? 0), 0);
   const peakRecall = Math.max(...lossData.map(d => d.recall ?? 0), 0);
 
-  // ── Radar data ─────────────────────────────────────────────────────────────
+
   const radarData = [
     { metric: 'Accuracy', value: +(peakAccuracy * 100).toFixed(1) },
     { metric: 'F1 Score', value: +(peakF1 * 100).toFixed(1) },
@@ -278,11 +279,19 @@ export default function ExperimentDetailPage() {
     if (!modelPath) { toast('error', 'No trained model', 'Complete training first'); return; }
     setEngineBusy('infer');
     try {
-      const features = [Array.from({ length: experiment?.config.layers[0] ?? 5 }, (_, i) => 0.1 * (i + 1))];
+      let features: number[][];
+      if (inferenceInputs.trim()) {
+        const parsed = JSON.parse(inferenceInputs);
+        features = Array.isArray(parsed) ? (Array.isArray(parsed[0]) ? parsed : [parsed]) : [[parsed]];
+      } else {
+        features = [Array.from({ length: experiment?.config.layers[0] ?? 5 }, (_, i) => 0.1 * (i + 1))];
+      }
       const res = await engineApi.inference({ modelPath, features, task: experiment?.config.task ?? 'regression' });
       setLastPredictions(JSON.stringify(res.predictions, null, 2));
       toast('success', 'Inference complete', `Backend: ${res.backend} (${res.latencyMs}ms)`);
-    } catch { toast('error', 'Inference failed', 'Check engine health and model artifacts'); }
+    } catch (err: any) {
+      toast('error', 'Inference failed', err.message || 'Check engine health and model artifacts');
+    }
     finally { setEngineBusy(null); }
   }
 
@@ -420,13 +429,13 @@ export default function ExperimentDetailPage() {
             </Button>
             <Button variant="outline" size="lg" disabled={!modelPath || engineBusy !== null} onClick={handleRunInference}>
               <Cpu className="h-4 w-4 mr-2" />
-              {engineBusy === 'infer' ? 'Running…' : 'Infer'}
+              {engineBusy === 'infer' ? 'Running…' : 'Run Inference'}
             </Button>
           </div>
         </Flex>
       </motion.div>
 
-      {/* ── KPI Row ─────────────────────────────────────────────────────────── */}
+
       <div className={`grid gap-3 mb-8 ${taskIsClassification ? 'grid-cols-2 md:grid-cols-4 lg:grid-cols-7' : 'grid-cols-2 md:grid-cols-4'}`}>
         <MetricCard icon={BarChart3} label="Best Val Loss" value={bestLoss?.toFixed(4) ?? '—'} color="text-emerald-400" />
         <MetricCard icon={TrendingDown} label="Current Loss" value={latest?.loss?.toFixed(4) ?? '—'} color="text-rose-400" />
@@ -439,7 +448,7 @@ export default function ExperimentDetailPage() {
         </>}
       </div>
 
-      {/* ── Charts ──────────────────────────────────────────────────────────── */}
+
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-6">
         <TabBar active={activeTab} onChange={setActiveTab} />
       </motion.div>
@@ -453,7 +462,7 @@ export default function ExperimentDetailPage() {
           transition={{ duration: 0.2 }}
         >
           <Grid cols={2} gap="md">
-            {/* ── Chart Panel ── */}
+
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
               <Card>
                 <CardHeader>
@@ -547,7 +556,7 @@ export default function ExperimentDetailPage() {
               </Card>
             </motion.div>
 
-            {/* ── Training Log ── */}
+
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
               <Card>
                 <CardHeader>
@@ -600,25 +609,50 @@ export default function ExperimentDetailPage() {
         </motion.div>
       </AnimatePresence>
 
-      {/* ── Inference output ──────────────────────────────────────────────── */}
-      {lastPredictions && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
-          <Card className="border-green-500/20">
+      {/* Inference Panel */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
+        <Grid cols={2} gap="md">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Cpu className="h-4 w-4 text-green-400" /> Last Inference Output
+              <CardTitle className="flex items-center gap-2 text-sm text-green-400">
+                <Terminal className="h-4 w-4" /> Manual Inference Input
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <pre className="text-xs font-mono text-green-400/80 bg-neutral-950/60 rounded-xl p-4 overflow-x-auto border border-neutral-800/50">
-                {lastPredictions}
-              </pre>
+              <textarea
+                value={inferenceInputs}
+                onChange={(e) => setInferenceInputs(e.target.value)}
+                placeholder={JSON.stringify(Array.from({ length: experiment?.config.layers[0] ?? 5 }, (_, i) => 0.1 * (i + 1)))}
+                className="w-full h-32 bg-neutral-950 border border-neutral-800 rounded-xl p-4 font-mono text-xs text-green-500 focus:outline-none focus:border-green-500/50 resize-none"
+              />
+              <p className="text-[10px] text-neutral-500 mt-2 italic">
+                Input features as a JSON array (e.g. [0.1, 0.2, ...]). Default sample used if empty.
+              </p>
             </CardContent>
           </Card>
-        </motion.div>
-      )}
 
-      {/* ── Architecture panel ───────────────────────────────────────────── */}
+          <Card className={lastPredictions ? 'border-green-500/30 font-mono' : 'opacity-50'}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Activity className="h-4 w-4 text-emerald-400" /> Latency & Results
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-32 overflow-y-auto font-mono text-xs text-green-400/90 bg-neutral-950/40 rounded-xl p-4 border border-neutral-800/50">
+                {lastPredictions ? (
+                  <pre className="whitespace-pre-wrap">{lastPredictions}</pre>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-neutral-700">
+                    Awaiting inference...
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </Grid>
+      </motion.div>
+
+
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-6">
         <Card>
           <CardHeader>
@@ -633,10 +667,10 @@ export default function ExperimentDetailPage() {
                   {experiment.config.layers.map((units: number, i: number) => (
                     <div key={i} className="flex items-center gap-2 shrink-0">
                       <div className={`rounded-xl border px-3 py-2 text-xs font-mono transition-all duration-200 hover:scale-105 ${i === 0
-                          ? 'border-sky-500/30 bg-sky-500/5 text-sky-400'
-                          : i === experiment.config.layers.length - 1
-                            ? 'border-violet-500/30 bg-violet-500/5 text-violet-400'
-                            : 'border-green-500/20 bg-green-500/5 text-green-400'
+                        ? 'border-sky-500/30 bg-sky-500/5 text-sky-400'
+                        : i === experiment.config.layers.length - 1
+                          ? 'border-violet-500/30 bg-violet-500/5 text-violet-400'
+                          : 'border-green-500/20 bg-green-500/5 text-green-400'
                         }`}>
                         <div className="text-[9px] text-neutral-500 uppercase mb-0.5 tracking-wide">
                           {i === 0 ? 'Input' : i === experiment.config.layers.length - 1 ? 'Output' : `L${i}`}

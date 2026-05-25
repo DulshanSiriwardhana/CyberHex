@@ -74,7 +74,7 @@ const NavBar = () => {
       `}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {}
+        { }
         <Link
           to="/"
           className="flex items-center gap-2 group"
@@ -86,7 +86,7 @@ const NavBar = () => {
           <CyberHexWord size="sm" showSerial={false} />
         </Link>
 
-        {}
+        { }
         <div className="hidden md:flex items-center gap-1">
           <Link
             to="/"
@@ -115,13 +115,31 @@ const NavBar = () => {
           >
             Contact
           </Link>
+          <Link
+            to="/showcase"
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/showcase"
+              ? "text-green-400 bg-green-500/10"
+              : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
+              }`}
+          >
+            Showcase
+          </Link>
+          <Link
+            to="/pricing"
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/pricing"
+              ? "text-green-400 bg-green-500/10"
+              : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
+              }`}
+          >
+            Pricing
+          </Link>
         </div>
 
-        {}
+        { }
         <div className="hidden md:flex items-center gap-3">
-          {}
+          { }
           <div className="flex items-center gap-0.5 rounded-xl border border-neutral-700/50 bg-neutral-800/30 p-0.5 mr-1">
-            {}
+            { }
             <button
               onClick={toggle}
               className="relative rounded-lg p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-700/50 transition-all duration-200"
@@ -145,7 +163,7 @@ const NavBar = () => {
                 </motion.span>
               </AnimatePresence>
             </button>
-            {}
+            { }
             <div className="relative" ref={themeMenuRef}>
               <button
                 onClick={() => setThemeMenuOpen(!themeMenuOpen)}
@@ -274,7 +292,7 @@ const NavBar = () => {
           )}
         </div>
 
-        {}
+        { }
         <div className="flex md:hidden items-center gap-1">
           <button
             onClick={toggle}
@@ -301,7 +319,7 @@ const NavBar = () => {
         </div>
       </div>
 
-      {}
+      { }
       <AnimatePresence>
         {isMobileOpen && (
           <motion.div
@@ -342,7 +360,27 @@ const NavBar = () => {
               >
                 Contact
               </Link>
-              {}
+              <Link
+                to="/showcase"
+                onClick={closeMobile}
+                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/showcase"
+                  ? "text-green-400 bg-green-500/10"
+                  : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
+                  }`}
+              >
+                Showcase
+              </Link>
+              <Link
+                to="/pricing"
+                onClick={closeMobile}
+                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/pricing"
+                  ? "text-green-400 bg-green-500/10"
+                  : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
+                  }`}
+              >
+                Pricing
+              </Link>
+              { }
               <div className="pt-3 border-t border-neutral-800/50">
                 <p className="px-3 pt-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-neutral-500">
                   Color Theme

@@ -160,6 +160,12 @@ export interface ExperimentResults {
   epochs?: number[];
   trainLoss?: number[];
   valLoss?: number[];
+  accuracy?: number[];
+  f1?: number[];
+  precision?: number[];
+  recall?: number[];
+  learningRates?: number[];
+  ensembleSize?: number;
   modelPath?: string;
   completedAt?: string;
 }
@@ -171,6 +177,11 @@ export interface TrainingStatus {
     epochs: number[];
     train_loss: number[];
     val_loss: number[];
+    accuracy?: number[];
+    f1?: number[];
+    precision?: number[];
+    recall?: number[];
+    learning_rates?: number[];
     best_val_loss: number;
   };
   results?: ExperimentResults;

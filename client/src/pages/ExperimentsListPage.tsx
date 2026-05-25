@@ -92,7 +92,7 @@ export default function ExperimentsListPage() {
         </Flex>
       </motion.div>
 
-      {}
+
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-6">
         <Flex gap="md" wrap>
           <div className="relative flex-1 max-w-sm">
@@ -110,11 +110,10 @@ export default function ExperimentsListPage() {
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  statusFilter === s
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${statusFilter === s
                     ? 'bg-green-500/10 text-green-400 border border-green-500/20'
                     : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/50'
-                }`}
+                  }`}
               >
                 {s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
@@ -126,7 +125,7 @@ export default function ExperimentsListPage() {
         </Flex>
       </motion.div>
 
-      {}
+
       {filtered.length === 0 ? (
         <div className="text-center py-20">
           <FlaskConical className="h-16 w-16 text-neutral-800 mx-auto mb-4" />
@@ -141,6 +140,7 @@ export default function ExperimentsListPage() {
           </Link>
         </div>
       ) : (
+
         <Stack gap="sm">
           {filtered.map((exp, i) => (
             <motion.div
@@ -157,12 +157,11 @@ export default function ExperimentsListPage() {
                   <CardContent className="p-5">
                     <Flex justify="between" gap="md" wrap>
                       <div className="flex items-center gap-4 min-w-0">
-                        <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
-                          exp.status === 'training' ? 'bg-green-500/10 border border-green-500/20 text-green-400' :
-                          exp.status === 'completed' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' :
-                          exp.status === 'failed' ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400' :
-                          'bg-neutral-800/50 border border-neutral-700/30 text-neutral-500'
-                        }`}>
+                        <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${exp.status === 'training' ? 'bg-green-500/10 border border-green-500/20 text-green-400' :
+                            exp.status === 'completed' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' :
+                              exp.status === 'failed' ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400' :
+                                'bg-neutral-800/50 border border-neutral-700/30 text-neutral-500'
+                          }`}>
                           <FlaskConical className="h-5 w-5" />
                         </div>
                         <div className="min-w-0">

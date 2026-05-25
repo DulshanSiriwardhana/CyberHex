@@ -603,6 +603,45 @@ export function GettingStarted() {
                     </p>
                 </div>
 
+                <div className="animate-on-scroll card" style={{ marginBottom: 48, background: 'linear-gradient(135deg, rgba(34,197,94,0.05) 0%, rgba(139,92,246,0.05) 100%)', border: '1px solid rgba(34,197,94,0.2)' }}>
+                    <div style={{ padding: '24px 28px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                            <span className="badge badge-green" style={{ textTransform: 'uppercase', letterSpacing: 1 }}>New in v1.1</span>
+                            <h3 style={{ fontSize: 20, fontWeight: 800 }}>Advanced Agentic v1.1 Upgrade</h3>
+                        </div>
+                        <ul style={{ listValues: 'none', padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                            <li style={{ display: 'flex', gap: 12 }}>
+                                <span style={{ color: 'var(--green-400)', fontWeight: 'bold' }}>✦</span>
+                                <div>
+                                    <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: 14 }}>Infinite IQ Engine</strong>
+                                    <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Advanced optimizers (AdamW, RAdam, Lion) and batch normalization in C++.</span>
+                                </div>
+                            </li>
+                            <li style={{ display: 'flex', gap: 12 }}>
+                                <span style={{ color: 'var(--blue-400)', fontWeight: 'bold' }}>✦</span>
+                                <div>
+                                    <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: 14 }}>Transformer Blocks</strong>
+                                    <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Native C++ implementation of Multi-Head Self-Attention layers.</span>
+                                </div>
+                            </li>
+                            <li style={{ display: 'flex', gap: 12 }}>
+                                <span style={{ color: 'var(--purple-400)', fontWeight: 'bold' }}>✦</span>
+                                <div>
+                                    <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: 14 }}>Ensemble Checkpointing</strong>
+                                    <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Automated model averaging and high-fidelity artifact versioning.</span>
+                                </div>
+                            </li>
+                            <li style={{ display: 'flex', gap: 12 }}>
+                                <span style={{ color: 'var(--orange-400)', fontWeight: 'bold' }}>✦</span>
+                                <div>
+                                    <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: 14 }}>High-Fidelity Viz</strong>
+                                    <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Digital Cortex visualization for real-time weights activation analysis.</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
                 <div className="two-col animate-on-scroll">
                     <div>
                         <h3 style={{ fontSize: 18, marginBottom: 24, color: 'var(--green-400)' }}>

@@ -27,6 +27,8 @@ const ModelsPage = lazy(() => import("@/pages/ModelsPage"));
 const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
 const CyberGames = lazy(() => import("@/pages/CyberGames"));
 const ArchitectureDesigner = lazy(() => import("@/pages/ArchitectureDesigner"));
+const GuestShowcasePage = lazy(() => import("@/pages/GuestShowcasePage"));
+const PricingPage = lazy(() => import("@/pages/PricingPage"));
 
 function PageFallback() {
   return (
@@ -44,19 +46,21 @@ function AppLayout() {
     <div className="relative min-h-screen bg-neutral-950 font-spectral antialiased">
       <AmbientBackground />
 
-      {}
+      { }
       <div className="relative" style={{ zIndex: 1 }}>
         <NavBar />
         <Suspense fallback={<PageFallback />}>
           <Routes>
-            {}
+            { }
             <Route path="/" element={<LandingPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/showcase" element={<GuestShowcasePage />} />
+            <Route path="/pricing" element={<PricingPage />} />
 
-            {}
+            { }
             <Route
               path="/dashboard"
               element={
@@ -122,7 +126,7 @@ function AppLayout() {
               }
             />
 
-            {}
+            { }
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>
