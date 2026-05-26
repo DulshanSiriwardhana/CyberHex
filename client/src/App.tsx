@@ -29,6 +29,7 @@ const CyberGames = lazy(() => import("@/pages/CyberGames"));
 const ArchitectureDesigner = lazy(() => import("@/pages/ArchitectureDesigner"));
 const GuestShowcasePage = lazy(() => import("@/pages/GuestShowcasePage"));
 const PricingPage = lazy(() => import("@/pages/PricingPage"));
+const ChallengeDetailPage = lazy(() => import("@/pages/ChallengeDetailPage"));
 
 function PageFallback() {
   return (
@@ -114,6 +115,14 @@ function AppLayout() {
               element={
                 <ProtectedRoute>
                   <CyberGames />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cybergames/:id"
+              element={
+                <ProtectedRoute>
+                  <ChallengeDetailPage />
                 </ProtectedRoute>
               }
             />

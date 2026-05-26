@@ -129,7 +129,7 @@ export default function ExperimentBuilderPage() {
     "syn_flags",
     "ack_flags",
   ]);
-  const [targetFeature, setTargetFeature] = useState("is_intrusion");
+  const [targetFeatures, setTargetFeatures] = useState<string[]>(["is_intrusion"]);
 
   const [trainSplit, setTrainSplit] = useState(80);
   const [valSplit, setValSplit] = useState(10);
@@ -221,14 +221,14 @@ export default function ExperimentBuilderPage() {
     if (selectedDatasetId === "custom") {
       if (customFeatures.length > 0) {
         setSelectedFeatures(customFeatures.slice(0, 6).map((f) => f.name));
-        setTargetFeature(customTargets[0] || "");
+        setTargetFeatures([customTargets[0] || ""]);
         setLoss(customTaskType === "classification" ? "bce" : "mse");
       }
       return;
     }
 
     setSelectedFeatures(activeDataset.features.slice(0, 6).map((f) => f.name));
-    setTargetFeature(activeDataset.targets[0]);
+    setTargetFeatures([activeDataset.targets[0]]);
 
     if (activeDataset.taskType === "classification") {
       setLoss("bce");
@@ -346,6 +346,17 @@ export default function ExperimentBuilderPage() {
       setSelectedFeatures(selectedFeatures.filter((f) => f !== featName));
     } else {
       setSelectedFeatures([...selectedFeatures, featName]);
+      setTargetFeatures(targetFeatures.filter((f) => f !== featName));
+    }
+  };
+
+  const toggleTarget = (tgName: string) => {
+    if (targetFeatures.includes(tgName)) {
+      if (targetFeatures.length <= 1) return;
+      setTargetFeatures(targetFeatures.filter((f) => f !== tgName));
+    } else {
+      setTargetFeatures([...targetFeatures, tgName]);
+      setSelectedFeatures(selectedFeatures.filter((f) => f !== tgName));
     }
   };
 
@@ -377,7 +388,7 @@ export default function ExperimentBuilderPage() {
         batchSize,
         epochs,
         learningRate,
-        optimizer: optimizer.charAt(0).toUpperCase() + optimizer.slice(1),
+        optimizer: optimizer,
         lrSchedule,
         warmupEpochs,
         validationSplit: valSplit / 100,
@@ -393,7 +404,7 @@ export default function ExperimentBuilderPage() {
         dataPath: selectedDatasetId === 'custom' ? uploadedFilePath : null,
         datasetName: selectedDatasetId,
         selectedFeatures,
-        targetFeature,
+        targetFeatures,
         customData: selectedDatasetId === 'custom' && !uploadedFilePath ? customCsv : null,
         seed: 42,
       },
@@ -769,28 +780,40 @@ export default function ExperimentBuilderPage() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">
-                          Target Label (Y)
-                        </label>
-                        <select
-                          value={targetFeature}
-                          onChange={(e) => setTargetFeature(e.target.value)}
-                          className="input-cyber w-full py-2 bg-neutral-900 border border-neutral-800 text-white rounded-lg focus:border-green-500 focus:outline-none text-sm px-3"
-                        >
-                          {activeDatasetObj.targets.map((tg) => (
-                            <option key={tg} value={tg}>
-                              {tg}
-                            </option>
-                          ))}
-                        </select>
+                      <div className="grid grid-cols-1 gap-3">
+                        {activeDatasetObj.targets.map((tg) => {
+                          const isChecked = targetFeatures.includes(tg);
+                          return (
+                            <div
+                              key={tg}
+                              onClick={() => toggleTarget(tg)}
+                              className={`flex items-center justify-between rounded-xl border p-3 cursor-pointer transition-all duration-200 ${isChecked
+                                ? "bg-violet-500/5 border-violet-500/30 shadow-[0_0_10px_rgba(139,92,246,0.02)]"
+                                : "bg-neutral-900/25 border-neutral-850 hover:border-neutral-800"
+                                }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={`h-4.5 w-4.5 rounded border flex items-center justify-center transition-colors ${isChecked ? "bg-violet-500 border-violet-400" : "border-neutral-700 bg-neutral-900"
+                                    }`}
+                                >
+                                  {isChecked && <div className="h-2 w-2 rounded-sm bg-neutral-950" />}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-semibold text-white font-mono">{tg}</p>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
+
                       <div className="rounded-xl bg-neutral-950/40 p-4 border border-neutral-850 space-y-3">
                         <p className="text-xs text-neutral-400 leading-relaxed">
-                          Choosing a target updates the loss and final layer metrics. Selecting <strong>{targetFeature}</strong> implies a <strong>{activeDatasetObj.taskType}</strong> task with 1 output scalar node.
+                          Choosing targets updates the loss and final layer metrics. Selecting <strong>{targetFeatures.join(", ")}</strong> implies a <strong>{activeDatasetObj.taskType}</strong> task with {targetFeatures.length} output node(s).
                         </p>
                         <Badge variant="secondary" className="w-fit">
-                          Recommended Loss: {activeDatasetObj.taskType === "classification" ? "BCE" : "MSE"}
+                          Recommended Loss: {activeDatasetObj.taskType === "classification" ? "BCE / Categorical CE" : "MSE"}
                         </Badge>
                       </div>
                     </CardContent>
@@ -810,7 +833,7 @@ export default function ExperimentBuilderPage() {
                       </div>
                       <div className="flex justify-between text-xs font-mono">
                         <span className="text-neutral-500">Output Locked</span>
-                        <span className="text-violet-400">1 Scalar</span>
+                        <span className="text-violet-400">{targetFeatures.length} Node{targetFeatures.length !== 1 ? 's' : ''}</span>
                       </div>
                       <div className="flex justify-between text-xs font-mono">
                         <span className="text-neutral-500">Task Mode</span>

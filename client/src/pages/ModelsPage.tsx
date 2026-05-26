@@ -17,20 +17,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Container, Grid, Flex } from "@/components/ui/layout";
 
-const models = [
-  { id: 1, name: "MNIST Classifier v3", accuracy: 98.7, size: "2.4 MB", framework: "Custom C++", created: "3 days ago", status: "deployed" },
-  { id: 2, name: "Sentiment LSTM", accuracy: 87.2, size: "5.1 MB", framework: "Custom C++", created: "1 week ago", status: "ready" },
-  { id: 3, name: "Price Predictor", accuracy: 94.1, size: "1.8 MB", framework: "Custom C++", created: "2 weeks ago", status: "deployed" },
-  { id: 4, name: "Image GAN", accuracy: 76.4, size: "12.3 MB", framework: "Custom C++", created: "3 weeks ago", status: "archived" },
-];
+import { useState, useEffect } from "react";
+import { experimentsApi, type Experiment } from "@/lib/api";
 
 const statusBadges: Record<string, { variant: "success" | "default" | "muted"; label: string }> = {
-  deployed: { variant: "success", label: "Deployed" },
+  completed: { variant: "success", label: "Deployed" },
   ready: { variant: "default", label: "Ready" },
   archived: { variant: "muted", label: "Archived" },
 };
 
 export default function ModelsPage() {
+  const [models, setModels] = useState<Experiment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    experimentsApi.list({ status: 'completed' })
+      .then(data => {
+        setModels(data.experiments);
+      })
+      .catch(() => {
+        // Fallback or handle error
+      })
+      .finally(() => setLoading(false));
+  }, []);
   return (
     <Container className="py-8 pt-24">
       <motion.div
@@ -61,7 +70,7 @@ export default function ModelsPage() {
       <Grid cols={2} gap="md">
         {models.map((model, i) => (
           <motion.div
-            key={model.id}
+            key={model._id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08, duration: 0.4 }}
@@ -75,11 +84,11 @@ export default function ModelsPage() {
                       {model.name}
                     </CardTitle>
                     <p className="text-xs text-neutral-500 mt-1">
-                      {model.framework} · {model.size}
+                      {model.config.modelType} · {(model.results?.ensembleSize || 0) > 0 ? `Ensemble (${model.results?.ensembleSize}x)` : 'Native C++'}
                     </p>
                   </div>
-                  <Badge variant={statusBadges[model.status].variant as any} size="sm">
-                    {statusBadges[model.status].label}
+                  <Badge variant={statusBadges[model.status]?.variant as any || 'success'} size="sm">
+                    {statusBadges[model.status]?.label || 'Deployed'}
                   </Badge>
                 </Flex>
               </CardHeader>
@@ -87,15 +96,17 @@ export default function ModelsPage() {
                 <div className="flex items-center gap-4 mb-4">
                   <div className="flex items-center gap-1.5 text-sm">
                     <BarChart3 className="h-4 w-4 text-emerald-400" />
-                    <span className="text-neutral-300 font-mono">{model.accuracy}%</span>
+                    <span className="text-neutral-300 font-mono">
+                      {model.results?.peakAccuracy ? (model.results.peakAccuracy * 100).toFixed(1) : (model.results?.finalValLoss ? (1 - model.results.finalValLoss).toFixed(3) : '0.0')}%
+                    </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-sm">
                     <Clock className="h-4 w-4 text-neutral-500" />
-                    <span className="text-neutral-500">{model.created}</span>
+                    <span className="text-neutral-500">{new Date(model.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
                 <Flex gap="sm">
-                  <Link to={`/experiments/${model.id}`}>
+                  <Link to={`/experiments/${model._id}`}>
                     <Button variant="outline" size="sm">
                       <FlaskConical className="h-3.5 w-3.5 mr-1.5" />
                       Details
@@ -116,7 +127,7 @@ export default function ModelsPage() {
         ))}
       </Grid>
 
-      {}
+      { }
       {models.length === 0 && (
         <div className="text-center py-20">
           <Brain className="h-16 w-16 text-neutral-800 mx-auto mb-4" />

@@ -23,14 +23,14 @@ router.post('/register', asyncHandler(async (req, res) => {
         throw new ValidationError('Email not verified. Please verify your email before registering.');
     }
 
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    const existingUser = await User.findOne({ $or: [{ email: email.toLowerCase() }, { username }] });
     if (existingUser) {
         throw new ConflictError(
-            existingUser.email === email ? 'Email already registered' : 'Username already taken'
+            existingUser.email.toLowerCase() === email.toLowerCase() ? 'Email already registered' : 'Username already taken'
         );
     }
 
-    const user = new User({ username, email, password, emailVerified: true });
+    const user = new User({ username, email: email.toLowerCase(), password, emailVerified: true });
     await user.save();
     await Otp.deleteMany({ email: email.toLowerCase() });
     logger.info(`User registered: ${email}`);

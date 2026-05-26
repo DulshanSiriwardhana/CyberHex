@@ -403,6 +403,8 @@ export default function ExperimentDetailPage() {
               </Badge>
               <span className="text-xs text-neutral-500 font-mono">{experiment?.config.datasetName || 'Custom Dataset'}</span>
               <span className="text-xs text-neutral-600">·</span>
+              <span className="text-xs text-neutral-500 font-mono">Y: {experiment?.config.targetFeatures?.join(", ") || 'none'}</span>
+              <span className="text-xs text-neutral-600">·</span>
               <span className="text-xs text-neutral-500 capitalize">{experiment?.config.optimizer || 'adamw'}</span>
               {wsConnected && (
                 <span className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium">

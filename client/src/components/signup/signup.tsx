@@ -35,7 +35,11 @@ export default function SignUp() {
       case 2:
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
       case 3:
-        return password.length >= 6 && password === confirmPassword;
+        return password.length >= 8 &&
+          /[A-Z]/.test(password) &&
+          /[a-z]/.test(password) &&
+          /[0-9]/.test(password) &&
+          password === confirmPassword;
       case 4:
         return otp.length === 6;
       default:
@@ -131,18 +135,17 @@ export default function SignUp() {
         Step {step} of {steps.length} — {steps[step - 1].label}
       </p>
 
-      {}
+      { }
       <div className="flex gap-1.5 mb-8">
         {steps.map((s) => (
           <div
             key={s.id}
-            className={`h-1 flex-1 rounded-full transition-all duration-500 ${
-              s.id < step
-                ? "bg-gradient-to-r from-green-500 to-green-400 shadow-[0_0_6px_rgba(34, 197, 94,0.4)]"
-                : s.id === step
-                  ? "bg-green-500/60"
-                  : "bg-neutral-800"
-            }`}
+            className={`h-1 flex-1 rounded-full transition-all duration-500 ${s.id < step
+              ? "bg-gradient-to-r from-green-500 to-green-400 shadow-[0_0_6px_rgba(34, 197, 94,0.4)]"
+              : s.id === step
+                ? "bg-green-500/60"
+                : "bg-neutral-800"
+              }`}
           />
         ))}
       </div>
@@ -168,7 +171,7 @@ export default function SignUp() {
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="space-y-4 min-h-[180px]"
         >
-          {}
+          { }
           {step === 1 && (
             <>
               <div className="space-y-1.5">
@@ -195,7 +198,7 @@ export default function SignUp() {
             </>
           )}
 
-          {}
+          { }
           {step === 2 && (
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-neutral-400">Email</label>
@@ -217,7 +220,7 @@ export default function SignUp() {
             </div>
           )}
 
-          {}
+          { }
           {step === 3 && (
             <>
               <div className="space-y-1.5">
@@ -226,7 +229,7 @@ export default function SignUp() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min. 6 characters"
+                  placeholder="Min. 8 chars, with A-Z, a-z, 0-9"
                   className="input-cyber"
                   autoFocus
                 />
@@ -255,7 +258,7 @@ export default function SignUp() {
             </>
           )}
 
-          {}
+          { }
           {step === 4 && (
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-neutral-400">
@@ -290,7 +293,7 @@ export default function SignUp() {
         </motion.div>
       </AnimatePresence>
 
-      {}
+      { }
       <div className="flex items-center justify-between mt-8">
         <Button
           variant="ghost"

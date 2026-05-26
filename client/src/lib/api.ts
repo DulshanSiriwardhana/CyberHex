@@ -148,7 +148,7 @@ export interface ExperimentConfig {
   dataPath: string | null;
   datasetName?: string;
   selectedFeatures?: string[];
-  targetFeature?: string;
+  targetFeatures?: string[];
   seed: number;
 }
 
@@ -167,6 +167,8 @@ export interface ExperimentResults {
   learningRates?: number[];
   ensembleSize?: number;
   modelPath?: string;
+  peakAccuracy?: number;
+  peakF1?: number;
   completedAt?: string;
 }
 

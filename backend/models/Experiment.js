@@ -52,7 +52,7 @@ const ExperimentSchema = new Schema({
     learningRate: { type: Number, default: 0.001 },
     optimizer: {
       type: String,
-      enum: ['adam', 'adamw', 'radam', 'lion', 'sgd', 'rmsprop', 'Adam', 'AdamW', 'RAdam', 'Lion', 'SGD', 'RMSProp'],
+      enum: ['adam', 'adamw', 'radam', 'lion', 'sgd', 'rmsprop', 'Adam', 'AdamW', 'Adamw', 'RAdam', 'Lion', 'SGD', 'RMSProp'],
       default: 'adamw',
     },
 
@@ -77,7 +77,7 @@ const ExperimentSchema = new Schema({
     customData: { type: String, default: null },
     datasetName: { type: String, default: 'cyber_intrusion' },
     selectedFeatures: { type: [String], default: [] },
-    targetFeature: { type: String, default: '' },
+    targetFeatures: { type: [String], default: [] },
     seed: { type: Number, default: 42 },
   },
 
