@@ -172,6 +172,7 @@ class NeuralNetwork:
         label_smoothing=0.0,
         weight_decay=1e-4,
         patience=15,
+        early_stopping=True,
         lr_schedule="cosine",   
         warmup_epochs=5,
     ):
@@ -187,6 +188,7 @@ class NeuralNetwork:
         self.label_smoothing = label_smoothing
         self.weight_decay = weight_decay
         self.patience = patience
+        self.early_stopping = early_stopping
         self.lr_schedule = lr_schedule
         self.warmup_epochs = warmup_epochs
         self.activations_config = activations
@@ -356,12 +358,18 @@ class NeuralNetwork:
     def _clip_gradients(self, grads_w, grads_b):
         if self.gradient_clip <= 0:
             return grads_w, grads_b
+        
+        # Ensure all gradients are finite before norm calculation
+        grads_w = [np.nan_to_num(g) for g in grads_w]
+        grads_b = [np.nan_to_num(g) for g in grads_b]
+        
         total_norm = 0.0
         for g in grads_w + grads_b:
             total_norm += np.sum(g**2)
         total_norm = math.sqrt(total_norm)
+        
         if total_norm > self.gradient_clip:
-            scale = self.gradient_clip / (total_norm + 1e-6)
+            scale = self.gradient_clip / (total_norm + 1e-8)
             grads_w = [g * scale for g in grads_w]
             grads_b = [g * scale for g in grads_b]
         return grads_w, grads_b
@@ -392,12 +400,13 @@ class NeuralNetwork:
     def _compute_metrics(self, y_pred, y_true_raw):
         if self.task != "classification":
             return {}
+        y_true_safe = np.nan_to_num(y_true_raw, nan=0.0, posinf=0.0, neginf=0.0)
         if self.layers[-1] == 1:
-            preds = (y_pred > 0.5).astype(int).flatten()
-            trues = y_true_raw.flatten().astype(int)
+            preds = (np.nan_to_num(y_pred, nan=0.0) > 0.5).astype(int).flatten()
+            trues = y_true_safe.flatten().astype(int)
         else:
-            preds = np.argmax(y_pred, axis=1)
-            trues = y_true_raw.flatten().astype(int)
+            preds = np.argmax(np.nan_to_num(y_pred, nan=0.0), axis=1)
+            trues = y_true_safe.flatten().astype(int)
 
         accuracy = float(np.mean(preds == trues))
 
@@ -501,23 +510,26 @@ class NeuralNetwork:
                 self.weights[j] -= alpha * gw / (np.sqrt(vs_w[j]) + eps) + alpha*wd*self.weights[j]
                 self.biases[j]  -= alpha * gb / (np.sqrt(vs_b[j]) + eps)
 
-            else:  
-                if opt == "sgd":
-                    ms_w[j] = 0.9 * ms_w[j] + gw
-                    ms_b[j] = 0.9 * ms_b[j] + gb
-                    self.weights[j] -= alpha * ms_w[j] + alpha*wd*self.weights[j]
-                    self.biases[j]  -= alpha * ms_b[j]
-                else:
-                    ms_w[j] = beta1 * ms_w[j] + (1-beta1) * gw
-                    vs_w[j] = beta2 * vs_w[j] + (1-beta2) * gw**2
-                    ms_b[j] = beta1 * ms_b[j] + (1-beta1) * gb
-                    vs_b[j] = beta2 * vs_b[j] + (1-beta2) * gb**2
-                    mw = ms_w[j]/(1-beta1**t)
-                    vw = vs_w[j]/(1-beta2**t)
-                    mb = ms_b[j]/(1-beta1**t)
-                    vb = vs_b[j]/(1-beta2**t)
-                    self.weights[j] -= alpha * mw/(np.sqrt(vw)+eps)
-                    self.biases[j]  -= alpha * mb/(np.sqrt(vb)+eps)
+            elif opt == "sgd":
+                ms_w[j] = 0.9 * ms_w[j] + gw
+                ms_b[j] = 0.9 * ms_b[j] + gb
+                self.weights[j] -= alpha * ms_w[j] + alpha*wd*self.weights[j]
+                self.biases[j]  -= alpha * ms_b[j]
+            elif opt == "adamw" or opt == "adam":
+                ms_w[j] = beta1 * ms_w[j] + (1-beta1) * gw
+                vs_w[j] = beta2 * vs_w[j] + (1-beta2) * (gw**2)
+                ms_b[j] = beta1 * ms_b[j] + (1-beta1) * gb
+                vs_b[j] = beta2 * vs_b[j] + (1-beta2) * (gb**2)
+                mw = ms_w[j] / (1 - beta1**t + 1e-10)
+                vw = vs_w[j] / (1 - beta2**t + 1e-10)
+                mb = ms_b[j] / (1 - beta1**t + 1e-10)
+                vb = vs_b[j] / (1 - beta2**t + 1e-10)
+                self.weights[j] -= alpha * (mw / (np.sqrt(vw) + eps) + wd * self.weights[j])
+                self.biases[j]  -= alpha * (mb / (np.sqrt(vb) + eps))
+            else:
+                # Basic Gradient Descent fallback
+                self.weights[j] -= alpha * gw
+                self.biases[j]  -= alpha * gb
 
     
 
@@ -605,7 +617,7 @@ class NeuralNetwork:
                 else:
                     patience_counter += 1
 
-                if patience_counter >= self.patience:
+                if self.early_stopping and patience_counter >= self.patience:
                     print(json.dumps({
                         "type": "log",
                         "message": f"[EarlyStopping] Triggered at epoch {epoch+1}. Best val_loss={best_val_loss:.6f}"
@@ -613,14 +625,18 @@ class NeuralNetwork:
                     break
 
             
+            # Ensure train_loss is finite for JSON
+            safe_train_loss = float(train_loss) if np.isfinite(train_loss) else 1e9
+            
             payload = {
                 "type":       "epoch",
                 "epoch":      epoch + 1,
-                "train_loss": float(train_loss),
+                "train_loss": safe_train_loss,
                 "lr":         float(current_lr),
             }
             if val_loss is not None:
-                payload["val_loss"] = float(val_loss)
+                safe_val_loss = float(val_loss) if np.isfinite(val_loss) else 1e9
+                payload["val_loss"] = safe_val_loss
 
             metrics = self._compute_metrics(acts_all[-1], y_orig)
             payload.update(metrics)
@@ -777,9 +793,34 @@ def main():
             try:
                 print(json.dumps({"type": "log", "message": f"Loading dataset ({size_mb:.2f} MB)..."}), flush=True)
                 if data_path.endswith(".csv"):
-                    data    = np.genfromtxt(data_path, delimiter=",", skip_header=1)
-                    X_train = data[:, :-1]
-                    y_train = data[:, -1]
+                    import csv
+                    with open(data_path, "r") as f:
+                        header = next(csv.reader(f))
+                    
+                    full_data = np.genfromtxt(data_path, delimiter=",", skip_header=1)
+                    
+                    sel_feats = config.get("selected_features", [])
+                    tgt_feats = config.get("target_features", [])
+                    
+                    if not sel_feats or not tgt_feats:
+                        # Fallback to old behavior if config is missing
+                        X_train = full_data[:, :-1]
+                        y_train = full_data[:, -1]
+                    else:
+                        # Filter based on headers
+                        try:
+                            feat_indices = [header.index(h) for h in sel_feats if h in header]
+                            target_indices = [header.index(h) for h in tgt_feats if h in header]
+                            
+                            X_train = full_data[:, feat_indices]
+                            y_train = full_data[:, target_indices]
+                            
+                            if y_train.shape[1] == 1:
+                                y_train = y_train.flatten()
+                        except Exception as e:
+                            print(json.dumps({"type": "log", "message": f"Feature selection failed: {e}. Falling back."}), flush=True)
+                            X_train = full_data[:, :-1]
+                            y_train = full_data[:, -1]
                 else:
                     with open(data_path, "rb") as f:
                         data    = np.frombuffer(f.read(), dtype=np.uint8)
@@ -788,6 +829,18 @@ def main():
                         y_train = np.random.randint(0, 2, n)
             except Exception as ex:
                 print(json.dumps({"type": "log", "message": f"Data load error: {ex}"}), flush=True)
+
+
+        if X_train is not None:
+            # Robust data cleaning for Infinity and NaN values
+            if np.any(np.isnan(X_train)) or np.any(np.isinf(X_train)):
+                print(json.dumps({"type": "log", "message": "Cleaning NaN/Inf values from feature matrix..."}), flush=True)
+                X_train = np.nan_to_num(X_train, nan=0.0, posinf=1.0, neginf=-1.0)
+            
+            if np.any(np.isnan(y_train)) or np.any(np.isinf(y_train)):
+                print(json.dumps({"type": "log", "message": "Cleaning NaN/Inf values from labels..."}), flush=True)
+                y_train = np.nan_to_num(y_train, nan=0.0, posinf=0.0, neginf=0.0)
+
 
     if X_train is None:
         X_train, y_train = generate_synthetic_data(task, n_samples=2000)
@@ -823,7 +876,9 @@ def main():
         activations = config.get("activations", [])
 
         if layers[0] != X_train.shape[1]:
-            layers = [X_train.shape[1]] + layers
+            # Overwrite instead of prepend if dimensions are mismatched
+            # This ensures consistency with the frontend which expects the architect's layers[0] to be input
+            layers[0] = X_train.shape[1]
 
         if task == "classification":
             n_classes = len(np.unique(y_train))
@@ -846,6 +901,7 @@ def main():
             label_smoothing=config.get("label_smoothing", 0.0),
             weight_decay=config.get("weight_decay", 1e-4),
             patience=config.get("patience", 15),
+            early_stopping=config.get("early_stopping", True),
             lr_schedule=config.get("lr_schedule", "cosine"),
             warmup_epochs=config.get("warmup_epochs", 5),
         )

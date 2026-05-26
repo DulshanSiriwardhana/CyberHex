@@ -76,8 +76,8 @@ export const features = [
 ];
 
 export const stats = [
-  { label: "Models Trained", value: "48,291+", suffix: "" },
-  { label: "Active Engineers", value: "12,400+", suffix: "" },
-  { label: "Avg Inference", value: "0.38", suffix: "ms" },
-  { label: "Uptime", value: "99.99", suffix: "%" },
+  { label: "Engine Latency", value: "< 0.5", suffix: "ms" },
+  { label: "Engine Core", value: "C++17", suffix: "" },
+  { label: "Training", value: "Async", suffix: "" },
+  { label: "Environment", value: "Local", suffix: "" },
 ];

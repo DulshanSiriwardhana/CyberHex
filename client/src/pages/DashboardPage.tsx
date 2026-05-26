@@ -50,7 +50,7 @@ export default function DashboardPage() {
   const stats = [
     { icon: Brain, label: "Total Models", value: experiments.filter(e => e.status === 'completed').length.toString(), change: "Released" },
     { icon: FlaskConical, label: "Experiments", value: experiments.length.toString(), change: "Total Runs" },
-    { icon: TrendingUp, label: "Avg Loss", value: (experiments.filter(e => e.results?.finalTrainLoss).reduce((acc, e) => acc + (e.results?.finalTrainLoss || 0), 0) / (experiments.filter(e => e.results?.finalTrainLoss).length || 1)).toFixed(3), change: "Training Metric" },
+    { icon: TrendingUp, label: "Avg Loss", value: experiments.filter(e => e.results?.finalTrainLoss !== undefined).length > 0 ? (experiments.filter(e => e.results?.finalTrainLoss !== undefined).reduce((acc, e) => acc + (e.results?.finalTrainLoss || 0), 0) / experiments.filter(e => e.results?.finalTrainLoss !== undefined).length).toFixed(3) : "N/A", change: "Training Metric" },
     { icon: Clock, label: "Active Jobs", value: experiments.filter(e => e.status === 'training').length.toString(), change: "Running Now" },
   ];
 

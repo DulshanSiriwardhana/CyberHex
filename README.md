@@ -13,7 +13,7 @@
 
 ---
 
-CyberHex is a **local-first machine learning platform** designed for technical engineers who demand speed, precision, and privacy. It combines a custom high-performance C++ neural network engine, a suite of advanced ML modules, a Node.js/Express backend, and a modern React dashboard — all containerized with Docker.
+CyberHex is a **private, high-performance machine learning platform** designed for technical engineers who demand speed, precision, and absolute control. It combines a custom C++17 neural network core with a modular React dashboard — allowing you to design, train, and deploy models entirely on your own terms.
 
 ---
 
@@ -187,45 +187,36 @@ CyberHex/
 
 ---
 
-## Getting Started
+### Quick Start (Local)
+
+The fastest way to get CyberHex running locally:
+
+```bash
+chmod +x start.sh
+./start.sh
+```
+
+This will automatically configure your environment files and start both the backend and frontend.
+
+---
 
 ### Prerequisites
 
-- **Docker** & **Docker Compose** (recommended)
-- **Node.js 18+** & **npm** or **yarn** (for local dev)
-- **MongoDB 7** (if running locally without Docker)
-- **CMake 3.14+** and a C++17 compiler (for the C++ ML engine)
-- **Python 3.8+** (for Python ML modules)
+- **Node.js 18+** & **npm**
+- **MongoDB 7** (Running locally or via Docker)
+- **CMake 3.14+** (For C++ engine)
 
-### Docker Setup (Recommended)
+### Docker Setup (One-Liner)
 
-1. **Clone the repository**
+```bash
+docker compose up --build -d
+```
 
-   ```bash
-   git clone https://github.com/DulshanSiriwardhana/CyberHex.git
-   cd CyberHex
-   ```
+### Access
 
-2. **Configure environment variables**
-
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration (or use defaults for development)
-   ```
-
-3. **Build and start all services**
-
-   ```bash
-   docker compose up --build -d
-   ```
-
-4. **Access the application**
-
-   | Service    | URL                     |
-   | ---------- | ----------------------- |
-   | Frontend   | http://localhost:80     |
-   | Backend    | http://localhost:5000   |
-   | MongoDB    | localhost:27017         |
+- **Dashboard**: http://localhost:5173
+- **API**: http://localhost:5000
+- **Studio**: http://localhost:5174 (if running locally)
 
 5. **Stop services**
 

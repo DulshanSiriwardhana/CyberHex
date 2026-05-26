@@ -162,7 +162,7 @@ export default function ExperimentBuilderPage() {
             activation
           });
         } else if (["ReLU", "Sigmoid", "Tanh", "Softmax", "GELU"].includes(current.type)) {
-          
+
         } else {
           mapped.push({
             id: current.id,
@@ -193,7 +193,7 @@ export default function ExperimentBuilderPage() {
   const [loss, setLoss] = useState("bce");
   const [earlyStopping, setEarlyStopping] = useState(true);
   const [patience, setPatience] = useState(15);
-  
+
   const [dropoutRate, setDropoutRate] = useState(0.0);
   const [useBatchNorm, setUseBatchNorm] = useState(false);
   const [gradientClip, setGradientClip] = useState(5.0);
@@ -218,24 +218,22 @@ export default function ExperimentBuilderPage() {
   const activeDataset = DATASETS.find((d) => d.id === selectedDatasetId) || DATASETS[0];
 
   useEffect(() => {
-    if (selectedDatasetId === "custom") {
-      if (customFeatures.length > 0) {
-        setSelectedFeatures(customFeatures.slice(0, 6).map((f) => f.name));
-        setTargetFeatures([customTargets[0] || ""]);
-        setLoss(customTaskType === "classification" ? "bce" : "mse");
-      }
-      return;
-    }
+    const firstTarget = selectedDatasetId === "custom" ? (customTargets[0] || "") : activeDataset.targets[0];
+    const initialFeatures = selectedDatasetId === "custom"
+      ? customFeatures.map(f => f.name)
+      : activeDataset.features.map(f => f.name);
 
-    setSelectedFeatures(activeDataset.features.slice(0, 6).map((f) => f.name));
-    setTargetFeatures([activeDataset.targets[0]]);
+    // Default to first 6 features that are NOT the target
+    const filteredFeatures = initialFeatures
+      .filter(f => f !== firstTarget)
+      .slice(0, 6);
 
-    if (activeDataset.taskType === "classification") {
-      setLoss("bce");
-    } else {
-      setLoss("mse");
-    }
-  }, [selectedDatasetId, customFeatures, customTargets, customTaskType]);
+    setSelectedFeatures(filteredFeatures);
+    setTargetFeatures([firstTarget]);
+
+    const taskType = selectedDatasetId === "custom" ? customTaskType : activeDataset.taskType;
+    setLoss(taskType === "classification" ? "bce" : "mse");
+  }, [selectedDatasetId, customFeatures, customTargets, customTaskType, activeDataset]);
 
   const handleCsvInput = (csv: string) => {
     setCustomCsv(csv);
@@ -249,18 +247,17 @@ export default function ExperimentBuilderPage() {
       const headers = lines[0].split(",").map(h => h.trim());
       if (headers.length < 2) return;
 
-      const features = headers.slice(0, -1).map(h => ({
+      const allCols = headers.map(h => ({
         name: h,
         type: "float",
         min: 0,
         max: 1,
         mean: 0.5
       }));
-      const target = headers[headers.length - 1];
 
-      setCustomFeatures(features);
-      setCustomTargets([target]);
-      setFeedbackMsg({ type: "success", text: `Successfully parsed ${headers.length} columns from CSV.` });
+      setCustomFeatures(allCols);
+      setCustomTargets(headers);
+      setFeedbackMsg({ type: "success", text: `Successfully parsed ${headers.length} columns from CSV. Select your target column in Step 2.` });
     } catch (e) {
       setFeedbackMsg({ type: "error", text: "Failed to parse CSV. Ensure it has a header row." });
     } finally {
@@ -292,8 +289,9 @@ export default function ExperimentBuilderPage() {
           const firstLine = text.split('\n')[0];
           const headers = firstLine.split(',').map(h => h.trim());
           if (headers.length >= 2) {
-            setCustomFeatures(headers.slice(0, -1).map(h => ({ name: h, type: "float", min: 0, max: 1, mean: 0.5 })));
-            setCustomTargets([headers[headers.length - 1]]);
+            const allCols = headers.map(h => ({ name: h, type: "float", min: 0, max: 1, mean: 0.5 }));
+            setCustomFeatures(allCols);
+            setCustomTargets(headers);
           }
         };
         reader.readAsText(file.slice(0, 1024 * 10));
@@ -371,7 +369,7 @@ export default function ExperimentBuilderPage() {
   const getExperimentPayload = () => {
     const hiddenUnits = layers.map((l) => l.units);
     const inputSize = selectedFeatures.length;
-    const outputSize = 1;
+    const outputSize = targetFeatures.length;
     const activations = layers.map((l) => l.activation);
     activations.push(activeDatasetObj.taskType === 'classification' ? 'sigmoid' : 'linear');
 
@@ -395,7 +393,7 @@ export default function ExperimentBuilderPage() {
         testSplit: testSplit / 100,
         earlyStopping,
         patience,
-        
+
         dropoutRate,
         useBatchNorm,
         gradientClip,
@@ -1148,7 +1146,7 @@ export default function ExperimentBuilderPage() {
                         <input type="number" value={patience} onChange={(e) => setPatience(Number(e.target.value))} className="input-cyber w-full py-1.5 text-sm" min={1} max={50} />
                       </div>
 
-                      {}
+                      { }
                       <div className="border-t border-neutral-800/50 pt-3 mt-1">
                         <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Ultra-Pro Regularization</p>
                         <div className="space-y-3">

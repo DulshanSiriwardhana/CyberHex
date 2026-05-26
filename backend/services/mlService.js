@@ -71,13 +71,14 @@ export function buildPythonConfig(experiment) {
     custom_data: cfg.customData || null,
     activations: cfg.activations || [],
     seed: cfg.seed || 42,
-    
+
     dropout_rate: cfg.dropoutRate || 0.0,
     use_batch_norm: cfg.useBatchNorm ?? false,
     gradient_clip: cfg.gradientClip ?? 5.0,
     label_smoothing: cfg.labelSmoothing ?? 0.0,
     weight_decay: cfg.weightDecay ?? 1e-4,
     patience: cfg.patience || 15,
+    early_stopping: cfg.earlyStopping ?? true,
     lr_schedule: cfg.lrSchedule || 'cosine',
     warmup_epochs: cfg.warmupEpochs || 5,
   };
@@ -197,7 +198,7 @@ function processOutputLine(job, jobId, line) {
       job.metrics.train_loss.push(parsed.train_loss);
       job.metrics.val_loss.push(parsed.val_loss ?? null);
 
-      
+
       if (parsed.lr != null) job.metrics.learning_rates.push(parsed.lr);
       if (parsed.accuracy != null) { job.metrics.accuracy.push(parsed.accuracy); }
       if (parsed.f1 != null) { job.metrics.f1.push(parsed.f1); }
@@ -267,7 +268,7 @@ function attachProcessHandlers(job, childProcess) {
       job.buffer = '';
     }
 
-    if (job.status === 'running') {
+    if (job.status === 'training') {
       job.status = code === 0 ? 'completed' : 'failed';
     }
 
@@ -313,8 +314,8 @@ export async function startTraining(experiment) {
   const existingLocal = activeJobs.get(jobId);
   const existingRemote = await getJobSnapshot(jobId);
   if (
-    (existingLocal && (existingLocal.status === 'running' || existingLocal.status === 'queued')) ||
-    (existingRemote && (existingRemote.status === 'running' || existingRemote.status === 'queued'))
+    (existingLocal && (existingLocal.status === 'training' || existingLocal.status === 'queued')) ||
+    (existingRemote && (existingRemote.status === 'training' || existingRemote.status === 'queued'))
   ) {
     throw new Error('Training already running or queued for this experiment');
   }
@@ -367,7 +368,7 @@ export async function startTraining(experiment) {
       dead_neurons_pct: null,
       ensemble_size: 0,
     },
-    status: 'running',
+    status: 'training',
     startedAt: new Date(),
     buffer: '',
     engine,
@@ -390,7 +391,7 @@ export async function stopTraining(jobId) {
   const job = activeJobs.get(jobId);
   if (!job) {
     const snapshot = await getJobSnapshot(jobId);
-    if (!snapshot || (snapshot.status !== 'running' && snapshot.status !== 'queued')) return null;
+    if (!snapshot || (snapshot.status !== 'training' && snapshot.status !== 'queued')) return null;
     snapshot.status = 'stopped';
     await saveJobSnapshot(jobId, snapshot);
     await finalizeExperiment(jobId, { status: 'stopped', metrics: snapshot.metrics || {} });
@@ -430,7 +431,7 @@ export async function getAllActiveJobs() {
   }
   const snapshots = await listJobSnapshots();
   for (const snap of snapshots) {
-    if (snap.status === 'running' && !activeJobs.has(snap.experimentId)) {
+    if (snap.status === 'training' && !activeJobs.has(snap.experimentId)) {
       jobs.push({
         experimentId: snap.experimentId,
         status: snap.status,

@@ -44,14 +44,7 @@ export default function ExperimentsListPage() {
         setExperiments(data.experiments);
       })
       .catch(() => {
-
-        setExperiments([
-          { _id: '1', userId: '', name: 'MNIST Classifier v3', description: '', status: 'completed', config: {} as any, createdAt: '2h ago', updatedAt: '2h ago' },
-          { _id: '2', userId: '', name: 'Sentiment LSTM', description: '', status: 'training', config: {} as any, createdAt: '5h ago', updatedAt: '5h ago' },
-          { _id: '3', userId: '', name: 'Image GAN', description: '', status: 'failed', config: {} as any, createdAt: '1d ago', updatedAt: '1d ago' },
-          { _id: '4', userId: '', name: 'Price Predictor', description: '', status: 'completed', config: {} as any, createdAt: '2d ago', updatedAt: '2d ago' },
-          { _id: '5', userId: '', name: 'Draft Network', description: '', status: 'draft', config: {} as any, createdAt: '3d ago', updatedAt: '3d ago' },
-        ]);
+        setExperiments([]);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -111,8 +104,8 @@ export default function ExperimentsListPage() {
                 key={s}
                 onClick={() => setStatusFilter(s)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${statusFilter === s
-                    ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                    : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/50'
+                  ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                  : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/50'
                   }`}
               >
                 {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -158,9 +151,9 @@ export default function ExperimentsListPage() {
                     <Flex justify="between" gap="md" wrap>
                       <div className="flex items-center gap-4 min-w-0">
                         <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${exp.status === 'training' ? 'bg-green-500/10 border border-green-500/20 text-green-400' :
-                            exp.status === 'completed' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' :
-                              exp.status === 'failed' ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400' :
-                                'bg-neutral-800/50 border border-neutral-700/30 text-neutral-500'
+                          exp.status === 'completed' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' :
+                            exp.status === 'failed' ? 'bg-rose-500/10 border border-rose-500/20 text-rose-400' :
+                              'bg-neutral-800/50 border border-neutral-700/30 text-neutral-500'
                           }`}>
                           <FlaskConical className="h-5 w-5" />
                         </div>
