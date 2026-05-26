@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""ONNX Runtime inference for CyberHex exported models (cyberhex.infer.v1)."""
+
+
 import json
 import os
 import sys

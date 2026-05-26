@@ -14,7 +14,7 @@ export function PageLayout({ children, className }: PageLayoutProps) {
         className,
       )}
     >
-      {}
+      { }
       <div className="pointer-events-none fixed inset-0 bg-cyber-radial" />
       <div className="relative z-[1]">{children}</div>
     </div>
@@ -185,21 +185,28 @@ export function Panel({ children, className, glow }: PanelProps) {
 interface SectionHeadingProps {
   title: string;
   description?: string;
+  subtitle?: string;
   className?: string;
   align?: "left" | "center";
+  center?: boolean;
 }
 
 export function SectionHeading({
   title,
   description,
+  subtitle,
   className,
   align = "center",
+  center,
 }: SectionHeadingProps) {
+  const isCentered = center || align === "center";
+  const displayDescription = subtitle || description;
+
   return (
     <div
       className={cn(
         "mb-12",
-        align === "center" && "text-center",
+        isCentered && "text-center",
         className,
       )}
     >
@@ -209,12 +216,15 @@ export function SectionHeading({
       <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-[2.5rem] lg:leading-tight">
         {title}
       </h2>
-      {description && (
-        <p className="mt-4 max-w-2xl text-base sm:text-lg text-neutral-400 leading-relaxed mx-auto">
-          {description}
+      {displayDescription && (
+        <p className={cn(
+          "mt-4 max-w-2xl text-base sm:text-lg text-neutral-400 leading-relaxed",
+          isCentered && "mx-auto"
+        )}>
+          {displayDescription}
         </p>
       )}
-      <div className={cn("mt-6 divider-cyber", align === "center" && "mx-auto max-w-xs")} />
+      <div className={cn("mt-6 divider-cyber", isCentered && "mx-auto max-w-xs")} />
     </div>
   );
 }

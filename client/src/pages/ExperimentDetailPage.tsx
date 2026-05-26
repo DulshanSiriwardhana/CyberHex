@@ -109,7 +109,7 @@ function MetricCard({
       className="group"
     >
       <StatCard className="hover:border-green-500/20 transition-all duration-300 relative overflow-hidden">
-        {/* Scan shimmer */}
+        {}
         <motion.div
           className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent"
           animate={{ y: ['-100%', '400%'] }}
@@ -209,7 +209,7 @@ export default function ExperimentDetailPage() {
       setExperiment(data.experiment);
       setTotalEpochs(data.experiment.config.epochs);
 
-      // Populate from stored results
+      
       const r = data.experiment.results;
       if (r?.epochs?.length) {
         const pts: LivePoint[] = r.epochs.map((e: number, i: number) => ({
@@ -376,10 +376,10 @@ export default function ExperimentDetailPage() {
 
   const taskIsClassification = experiment?.config.task === 'classification';
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  
   return (
     <Container className="py-8 pt-24">
-      {/* Header */}
+      {}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -612,7 +612,7 @@ export default function ExperimentDetailPage() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Inference Panel */}
+      {}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
         <Grid cols={2} gap="md">
           <Card>

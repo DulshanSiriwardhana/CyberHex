@@ -1,15 +1,15 @@
 import { useEffect, useRef } from "react";
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  CyberHex Digital Cortex  v∞.0  —  World #1 Neural Visualization Engine
-//  Features:
-//    • 80 chromatic nodes with depth-layered rendering (z-parallax)
-//    • Multi-speed data-stream pulses along connection edges
-//    • Hexagonal "nucleus" nodes that breathe and emit signal rings
-//    • Mouse gravity field + click shockwave explosion
-//    • Adaptive draw-call budget (60 fps target, auto-reduces particles on lag)
-//    • Multi-layer composite: background grid + node clusters + data packets
-// ─────────────────────────────────────────────────────────────────────────────
+
+
+
+
+
+
+
+
+
+
 
 interface Vec2 { x: number; y: number; }
 
@@ -22,7 +22,7 @@ export default function DigitalCortex() {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        
         const ctx = canvas.getContext("2d")!;
 
         let width = (canvas.width = window.innerWidth);
@@ -31,26 +31,26 @@ export default function DigitalCortex() {
         const mouse: Vec2 & { active: boolean } = { x: -2000, y: -2000, active: false };
         let shockwaves: { x: number; y: number; r: number; maxR: number; alpha: number }[] = [];
 
-        // ── Palette ────────────────────────────────────────────────────────
-        const GREEN = { r: 34, g: 197, b: 94 };  // #22c55e
-        const VIOLET = { r: 139, g: 92, b: 246 };  // #8b5cf6
-        const CYAN = { r: 0, g: 229, b: 255 };  // #00e5ff
+        
+        const GREEN = { r: 34, g: 197, b: 94 };  
+        const VIOLET = { r: 139, g: 92, b: 246 };  
+        const CYAN = { r: 0, g: 229, b: 255 };  
         const ATOM_COLORS = [GREEN, VIOLET, CYAN];
 
         function rgbA(c: typeof GREEN, a: number) {
             return `rgba(${c.r},${c.g},${c.b},${a})`;
         }
 
-        // ── Particle (Node) ────────────────────────────────────────────────
+        
         class Particle {
             x: number; y: number;
             vx: number; vy: number;
             size: number;
             pulse: number;
             pulseSpeed: number;
-            depth: number;       // 0.2 – 1.0 (z depth; closer = larger & brighter)
+            depth: number;       
             colorIdx: number;
-            isNucleus: boolean;  // special hex nodes
+            isNucleus: boolean;  
             signalRings: { r: number; alpha: number }[];
             ringTimer: number;
             angleOffset: number;
@@ -74,17 +74,17 @@ export default function DigitalCortex() {
             }
 
             update(time: number) {
-                // Noise vector field (organic drift)
+                
                 const nx = Math.sin(this.x * 0.003 + time * 0.0005) * 0.08 * this.depth;
                 const ny = Math.cos(this.y * 0.003 + time * 0.0005) * 0.08 * this.depth;
                 this.vx = lerp(this.vx, nx, 0.04);
                 this.vy = lerp(this.vy, ny, 0.04);
 
-                // Damping
+                
                 this.vx *= 0.992;
                 this.vy *= 0.992;
 
-                // Mouse gravity field
+                
                 if (mouse.active) {
                     const dx = mouse.x - this.x;
                     const dy = mouse.y - this.y;
@@ -101,13 +101,13 @@ export default function DigitalCortex() {
                 this.y += this.vy;
                 this.pulse += this.pulseSpeed;
 
-                // Wrap-around (soft bounce with velocity reversal at edge)
+                
                 if (this.x < -10) { this.x = width + 10; }
                 if (this.x > width + 10) { this.x = -10; }
                 if (this.y < -10) { this.y = height + 10; }
                 if (this.y > height + 10) { this.y = -10; }
 
-                // Nucleus signal rings
+                
                 if (this.isNucleus) {
                     this.ringTimer++;
                     if (this.ringTimer > 90 + Math.random() * 120) {
@@ -127,7 +127,7 @@ export default function DigitalCortex() {
                 const alpha = (0.25 + pulse * 0.25) * this.depth;
                 const r = this.size * (1 + pulse * 0.3);
 
-                // Signal rings (nucleus only)
+                
                 for (const ring of this.signalRings) {
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, ring.r, 0, Math.PI * 2);
@@ -137,7 +137,7 @@ export default function DigitalCortex() {
                 }
 
                 if (this.isNucleus) {
-                    // Draw hexagon
+                    
                     ctx.save();
                     ctx.translate(this.x, this.y);
                     ctx.rotate(this.angleOffset + time * 0.0003);
@@ -156,7 +156,7 @@ export default function DigitalCortex() {
                     ctx.fill();
                     ctx.restore();
 
-                    // Inner glow core
+                    
                     const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, r * 4);
                     glow.addColorStop(0, rgbA(c, alpha * 0.8));
                     glow.addColorStop(1, "transparent");
@@ -165,7 +165,7 @@ export default function DigitalCortex() {
                     ctx.fillStyle = glow;
                     ctx.fill();
                 } else {
-                    // Standard node
+                    
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
                     ctx.fillStyle = rgbA(c, alpha * 2);
@@ -181,7 +181,7 @@ export default function DigitalCortex() {
             }
         }
 
-        // ── Data Packet (travels along edges) ──────────────────────────────
+        
         class DataPacket {
             from: Particle;
             to: Particle;
@@ -215,7 +215,7 @@ export default function DigitalCortex() {
                 ctx.fillStyle = rgbA(c, alpha);
                 ctx.fill();
 
-                // Tail glow
+                
                 const glow = ctx.createRadialGradient(x, y, 0, x, y, this.size * 3);
                 glow.addColorStop(0, rgbA(c, alpha * 0.4));
                 glow.addColorStop(1, "transparent");
@@ -226,7 +226,7 @@ export default function DigitalCortex() {
             }
         }
 
-        // ── Init ───────────────────────────────────────────────────────────
+        
         const PARTICLE_COUNT = Math.min(80, Math.floor((width * height) / 14000));
         const CONNECTION_DIST = Math.min(200, width * 0.15);
         const MAX_PACKETS = 12;
@@ -239,16 +239,16 @@ export default function DigitalCortex() {
         let frameCount = 0;
         let rafId: number;
 
-        // ── Animation Loop ─────────────────────────────────────────────────
+        
         function animate(time: number) {
             rafId = requestAnimationFrame(animate);
             frameCount++;
 
-            // ── Background fade ──
+            
             ctx.fillStyle = "rgba(9,9,11,0.18)";
             ctx.fillRect(0, 0, width, height);
 
-            // ── Update shockwaves ──
+            
             shockwaves = shockwaves
                 .map(sw => ({ ...sw, r: sw.r + 6, alpha: sw.alpha * 0.88 }))
                 .filter(sw => sw.alpha > 0.02);
@@ -264,7 +264,7 @@ export default function DigitalCortex() {
                 ctx.fill();
             }
 
-            // ── Update + draw particles ──
+            
             ctx.globalCompositeOperation = "screen";
 
             const sorted = [...particles].sort((a, b) => a.depth - b.depth);
@@ -273,7 +273,7 @@ export default function DigitalCortex() {
                 sorted[i].update(time);
                 sorted[i].draw(time);
 
-                // Draw connections
+                
                 for (let j = i + 1; j < sorted.length; j++) {
                     const p2 = sorted[j];
                     const dx = sorted[i].x - p2.x;
@@ -286,14 +286,14 @@ export default function DigitalCortex() {
                         const alpha = (1 - d / CONNECTION_DIST) * 0.13 * depthAlpha;
                         if (alpha < 0.015) continue;
 
-                        // Color-blend edge based on node colors
+                        
                         const ci = ATOM_COLORS[sorted[i].colorIdx];
                         const cj = ATOM_COLORS[p2.colorIdx];
 
                         if (sorted[i].colorIdx === p2.colorIdx) {
                             ctx.strokeStyle = rgbA(ci, alpha);
                         } else {
-                            // Gradient edge
+                            
                             const grad = ctx.createLinearGradient(sorted[i].x, sorted[i].y, p2.x, p2.y);
                             grad.addColorStop(0, rgbA(ci, alpha));
                             grad.addColorStop(1, rgbA(cj, alpha));
@@ -306,7 +306,7 @@ export default function DigitalCortex() {
                         ctx.lineTo(p2.x, p2.y);
                         ctx.stroke();
 
-                        // Spawn data packets along edges
+                        
                         if (
                             packets.length < MAX_PACKETS &&
                             Math.random() < PACKET_SPAWN_RATE
@@ -317,7 +317,7 @@ export default function DigitalCortex() {
                 }
             }
 
-            // ── Data packets ──
+            
             for (let k = packets.length - 1; k >= 0; k--) {
                 packets[k].update();
                 packets[k].draw();
@@ -327,7 +327,7 @@ export default function DigitalCortex() {
             ctx.globalCompositeOperation = "source-over";
         }
 
-        // ── Mouse ─────────────────────────────────────────────────────────
+        
         const handleMouseMove = (e: MouseEvent) => {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
@@ -338,7 +338,7 @@ export default function DigitalCortex() {
 
         const handleClick = (e: MouseEvent) => {
             shockwaves.push({ x: e.clientX, y: e.clientY, r: 10, maxR: 300, alpha: 0.8 });
-            // Repulse nearby particles
+            
             particles.forEach(p => {
                 const dx = p.x - e.clientX;
                 const dy = p.y - e.clientY;

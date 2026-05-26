@@ -162,7 +162,7 @@ export default function ExperimentBuilderPage() {
             activation
           });
         } else if (["ReLU", "Sigmoid", "Tanh", "Softmax", "GELU"].includes(current.type)) {
-          // Skip orphaned activations or handle them
+          
         } else {
           mapped.push({
             id: current.id,
@@ -193,7 +193,7 @@ export default function ExperimentBuilderPage() {
   const [loss, setLoss] = useState("bce");
   const [earlyStopping, setEarlyStopping] = useState(true);
   const [patience, setPatience] = useState(15);
-  // Ultra-Max-Pro regularization
+  
   const [dropoutRate, setDropoutRate] = useState(0.0);
   const [useBatchNorm, setUseBatchNorm] = useState(false);
   const [gradientClip, setGradientClip] = useState(5.0);
@@ -395,7 +395,7 @@ export default function ExperimentBuilderPage() {
         testSplit: testSplit / 100,
         earlyStopping,
         patience,
-        // Ultra-Max-Pro regularization
+        
         dropoutRate,
         useBatchNorm,
         gradientClip,
@@ -1148,7 +1148,7 @@ export default function ExperimentBuilderPage() {
                         <input type="number" value={patience} onChange={(e) => setPatience(Number(e.target.value))} className="input-cyber w-full py-1.5 text-sm" min={1} max={50} />
                       </div>
 
-                      {/* ── Ultra-Pro Regularization ── */}
+                      {}
                       <div className="border-t border-neutral-800/50 pt-3 mt-1">
                         <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Ultra-Pro Regularization</p>
                         <div className="space-y-3">

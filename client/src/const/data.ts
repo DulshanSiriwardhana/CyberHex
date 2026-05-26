@@ -25,14 +25,10 @@ export const dashboardNavItems: NavItem[] = [
   { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard, protected: true },
   { name: "Models", path: "/models", icon: Brain, protected: true },
   { name: "Experiments", path: "/experiments", icon: FlaskConical, protected: true },
-  { name: "CyberGames", path: "/cybergames", icon: Gamepad2, protected: true },
   { name: "Settings", path: "/settings", icon: Settings, protected: true },
 ];
 
-export const publicNavItems: NavItem[] = [
-  { name: "About", path: "/about", icon: Info },
-  { name: "Contact", path: "/contact", icon: Mail },
-];
+export const publicNavItems: NavItem[] = [];
 
 export const features = [
   {

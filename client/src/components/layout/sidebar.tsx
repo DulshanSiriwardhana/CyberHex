@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   FlaskConical,
   BrainCircuit,
-  Gamepad2,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -14,10 +13,12 @@ import {
   BarChart3,
   Clock,
   Play,
-  BookOpen,
+  Terminal,
+  Layers,
   type LucideIcon,
 } from 'lucide-react';
 import { SPACING } from '@/lib/design-tokens';
+import { useAuth } from '@/contexts/auth';
 
 export interface NavItem {
   id: string;
@@ -51,8 +52,6 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       { id: 'experiments-all', label: 'All Experiments', icon: BarChart3, href: '/experiments' },
       { id: 'experiments-new', label: 'New Experiment', icon: Plus, href: '/experiments/new' },
-      { id: 'experiments-running', label: 'Running', icon: Play, href: '/experiments?status=running', badge: '3' },
-      { id: 'experiments-history', label: 'History', icon: Clock, href: '/experiments?status=completed' },
     ],
   },
   {
@@ -63,17 +62,11 @@ const NAV_ITEMS: NavItem[] = [
     shortcut: 'G M',
   },
   {
-    id: 'cybergames',
-    label: 'CyberGames',
-    icon: Gamepad2,
-    href: '/cybergames',
-    shortcut: 'G C',
-  },
-  {
-    id: 'docs',
-    label: 'Documentation',
-    icon: BookOpen,
-    href: '/docs',
+    id: 'designer',
+    label: 'Architecture Designer',
+    icon: Layers,
+    href: '/designer',
+    shortcut: 'G A',
   },
   {
     id: 'settings',
@@ -103,10 +96,10 @@ function NavItemComponent({
 
   const isActive = item.href
     ? location.pathname === item.href ||
-      (item.href !== '/dashboard' && location.pathname.startsWith(item.href))
+    (item.href !== '/dashboard' && location.pathname.startsWith(item.href))
     : item.children?.some(
-        (child) => child.href && location.pathname.startsWith(child.href)
-      ) ?? false;
+      (child) => child.href && location.pathname.startsWith(child.href)
+    ) ?? false;
 
   const hasChildren = Boolean(item.children?.length);
   const Icon = item.icon;
@@ -126,10 +119,9 @@ function NavItemComponent({
         className={`
           group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
           text-sm font-medium transition-all duration-150 ease-out
-          ${
-            isActive
-              ? 'bg-green-500/8 text-green-300 border border-green-500/15'
-              : 'text-white/60 hover:text-white/85 hover:bg-white/[0.03] border border-transparent'
+          ${isActive
+            ? 'bg-green-500/8 text-green-300 border border-green-500/15'
+            : 'text-white/60 hover:text-white/85 hover:bg-white/[0.03] border border-transparent'
           }
           ${collapsed ? 'justify-center px-2' : ''}
         `}
@@ -137,9 +129,8 @@ function NavItemComponent({
         style={{ paddingLeft: collapsed ? undefined : `${12 + depth * 16}px` }}
       >
         <Icon
-          className={`w-5 h-5 shrink-0 transition-colors ${
-            isActive ? 'text-green-400' : 'text-white/35 group-hover:text-white/60'
-          }`}
+          className={`w-5 h-5 shrink-0 transition-colors ${isActive ? 'text-green-400' : 'text-white/35 group-hover:text-white/60'
+            }`}
         />
 
         {!collapsed && (
@@ -199,6 +190,7 @@ function NavItemComponent({
 }
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+  const { user } = useAuth();
   return (
     <motion.aside
       initial={false}
@@ -208,7 +200,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       transition={{ type: 'spring', stiffness: 400, damping: 35 }}
       className="relative h-screen flex flex-col bg-[#0d0d14] border-r border-white/[0.04] shrink-0 overflow-hidden"
     >
-      {}
+      { }
       <button
         onClick={onToggle}
         className="absolute -right-3 top-6 z-10 w-6 h-6 rounded-full bg-[#181825] border border-white/[0.08] flex items-center justify-center hover:bg-[#1f1f2e] hover:border-white/[0.14] transition-all group"
@@ -220,10 +212,10 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         )}
       </button>
 
-      {}
+      { }
       <div className="flex items-center gap-3 px-4 h-14 shrink-0 border-b border-white/[0.04]">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-violet-600 flex items-center justify-center shrink-0">
-          <span className="text-xs font-bold text-white">CH</span>
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+          <Terminal className="h-4 w-4 text-white" />
         </div>
         <AnimatePresence>
           {!collapsed && (
@@ -239,25 +231,25 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         </AnimatePresence>
       </div>
 
-      {}
+      { }
       <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
         {NAV_ITEMS.map((item) => (
           <NavItemComponent key={item.id} item={item} collapsed={collapsed} />
         ))}
       </nav>
 
-      {}
+      { }
       <div className="px-3 py-3 border-t border-white/[0.04]">
         {!collapsed && (
           <div className="flex items-center gap-2 px-2 py-2 rounded-xl bg-white/[0.02]">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-violet-500 flex items-center justify-center shrink-0">
-              <span className="text-[10px] font-bold text-white">U</span>
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shrink-0">
+              <span className="text-[10px] font-bold text-white">{user?.username?.[0]?.toUpperCase() || 'U'}</span>
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-[12px] font-medium text-white/80 truncate">
-                User
+                {user?.username || 'Guest'}
               </div>
-              <div className="text-[10px] text-white/30">Pro Plan</div>
+              <div className="text-[10px] text-white/30 truncate">Local Instance</div>
             </div>
           </div>
         )}

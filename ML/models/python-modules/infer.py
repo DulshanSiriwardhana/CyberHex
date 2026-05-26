@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""CyberHex inference CLI — loads .npz weights from train.py and predicts."""
+
+
 import json
 import os
 import sys

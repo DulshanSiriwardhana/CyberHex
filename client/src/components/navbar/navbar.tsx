@@ -89,50 +89,33 @@ const NavBar = () => {
         { }
         <div className="hidden md:flex items-center gap-1">
           <Link
-            to="/"
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/"
+            to="/dashboard"
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/dashboard"
               ? "text-green-400 bg-green-500/10"
               : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
               }`}
           >
-            Home
+            Dashboard
           </Link>
           <Link
-            to="/about"
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/about"
+            to="/models"
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/models"
               ? "text-green-400 bg-green-500/10"
               : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
               }`}
           >
-            About
+            Models
           </Link>
           <Link
-            to="/contact"
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/contact"
+            to="/experiments"
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/experiments"
               ? "text-green-400 bg-green-500/10"
               : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
               }`}
           >
-            Contact
+            Experiments
           </Link>
-          <Link
-            to="/showcase"
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/showcase"
-              ? "text-green-400 bg-green-500/10"
-              : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
-              }`}
-          >
-            Showcase
-          </Link>
-          <Link
-            to="/pricing"
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/pricing"
-              ? "text-green-400 bg-green-500/10"
-              : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
-              }`}
-          >
-            Pricing
-          </Link>
+
         </div>
 
         { }
@@ -331,55 +314,36 @@ const NavBar = () => {
           >
             <div className="px-4 py-4 space-y-1">
               <Link
-                to="/"
+                to="/dashboard"
                 onClick={closeMobile}
-                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/"
+                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/dashboard"
                   ? "text-green-400 bg-green-500/10"
                   : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
                   }`}
               >
-                Home
+                Dashboard
               </Link>
               <Link
-                to="/about"
+                to="/models"
                 onClick={closeMobile}
-                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/about"
+                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/models"
                   ? "text-green-400 bg-green-500/10"
                   : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
                   }`}
               >
-                About
+                Models
               </Link>
               <Link
-                to="/contact"
+                to="/experiments"
                 onClick={closeMobile}
-                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/contact"
+                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/experiments"
                   ? "text-green-400 bg-green-500/10"
                   : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
                   }`}
               >
-                Contact
+                Experiments
               </Link>
-              <Link
-                to="/showcase"
-                onClick={closeMobile}
-                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/showcase"
-                  ? "text-green-400 bg-green-500/10"
-                  : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
-                  }`}
-              >
-                Showcase
-              </Link>
-              <Link
-                to="/pricing"
-                onClick={closeMobile}
-                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/pricing"
-                  ? "text-green-400 bg-green-500/10"
-                  : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
-                  }`}
-              >
-                Pricing
-              </Link>
+
               { }
               <div className="pt-3 border-t border-neutral-800/50">
                 <p className="px-3 pt-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-neutral-500">

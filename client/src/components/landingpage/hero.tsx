@@ -18,7 +18,7 @@ import { stats } from "@/const/data";
 import { useAuthModal } from "@/stores/authModal";
 import DigitalCortex from "./DigitalCortex";
 
-// ─── Floating Icons ──────────────────────────────────────────────────────────
+
 const floatingIcons = [
   { Icon: Cpu, x: "8%", y: "18%", delay: 0, duration: 5.8 },
   { Icon: Zap, x: "84%", y: "12%", delay: 1.2, duration: 5.2 },
@@ -29,7 +29,7 @@ const floatingIcons = [
   { Icon: Globe, x: "5%", y: "44%", delay: 1.5, duration: 5.0 },
 ];
 
-// ─── Typewriter Cycle ─────────────────────────────────────────────────────────
+
 const PHRASES = [
   "Machine Learning for Cyber Engineers",
   "Train Neural Nets in Your Browser",
@@ -70,7 +70,7 @@ function useTypewriter(phrases: string[], speed = 45, pause = 2000) {
   return text;
 }
 
-// ─── Animated Counter ────────────────────────────────────────────────────────
+
 function AnimatedStat({ value, suffix, label }: { value: string; suffix: string; label: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -91,10 +91,10 @@ function AnimatedStat({ value, suffix, label }: { value: string; suffix: string;
       animate={visible ? { opacity: 1, scale: 1 } : {}}
       transition={{ duration: 0.5 }}
     >
-      {/* Hover glow */}
+      {}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-green-500/5 to-violet-500/5 pointer-events-none" />
 
-      {/* Scan line */}
+      {}
       <motion.div
         className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-green-400/30 to-transparent"
         animate={{ y: ["0%", "400%"] }}
@@ -120,7 +120,7 @@ function AnimatedStat({ value, suffix, label }: { value: string; suffix: string;
   );
 }
 
-// ─── Mouse Parallax Container ─────────────────────────────────────────────────
+
 function ParallaxContainer({ children }: { children: React.ReactNode }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -145,31 +145,31 @@ function ParallaxContainer({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ─── Status Line ─────────────────────────────────────────────────────────────
+
 const STATUS_ITEMS = [
   { color: "bg-green-400", label: "ML Engine", status: "OPERATIONAL" },
   { color: "bg-violet-400", label: "WebSocket", status: "LIVE" },
   { color: "bg-cyan-400", label: "Inference", status: "0.4ms AVG" },
 ];
 
-// ─── Hero ─────────────────────────────────────────────────────────────────────
+
 export default function Hero() {
   const { openSignUp } = useAuthModal();
   const typedText = useTypewriter(PHRASES);
 
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-16">
-      {/* Background layers */}
+      {}
       <div className="absolute inset-0 bg-cyber-radial pointer-events-none" />
       <div className="absolute inset-0 bg-cyber-grid pointer-events-none opacity-[0.3]" />
 
-      {/* Second, denser grid layer */}
+      {}
       <div className="absolute inset-0 bg-cyber-grid-dense pointer-events-none opacity-[0.08]" />
 
-      {/* Neural cortex canvas */}
+      {}
       <DigitalCortex />
 
-      {/* Floating ambient icons */}
+      {}
       {floatingIcons.map(({ Icon, x, y, delay, duration }, i) => (
         <motion.div
           key={i}
@@ -182,10 +182,10 @@ export default function Hero() {
         </motion.div>
       ))}
 
-      {/* ── Main Content ── */}
+      {}
       <div className="relative z-10 mx-auto max-w-6xl px-4 text-center">
 
-        {/* Wordmark */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -195,7 +195,7 @@ export default function Hero() {
           <CyberHexWord size="hero" />
         </motion.div>
 
-        {/* Release badge */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -205,7 +205,7 @@ export default function Hero() {
           <ReleaseBadge variant="live" />
         </motion.div>
 
-        {/* Status line */}
+        {}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -222,7 +222,7 @@ export default function Hero() {
           ))}
         </motion.div>
 
-        {/* Hero headline */}
+        {}
         <ParallaxContainer>
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
@@ -237,7 +237,7 @@ export default function Hero() {
           </motion.h1>
         </ParallaxContainer>
 
-        {/* Typewriter */}
+        {}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -248,7 +248,7 @@ export default function Hero() {
           <span className="animate-terminal-cursor text-green-400">|</span>
         </motion.p>
 
-        {/* Subtext */}
+        {}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -260,7 +260,7 @@ export default function Hero() {
           <span className="text-green-500/70">No Jupyter notebooks required.</span>
         </motion.p>
 
-        {/* CTA Buttons */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -288,7 +288,7 @@ export default function Hero() {
           </Link>
         </motion.div>
 
-        {/* Stats Grid */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -301,7 +301,7 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
+      {}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

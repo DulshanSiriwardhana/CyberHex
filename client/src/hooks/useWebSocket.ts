@@ -6,11 +6,19 @@ interface WebSocketOptions {
     maxDelay?: number;
 }
 
+export interface UseWebSocketReturn {
+    isConnected: boolean;
+    error: string | null;
+    send: (data: any) => void;
+    reconnect: () => void;
+    ws: WebSocket | null;
+}
+
 export const useWebSocket = (
     url: string,
     onMessage: (data: any) => void,
     options: WebSocketOptions = {}
-) => {
+): UseWebSocketReturn => {
     const {
         maxRetries = 5,
         initialDelay = 1000,

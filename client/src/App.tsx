@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/auth";
+import { AuthProvider, useAuth } from "@/contexts/auth";
 import { ToastProvider } from "@/components/ui/toaster";
 import { ToastContainer } from "@/components/ui/toast";
 import { AmbientBackground } from "@/components/ui/ambient-background";
@@ -14,22 +14,17 @@ import AuthModals from "@/components/auth-modals";
 
 import LandingPage from "@/pages/LandingPage";
 
-const AboutPage = lazy(() => import("@/pages/AboutPage"));
-const ContactPage = lazy(() => import("@/pages/ContactPage"));
-const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 const SignInPage = lazy(() => import("@/pages/SignInPage"));
 const SignUpPage = lazy(() => import("@/pages/SignUpPage"));
+const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 const ExperimentBuilderPage = lazy(() => import("@/pages/ExperimentBuilderPage"));
 const ExperimentDetailPage = lazy(() => import("@/pages/ExperimentDetailPage"));
 const ExperimentsListPage = lazy(() => import("@/pages/ExperimentsListPage"));
 const ModelsPage = lazy(() => import("@/pages/ModelsPage"));
 const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
-const CyberGames = lazy(() => import("@/pages/CyberGames"));
 const ArchitectureDesigner = lazy(() => import("@/pages/ArchitectureDesigner"));
-const GuestShowcasePage = lazy(() => import("@/pages/GuestShowcasePage"));
-const PricingPage = lazy(() => import("@/pages/PricingPage"));
-const ChallengeDetailPage = lazy(() => import("@/pages/ChallengeDetailPage"));
+
 
 function PageFallback() {
   return (
@@ -41,27 +36,21 @@ function PageFallback() {
 
 function AppLayout() {
 
+  const { user } = useAuth();
   useKeyboardShortcuts();
 
   return (
     <div className="relative min-h-screen bg-neutral-950 font-spectral antialiased">
       <AmbientBackground />
 
-      { }
       <div className="relative" style={{ zIndex: 1 }}>
         <NavBar />
         <Suspense fallback={<PageFallback />}>
           <Routes>
-            { }
             <Route path="/" element={<LandingPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/showcase" element={<GuestShowcasePage />} />
-            <Route path="/pricing" element={<PricingPage />} />
 
-            { }
             <Route
               path="/dashboard"
               element={
@@ -110,22 +99,7 @@ function AppLayout() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/cybergames"
-              element={
-                <ProtectedRoute>
-                  <CyberGames />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/cybergames/:id"
-              element={
-                <ProtectedRoute>
-                  <ChallengeDetailPage />
-                </ProtectedRoute>
-              }
-            />
+
             <Route
               path="/settings"
               element={

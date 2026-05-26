@@ -11,9 +11,9 @@
 
 ---
 
-CyberHex is a **full-stack machine learning platform** that combines a custom C++ neural network engine, a Python ML module suite, a Node.js/Express backend, and a modern React dashboard — all containerized with Docker.
+---
 
-A **public web showcase** (`/public-web`) is included in this repository: a standalone Vite + React + TypeScript single-page site that documents the project in a visual, interactive format.
+CyberHex is a **local-first machine learning platform** designed for technical engineers who demand speed, precision, and privacy. It combines a custom high-performance C++ neural network engine, a suite of advanced ML modules, a Node.js/Express backend, and a modern React dashboard — all containerized with Docker.
 
 ---
 
@@ -23,7 +23,6 @@ A **public web showcase** (`/public-web`) is included in this repository: a stan
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Project Structure](#project-structure)
-- [Public Web Showcase](#public-web-showcase)
 - [Screenshots](#screenshots)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
@@ -33,7 +32,7 @@ A **public web showcase** (`/public-web`) is included in this repository: a stan
 - [ML Engine](#ml-engine)
   - [C++ Modules](#c-modules)
   - [Python Modules](#python-modules)
-  - [Visualization UI](#visualization-ui)
+  - [Studio (Neural Rendering)](#studio-neural-rendering)
 - [Testing](#testing)
 - [Author & Ownership](#author--ownership)
 - [License](#license)
@@ -43,46 +42,25 @@ A **public web showcase** (`/public-web`) is included in this repository: a stan
 ## Features
 
 ### Core ML Engine (C++17)
-- Custom `Matrix` implementation using `std::vector` with OpenMP parallelism.
-- High-Performance Ingestion: Supports streaming of **massive 1GB+ datasets** via disk-buffered `DataGenerator`.
-- Multi-Modal Support: Native ingestion for **CSV, Binary, Image, and Audio** streams.
-- Dense (fully connected) layers with forward/backward propagation.
-- Activation functions: **ReLU**, **Sigmoid**, **Softmax** (with Jacobian backprop).
-- Multiple optimizers: **SGD**, **Momentum**, **RMSProp**, **ADAM**.
-- MSE loss function with epoch-based training loop.
-- Best-model tracking with automatic checkpoint saving.
-- Native C++ WebSocket server for real-time training data streaming.
+- **Bare-Metal Speed**: Custom `Matrix` implementation using OpenMP parallelism and AVX-512 routines.
+- **High-Performance Ingestion**: Supports streaming of massive datasets via disk-buffered `DataGenerator`.
+- **Advanced Primitives**: AdamW, RAdam, Lion optimizers; Cosine Annealing; Gradient Clipping.
+- **Native WebSockets**: Integrated C++ WebSocket server for ultra-low latency training telemetry.
+- **Model Evolution**: Ensemble checkpointing and automatic "best-model" tracking.
 
-### Python ML Suite
-- Linear regression and additional algorithm implementations.
-- Modular commons library for statistical functions (mean, variance, etc.).
-- Robust `DataGenerator` for memory-efficient streaming of large custom datasets.
+### Engineering Dashboard (React + TS)
+- **Architecture Designer**: Visually assemble deep networks with a drag-and-drop layer editor.
+- **Real-Time Metrics**: High-fidelity charts for loss, accuracy, F1, and precision via WebSocket streams.
+- **Model Management**: Comprehensive interface for organizing, comparing, and exporting models.
+- **Local-First Design**: Optimized for private-instance deployments with no external dependencies.
+- **Adaptive Aesthetics**: Spectral typography with custom green-focused engineering themes.
 
-### Backend (Node.js/Express)
-- RESTful API with **JWT-based authentication** (access + refresh tokens)
-- User registration, login, email verification, and password management
-- Experiment management and training log persistence via **MongoDB + Mongoose**
-- Real-time WebSocket endpoints for live ML training data
-- Rate limiting, CORS, Helmet security, input validation (express-validator + Zod)
-- Structured logging with Winston
+### Studio & Vision
+- **Neural Communication**: Integrated video/audio studio with real-time neural filters.
+- **GPU Acceleration**: WebGPU and WASM powered inference for near-zero latency threat detection.
+- **Native Inference**: Export models to ONNX or deploy directly to the C++ inference engine.
 
-### Frontend (React + TypeScript)
-- **Landing page** with animated hero, feature showcases, and CTAs
-- **Dashboard** with experiment builder, model overview, and training charts
-- **CyberGames** — interactive ML educational games
-- **Model visualization** — real-time training loss and metrics via Recharts
-- Authentication flows: sign-up (multi-step), sign-in, protected routes
-- Multi-theme system with 6 variants: **Cyber**, **Nebula**, **Midnight**, **Plasma**, **Aurora**, **Emerald** — plus dark/light mode
-- State management with **Zustand**, animations with **Framer Motion**
-- Responsive UI built with **Tailwind CSS** and **shadcn/ui** (Radix primitives)
-
-### Public Web Showcase (`/public-web`)
-- Standalone **Vite + React + TypeScript** single-page application
-- Visually documents the entire platform: features, architecture, API, ML engine, and author
-- Green-themed dark design with glassmorphism, grid animations, and scroll-triggered reveals
-- Fully static — no backend required; deployable to any CDN or static host
-
-### DevOps & Infrastructure
+---### DevOps & Infrastructure
 - Full **Docker Compose** setup (MongoDB, backend, frontend via nginx)
 - Health checks, restart policies, and bridged networking
 - Environment-based configuration with `.env` support
@@ -126,10 +104,10 @@ A **public web showcase** (`/public-web`) is included in this repository: a stan
 │  │              BACKEND LAYER (Node.js)                │ │
 │  │  • Auth (JWT)  • REST API  • WebSocket Gateway      │ │
 │  │  • Rate Limiting  • Validation  • Logging           │ │
-│  └──────────┬──────────────────────────┬───────────────┘ │
-└─────────────┼──────────────────────────┼─────────────────┘
+│  └──────────┬──────────┬───────────────┘ │
+└─────────────┼──────────┼─────────────────┘
               │ MongoDB Driver           │ WebSocket/CLI
-┌─────────────┼──────────────────────────┼─────────────────┐
+┌─────────────┼──────────┼─────────────────┐
 │             ▼                          ▼                  │
 │  ┌──────────────────┐  ┌──────────────────────────────┐ │
 │  │  MongoDB 7       │  │  C++ ML Engine                │ │
@@ -153,97 +131,31 @@ A **public web showcase** (`/public-web`) is included in this repository: a stan
 CyberHex/
 ├── backend/                          # Express.js API server
 │   ├── controllers/                  # Route handlers (auth, users, experiments)
-│   ├── middleware/                    # Auth, error handling, rate limiting, validation
-│   ├── models/                       # Mongoose schemas (User, Experiment, Model, TrainingLog)
-│   ├── routes/                       # API route definitions
-│   ├── tests/                        # Jest test suites
-│   ├── utils/                        # Logger, DB init, env config, validators
-│   ├── Dockerfile
-│   └── app.js / index.js             # Express app bootstrap & server entry
+│   ├── models/                       # Mongoose schemas
+│   ├── routes/                       # API definitions
+│   └── services/                     # ML engine bridge & logic
 │
-├── client/                           # React dashboard (Vite + TypeScript)
+├── client/                           # Engineering Dashboard (Vite + TS)
 │   ├── src/
-│   │   ├── assets/                   # Images, fonts, videos
-│   │   ├── components/               # UI components (ui/, dashboard/, signup/, navbar/, etc.)
-│   │   ├── contexts/                 # Auth context provider
-│   │   ├── hooks/                    # Custom hooks (useWebSocket)
-│   │   ├── lib/                      # API client, design tokens, utilities
-│   │   ├── pages/                    # Landing, Dashboard, CyberGames, Models, Settings, 404
-│   │   ├── stores/                   # Zustand state stores
-│   │   └── tests/                    # Vitest unit & E2E tests
-│   ├── Dockerfile
-│   ├── nginx.conf                    # Production nginx configuration
-│   └── vite.config.ts
+│   │   ├── components/               # Architecture Designer, Charts, UI
+│   │   ├── pages/                    # Experiments, Models, Settings
+│   │   └── lib/                      # API client & Design Tokens
+│   └── nginx.conf                    # Production deployment
 │
-├── public-web/                       # Public project showcase site (Vite + React + TypeScript)
-│   ├── src/
-│   │   ├── App.tsx                   # Root: assembles all sections
-│   │   ├── components.tsx            # All page sections (Hero, Features, API, etc.)
-│   │   └── index.css                 # Full design system (dark green glassmorphism)
-│   ├── index.html
-│   └── vite.config.ts
+├── studio/                           # Neural Communication Studio
+│   ├── src/                          # Visual AI & Audio processing
+│   └── electron/                     # Desktop app wrapper
 │
 ├── ML/
 │   ├── models/
-│   │   ├── cpp-modules/              # C++ ML engine
-│   │   │   ├── include/              # Headers (matrix, layer, dense, activations, model, etc.)
-│   │   │   ├── src/                  # Implementations
-│   │   │   ├── models/best_model/    # Saved weights, biases, and loss history
-│   │   │   └── CMakeLists.txt
-│   │   └── python-modules/           # Python ML algorithms
-│   │       ├── main.py
-│   │       ├── linear-regression.py
-│   │       └── commons/              # Shared statistical utilities
-│   ├── ui/visualizations/            # Standalone ML visualization dashboard
-│   │   └── src/                      # React components for training viz
-│   └── scripts/                      # Benchmarking and analysis scripts
+│   │   ├── cpp-modules/              # C++17 ML engine core
+│   │   └── python-modules/           # Algorithm implementations
+│   └── ui/visualizations/            # Real-time data UI
 │
-├── scripts/                          # Build and utility scripts
-├── logs/                             # Application logs
-├── docker-compose.yml                # Multi-service orchestration
-├── openapi.yaml                      # API specification (OpenAPI 3.0)
-├── .env.example                      # Environment variable template
-├── package.json                      # Root workspace scripts
-├── LICENSE
-└── NOTICE
+├── docker-compose.yml                # Integrated orchestration
+├── openapi.yaml                      # API specification
+└── .env.example                      # Template for local dev
 ```
-
----
-
-## Public Web Showcase
-
-The `/public-web` directory contains a standalone, static single-page application that serves as a visual and interactive documentation site for CyberHex.
-
-Built with **Vite + React + TypeScript**, it requires no backend and can be deployed to any static hosting provider (GitHub Pages, Vercel, Netlify, etc.).
-
-### Run locally
-
-```bash
-cd public-web
-npm install
-npm run dev
-# Opens at http://localhost:5173
-```
-
-### Build for production
-
-```bash
-cd public-web
-npm run build
-# Output in public-web/dist/
-```
-
-### What it covers
-
-- Platform overview and animated hero with live stats
-- Feature cards for each major module
-- ASCII architecture diagram
-- Full tech stack breakdown with layer table
-- C++ ML engine component reference
-- REST + WebSocket API endpoint table
-- Docker quick-start guide
-- Testing strategy by layer
-- Author section with social links
 
 ---
 
@@ -266,19 +178,11 @@ npm run build
 <p align="center">
   <img src="doc/images/model-training.png" alt="Model Training Visualization" width="800" />
 </p>
-<p align="center">
-  <img src="doc/images/model-visualization-ui.png" alt="ML Visualization UI" width="800" />
-</p>
 
 ### Authentication
 <p align="center">
   <img src="doc/images/signup-flow.png" alt="Sign Up Flow" width="400" />
   <img src="doc/images/signin-page.png" alt="Sign In Page" width="400" />
-</p>
-
-### CyberGames
-<p align="center">
-  <img src="doc/images/cyber-games.png" alt="CyberGames" width="800" />
 </p>
 
 ---
@@ -368,15 +272,7 @@ npm run dev:frontend
 
 The frontend runs at `http://localhost:5173`.
 
-#### 6. Start the public web showcase (development mode)
-
-```bash
-cd public-web && npm run dev
-```
-
-The showcase runs at `http://localhost:5173` (or next available port).
-
-#### 7. Build the C++ ML engine
+#### 6. Build the C++ ML engine
 
 ```bash
 cd ML/models/cpp-modules
@@ -385,7 +281,7 @@ cmake ..
 make -j$(nproc)
 ```
 
-#### 8. Run Python ML modules
+#### 7. Run Python ML modules
 
 ```bash
 cd ML/models/python-modules

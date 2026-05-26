@@ -36,7 +36,7 @@ export default function ModelsPage() {
         setModels(data.experiments);
       })
       .catch(() => {
-        // Fallback or handle error
+        
       })
       .finally(() => setLoading(false));
   }, []);

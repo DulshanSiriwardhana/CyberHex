@@ -5,26 +5,26 @@ import math
 import random
 import numpy as np
 
-# ─────────────────────────────────────────────────────────────────────────────
-#  CyberHex Ultra-Max-Pro Neural Engine  v∞.0
-#  World #1 · IQ: Infinite · Optimizer: AdamW / RAdam / Lion / SGD+Momentum
-#  Features: Batch Normalization · Dropout · Gradient Clipping · Label Smoothing
-#            Cosine Annealing w/ Warm Restarts · Ensemble Checkpointing
-#            F1 / Precision / Recall · Dead-Neuron Detection
-# ─────────────────────────────────────────────────────────────────────────────
+
+
+
+
+
+
+
 
 def softmax(x):
     exp_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
     return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
 
-# ─── Activations ──────────────────────────────────────────────────────────────
+
 
 def gelu(x):
-    """Exact GELU — used in modern transformers."""
+    
     return 0.5 * x * (1.0 + np.tanh(math.sqrt(2.0 / math.pi) * (x + 0.044715 * x**3)))
 
 def gelu_derivative(a, x):
-    """Approximate derivative via finite difference on pre-activation."""
+    
     eps = 1e-5
     return (gelu(x + eps) - gelu(x - eps)) / (2 * eps)
 
@@ -34,13 +34,10 @@ def swish(x):
 def mish(x):
     return x * np.tanh(np.log(1 + np.exp(np.clip(x, -20, 20))))
 
-# ─── Batch Normalization Layer ─────────────────────────────────────────────────
+
 
 class BatchNorm:
-    """
-    Full Batch Normalization with learnable gamma / beta.
-    Tracks running mean/variance for inference mode.
-    """
+    
     def __init__(self, n_features, eps=1e-5, momentum=0.1):
         self.eps = eps
         self.momentum = momentum
@@ -48,7 +45,7 @@ class BatchNorm:
         self.beta = np.zeros(n_features)
         self.running_mean = np.zeros(n_features)
         self.running_var = np.ones(n_features)
-        # cache for backward
+        
         self._cache = None
 
     def forward(self, x, training=True):
@@ -74,7 +71,7 @@ class BatchNorm:
         dx     = dx_hat / np.sqrt(var + self.eps) + dvar * 2 * (x - mu) / m + dmu / m
         return dx, dgamma, dbeta
 
-# ─── Dropout ──────────────────────────────────────────────────────────────────
+
 
 class Dropout:
     def __init__(self, rate=0.5):
@@ -90,7 +87,7 @@ class Dropout:
     def backward(self, dout):
         return dout * self._mask if self._mask is not None else dout
 
-# ─── Multi-Head Attention ──────────────────────────────────────────────────────
+
 
 class MultiHeadAttention:
     def __init__(self, d_model, num_heads):
@@ -114,7 +111,7 @@ class MultiHeadAttention:
         ctx    = np.matmul(attn, v).transpose(0, 2, 1, 3).reshape(B, T, D)
         return np.dot(ctx, self.w_o)
 
-# ─── Linear Regression ────────────────────────────────────────────────────────
+
 
 class LinearRegression:
     def __init__(self, learning_rate=0.001, epochs=100, batch_size=32):
@@ -155,19 +152,10 @@ class LinearRegression:
     def predict(self, X):
         return np.dot(X, self.weights) + self.bias
 
-# ─── Ultra-Max-Pro Neural Network ─────────────────────────────────────────────
+
 
 class NeuralNetwork:
-    """
-    World-class #1 Neural Network Engine.
-
-    Supported optimizers : adam | adamw | radam | lion | sgd | rmsprop
-    Supported activations: relu | leaky_relu | gelu | swish | mish | sigmoid | tanh | softmax | linear
-    Extras               : Batch Normalization, Dropout, Gradient Clipping,
-                           Label Smoothing, Cosine Annealing w/ Warm Restarts,
-                           F1/Precision/Recall, Dead-Neuron Detection,
-                           Ensemble Top-3 Model Checkpointing
-    """
+    
 
     def __init__(
         self,
@@ -184,7 +172,7 @@ class NeuralNetwork:
         label_smoothing=0.0,
         weight_decay=1e-4,
         patience=15,
-        lr_schedule="cosine",   # none | step | cosine | cosine_warm
+        lr_schedule="cosine",   
         warmup_epochs=5,
     ):
         self.layers = layers
@@ -203,9 +191,9 @@ class NeuralNetwork:
         self.warmup_epochs = warmup_epochs
         self.activations_config = activations
 
-        # ------------------------------------
-        # Fill / default activations
-        # ------------------------------------
+        
+        
+        
         n_transitions = len(layers) - 1
         if not self.activations_config or len(self.activations_config) < n_transitions:
             default_hidden = "gelu"
@@ -218,7 +206,7 @@ class NeuralNetwork:
 
         self._build()
 
-    # ── Build ──────────────────────────────────────────────────────────────────
+    
 
     def _build(self):
         np.random.seed(42)
@@ -231,7 +219,7 @@ class NeuralNetwork:
             fi, fo = self.layers[i], self.layers[i + 1]
             act = self.activations_config[i].lower() if i < len(self.activations_config) else "relu"
 
-            # ── Kaiming for ReLU-family, Xavier otherwise ──
+            
             if act in ("relu", "leaky_relu"):
                 w = np.random.randn(fi, fo) * math.sqrt(2.0 / fi)
             elif act in ("gelu", "swish", "mish"):
@@ -243,22 +231,22 @@ class NeuralNetwork:
             self.weights.append(w)
             self.biases.append(np.zeros(fo))
 
-            # Batch Norm on all hidden layers
+            
             if self.use_batch_norm and i < len(self.layers) - 2:
                 self.bn_layers.append(BatchNorm(fo))
             else:
                 self.bn_layers.append(None)
 
-            # Dropout on all hidden layers (not output)
+            
             if self.dropout_rate > 0 and i < len(self.layers) - 2:
                 self.dropout_layers.append(Dropout(self.dropout_rate))
             else:
                 self.dropout_layers.append(None)
 
-        # Ensemble: store top-3 checkpoints by val_loss
-        self._ensemble = []   # list of (val_loss, weights_copy, biases_copy)
+        
+        self._ensemble = []   
 
-    # ── Activation ────────────────────────────────────────────────────────────
+    
 
     def _activate(self, z, method, training=True, index=0, pre_z=None):
         m = method.lower()
@@ -272,7 +260,7 @@ class NeuralNetwork:
         if m == "softmax":
             e = np.exp(z - np.max(z, axis=1, keepdims=True))
             return e / np.sum(e, axis=1, keepdims=True)
-        return z  # linear
+        return z  
 
     def _activate_derivative(self, a, z, method):
         m = method.lower()
@@ -287,35 +275,35 @@ class NeuralNetwork:
         if m == "tanh":        return 1 - a**2
         return np.ones_like(a)
 
-    # ── Forward ───────────────────────────────────────────────────────────────
+    
 
     def _forward(self, X, training=True):
         activations = [X]
-        pre_activations = [None]   # z values (pre-activation)
+        pre_activations = [None]   
         for i in range(len(self.weights)):
             z = np.dot(activations[-1], self.weights[i]) + self.biases[i]
             pre_activations.append(z)
 
             a = self._activate(z, self.activations_config[i])
 
-            # Batch Norm (hidden layers)
+            
             if self.bn_layers[i] is not None:
                 a = self.bn_layers[i].forward(a, training=training)
 
-            # Dropout (hidden layers)
+            
             if self.dropout_layers[i] is not None:
                 a = self.dropout_layers[i].forward(a, training=training)
 
             activations.append(a)
         return activations, pre_activations
 
-    # ── Loss ──────────────────────────────────────────────────────────────────
+    
 
     def _compute_loss(self, y_pred, y_true):
         if self.task == "classification":
             y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
 
-            # Label smoothing
+            
             if self.label_smoothing > 0 and y_true.ndim > 1:
                 K = y_true.shape[1]
                 y_true = y_true * (1 - self.label_smoothing) + self.label_smoothing / K
@@ -325,7 +313,7 @@ class NeuralNetwork:
             return float(-np.mean(np.sum(y_true * np.log(y_pred), axis=1)))
         return float(np.mean((y_pred - y_true.reshape(-1, 1))**2))
 
-    # ── Backward ──────────────────────────────────────────────────────────────
+    
 
     def _backward(self, activations, pre_activations, X, y):
         grads_w = [np.zeros_like(w) for w in self.weights]
@@ -342,11 +330,11 @@ class NeuralNetwork:
             delta  = error * self._activate_derivative(activations[-1], pre_activations[-1], last_act)
 
         for i in reversed(range(len(self.weights))):
-            # Dropout backward
+            
             if self.dropout_layers[i] is not None:
                 delta = self.dropout_layers[i].backward(delta)
 
-            # BatchNorm backward
+            
             if self.bn_layers[i] is not None:
                 delta, dgamma, dbeta = self.bn_layers[i].backward(delta)
                 self.bn_layers[i].gamma -= 0.001 * dgamma
@@ -363,7 +351,7 @@ class NeuralNetwork:
 
         return grads_w, grads_b
 
-    # ── Gradient Clip ─────────────────────────────────────────────────────────
+    
 
     def _clip_gradients(self, grads_w, grads_b):
         if self.gradient_clip <= 0:
@@ -378,10 +366,10 @@ class NeuralNetwork:
             grads_b = [g * scale for g in grads_b]
         return grads_w, grads_b
 
-    # ── LR Schedule ───────────────────────────────────────────────────────────
+    
 
     def _get_lr(self, epoch):
-        # Warmup phase
+        
         if epoch < self.warmup_epochs:
             return self.lr * (epoch + 1) / max(self.warmup_epochs, 1)
 
@@ -396,10 +384,10 @@ class NeuralNetwork:
             return self.lr * 0.5 * (1 + math.cos(math.pi * t_cycle / T_cycle))
         if self.lr_schedule == "step":
             return self.lr * (0.5 ** (t // max(T // 4, 1)))
-        # inverse time decay
+        
         return self.lr * (1.0 / (1.0 + 0.005 * t))
 
-    # ── Metrics ───────────────────────────────────────────────────────────────
+    
 
     def _compute_metrics(self, y_pred, y_true_raw):
         if self.task != "classification":
@@ -413,7 +401,7 @@ class NeuralNetwork:
 
         accuracy = float(np.mean(preds == trues))
 
-        # Binary F1
+        
         tp = float(np.sum((preds == 1) & (trues == 1)))
         fp = float(np.sum((preds == 1) & (trues == 0)))
         fn = float(np.sum((preds == 0) & (trues == 1)))
@@ -421,7 +409,7 @@ class NeuralNetwork:
         recall    = tp / (tp + fn + 1e-8)
         f1        = 2 * precision * recall / (precision + recall + 1e-8)
 
-        # Dead neuron ratio
+        
         act_all, _ = self._forward(np.eye(self.layers[0])[:10], training=False)
         dead = 0
         total = 0
@@ -438,7 +426,7 @@ class NeuralNetwork:
             "dead_neurons_pct": float(dead_ratio * 100),
         }
 
-    # ── Ensemble checkpoint ───────────────────────────────────────────────────
+    
 
     def _update_ensemble(self, val_loss):
         snap = (val_loss, [w.copy() for w in self.weights], [b.copy() for b in self.biases])
@@ -447,7 +435,7 @@ class NeuralNetwork:
         if len(self._ensemble) > 3:
             self._ensemble = self._ensemble[:3]
 
-    # ── Optimizer step ────────────────────────────────────────────────────────
+    
 
     def _optimizer_step(self, opt_state, grads_w, grads_b, epoch, current_lr):
         ms_w, vs_w, ms_b, vs_b = (
@@ -499,7 +487,7 @@ class NeuralNetwork:
                     self.biases[j]  -= alpha * mb
 
             elif opt == "lion":
-                # Lion optimizer: sign-based momentum
+                
                 c_w = np.sign(beta1 * ms_w[j] + (1-beta1) * gw)
                 c_b = np.sign(beta1 * ms_b[j] + (1-beta1) * gb)
                 self.weights[j] -= alpha * (c_w + wd * self.weights[j])
@@ -513,7 +501,7 @@ class NeuralNetwork:
                 self.weights[j] -= alpha * gw / (np.sqrt(vs_w[j]) + eps) + alpha*wd*self.weights[j]
                 self.biases[j]  -= alpha * gb / (np.sqrt(vs_b[j]) + eps)
 
-            else:  # adam (fallback) and sgd
+            else:  
                 if opt == "sgd":
                     ms_w[j] = 0.9 * ms_w[j] + gw
                     ms_b[j] = 0.9 * ms_b[j] + gb
@@ -531,10 +519,10 @@ class NeuralNetwork:
                     self.weights[j] -= alpha * mw/(np.sqrt(vw)+eps)
                     self.biases[j]  -= alpha * mb/(np.sqrt(vb)+eps)
 
-    # ── Fit ───────────────────────────────────────────────────────────────────
+    
 
     def fit(self, X, y, X_val=None, y_val=None):
-        # ── One-hot for multiclass ──
+        
         y_orig = y.copy()
         if self.task == "classification" and self.layers[-1] > 1:
             nc = self.layers[-1]
@@ -544,7 +532,7 @@ class NeuralNetwork:
         elif self.task == "classification" and self.layers[-1] == 1:
             y = y.reshape(-1, 1)
 
-        # ── optimiser state ──
+        
         opt_state = {
             "ms_w": [np.zeros_like(w) for w in self.weights],
             "vs_w": [np.zeros_like(w) for w in self.weights],
@@ -572,7 +560,7 @@ class NeuralNetwork:
         for epoch in range(self.epochs):
             current_lr = self._get_lr(epoch)
 
-            # ── Mini-batch shuffle ──
+            
             idx = np.random.permutation(n)
             Xs, ys = X[idx], y[idx]
 
@@ -588,7 +576,7 @@ class NeuralNetwork:
                 opt_state["t"] += 1
                 self._optimizer_step(opt_state, gw, gb, epoch, current_lr)
 
-            # ── Epoch metrics ──
+            
             acts_all, _ = self._forward(X, training=False)
             train_loss  = self._compute_loss(acts_all[-1], y)
 
@@ -605,10 +593,10 @@ class NeuralNetwork:
                 acts_val, _ = self._forward(X_val, training=False)
                 val_loss = self._compute_loss(acts_val[-1], yv)
 
-                # Ensemble checkpoint
+                
                 self._update_ensemble(val_loss)
 
-                # Early stopping
+                
                 if val_loss < best_val_loss:
                     best_val_loss    = val_loss
                     best_weights     = [w.copy() for w in self.weights]
@@ -624,7 +612,7 @@ class NeuralNetwork:
                     }), flush=True)
                     break
 
-            # ── Metrics payload ──
+            
             payload = {
                 "type":       "epoch",
                 "epoch":      epoch + 1,
@@ -639,7 +627,7 @@ class NeuralNetwork:
 
             print(json.dumps(payload), flush=True)
 
-        # ── Restore best model ──
+        
         self.weights = best_weights
         self.biases  = best_biases
 
@@ -655,16 +643,13 @@ class NeuralNetwork:
         acts, _ = self._forward(X, training=False)
         return acts[-1]
 
-# ─── Synthetic Cyber-Traffic Generator ────────────────────────────────────────
+
 
 def generate_synthetic_data(task, n_samples=2000):
-    """
-    Generates photo-realistic synthetic cyber network traffic data.
-    Features mimic DARPA/KDD-Cup99 packet engineering telemetry.
-    """
+    
     np.random.seed(42)
 
-    # 14 engineered features
+    
     duration          = np.random.exponential(scale=40, size=n_samples)
     src_bytes         = np.random.lognormal(mean=8, sigma=2, size=n_samples)
     dst_bytes         = np.random.lognormal(mean=7, sigma=2, size=n_samples)
@@ -687,19 +672,19 @@ def generate_synthetic_data(task, n_samples=2000):
     ])
 
     if task == "classification":
-        # Multi-factor attack decision boundary
+        
         is_attack = (
             ((connection_count > 30) & (same_srv_rate < 0.3)) |
             (src_bytes > 50000) |
             ((serror_rate > 0.7) & (syn_flag > 0.7)) |
             (payload_entropy > 7.5)
         ).astype(int)
-        # 3% realistic label noise
+        
         noise_mask = np.random.random(n_samples) < 0.03
         is_attack[noise_mask] = 1 - is_attack[noise_mask]
         return X, is_attack
     else:
-        # Anomaly Severity Score (0-100)
+        
         y = (
             src_bytes * 0.0001 +
             connection_count * 0.5 +
@@ -710,7 +695,7 @@ def generate_synthetic_data(task, n_samples=2000):
         y = np.clip(y, 0, 100)
         return X, y
 
-# ─── Data Generator (streaming large files) ───────────────────────────────────
+
 
 class DataGenerator:
     def __init__(self, data_path, task="regression", batch_size=32):
@@ -757,7 +742,7 @@ class DataGenerator:
     def flow(self):
         return self._load_csv_batch() if self.ext == ".csv" else self._load_image_batch()
 
-# ─── Main Entry ───────────────────────────────────────────────────────────────
+
 
 def main():
     config_raw = os.environ.get("CYBERHEX_CONFIG", "{}")
@@ -815,7 +800,7 @@ def main():
         X_train = X_train[:split]
         y_train = y_train[:split]
 
-    # Feature Scaling (StandardScaler)
+    
     print(json.dumps({"type": "log", "message": "Applying StandardScaler feature normalization..."}), flush=True)
     mean  = np.mean(X_train, axis=0)
     std   = np.std(X_train,  axis=0) + 1e-8

@@ -71,7 +71,7 @@ export function buildPythonConfig(experiment) {
     custom_data: cfg.customData || null,
     activations: cfg.activations || [],
     seed: cfg.seed || 42,
-    // ── Ultra-Max-Pro advanced config ──────────────────────────────
+    
     dropout_rate: cfg.dropoutRate || 0.0,
     use_batch_norm: cfg.useBatchNorm ?? false,
     gradient_clip: cfg.gradientClip ?? 5.0,
@@ -197,7 +197,7 @@ function processOutputLine(job, jobId, line) {
       job.metrics.train_loss.push(parsed.train_loss);
       job.metrics.val_loss.push(parsed.val_loss ?? null);
 
-      // ── New ultra-pro metrics ──────────────────────────────────────────
+      
       if (parsed.lr != null) job.metrics.learning_rates.push(parsed.lr);
       if (parsed.accuracy != null) { job.metrics.accuracy.push(parsed.accuracy); }
       if (parsed.f1 != null) { job.metrics.f1.push(parsed.f1); }

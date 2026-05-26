@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-"""Build ONNX from CyberHex manifests (cyberhex.onnx.v1): MLP JSON or graph param bins."""
+
+
 import json
 import os
 import struct

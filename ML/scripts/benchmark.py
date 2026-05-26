@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
-"""
-CyberHex Benchmark: Compare C++ engine vs NumPy/PyTorch.
-Run: python3 ML/scripts/benchmark.py
-"""
+
+
 
 import json
 import os

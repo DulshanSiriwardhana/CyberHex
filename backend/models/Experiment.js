@@ -1,14 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-/**
- * CyberHex Experiment Schema  v∞.0  — World #1 Ultra-Max-Pro
- *
- * Tracks full lifecycle of a training run including:
- *  - Advanced optimizer + regularization config
- *  - Per-epoch metrics (loss, val_loss, lr, accuracy, f1)
- *  - Ensemble checkpoint metadata
- *  - Dead-neuron detection ratio
- */
+
 
 const ExperimentSchema = new Schema({
   userId: {
@@ -41,11 +33,11 @@ const ExperimentSchema = new Schema({
       default: 'neural_network',
     },
 
-    // ── Architecture ────────────────────────────────────────────────────────
+    
     layers: { type: [Number], default: [128, 64, 32, 1] },
     activations: { type: [String], default: ['gelu', 'gelu', 'gelu', 'linear'] },
 
-    // ── Training Hyperparameters ─────────────────────────────────────────────
+    
     loss: { type: String, default: 'mse' },
     batchSize: { type: Number, default: 32 },
     epochs: { type: Number, default: 100 },
@@ -56,18 +48,18 @@ const ExperimentSchema = new Schema({
       default: 'adamw',
     },
 
-    // ── Learning Rate Schedule ───────────────────────────────────────────────
+    
     lrSchedule: { type: String, enum: ['none', 'step', 'cosine', 'cosine_warm'], default: 'cosine' },
     warmupEpochs: { type: Number, default: 5 },
 
-    // ── Regularization ───────────────────────────────────────────────────────
+    
     dropoutRate: { type: Number, default: 0.0, min: 0, max: 0.9 },
     useBatchNorm: { type: Boolean, default: false },
     gradientClip: { type: Number, default: 5.0 },
     labelSmoothing: { type: Number, default: 0.0, min: 0, max: 0.5 },
     weightDecay: { type: Number, default: 1e-4 },
 
-    // ── Data / Split ─────────────────────────────────────────────────────────
+    
     validationSplit: { type: Number, default: 0.2, min: 0, max: 0.5 },
     testSplit: { type: Number, default: 0.1, min: 0, max: 0.4 },
     earlyStopping: { type: Boolean, default: true },
@@ -82,13 +74,13 @@ const ExperimentSchema = new Schema({
   },
 
   results: {
-    // ── Final metrics ────────────────────────────────────────────────────────
+    
     bestTrainLoss: Number,
     bestValLoss: Number,
     finalTrainLoss: Number,
     finalValLoss: Number,
 
-    // ── Per-epoch series ─────────────────────────────────────────────────────
+    
     epochs: [Number],
     trainLoss: [Number],
     valLoss: [Number],
@@ -98,12 +90,12 @@ const ExperimentSchema = new Schema({
     recall: [Number],
     learningRates: [Number],
 
-    // ── Model artifacts ──────────────────────────────────────────────────────
+    
     modelPath: String,
     ensembleSize: { type: Number, default: 0 },
 
-    // ── Diagnostics ──────────────────────────────────────────────────────────
-    deadNeuronPct: Number,     // % of dead neurons at final epoch
+    
+    deadNeuronPct: Number,     
     peakF1: Number,
     peakAccuracy: Number,
 
@@ -113,7 +105,7 @@ const ExperimentSchema = new Schema({
   timestamps: true,
 });
 
-// ── Compound indexes for common query patterns ──────────────────────────────
+
 ExperimentSchema.index({ userId: 1, status: 1 });
 ExperimentSchema.index({ userId: 1, createdAt: -1 });
 ExperimentSchema.index({ createdAt: -1 });
