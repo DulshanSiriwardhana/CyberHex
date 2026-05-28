@@ -42,6 +42,8 @@ function AppLayout() {
   return (
     <div className="relative min-h-screen bg-neutral-950 font-spectral antialiased">
       <AmbientBackground />
+      <div className="global-scanline" />
+      <div className="global-noise" />
 
       <div className="relative" style={{ zIndex: 1 }}>
         <NavBar />

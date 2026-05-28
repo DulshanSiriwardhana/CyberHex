@@ -68,11 +68,12 @@ const NavBar = () => {
       className={`
         fixed top-0 left-0 right-0 z-[200] transition-all duration-300
         ${scrolled
-          ? "bg-neutral-950/90 backdrop-blur-xl border-b border-neutral-800/60 shadow-[0_4px_24px_rgba(0,0,0,0.25)]"
-          : "bg-gradient-to-b from-neutral-950/80 to-transparent"
+          ? "bg-neutral-950/80 backdrop-blur-2xl border-b border-green-500/20 shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
+          : "bg-transparent"
         }
       `}
     >
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-green-500/10 to-transparent" />
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         { }
         <Link

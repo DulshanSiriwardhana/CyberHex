@@ -22,6 +22,7 @@ import {
   Sparkles,
   Save,
   Upload,
+  Terminal as TerminalIcon,
 } from 'lucide-react';
 import {
   LineChart,
@@ -655,7 +656,7 @@ export default function ExperimentDetailPage() {
             <CardHeader>
               <Flex justify="between">
                 <CardTitle className="flex items-center gap-2 text-sm text-green-400">
-                  <Terminal className="h-4 w-4" /> Inference Input
+                  <TerminalIcon className="h-4 w-4" /> Inference Input
                 </CardTitle>
                 <div className="flex gap-2">
                   <input

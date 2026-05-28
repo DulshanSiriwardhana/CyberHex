@@ -91,10 +91,10 @@ function AnimatedStat({ value, suffix, label }: { value: string; suffix: string;
       animate={visible ? { opacity: 1, scale: 1 } : {}}
       transition={{ duration: 0.5 }}
     >
-      {}
+      { }
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-green-500/5 to-violet-500/5 pointer-events-none" />
 
-      {}
+      { }
       <motion.div
         className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-green-400/30 to-transparent"
         animate={{ y: ["0%", "400%"] }}
@@ -159,17 +159,17 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-16">
-      {}
+      { }
       <div className="absolute inset-0 bg-cyber-radial pointer-events-none" />
       <div className="absolute inset-0 bg-cyber-grid pointer-events-none opacity-[0.3]" />
 
-      {}
+      { }
       <div className="absolute inset-0 bg-cyber-grid-dense pointer-events-none opacity-[0.08]" />
 
-      {}
+      { }
       <DigitalCortex />
 
-      {}
+      { }
       {floatingIcons.map(({ Icon, x, y, delay, duration }, i) => (
         <motion.div
           key={i}
@@ -182,10 +182,10 @@ export default function Hero() {
         </motion.div>
       ))}
 
-      {}
+      { }
       <div className="relative z-10 mx-auto max-w-6xl px-4 text-center">
 
-        {}
+        { }
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -195,7 +195,7 @@ export default function Hero() {
           <CyberHexWord size="hero" />
         </motion.div>
 
-        {}
+        { }
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -205,7 +205,7 @@ export default function Hero() {
           <ReleaseBadge variant="live" />
         </motion.div>
 
-        {}
+        { }
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -222,22 +222,22 @@ export default function Hero() {
           ))}
         </motion.div>
 
-        {}
+        { }
         <ParallaxContainer>
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="text-5xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05]"
+            className="text-5xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] cyber-perspective"
           >
-            <span className="block">Build Neural Networks</span>
-            <span className="block mt-2 bg-gradient-to-r from-green-400 via-emerald-300 to-violet-400 bg-clip-text text-transparent animate-gradient-shift">
+            <span className="block cyber-3d-rotate">Build Neural Networks</span>
+            <span className="block mt-2 bg-gradient-to-r from-green-400 via-emerald-300 to-violet-400 bg-clip-text text-transparent animate-gradient-shift cyber-3d-rotate">
               Like an Engineer
             </span>
           </motion.h1>
         </ParallaxContainer>
 
-        {}
+        { }
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -248,7 +248,7 @@ export default function Hero() {
           <span className="animate-terminal-cursor text-green-400">|</span>
         </motion.p>
 
-        {}
+        { }
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -260,7 +260,7 @@ export default function Hero() {
           <span className="text-green-500/70">No Jupyter notebooks required.</span>
         </motion.p>
 
-        {}
+        { }
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -288,7 +288,7 @@ export default function Hero() {
           </Link>
         </motion.div>
 
-        {}
+        { }
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -301,7 +301,7 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {}
+      { }
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

@@ -15,7 +15,12 @@ import {
   Info,
   ChevronRight,
   TrendingUp,
-  AlertTriangle
+  AlertTriangle,
+  Zap,
+  Pause,
+  RotateCw,
+  Braces,
+  Code2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, GlowCard } from "@/components/ui/card";
@@ -30,7 +35,6 @@ import {
   CartesianGrid,
   Tooltip
 } from "recharts";
-import { Pause, RotateCw } from "lucide-react";
 
 interface LayerType {
   name: string;
@@ -129,7 +133,7 @@ export default function ArchitectureDesigner() {
   const [learningRate, setLearningRate] = useState<number>(0.001);
   const [lossFunction, setLossFunction] = useState<string>("Categorical Cross-Entropy");
 
-  const [activeTab, setActiveTab] = useState<"visual" | "cpp" | "json" | "wasm">("visual");
+  const [activeTab, setActiveTab] = useState<"designer" | "topology" | "cpp" | "json" | "wasm">("designer");
 
   const [wasmModule, setWasmModule] = useState<any>(null);
   const [wasmLoading, setWasmLoading] = useState<boolean>(false);
@@ -200,7 +204,7 @@ export default function ArchitectureDesigner() {
     for (let r = 0; r < gridSize; r++) {
       for (let c = 0; c < gridSize; c++) {
         const cx = (c / (gridSize - 1)) * 3.0 - 1.5;
-        const cy = (1.5 - (r / (gridSize - 1)) * 3.0) - 1.5;
+        const cy = 1.5 - (r / (gridSize - 1)) * 3.0;
         gridX.push(cx, cy);
       }
     }
@@ -229,10 +233,10 @@ export default function ArchitectureDesigner() {
 
           let color = "";
           if (val > 0.5) {
-            const alpha = Math.min((val - 0.5) * 1.5, 0.45);
+            const alpha = Math.min((val - 0.5) * 2.0, 0.8);
             color = `rgba(34, 197, 94, ${alpha})`;
           } else {
-            const alpha = Math.min((0.5 - val) * 1.5, 0.45);
+            const alpha = Math.min((0.5 - val) * 2.0, 0.8);
             color = `rgba(139, 92, 246, ${alpha})`;
           }
 
@@ -393,9 +397,15 @@ export default function ArchitectureDesigner() {
       }
 
       try {
-        const loss = wasmModel.trainStep(wasmXMatrix, wasmYMatrix, currentWasmEpoch);
+        // Run multiple steps per frame to speed up training
+        let lastLoss = 0;
+        for (let s = 0; s < 5; s++) {
+          if (currentWasmEpoch + s >= wasmEpochs) break;
+          lastLoss = wasmModel.trainStep(wasmXMatrix, wasmYMatrix, currentWasmEpoch + s);
+        }
+        const loss = lastLoss;
 
-        const newEpoch = currentWasmEpoch + 1;
+        const newEpoch = Math.min(wasmEpochs, currentWasmEpoch + 5);
         setCurrentWasmEpoch(newEpoch);
 
         setWasmLossHistory(prev => {
@@ -716,49 +726,39 @@ export default function ArchitectureDesigner() {
 
         { }
         <div className="col-span-2 space-y-4 flex flex-col">
-          { }
-          <Flex className="border-b border-neutral-800/80 pb-0.5" gap="sm">
+          <div className="flex bg-neutral-900/50 p-1 rounded-xl border border-neutral-800/80 mb-6 backdrop-blur-md self-start">
             <button
-              onClick={() => setActiveTab("visual")}
-              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${activeTab === "visual"
-                ? "text-green-400 border-green-500 bg-green-500/5"
-                : "text-neutral-500 border-transparent hover:text-neutral-300"
-                }`}
+              onClick={() => setActiveTab("designer")}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === "designer" ? "bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.4)]" : "text-neutral-500 hover:text-neutral-300"}`}
             >
-              Visual Canvas
+              <Layers className="h-3.5 w-3.5" />
+              CANVAS
+            </button>
+            <button
+              onClick={() => setActiveTab("topology")}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === "topology" ? "bg-cyan-500 text-black shadow-[0_0_15px_rgba(6,182,212,0.4)]" : "text-neutral-500 hover:text-neutral-300"}`}
+            >
+              <Cpu className="h-3.5 w-3.5" />
+              TOPOLOGY
+            </button>
+            <button
+              onClick={() => setActiveTab("wasm")}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === "wasm" ? "bg-amber-500 text-black shadow-[0_0_15px_rgba(245,158,11,0.4)]" : "text-neutral-500 hover:text-neutral-300"}`}
+            >
+              <Zap className="h-3.5 w-3.5" />
+              WASM LIVE
             </button>
             <button
               onClick={() => setActiveTab("cpp")}
-              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${activeTab === "cpp"
-                ? "text-green-400 border-green-500 bg-green-500/5"
-                : "text-neutral-500 border-transparent hover:text-neutral-300"
-                }`}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === "cpp" ? "bg-neutral-800 text-white" : "text-neutral-500 hover:text-neutral-300"}`}
             >
-              C++ Code
+              <Code className="h-3.5 w-3.5" />
+              C++ CODE
             </button>
-            <button
-              onClick={() => setActiveTab("json")}
-              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${activeTab === "json"
-                ? "text-green-400 border-green-500 bg-green-500/5"
-                : "text-neutral-500 border-transparent hover:text-neutral-300"
-                }`}
-            >
-              JSON Manifest
-            </button>
-            <button
-              onClick={() => { setActiveTab("wasm"); startWasmSimulation(); }}
-              className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${activeTab === "wasm"
-                ? "text-green-400 border-green-500 bg-green-500/5"
-                : "text-neutral-500 border-transparent hover:text-neutral-300"
-                }`}
-            >
-              Live WASM Simulation
-            </button>
-          </Flex>
+          </div>
 
-          { }
           <div className="flex-1 min-h-[500px]">
-            {activeTab === "visual" && (
+            {activeTab === "designer" && (
               <GlowCard className="p-6 h-full bg-neutral-950/40 relative overflow-hidden flex flex-col">
                 { }
                 <div className="absolute inset-0 bg-cyber-grid opacity-15 pointer-events-none" />
@@ -901,45 +901,82 @@ export default function ArchitectureDesigner() {
               </Card>
             )}
 
-            {activeTab === "json" && (
-              <Card className="border-neutral-800 bg-neutral-900/50 backdrop-blur-xl h-full flex flex-col overflow-hidden">
-                <CardHeader className="pb-2 border-b border-neutral-800/40 flex flex-row items-center justify-between">
-                  <CardTitle className="text-sm font-mono text-neutral-400 flex items-center gap-1.5">
-                    <Code className="h-4 w-4 text-green-400" />
-                    model_config.json
-                  </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      const data = { modelName, inputFeatures, layers, optimizer, learningRate, lossFunction };
-                      navigator.clipboard.writeText(JSON.stringify(data, null, 2));
-                    }}
-                  >
-                    Copy JSON
-                  </Button>
-                </CardHeader>
-                <CardContent className="p-0 flex-1">
-                  <pre className="p-4 text-xs font-mono text-neutral-300 overflow-auto max-h-[60vh] bg-neutral-950/80 leading-relaxed">
-                    <code>
-                      {JSON.stringify(
-                        {
-                          modelName,
-                          inputFeatures,
-                          layers: layers.map(({ type, params }) => ({ type, params })),
-                          optimizer,
-                          learningRate,
-                          lossFunction
-                        },
-                        null,
-                        2
-                      )}
-                    </code>
-                  </pre>
-                </CardContent>
-              </Card>
-            )}
 
+            {activeTab === "topology" && (
+              <div className="h-full min-h-[500px] flex flex-col">
+                <GlowCard className="p-8 bg-neutral-950/40 flex-1 relative overflow-hidden flex flex-col items-center justify-center">
+                  <div className="absolute inset-0 bg-cyber-grid opacity-20 pointer-events-none" />
+
+                  <div className="relative z-10 w-full max-w-4xl cyber-perspective">
+                    <div className="flex flex-col items-center space-y-[-40px] cyber-3d-rotate py-20">
+                      {/* Input features plane */}
+                      <div className="relative group cursor-help mb-8">
+                        <div className="w-48 h-12 bg-green-500/10 border border-green-500/40 rounded-xl flex items-center justify-center backdrop-blur-md shadow-[0_0_30px_rgba(34,197,94,0.1)]">
+                          <p className="text-[10px] font-mono font-bold text-green-400">DATA_INPUT_STREAM [{inputFeatures}]</p>
+                        </div>
+                        <div className="absolute inset-0 bg-green-400/5 blur-xl group-hover:bg-green-400/10 transition-colors" />
+                      </div>
+
+                      {/* Dynamic stacks */}
+                      {layers.map((layer, idx) => {
+                        const depth = idx * 2;
+                        const isActivation = AVAILABLE_LAYERS[layer.type].category === "activation";
+                        const accent = isActivation ? "violet" : "green";
+
+                        return (
+                          <motion.div
+                            key={layer.id}
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: idx * 0.05 }}
+                            className="relative group w-full flex justify-center"
+                            style={{ zIndex: layers.length - idx }}
+                          >
+                            <div
+                              className={`
+                                 w-64 h-24 relative overflow-hidden rounded-2xl border 
+                                 ${isActivation ? "border-violet-500/40 bg-violet-500/5" : "border-green-500/40 bg-green-500/5"} 
+                                 backdrop-blur-xl transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-2
+                                 flex flex-col items-center justify-center holographic-edge
+                               `}
+                            >
+                              <div className={`absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-${accent}-400/40 to-transparent animate-scan-line`} />
+
+                              <p className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1">Layer {idx + 1}</p>
+                              <h4 className={`text-base font-extrabold ${isActivation ? "text-violet-400" : "text-white"}`}>{layer.type}</h4>
+
+                              {layer.params.out_features && (
+                                <p className="text-[10px] font-mono text-neutral-500 mt-1">OUT_CHANNELS: {layer.params.out_features}</p>
+                              )}
+
+                              <div className={`absolute bottom-2 right-3 h-1.5 w-1.5 rounded-full bg-${accent}-500/50 animate-pulse`} />
+                            </div>
+
+                            {/* Connector pulses */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-20">
+                              <div className={`w-32 h-32 rounded-full border border-${accent}-500/30 animate-neural-ping`} />
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+
+                      {/* Output features plane */}
+                      <div className="relative group cursor-help mt-12">
+                        <div className="w-48 h-12 bg-amber-500/10 border border-amber-500/40 rounded-xl flex items-center justify-center backdrop-blur-md shadow-[0_0_30px_rgba(245,158,11,0.1)]">
+                          <p className="text-[10px] font-mono font-bold text-amber-400">DECISION_LOGITS [{shapes[shapes.length - 1]}]</p>
+                        </div>
+                        <div className="absolute inset-0 bg-amber-400/5 blur-xl group-hover:bg-amber-400/10 transition-colors" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-6 right-8 text-right pointer-events-none">
+                    <p className="text-xs font-mono text-neutral-500 opacity-50 uppercase tracking-widest">Topological Insight View</p>
+                    <p className="text-[10px] font-mono text-green-500/40">RENDERING_GHOST_STACK_V4.0</p>
+                  </div>
+                </GlowCard>
+              </div>
+            )}
             {activeTab === "wasm" && (
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full min-h-[500px]">
                 { }
@@ -1006,7 +1043,11 @@ export default function ArchitectureDesigner() {
                                   className="bg-green-600 hover:bg-green-700 text-white font-mono flex items-center gap-1.5 shadow-[0_0_10px_rgba(22,163,74,0.3)] transition-all"
                                   onClick={() => {
                                     if (currentWasmEpoch >= wasmEpochs) {
-                                      startWasmSimulation().then(() => setIsWasmTraining(true));
+                                      startWasmSimulation().then(() => {
+                                        setIsWasmTraining(true);
+                                        // Force immediate redraw
+                                        setTimeout(() => drawDecisionBoundary(wasmModule, wasmModel, wasmPoints), 10);
+                                      });
                                     } else {
                                       setIsWasmTraining(true);
                                     }

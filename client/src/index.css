@@ -980,5 +980,87 @@ body {
 }
 
 .wordmark-v4-hero-glow {
-  filter: drop-shadow(0 0 40px rgba(5, 150, 105, 0.12));
+  filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.3)) drop-shadow(0 0 20px rgba(34, 197, 94, 0.1));
+}
+
+/* God-Level IQ UI Overlays */
+.global-scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%,
+      rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(90deg,
+      rgba(255, 0, 0, 0.015),
+      rgba(0, 255, 0, 0.01),
+      rgba(0, 0, 255, 0.015));
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.2;
+}
+
+.global-noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+}
+
+.holographic-edge {
+  position: relative;
+}
+
+.holographic-edge::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg,
+      transparent 40%,
+      rgba(34, 197, 94, 0.4) 45%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(139, 92, 246, 0.4) 55%,
+      transparent 60%);
+  background-size: 200% 200%;
+  border-radius: inherit;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  animation: holographic 6s linear infinite;
+  pointer-events: none;
+}
+
+.cyber-perspective {
+  perspective: 2000px;
+}
+
+.cyber-3d-rotate {
+  transform: rotateX(10deg) rotateY(-5deg);
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cyber-3d-rotate:hover {
+  transform: rotateX(0deg) rotateY(0deg);
+}
+
+.cyber-node-glow {
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5),
+    0 0 25px rgba(34, 197, 94, 0.2);
+}
+
+.cyber-status-bar {
+  background: repeating-linear-gradient(45deg,
+      rgba(34, 197, 94, 0.1),
+      rgba(34, 197, 94, 0.1) 10px,
+      transparent 10px,
+      transparent 20px);
 }
