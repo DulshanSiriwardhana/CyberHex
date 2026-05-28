@@ -1116,3 +1116,51 @@ body {
   background-image: radial-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px);
   background-size: 20px 20px;
 }
+
+/* === PEAK DYNAMICS === */
+.matrix-container {
+  mask-image: linear-gradient(to bottom, transparent, black, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black, transparent);
+}
+
+.matrix-column {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 14px;
+  animation: matrix-rain linear infinite;
+  white-space: nowrap;
+  color: rgba(34, 197, 94, 0.3);
+}
+
+@keyframes matrix-rain {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.parallax-3d {
+  perspective: 1000px;
+}
+
+.parallax-card {
+  transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-style: preserve-3d;
+}
+
+.parallax-card:hover {
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+}

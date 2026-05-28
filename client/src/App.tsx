@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/auth";
 import { ToastProvider } from "@/components/ui/toaster";
@@ -36,11 +36,24 @@ function PageFallback() {
 
 function AppLayout() {
 
-  const { user } = useAuth();
-  useKeyboardShortcuts();
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   return (
-    <div className="relative min-h-screen bg-neutral-950 font-spectral antialiased">
+    <div className="relative min-h-screen bg-neutral-950 font-spectral antialiased selection:bg-green-500/30 selection:text-green-200">
+      <div
+        className="fixed inset-0 pointer-events-none z-0 opacity-40 transition-opacity duration-1000"
+        style={{
+          background: `radial-gradient(circle 800px at ${mousePos.x}px ${mousePos.y}px, rgba(34, 197, 94, 0.08), transparent 80%)`,
+        }}
+      />
       <AmbientBackground />
       <div className="global-scanline" />
       <div className="global-noise" />

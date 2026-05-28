@@ -19,6 +19,8 @@ import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
 import { Container, Grid, Stack, Flex, SectionHeading } from "@/components/ui/layout";
 import { useAuth } from "@/contexts/auth";
+import WorldThreatMap from "@/components/dashboard/WorldThreatMap";
+import MatrixBackground from "@/components/dashboard/MatrixBackground";
 
 
 
@@ -55,7 +57,8 @@ export default function DashboardPage() {
   ];
 
   return (
-    <Container className="py-8 pt-24 relative">
+    <Container className="py-8 pt-24 relative overflow-hidden">
+      <MatrixBackground />
       <div className="absolute inset-0 cyber-grid-overlay opacity-20 pointer-events-none" />
 
       <motion.div
@@ -212,6 +215,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-6">
+          <WorldThreatMap />
           <Card className="cyber-card-max border-none h-full flex flex-col overflow-hidden">
             <div className="h-1 bg-gradient-to-r from-green-500 via-emerald-400 to-green-500 animate-gradient-shift" />
             <CardHeader className="pb-4">
@@ -298,6 +302,30 @@ export default function DashboardPage() {
           </Card>
         </Link>
       </Grid>
+
+      {/* PEAK DYNAMICS: GLOBAL INTELLIGENCE FEED */}
+      <div className="mt-12 mb-4 relative z-10">
+        <div className="rounded-xl bg-neutral-900/40 border border-white/5 p-3 overflow-hidden whitespace-nowrap relative">
+          <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-neutral-900 to-transparent z-10" />
+          <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-neutral-900 to-transparent z-10" />
+          <motion.div
+            className="flex gap-12 text-[10px] font-mono font-bold text-green-500/50 uppercase"
+            animate={{ x: [0, -1000] }}
+            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+          >
+            <span>[SIGNAL_LOCKED] Node 0xAF23 transmitting encryption keys...</span>
+            <span>[THREAT_NEUTRALIZED] DDoS attempt detected from cluster 14.x...</span>
+            <span>[CORE_READY] WASM engine initialized in 42ms...</span>
+            <span>[DATA_STREAM] Ingesting 14.5MB/s anomalous packet logs...</span>
+            <span>[WRAITH_SCAN] Entropy levels within nominal range...</span>
+            <span>[SIGNAL_LOCKED] Node 0xAF23 transmitting encryption keys...</span>
+            <span>[THREAT_NEUTRALIZED] DDoS attempt detected from cluster 14.x...</span>
+            <span>[CORE_READY] WASM engine initialized in 42ms...</span>
+            <span>[DATA_STREAM] Ingesting 14.5MB/s anomalous packet logs...</span>
+            <span>[WRAITH_SCAN] Entropy levels within nominal range...</span>
+          </motion.div>
+        </div>
+      </div>
     </Container>
   );
 }
