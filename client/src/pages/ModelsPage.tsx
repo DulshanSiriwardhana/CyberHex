@@ -18,28 +18,43 @@ import { Badge } from "@/components/ui/badge";
 import { Container, Grid, Flex } from "@/components/ui/layout";
 
 import { useState, useEffect } from "react";
-import { experimentsApi, type Experiment } from "@/lib/api";
+import { modelsApi, type SavedModel } from "@/lib/api";
 
 const statusBadges: Record<string, { variant: "success" | "default" | "muted"; label: string }> = {
-  completed: { variant: "success", label: "Deployed" },
+  deployed: { variant: "success", label: "Deployed" },
   ready: { variant: "default", label: "Ready" },
   archived: { variant: "muted", label: "Archived" },
 };
 
 export default function ModelsPage() {
-  const [models, setModels] = useState<Experiment[]>([]);
+  const [models, setModels] = useState<SavedModel[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    experimentsApi.list({ status: 'completed' })
+  const fetchModels = () => {
+    setLoading(true);
+    modelsApi.list()
       .then(data => {
-        setModels(data.experiments);
+        setModels(data.models);
       })
       .catch(() => {
-        
+
       })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchModels();
   }, []);
+
+  const handleDeleteModel = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this model?")) return;
+    try {
+      await modelsApi.delete(id);
+      fetchModels();
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <Container className="py-8 pt-24">
       <motion.div
@@ -79,68 +94,54 @@ export default function ModelsPage() {
               <CardHeader>
                 <Flex justify="between" align="start">
                   <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Brain className="h-5 w-5 text-violet-400" />
-                      {model.name}
-                    </CardTitle>
-                    <p className="text-xs text-neutral-500 mt-1">
-                      {model.config.modelType} · {(model.results?.ensembleSize || 0) > 0 ? `Ensemble (${model.results?.ensembleSize}x)` : 'Native C++'}
-                    </p>
-                  </div>
-                  <Badge variant={statusBadges[model.status]?.variant as any || 'success'} size="sm">
-                    {statusBadges[model.status]?.label || 'Deployed'}
-                  </Badge>
-                </Flex>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="flex items-center gap-1.5 text-sm">
-                    <BarChart3 className="h-4 w-4 text-emerald-400" />
-                    <span className="text-neutral-300 font-mono">
-                      {model.results?.peakAccuracy ? (model.results.peakAccuracy * 100).toFixed(1) : (model.results?.finalValLoss ? (1 - model.results.finalValLoss).toFixed(3) : '0.0')}%
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-sm">
-                    <Clock className="h-4 w-4 text-neutral-500" />
-                    <span className="text-neutral-500">{new Date(model.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-                <Flex gap="sm">
-                  <Link to={`/experiments/${model._id}`}>
-                    <Button variant="outline" size="sm">
-                      <FlaskConical className="h-3.5 w-3.5 mr-1.5" />
-                      Details
-                      <ArrowRight className="h-3.5 w-3.5 ml-1" />
-                    </Button>
-                  </Link>
-                  <Button variant="ghost" size="sm">
-                    <Download className="h-3.5 w-3.5 mr-1.5" />
-                    Export
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-rose-400 hover:text-rose-300">
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </Flex>
-              </CardContent>
-            </Card>
-          </motion.div>
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="flex items-center gap-1.5 text-sm">
+                        <BarChart3 className="h-4 w-4 text-emerald-400" />
+                        <span className="text-neutral-300 font-mono">
+                          {model.metrics?.accuracy ? (model.metrics.accuracy * 100).toFixed(1) : (model.metrics?.valLoss ? (1 - model.metrics.valLoss).toFixed(3) : '0.0')}%
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-sm">
+                        <Clock className="h-4 w-4 text-neutral-500" />
+                        <span className="text-neutral-500">{new Date(model.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                    <Flex gap="sm">
+                      <Link to={`/experiments/${model.experimentId}`}>
+                        <Button variant="outline" size="sm">
+                          <FlaskConical className="h-3.5 w-3.5 mr-1.5" />
+                          Origin
+                          <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                        </Button>
+                      </Link>
+                      <Button variant="ghost" size="sm">
+                        <Download className="h-3.5 w-3.5 mr-1.5" />
+                        Export
+                      </Button>
+                      <Button variant="ghost" size="sm" className="text-rose-400 hover:text-rose-300" onClick={() => handleDeleteModel(model._id)}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </Flex>
+                  </CardContent>
+                </Card>
+              </motion.div>
         ))}
-      </Grid>
+            </Grid>
 
-      { }
-      {models.length === 0 && (
-        <div className="text-center py-20">
-          <Brain className="h-16 w-16 text-neutral-800 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-neutral-400">No models yet</h3>
-          <p className="text-sm text-neutral-600 mt-1 mb-6">Train your first model to see it here</p>
-          <Link to="/experiments/new">
-            <Button>
-              <Zap className="h-4 w-4 mr-2" />
-              Start an Experiment
-            </Button>
-          </Link>
-        </div>
-      )}
-    </Container>
-  );
+            { }
+            {models.length === 0 && (
+              <div className="text-center py-20">
+                <Brain className="h-16 w-16 text-neutral-800 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-neutral-400">No models yet</h3>
+                <p className="text-sm text-neutral-600 mt-1 mb-6">Train your first model to see it here</p>
+                <Link to="/experiments/new">
+                  <Button>
+                    <Zap className="h-4 w-4 mr-2" />
+                    Start an Experiment
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </Container>
+        );
 }
