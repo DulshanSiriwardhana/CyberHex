@@ -11,6 +11,7 @@ import {
   FlaskConical,
   ArrowRight,
   Zap,
+  Database,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,77 +57,122 @@ export default function ModelsPage() {
     }
   };
   return (
-    <Container className="py-8 pt-24">
+    <Container className="py-8 pt-24 relative">
+      <div className="absolute inset-0 cyber-grid-overlay opacity-10 pointer-events-none" />
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="mb-8"
+        transition={{ duration: 0.6 }}
+        className="mb-10 relative z-10"
       >
-        <Flex justify="between" wrap>
+        <Flex justify="between" align="end" wrap className="gap-6">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              <Brain className="h-7 w-7 text-violet-400" />
-              Models
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-1.5 w-1.5 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
+              <span className="text-[10px] font-bold text-violet-500 uppercase tracking-[0.2em]">Singularity Core</span>
+            </div>
+            <h1 className="text-4xl font-black tracking-tight text-white flex items-center gap-4">
+              <span className="text-gradient-max uppercase">SAVED MODELS /</span>
+              <span className="text-violet-400 glow-text-violet">DEVOPS</span>
             </h1>
-            <p className="mt-1 text-neutral-400">Trained models ready for inference</p>
+            <p className="mt-2 text-neutral-500 font-medium max-w-xl">
+              Validated neural architectures archived and ready for native C++ inference deployment.
+            </p>
           </div>
-          <div className="flex gap-3 mt-4 sm:mt-0">
+          <div className="flex gap-3">
             <Link to="/experiments/new">
-              <Button>
+              <Button size="lg" className="bg-green-500 text-black hover:bg-green-400 font-bold shadow-[0_0_20px_rgba(34,197,94,0.2)]">
                 <PlusCircle className="h-4 w-4 mr-2" />
-                Train New Model
+                NEW ARCHITECTURE
               </Button>
             </Link>
           </div>
         </Flex>
       </motion.div>
 
-      <Grid cols={2} gap="md">
+      <Grid cols={2} gap="lg" className="relative z-10">
         {models.map((model, i) => (
           <motion.div
             key={model._id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08, duration: 0.4 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.1, duration: 0.5 }}
           >
-            <Card className="group h-full">
-              <CardHeader>
+            <Card className="cyber-card-max border-none group overflow-hidden">
+              <div className="h-1 w-full bg-gradient-to-r from-violet-500/50 via-fuchsia-500/50 to-violet-500/50" />
+              <CardHeader className="pb-4">
                 <Flex justify="between" align="start">
-                  <CardTitle className="flex items-center gap-2">
-                    <Brain className="h-5 w-5 text-violet-400" />
-                    {model.name}
-                  </CardTitle>
-                  <Badge variant="success" size="sm">Deployed</Badge>
+                  <div>
+                    <CardTitle className="text-xl font-black text-white hover:text-violet-400 transition-colors uppercase tracking-tight">
+                      {model.name}
+                    </CardTitle>
+                    <p className="text-[10px] font-bold text-neutral-500 uppercase mt-1 flex items-center gap-2">
+                      <Clock className="h-3 w-3" />
+                      Archived: {new Date(model.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <Badge className="bg-green-500/10 text-green-400 border-green-500/20 font-bold text-[10px] py-1">READY FOR INFERENCE</Badge>
                 </Flex>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="flex items-center gap-1.5 text-sm">
-                    <BarChart3 className="h-4 w-4 text-emerald-400" />
-                    <span className="text-neutral-300 font-mono">
-                      {model.metrics?.accuracy ? (model.metrics.accuracy * 100).toFixed(1) : (model.metrics?.valLoss ? (1 - model.metrics.valLoss).toFixed(3) : '0.0')}%
-                    </span>
+              <CardContent className="space-y-6">
+                {/* Architecture "Ghost" Preview */}
+                <div className="h-24 w-full bg-black/40 rounded-2xl border border-white/5 flex items-center justify-center gap-4 relative overflow-hidden px-6">
+                  <div className="absolute inset-0 cyber-grid-overlay opacity-20 pointer-events-none" />
+                  <div className="h-10 w-10 rounded-full border-2 border-green-500/40 bg-green-500/10 flex items-center justify-center relative z-10">
+                    <Database className="h-5 w-5 text-green-400" />
                   </div>
-                  <div className="flex items-center gap-1.5 text-sm">
-                    <Clock className="h-4 w-4 text-neutral-500" />
-                    <span className="text-neutral-500">{new Date(model.createdAt).toLocaleDateString()}</span>
+                  <div className="h-px bg-gradient-to-r from-green-500/40 to-violet-500/40 flex-1 relative z-10" />
+                  <div className="flex gap-2 relative z-10">
+                    {[1, 2, 3].map(j => (
+                      <div key={j} className="h-12 w-3 rounded-full bg-violet-500/20 border border-violet-500/40 shadow-[0_0_10px_rgba(139,92,246,0.1)]" />
+                    ))}
+                  </div>
+                  <div className="h-px bg-gradient-to-r from-violet-500/40 to-amber-500/40 flex-1 relative z-10" />
+                  <div className="h-10 w-10 rounded-full border-2 border-amber-500/40 bg-amber-500/10 flex items-center justify-center relative z-10">
+                    <Zap className="h-5 w-5 text-amber-400" />
                   </div>
                 </div>
-                <Flex gap="sm">
-                  <Link to={`/experiments/${model.experimentId}`}>
-                    <Button variant="outline" size="sm">
-                      <FlaskConical className="h-3.5 w-3.5 mr-1.5" />
-                      Origin
-                      <ArrowRight className="h-3.5 w-3.5 ml-1" />
+
+                <Grid cols={3} gap="sm">
+                  <div className="p-3 rounded-xl bg-neutral-900/50 border border-white/5">
+                    <p className="text-[9px] font-bold text-neutral-500 uppercase mb-1">Accuracy / Metrics</p>
+                    <div className="flex items-center gap-1.5">
+                      <BarChart3 className="h-4 w-4 text-emerald-400" />
+                      <span className="text-sm font-black text-white font-mono">
+                        {model.metrics?.accuracy ? (model.metrics.accuracy * 100).toFixed(1) : (model.metrics?.valLoss ? (1 - model.metrics.valLoss).toFixed(3) : '0.0')}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-neutral-900/50 border border-white/5">
+                    <p className="text-[9px] font-bold text-neutral-500 uppercase mb-1">Engine Protocol</p>
+                    <div className="flex items-center gap-1.5">
+                      <Cpu className="h-4 w-4 text-violet-400" />
+                      <span className="text-sm font-black text-white font-mono uppercase">C++17</span>
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-neutral-900/50 border border-white/5">
+                    <p className="text-[9px] font-bold text-neutral-500 uppercase mb-1">Status</p>
+                    <div className="flex items-center gap-1.5">
+                      <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-sm font-black text-white font-mono uppercase">Live</span>
+                    </div>
+                  </div>
+                </Grid>
+
+                <Flex gap="md" className="pt-2">
+                  <Link to={`/experiments/${model.experimentId}`} className="flex-1">
+                    <Button variant="outline" className="w-full border-neutral-800 bg-neutral-900 font-bold hover:border-violet-500/40 hover:text-violet-400 transition-all">
+                      <FlaskConical className="h-4 w-4 mr-2" />
+                      VIEW ORIGIN
                     </Button>
                   </Link>
-                  <Button variant="ghost" size="sm">
-                    <Download className="h-3.5 w-3.5 mr-1.5" />
+                  <Button variant="ghost" className="bg-white/5 font-bold hover:bg-white/10 uppercase tracking-tighter text-xs">
+                    <Download className="h-4 w-4 mr-2" />
                     Export
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-rose-400 hover:text-rose-300" onClick={() => handleDeleteModel(model._id)}>
-                    <Trash2 className="h-3.5 w-3.5" />
+                  <Button variant="ghost" className="text-rose-500/50 hover:text-rose-400 hover:bg-rose-500/5" onClick={() => handleDeleteModel(model._id)}>
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </Flex>
               </CardContent>
