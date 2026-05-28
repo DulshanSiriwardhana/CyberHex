@@ -20,6 +20,8 @@ import {
   Gauge,
   Brain,
   Sparkles,
+  Save,
+  Upload,
 } from 'lucide-react';
 import {
   LineChart,
@@ -43,7 +45,7 @@ import { Badge } from '@/components/ui/badge';
 import { Container, Grid, Stack, Flex } from '@/components/ui/layout';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useToast } from '@/components/ui/toaster';
-import { experimentsApi, engineApi, type TrainingStatus, type Experiment } from '@/lib/api';
+import { experimentsApi, engineApi, modelsApi, type TrainingStatus, type Experiment } from '@/lib/api';
 import Terminal from '@/components/terminal/Terminal';
 
 interface LivePoint {
@@ -109,7 +111,7 @@ function MetricCard({
       className="group"
     >
       <StatCard className="hover:border-green-500/20 transition-all duration-300 relative overflow-hidden">
-        {}
+        { }
         <motion.div
           className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent"
           animate={{ y: ['-100%', '400%'] }}
@@ -180,6 +182,7 @@ export default function ExperimentDetailPage() {
   const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabKey>('loss');
+  const [isSaving, setIsSaving] = useState(false);
 
 
   const latest = lossData[lossData.length - 1];
@@ -209,7 +212,7 @@ export default function ExperimentDetailPage() {
       setExperiment(data.experiment);
       setTotalEpochs(data.experiment.config.epochs);
 
-      
+
       const r = data.experiment.results;
       if (r?.epochs?.length) {
         const pts: LivePoint[] = r.epochs.map((e: number, i: number) => ({
@@ -282,8 +285,14 @@ export default function ExperimentDetailPage() {
     try {
       let features: number[][];
       if (inferenceInputs.trim()) {
-        const parsed = JSON.parse(inferenceInputs);
-        features = Array.isArray(parsed) ? (Array.isArray(parsed[0]) ? parsed : [parsed]) : [[parsed]];
+        try {
+          const parsed = JSON.parse(inferenceInputs);
+          features = Array.isArray(parsed) ? (Array.isArray(parsed[0]) ? parsed : [parsed]) : [[parsed]];
+        } catch (e) {
+          // Try parsing as CSV
+          const lines = inferenceInputs.trim().split('\n');
+          features = lines.map(line => line.split(',').map(Number));
+        }
       } else {
         features = [Array.from({ length: experiment?.config.layers[0] ?? 5 }, (_, i) => 0.1 * (i + 1))];
       }
@@ -294,6 +303,19 @@ export default function ExperimentDetailPage() {
       toast('error', 'Inference failed', err.message || 'Check engine health and model artifacts');
     }
     finally { setEngineBusy(null); }
+  }
+
+  async function handleSaveModel() {
+    if (!id || status !== 'completed') return;
+    setIsSaving(true);
+    try {
+      await modelsApi.saveFromExperiment(id);
+      toast('success', 'Model Saved', 'Check the Models page to view your saved assets');
+    } catch (err: any) {
+      toast('error', 'Save Failed', err.message || 'Could not save model');
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   const handleWsMessage = useCallback((data: any) => {
@@ -376,10 +398,10 @@ export default function ExperimentDetailPage() {
 
   const taskIsClassification = experiment?.config.task === 'classification';
 
-  
+
   return (
     <Container className="py-8 pt-24">
-      {}
+      { }
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -434,6 +456,12 @@ export default function ExperimentDetailPage() {
               <Cpu className="h-4 w-4 mr-2" />
               {engineBusy === 'infer' ? 'Running…' : 'Run Inference'}
             </Button>
+            {status === 'completed' && (
+              <Button className="bg-violet-600 hover:bg-violet-700 text-white" size="lg" disabled={isSaving} onClick={handleSaveModel}>
+                <Save className="h-4 w-4 mr-2" />
+                {isSaving ? 'Saving...' : 'Save as Model'}
+              </Button>
+            )}
           </div>
         </Flex>
       </motion.div>
@@ -612,24 +640,44 @@ export default function ExperimentDetailPage() {
         </motion.div>
       </AnimatePresence>
 
-      {}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
         <Grid cols={2} gap="md">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm text-green-400">
-                <Terminal />
-              </CardTitle>
+              <Flex justify="between">
+                <CardTitle className="flex items-center gap-2 text-sm text-green-400">
+                  <Terminal className="h-4 w-4" /> Inference Input
+                </CardTitle>
+                <div className="flex gap-2">
+                  <input
+                    type="file"
+                    id="inference-upload"
+                    className="hidden"
+                    accept=".csv"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const text = await file.text();
+                      setInferenceInputs(text);
+                      toast('info', 'CSV Loaded', 'CSV content loaded into inference buffer');
+                    }}
+                  />
+                  <Button variant="ghost" size="sm" className="h-7 text-[10px]" onClick={() => document.getElementById('inference-upload')?.click()}>
+                    <Upload className="h-3 w-3 mr-1" />
+                    Load CSV
+                  </Button>
+                </div>
+              </Flex>
             </CardHeader>
             <CardContent>
               <textarea
                 value={inferenceInputs}
                 onChange={(e) => setInferenceInputs(e.target.value)}
-                placeholder={JSON.stringify(Array.from({ length: experiment?.config.layers[0] ?? 5 }, (_, i) => 0.1 * (i + 1)))}
+                placeholder={JSON.stringify(Array.from({ length: experiment?.config.layers?.[0] ?? 5 }, (_, i) => 0.1 * (i + 1)))}
                 className="w-full h-32 bg-neutral-950 border border-neutral-800 rounded-xl p-4 font-mono text-xs text-green-500 focus:outline-none focus:border-green-500/50 resize-none"
               />
               <p className="text-[10px] text-neutral-500 mt-2 italic">
-                Input features as a JSON array (e.g. [0.1, 0.2, ...]). Default sample used if empty.
+                Input features as a JSON array or CSV text. Default sample used if empty.
               </p>
             </CardContent>
           </Card>
@@ -637,7 +685,7 @@ export default function ExperimentDetailPage() {
           <Card className={lastPredictions ? 'border-green-500/30 font-mono' : 'opacity-50'}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
-                <Activity className="h-4 w-4 text-emerald-400" /> Latency & Results
+                <Activity className="h-4 w-4 text-emerald-400" /> Predictions & Latency
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -646,7 +694,7 @@ export default function ExperimentDetailPage() {
                   <pre className="whitespace-pre-wrap">{lastPredictions}</pre>
                 ) : (
                   <div className="h-full flex items-center justify-center text-neutral-700">
-                    Awaiting inference...
+                    Awaiting inference execution...
                   </div>
                 )}
               </div>
