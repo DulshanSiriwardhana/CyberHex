@@ -870,7 +870,7 @@ export default function ExperimentBuilderPage() {
                         <input
                           type="range"
                           min="50"
-                          max="90"
+                          max="100"
                           value={trainSplit}
                           onChange={(e) => handleSplitChange(Number(e.target.value))}
                           className="w-full h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-green-500"

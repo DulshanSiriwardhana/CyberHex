@@ -259,6 +259,34 @@ export const experimentsApi = {
     api.get<{ jobs: ActiveJob[] }>('/api/v1/ml/jobs/active'),
 };
 
+export interface SavedModel {
+  _id: string;
+  experimentId: string;
+  userId: string;
+  name: string;
+  type: string;
+  framework: string;
+  filePath: string;
+  config: any;
+  metrics: {
+    trainLoss?: number;
+    valLoss?: number;
+    accuracy?: number;
+  };
+  createdAt: string;
+}
+
+export const modelsApi = {
+  list: () =>
+    api.get<{ models: SavedModel[] }>('/api/v1/models'),
+
+  saveFromExperiment: (experimentId: string, name?: string) =>
+    api.post<{ message: string; model: SavedModel }>('/api/v1/models/save', { experimentId, name }),
+
+  delete: (id: string) =>
+    api.delete<{ message: string }>(`/api/v1/models/${id}`),
+};
+
 export const datasetsApi = {
   upload: (file: File, onProgress?: (progress: number) => void) => {
     return new Promise<{ status: string; data: { filename: string; path: string; size: number; mimetype: string } }>((resolve, reject) => {

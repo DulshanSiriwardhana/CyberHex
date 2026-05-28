@@ -16,6 +16,7 @@ import engineRoutes from './routes/engineRoutes.js';
 import otpRoutes from './routes/otpRoutes.js';
 import healthRoutes from './routes/healthRoutes.js';
 import datasetRoutes from './routes/datasetRoutes.js';
+import modelRoutes from './routes/modelRoutes.js';
 import logger from './utils/logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -61,6 +62,7 @@ app.use('/api/v1/ml', mlTrainingRoutes);
 app.use('/api/v1/engine', engineRoutes);
 app.use('/api/v1/otp', otpRoutes);
 app.use('/api/v1/datasets', datasetRoutes);
+app.use('/api/v1/models', modelRoutes);
 
 app.get('/api/v1/health', (_req, res) =>
     res.json({ status: 'ok', version: '3.0.0', timestamp: new Date().toISOString() })
