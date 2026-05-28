@@ -359,11 +359,15 @@ export default function ExperimentBuilderPage() {
   };
 
   const handleSplitChange = (val: number) => {
-
     setTrainSplit(val);
     const remainder = 100 - val;
-    setValSplit(Math.round(remainder / 2));
-    setTestSplit(Math.round(remainder / 2));
+    if (remainder > 0) {
+      setValSplit(Math.round(remainder / 2));
+      setTestSplit(remainder - Math.round(remainder / 2));
+    } else {
+      setValSplit(0);
+      setTestSplit(0);
+    }
   };
 
   const getExperimentPayload = () => {
