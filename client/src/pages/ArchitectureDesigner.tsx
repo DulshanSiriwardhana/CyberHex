@@ -207,7 +207,12 @@ export default function ArchitectureDesigner() {
 
     try {
       const grid_mat = new module.Matrix(gridSize * gridSize, 2);
-      grid_mat.setData(gridX);
+
+      // Explicitly create VectorDouble to avoid Emscripten conversion errors
+      const vGrid = new module.VectorDouble();
+      for (let i = 0; i < gridX.length; i++) vGrid.push_back(gridX[i]);
+      grid_mat.setData(vGrid);
+      vGrid.delete();
 
       const pred_mat = model.predict(grid_mat);
       const preds = pred_mat.getData();
@@ -349,9 +354,16 @@ export default function ArchitectureDesigner() {
       setWasmPoints(data.points);
 
       const X_mat = new module.Matrix(data.X.length / 2, 2);
-      X_mat.setData(data.X);
+      const vX = new module.VectorDouble();
+      for (let i = 0; i < data.X.length; i++) vX.push_back(data.X[i]);
+      X_mat.setData(vX);
+      vX.delete();
+
       const y_mat = new module.Matrix(data.y.length, 1);
-      y_mat.setData(data.y);
+      const vy = new module.VectorDouble();
+      for (let i = 0; i < data.y.length; i++) vy.push_back(data.y[i]);
+      y_mat.setData(vy);
+      vy.delete();
 
       setWasmModel(model);
       setWasmXMatrix(X_mat);
@@ -709,8 +721,8 @@ export default function ArchitectureDesigner() {
             <button
               onClick={() => setActiveTab("visual")}
               className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${activeTab === "visual"
-                  ? "text-green-400 border-green-500 bg-green-500/5"
-                  : "text-neutral-500 border-transparent hover:text-neutral-300"
+                ? "text-green-400 border-green-500 bg-green-500/5"
+                : "text-neutral-500 border-transparent hover:text-neutral-300"
                 }`}
             >
               Visual Canvas
@@ -718,8 +730,8 @@ export default function ArchitectureDesigner() {
             <button
               onClick={() => setActiveTab("cpp")}
               className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${activeTab === "cpp"
-                  ? "text-green-400 border-green-500 bg-green-500/5"
-                  : "text-neutral-500 border-transparent hover:text-neutral-300"
+                ? "text-green-400 border-green-500 bg-green-500/5"
+                : "text-neutral-500 border-transparent hover:text-neutral-300"
                 }`}
             >
               C++ Code
@@ -727,8 +739,8 @@ export default function ArchitectureDesigner() {
             <button
               onClick={() => setActiveTab("json")}
               className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${activeTab === "json"
-                  ? "text-green-400 border-green-500 bg-green-500/5"
-                  : "text-neutral-500 border-transparent hover:text-neutral-300"
+                ? "text-green-400 border-green-500 bg-green-500/5"
+                : "text-neutral-500 border-transparent hover:text-neutral-300"
                 }`}
             >
               JSON Manifest
@@ -736,8 +748,8 @@ export default function ArchitectureDesigner() {
             <button
               onClick={() => { setActiveTab("wasm"); startWasmSimulation(); }}
               className={`px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition-all duration-200 ${activeTab === "wasm"
-                  ? "text-green-400 border-green-500 bg-green-500/5"
-                  : "text-neutral-500 border-transparent hover:text-neutral-300"
+                ? "text-green-400 border-green-500 bg-green-500/5"
+                : "text-neutral-500 border-transparent hover:text-neutral-300"
                 }`}
             >
               Live WASM Simulation
@@ -795,8 +807,8 @@ export default function ArchitectureDesigner() {
                             { }
                             <div
                               className={`w-full max-w-md rounded-2xl border p-3.5 transition-all duration-300 ${isSelected
-                                  ? "border-green-500/50 bg-green-500/5 shadow-[0_0_20px_rgba(34,197,94,0.1)]"
-                                  : "border-neutral-800 bg-neutral-900/60 hover:border-neutral-700"
+                                ? "border-green-500/50 bg-green-500/5 shadow-[0_0_20px_rgba(34,197,94,0.1)]"
+                                : "border-neutral-800 bg-neutral-900/60 hover:border-neutral-700"
                                 }`}
                             >
                               <Flex justify="between" align="center">
