@@ -40,8 +40,15 @@ def main():
     if not model_path or not os.path.exists(model_path):
         print(json.dumps({"error": f"Model not found: {model_path}"}), flush=True)
         sys.exit(1)
+    try:
+        X = np.array(features, dtype=np.float64)
+    except ValueError as e:
+        row_lengths = [len(r) for r in features if isinstance(r, (list, np.ndarray))]
+        unique_lengths = list(set(row_lengths))
+        error_msg = f"Inhomogeneous feature shape. Rows have different lengths: {unique_lengths}. Full error: {str(e)}"
+        print(json.dumps({"success": False, "error": error_msg}), flush=True)
+        sys.exit(1)
 
-    X = np.array(features, dtype=np.float64)
     if X.ndim == 1:
         X = X.reshape(1, -1)
 

@@ -290,8 +290,17 @@ export default function ExperimentDetailPage() {
           features = Array.isArray(parsed) ? (Array.isArray(parsed[0]) ? parsed : [parsed]) : [[parsed]];
         } catch (e) {
           // Try parsing as CSV
-          const lines = inferenceInputs.trim().split('\n');
-          features = lines.map(line => line.split(',').map(Number));
+          const lines = inferenceInputs.trim().split('\n').filter(l => l.trim().length > 0);
+          features = lines.map(line =>
+            line.split(',')
+              .map(v => v.trim())
+              .filter(v => v !== '')
+              .map(Number)
+              .filter(v => !isNaN(v))
+          );
+          // Only use rows that match the expected input dimension if possible, 
+          // or at least ensure they are not empty
+          features = features.filter(row => row.length > 0);
         }
       } else {
         features = [Array.from({ length: experiment?.config.layers[0] ?? 5 }, (_, i) => 0.1 * (i + 1))];
