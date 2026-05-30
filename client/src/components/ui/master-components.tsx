@@ -4,29 +4,33 @@ import React from 'react';
 export const GlassCard = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4 }}
-      className={`bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl hover:border-white/20 transition-all ${className}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className={`cyber-card-max p-6 ${className}`}
     >
       {children}
     </motion.div>
   );
 };
 
-export const Button = ({ children, onClick, variant = 'primary', className = '' }: { children: React.ReactNode; onClick?: () => void; variant?: 'primary' | 'ghost'; className?: string }) => {
-  const base = "relative px-6 py-3 rounded-[0.75rem] font-spectral tracking-wider transition-all";
-  const styles = variant === 'primary'
-    ? "bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:shadow-[0_0_20px_rgba(52,211,153,0.2)]"
-    : "text-gray-400 hover:text-white hover:bg-white/5";
+export const Button = ({ children, onClick, variant = 'primary', className = '' }: { children: React.ReactNode; onClick?: () => void; variant?: 'primary' | 'ghost' | 'outline'; className?: string }) => {
+  const base = "relative px-6 py-3 rounded-xl font-spectral tracking-wider transition-all duration-300 font-bold uppercase text-xs";
+
+  const variants = {
+    primary: "bg-green-500 text-black hover:bg-green-400 shadow-[0_0_20px_rgba(34,197,94,0.2)] hover:shadow-[0_0_30px_rgba(34,197,94,0.4)]",
+    ghost: "text-neutral-400 hover:text-white hover:bg-white/5",
+    outline: "border border-neutral-800 text-neutral-300 hover:border-green-500/50 hover:text-green-400 hover:bg-green-500/5"
+  };
 
   return (
     <motion.button
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.02, translateY: -2 }}
       whileTap={{ scale: 0.98 }}
-      className={`${base} ${styles} ${className}`}
+      className={`${base} ${variants[variant]} ${className}`}
       onClick={onClick}
     >
+      <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-transparent via-white/10 to-transparent animate-scan-line" />
       {children}
     </motion.button>
   );
@@ -34,8 +38,8 @@ export const Button = ({ children, onClick, variant = 'primary', className = '' 
 
 export const Skeleton = ({ className = '' }: { className?: string }) => (
   <motion.div
-    animate={{ opacity: [0.5, 1, 0.5] }}
-    transition={{ duration: 1.5, repeat: Infinity }}
-    className={`bg-white/5 rounded-md ${className}`}
+    animate={{ opacity: [0.3, 0.6, 0.3] }}
+    transition={{ duration: 2, repeat: Infinity }}
+    className={`bg-neutral-800/50 rounded-lg ${className}`}
   />
 );

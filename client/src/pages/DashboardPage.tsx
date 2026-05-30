@@ -61,28 +61,12 @@ export default function DashboardPage() {
       <MatrixBackground />
       <div className="absolute inset-0 cyber-grid-overlay opacity-20 pointer-events-none" />
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6 }}
+      <SectionHeading
+        title={`Command Center / ${user.username}`}
+        subtitle="Synchronizing neural nodes and monitoring real-time training telemetry. All systems within nominal parameters."
+        align="left"
         className="mb-10 relative z-10"
-      >
-        <Flex justify="between" align="end" wrap className="gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse" />
-              <span className="text-[10px] font-bold text-green-500 uppercase tracking-[0.2em]">System Online</span>
-            </div>
-            <h1 className="text-4xl font-black tracking-tight text-white mb-2">
-              <span className="text-gradient-max uppercase">Command Center / </span>
-              <span className="text-green-400 drop-shadow-[0_0_15px_rgba(34,197,94,0.4)]">
-                {user.username}
-              </span>
-            </h1>
-            <p className="text-neutral-500 font-medium max-w-lg">
-              Synchronizing neural nodes and monitoring real-time training telemetry. All systems within nominal parameters.
-            </p>
-          </div>
+        actions={
           <div className="flex gap-4">
             <Link to="/experiments/new">
               <Button size="lg" className="bg-green-500 text-black hover:bg-green-400 shadow-[0_0_20px_rgba(34,197,94,0.2)] font-bold">
@@ -97,8 +81,8 @@ export default function DashboardPage() {
               </Button>
             </Link>
           </div>
-        </Flex>
-      </motion.div>
+        }
+      />
 
       <Grid cols={4} gap="lg" className="mb-10 relative z-10">
         {stats.map((stat, i) => (
@@ -162,7 +146,7 @@ export default function DashboardPage() {
                   >
                     <Link
                       to={`/experiments/${exp._id}`}
-                      className="group flex items-center justify-between rounded-2xl px-5 py-4 bg-neutral-900/30 border border-white/5 hover:border-green-500/30 hover:bg-green-500/5 transition-all duration-300"
+                      className="group flex items-center justify-between rounded-2xl px-6 py-5 bg-neutral-900/20 border border-white/5 hover:border-green-500/30 hover:bg-green-500/5 transition-all duration-300"
                     >
                       <div className="flex items-center gap-4 min-w-0">
                         <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${exp.status === "training" ? "bg-green-500/20 text-green-400" :

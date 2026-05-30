@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Container, Grid, Flex, Stack } from '@/components/ui/layout';
+import { Container, Grid, Flex, Stack, SectionHeading } from '@/components/ui/layout';
 import { SkeletonPage } from '@/components/ui/skeleton';
 import { experimentsApi, type Experiment } from '@/lib/api';
 import { useToast } from '@/components/ui/toaster';
@@ -65,25 +65,20 @@ export default function ExperimentsListPage() {
 
   return (
     <Container className="py-8 pt-24">
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="mb-8">
-        <Flex justify="between" wrap>
-          <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              <FlaskConical className="h-7 w-7 text-green-400" />
-              Experiments
-            </h1>
-            <p className="mt-1 text-neutral-400">Manage and monitor your ML training experiments</p>
-          </div>
-          <div className="flex gap-3 mt-4 sm:mt-0">
-            <Link to="/experiments/new">
-              <Button size="lg">
-                <PlusCircle className="h-4 w-4 mr-2" />
-                New Experiment
-              </Button>
-            </Link>
-          </div>
-        </Flex>
-      </motion.div>
+      <SectionHeading
+        title="Command / Experiments"
+        subtitle="Manage and monitor your ML training experiments with real-time telemetry."
+        center={false}
+        className="mb-8"
+        actions={
+          <Link to="/experiments/new">
+            <Button size="lg">
+              <PlusCircle className="h-4 w-4 mr-2" />
+              New Experiment
+            </Button>
+          </Link>
+        }
+      />
 
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-6">

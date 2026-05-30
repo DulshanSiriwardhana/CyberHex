@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import React, { type ReactNode } from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface PageLayoutProps {
@@ -10,11 +11,13 @@ export function PageLayout({ children, className }: PageLayoutProps) {
   return (
     <div
       className={cn(
-        "min-h-screen bg-neutral-950 bg-cyber-grid",
+        "min-h-screen bg-neutral-950 bg-cyber-grid selection:bg-green-500/30 selection:text-white",
         className,
       )}
     >
-      { }
+      <div className="noise-overlay" />
+      <div className="scanline-overlay" />
+      <div className="vignette" />
       <div className="pointer-events-none fixed inset-0 bg-cyber-radial" />
       <div className="relative z-[1]">{children}</div>
     </div>
@@ -189,6 +192,7 @@ interface SectionHeadingProps {
   className?: string;
   align?: "left" | "center";
   center?: boolean;
+  actions?: React.ReactNode;
 }
 
 export function SectionHeading({
@@ -198,33 +202,88 @@ export function SectionHeading({
   className,
   align = "center",
   center,
+  actions,
 }: SectionHeadingProps) {
   const isCentered = center || align === "center";
   const displayDescription = subtitle || description;
 
+  // Split title if it has a slash or just use it as is
+  const parts = title.split(" / ");
+
   return (
     <div
       className={cn(
-        "mb-12",
+        "mb-16",
         isCentered && "text-center",
         className,
       )}
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-green-500/80 mb-3">
-        CyberHex
-      </p>
-      <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-[2.5rem] lg:leading-tight">
-        {title}
-      </h2>
-      {displayDescription && (
-        <p className={cn(
-          "mt-4 max-w-2xl text-base sm:text-lg text-neutral-400 leading-relaxed",
-          isCentered && "mx-auto"
-        )}>
-          {displayDescription}
-        </p>
-      )}
-      <div className={cn("mt-6 divider-cyber", isCentered && "mx-auto max-w-xs")} />
+      <div className={cn("flex flex-col md:flex-row md:items-end justify-between gap-6", isCentered && "md:items-center md:text-center")}>
+        <div className="flex-1">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-[10px] font-black uppercase tracking-[0.4em] text-green-500 mb-4"
+          >
+            Signal Intel / v4.0
+          </motion.p>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl font-black tracking-tighter text-white sm:text-5xl lg:text-6xl uppercase"
+          >
+            {parts.map((part, i) => (
+              <React.Fragment key={part}>
+                {i > 0 && <span className="text-neutral-800 mx-2">/</span>}
+                <span className={i === 0 ? "text-white" : "bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent"}>
+                  {part}
+                </span>
+              </React.Fragment>
+            ))}
+          </motion.h2>
+
+          {displayDescription && (
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className={cn(
+                "mt-6 max-w-2xl text-lg text-neutral-400 font-medium leading-relaxed",
+                isCentered && "mx-auto"
+              )}
+            >
+              {displayDescription}
+            </motion.p>
+          )}
+        </div>
+
+        {actions && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="flex-shrink-0"
+          >
+            {actions}
+          </motion.div>
+        )}
+      </div>
+
+      <motion.div
+        initial={{ width: 0, opacity: 0 }}
+        whileInView={{ width: 120, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.3, duration: 0.8 }}
+        className={cn("h-1 bg-green-500 relative mt-8 rounded-full", isCentered && "mx-auto")}
+      >
+        <div className="absolute inset-0 bg-green-400 blur-sm opacity-50" />
+      </motion.div>
     </div>
   );
 }
