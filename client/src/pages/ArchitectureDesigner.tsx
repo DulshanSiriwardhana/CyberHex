@@ -621,11 +621,11 @@ export default function ArchitectureDesigner() {
 
         { }
         <div className="col-span-1 space-y-4">
-          <Card className="h-full border-neutral-800/80 bg-neutral-900/60 backdrop-blur-xl">
-            <CardHeader className="pb-3 border-b border-neutral-800/40">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Plus className="h-4 w-4 text-green-400" />
-                Add Layer Blocks
+          <Card className="h-full border-white/5 bg-black/40 backdrop-blur-3xl shadow-[0_20px_40px_rgba(0,0,0,0.4)] os-glass-panel">
+            <CardHeader className="pb-3 border-b border-white/5 bg-gradient-to-r from-neutral-900/50 to-transparent">
+              <CardTitle className="text-sm font-semibold tracking-wide flex items-center gap-2">
+                <Layers className="h-4 w-4 text-green-400" />
+                Architecture Primitives
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-4 px-3 max-h-[70vh] overflow-y-auto space-y-4">

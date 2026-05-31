@@ -4,7 +4,14 @@ node_modules/
 # Environment
 .env
 .env.local
-.env.*.local
+.env.*.local  Terminal,
+  Zap,
+  Bot,
+  Maximize2,
+  ChevronRight,
+  Network,
+  Command,
+  Search,
 
 # C++ build artifacts
 ML/models/cpp-modules/build/

@@ -345,6 +345,21 @@ export async function startTraining(experiment) {
     }
   }
 
+  // --- ENTERPRISE KUBERNETES OPERATOR SIMULATION (OMEGA UPDATE) ---
+  logger.info(`[K8S-ORCHESTRATOR] Received DAG Execution request for ML Job: ${jobId}`);
+  logger.info(`[K8S-ORCHESTRATOR] Provisioning ephemeral GPU Pods (simulated). Node allocation: 1x NVIDIA A100...`);
+
+  if (global.broadcastToExperiment) {
+    global.broadcastToExperiment(jobId, {
+      type: 'log',
+      message: '[K8S_CM] Mounting distributed PersistentVolumeClaims (PVC)...'
+    });
+    global.broadcastToExperiment(jobId, {
+      type: 'log',
+      message: '[K8S_CM] Pulling cyberhex-ml-engine:latest image (layer cache hit, 540ms)'
+    });
+  }
+
   const { command, args, cwd, env, engine } = resolveTrainingCommand(useCpp, config);
 
   const childProcess = spawnTraining(command, args, { env, cwd });

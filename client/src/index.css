@@ -134,6 +134,8 @@ html {
 
 body {
   background-color: var(--color-neutral-950);
+  background-image: radial-gradient(circle at 50% 0%, rgba(30, 30, 40, 0.8), rgba(8, 8, 12, 1) 80%);
+  background-attachment: fixed;
   color: var(--color-neutral-300);
   font-family: var(--font-spectral);
   -webkit-font-smoothing: antialiased;
@@ -146,8 +148,8 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -161,7 +163,8 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-green-500);
+  background: var(--color-green-400);
+  box-shadow: 0 0 10px var(--color-green-500);
 }
 
 @keyframes pulse-glow {
@@ -425,8 +428,10 @@ body {
 
 .stat-card-glow:hover {
   box-shadow:
-    0 0 20px rgba(34, 197, 94, 0.15),
-    0 0 60px rgba(34, 197, 94, 0.05);
+    0 0 30px rgba(34, 197, 94, 0.15),
+    0 0 80px rgba(34, 197, 94, 0.05),
+    inset 0 0 20px rgba(255, 255, 255, 0.02);
+  border-color: rgba(34, 197, 94, 0.4);
 }
 
 @keyframes text-shimmer {
@@ -1252,4 +1257,37 @@ body {
 
 .text-glow-violet {
   text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+/* --- ELITE PLATFORM STYLES (OMEGA) --- */
+
+.os-canvas {
+  background: radial-gradient(circle at 50% 50%, rgba(30, 30, 40, 1) 0%, rgba(10, 10, 15, 1) 100%);
+  background-size: 100vw 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.os-glass-panel {
+  background: rgba(20, 20, 25, 0.4);
+  backdrop-filter: blur(25px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
+}
+
+.os-glass-panel:hover {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 40px rgba(34, 197, 94, 0.05);
+}
+
+.os-typography-primary {
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.os-typography-mono {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.01em;
 }

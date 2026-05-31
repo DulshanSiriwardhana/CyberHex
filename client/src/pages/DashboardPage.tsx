@@ -1,316 +1,395 @@
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from "react-resizable-panels";
 import {
-  Brain,
-  FlaskConical,
-  PlusCircle,
-  TrendingUp,
-  Clock,
-  Cpu,
-  Zap,
-  ArrowRight,
-  BarChart3,
   Activity,
+  Cpu,
   Layers,
+  Terminal,
+  Zap,
+  Bot,
+  Maximize2,
+  ChevronRight,
+  Network,
+  Command,
+  Search,
+  Grid,
+  Menu,
+  Settings2,
+  Database
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, StatCard } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { SkeletonPage } from "@/components/ui/skeleton";
-import { Container, Grid, Stack, Flex, SectionHeading } from "@/components/ui/layout";
 import { useAuth } from "@/contexts/auth";
-import WorldThreatMap from "@/components/dashboard/WorldThreatMap";
-import MatrixBackground from "@/components/dashboard/MatrixBackground";
-
-
-
 import { useExperimentsStore } from "@/stores/experiments";
-import { useEffect } from "react";
+import MatrixBackground from "@/components/dashboard/MatrixBackground";
+import WorldThreatMap from "@/components/dashboard/WorldThreatMap";
+import { Button } from "@/components/ui/button";
 
-const statusColors: Record<string, string> = {
-  completed: "success",
-  training: "default",
-  failed: "destructive",
-  stopped: "warning",
-  draft: "secondary",
-};
+/**
+ * REASON FOR EXISTENCE: The DashboardPage is the central nervous system of CyberHex. 
+ * It has been upgraded to an "AI OS Workspace" to reflect a multi-pane, highly technical environment.
+ * SCALABILITY: Uses react-resizable-panels for native DOM resizing. Can be extended to arbitrary depths.
+ * PERFORMANCE: Frame-motion utilized for localized hardware-accelerated updates rather than React re-renders.
+ */
+
+// Premium OS-Level Panel Header
+const OsPanelHeader = ({ icon: Icon, title, active = false, action }: any) => (
+  <div className={`flex items-center justify-between px-3 py-2 border-b border-white/5 bg-neutral-900/40 backdrop-blur-md sticky top-0 z-20 group transition-colors ${active ? 'bg-neutral-800/40 border-b-neutral-700/50' : ''}`}>
+    <div className="flex items-center gap-2">
+      <Icon className={`h-3.5 w-3.5 ${active ? 'text-white' : 'text-neutral-400'}`} />
+      <span className={`text-[11px] font-semibold tracking-wider uppercase ${active ? 'text-white' : 'text-neutral-400'}`}>
+        {title}
+      </span>
+    </div>
+    {action && <div className="opacity-0 group-hover:opacity-100 transition-opacity">{action}</div>}
+  </div>
+);
+
+// Mac/Linux style window controls
+const WindowControls = () => (
+  <div className="flex items-center gap-1.5 px-3 py-2">
+    <div className="h-2.5 w-2.5 rounded-full bg-red-500/80 hover:bg-red-500 cursor-pointer shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all"></div>
+    <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80 hover:bg-amber-500 cursor-pointer shadow-[0_0_10px_rgba(245,158,11,0.5)] transition-all"></div>
+    <div className="h-2.5 w-2.5 rounded-full bg-green-500/80 hover:bg-green-500 cursor-pointer shadow-[0_0_10px_rgba(34,197,94,0.5)] transition-all"></div>
+  </div>
+);
+
+// High-Fidelity Resize Handle
+const ResizeHandle = () => (
+  <PanelResizeHandle className="w-[1px] bg-neutral-800 hover:bg-green-500/50 hover:w-[2px] transition-all duration-150 flex items-center justify-center cursor-col-resize z-30 group relative">
+    <div className="w-1 h-12 bg-transparent group-hover:bg-green-400 rounded-full transition-colors absolute" />
+  </PanelResizeHandle>
+);
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const { experiments, fetchExperiments } = useExperimentsStore();
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
   useEffect(() => {
     fetchExperiments();
+
+    // Global keyboard listener for Command Palette (CMD/CTRL + K)
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [fetchExperiments]);
 
-  if (!user) {
-    return <SkeletonPage rows={4} />;
-  }
-
-  const recentExperiments = experiments.slice(0, 5);
-
-  const stats = [
-    { icon: Brain, label: "Total Models", value: experiments.filter(e => e.status === 'completed').length.toString(), change: "Released" },
-    { icon: FlaskConical, label: "Experiments", value: experiments.length.toString(), change: "Total Runs" },
-    { icon: TrendingUp, label: "Avg Loss", value: experiments.filter(e => e.results?.finalTrainLoss !== undefined).length > 0 ? (experiments.filter(e => e.results?.finalTrainLoss !== undefined).reduce((acc, e) => acc + (e.results?.finalTrainLoss || 0), 0) / experiments.filter(e => e.results?.finalTrainLoss !== undefined).length).toFixed(3) : "N/A", change: "Training Metric" },
-    { icon: Clock, label: "Active Jobs", value: experiments.filter(e => e.status === 'training').length.toString(), change: "Running Now" },
-  ];
+  if (!user) return null;
+  const recentExperiments = experiments.slice(0, 8);
 
   return (
-    <Container className="py-8 pt-24 relative overflow-hidden">
-      <MatrixBackground />
-      <div className="absolute inset-0 cyber-grid-overlay opacity-20 pointer-events-none" />
+    <div className="h-[calc(100vh-4rem)] w-full overflow-hidden flex flex-col bg-[#08080C] font-sans relative selection:bg-green-500/30">
 
-      <SectionHeading
-        title={`Command Center / ${user.username}`}
-        subtitle="Synchronizing neural nodes and monitoring real-time training telemetry. All systems within nominal parameters."
-        align="left"
-        className="mb-10 relative z-10"
-        actions={
-          <div className="flex gap-4">
-            <Link to="/experiments/new">
-              <Button size="lg" className="bg-green-500 text-black hover:bg-green-400 shadow-[0_0_20px_rgba(34,197,94,0.2)] font-bold">
-                <PlusCircle className="h-4 w-4 mr-2" />
-                INITIATE EXPERIMENT
-              </Button>
-            </Link>
-            <Link to="/models">
-              <Button size="lg" variant="outline" className="border-neutral-800 bg-neutral-900/50 backdrop-blur-md hover:border-neutral-700 font-bold">
-                <Brain className="h-4 w-4 mr-2 text-violet-400" />
-                SINGULARITY CORE
-              </Button>
-            </Link>
-          </div>
-        }
-      />
+      {/* Background Ambience: Infinite OS Grid & Noise */}
+      <div className="absolute inset-0 pointer-events-none z-0 mix-blend-screen opacity-30">
+        <MatrixBackground />
+      </div>
+      <div className="absolute inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900/40 via-[#08080C]/80 to-[#08080C]"></div>
 
-      <Grid cols={4} gap="lg" className="mb-10 relative z-10">
-        {stats.map((stat, i) => (
+      {/* Global Command Palette Overlay */}
+      <AnimatePresence>
+        {commandPaletteOpen && (
           <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1, duration: 0.5 }}
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] z-50 rounded-2xl bg-neutral-900/80 backdrop-blur-2xl border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.8),0_0_40px_rgba(34,197,94,0.1)] overflow-hidden flex flex-col"
           >
-            <div className="cyber-card-max p-6 group cursor-default">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 rounded-lg bg-neutral-900/80 border border-neutral-800 group-hover:border-green-500/50 transition-colors">
-                  <stat.icon className="h-5 w-5 text-green-400" />
-                </div>
-                <div className="h-1 w-12 bg-neutral-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-500/40 animate-scan-line" style={{ width: '40%' }} />
-                </div>
+            <div className="flex items-center px-4 py-3 border-b border-white/5">
+              <Search className="h-4 w-4 text-neutral-400 mr-3" />
+              <input
+                autoFocus
+                type="text"
+                placeholder="Search resources, commands, or settings..."
+                className="flex-1 bg-transparent border-none outline-none text-sm font-mono text-white placeholder-neutral-500"
+              />
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] text-neutral-500 font-mono border border-white/10 px-1.5 rounded bg-neutral-800/50">ESC</span>
               </div>
+            </div>
+            <div className="p-2 py-4">
+              <div className="text-xs font-semibold text-neutral-500 mb-2 px-2">SUGGESTED ACTIONS</div>
               <div className="space-y-1">
-                <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">{stat.label}</p>
-                <div className="text-3xl font-black text-white font-mono flex items-baseline gap-1">
-                  {stat.value}
+                <div className="px-3 py-2 rounded-lg hover:bg-neutral-800/80 cursor-pointer flex items-center justify-between group">
+                  <div className="flex items-center gap-3"><Zap className="h-3 w-3 text-green-400" /><span className="text-sm text-neutral-200">Initialize New Training Run</span></div>
+                  <span className="text-[10px] font-mono text-neutral-600 group-hover:text-green-500">T + N</span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-green-500/80" />
-                  <span className="text-[9px] font-bold text-green-500/70 uppercase">{stat.change}</span>
+                <div className="px-3 py-2 rounded-lg hover:bg-neutral-800/80 cursor-pointer flex items-center justify-between group">
+                  <div className="flex items-center gap-3"><Layers className="h-3 w-3 text-violet-400" /><span className="text-sm text-neutral-200">Open Architecture Designer</span></div>
                 </div>
               </div>
             </div>
           </motion.div>
-        ))}
-      </Grid>
+        )}
+      </AnimatePresence>
 
-      <Grid cols={3} gap="lg" className="mb-10 relative z-10">
-        <div className="col-span-2">
-          <Card className="cyber-card-max border-none overflow-hidden h-full">
-            <CardHeader className="border-b border-white/5 pb-4">
-              <Flex justify="between" align="center">
-                <CardTitle className="flex items-center gap-3 text-lg font-bold">
-                  <div className="p-1.5 rounded-md bg-green-500/10 border border-green-500/20">
-                    <Activity className="h-4 w-4 text-green-400" />
-                  </div>
-                  LIVE FEED / RECENT ACTIVITY
-                </CardTitle>
-                <Link to="/experiments">
-                  <Button variant="ghost" size="sm" className="text-neutral-500 hover:text-white hover:bg-white/5">
-                    ARCHIVE
-                    <ArrowRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </Link>
-              </Flex>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="space-y-3">
-                {recentExperiments.map((exp, idx) => (
-                  <motion.div
-                    key={exp._id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 + (idx * 0.05) }}
-                  >
-                    <Link
-                      to={`/experiments/${exp._id}`}
-                      className="group flex items-center justify-between rounded-2xl px-6 py-5 bg-neutral-900/20 border border-white/5 hover:border-green-500/30 hover:bg-green-500/5 transition-all duration-300"
-                    >
-                      <div className="flex items-center gap-4 min-w-0">
-                        <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${exp.status === "training" ? "bg-green-500/20 text-green-400" :
-                          exp.status === "completed" ? "bg-emerald-500/20 text-emerald-400" :
-                            "bg-neutral-800 text-neutral-500"
-                          }`}>
-                          <FlaskConical className="h-5 w-5" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-bold text-white group-hover:text-green-400 transition-colors uppercase tracking-tight">{exp.name}</p>
-                          <p className="text-[10px] font-mono text-neutral-500 flex items-center gap-2">
-                            <Clock className="h-3 w-3" />
-                            {new Date(exp.createdAt).toLocaleString(undefined, { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-6 shrink-0">
-                        {exp.results?.finalTrainLoss !== undefined && (
-                          <div className="text-right hidden sm:block">
-                            <p className="text-[9px] font-bold text-neutral-600 uppercase mb-0.5">Final Loss</p>
-                            <span className="text-xs font-mono font-bold text-neutral-300">
-                              {exp.results.finalTrainLoss.toFixed(4)}
-                            </span>
-                          </div>
-                        )}
-                        <Badge
-                          variant={statusColors[exp.status] as any}
-                          className={`
-                            px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-tighter
-                            ${exp.status === 'training' ? 'animate-pulse' : ''}
-                          `}
-                        >
-                          {exp.status}
-                        </Badge>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-                {recentExperiments.length === 0 && (
-                  <div className="py-20 text-center opacity-40">
-                    <div className="h-16 w-16 bg-neutral-900 rounded-full flex items-center justify-center mx-auto mb-4 border border-neutral-800">
-                      <FlaskConical className="h-8 w-8 text-neutral-700" />
-                    </div>
-                    <p className="text-sm font-medium italic text-neutral-500">NO ACTIVE SIGNAL FOUND</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="space-y-6">
-          <WorldThreatMap />
-          <Card className="cyber-card-max border-none h-full flex flex-col overflow-hidden">
-            <div className="h-1 bg-gradient-to-r from-green-500 via-emerald-400 to-green-500 animate-gradient-shift" />
-            <CardHeader className="pb-4">
-              <CardTitle className="text-xs font-black text-neutral-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                <Activity className="h-3 w-3 text-green-500" />
-                Live Engine Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 flex flex-col justify-between">
-              <div className="space-y-6">
-                <div>
-                  <div className="flex justify-between text-[10px] font-bold uppercase mb-2">
-                    <span className="text-neutral-400">Memory Cluster A-1</span>
-                    <span className="text-green-500">32% / 128GB</span>
-                  </div>
-                  <div className="h-2 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5">
-                    <motion.div
-                      className="h-full bg-green-500"
-                      initial={{ width: 0 }}
-                      animate={{ width: '32%' }}
-                      transition={{ duration: 1 }}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-[10px] font-bold uppercase mb-2">
-                    <span className="text-neutral-400">Compute Load</span>
-                    <span className="text-violet-500">14.2 GFLOPS</span>
-                  </div>
-                  <div className="h-2 w-full bg-neutral-900 rounded-full overflow-hidden border border-white/5">
-                    <motion.div
-                      className="h-full bg-violet-500"
-                      initial={{ width: 0 }}
-                      animate={{ width: '58%' }}
-                      transition={{ duration: 1, delay: 0.2 }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8 p-4 rounded-xl bg-neutral-950/60 border border-white/5 font-mono text-[10px] text-neutral-500 space-y-1">
-                <p className="text-green-500/60"># SYSTEM_BOOT_SEQUENCE_OK</p>
-                <p className="text-neutral-600"># CORE_SYNC_MASTER: 0x4FEE2</p>
-                <p className="text-neutral-600"># WASM_ENV: INITIALIZED</p>
-                <p className="animate-pulse"># LISTENING_FOR_SIGNAL...</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </Grid>
-
-      <Grid cols={3} gap="lg" className="relative z-10">
-        <Link to="/experiments/new">
-          <Card className="cyber-card-max border-none group cursor-pointer h-full">
-            <CardContent className="p-8 flex flex-col items-center text-center">
-              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-green-500/20 to-green-600/5 border border-green-500/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] transition-all duration-300">
-                <Zap className="h-8 w-8 text-green-400" />
-              </div>
-              <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">Quick Experiment</h3>
-              <p className="text-sm text-neutral-500 font-medium">Launch a pre-configured training run in 2 clicks</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link to="/designer">
-          <Card className="cyber-card-max border-none group cursor-pointer h-full">
-            <CardContent className="p-8 flex flex-col items-center text-center">
-              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-600/5 border border-amber-500/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(245,158,11,0.2)] transition-all duration-300">
-                <Layers className="h-8 w-8 text-amber-400" />
-              </div>
-              <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">Visual Designer</h3>
-              <p className="text-sm text-neutral-500 font-medium">Assemble layers visually, configure nodes, export code</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link to="/models">
-          <Card className="cyber-card-max border-none group cursor-pointer h-full">
-            <CardContent className="p-8 flex flex-col items-center text-center">
-              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-violet-500/20 to-violet-600/5 border border-violet-500/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(139,92,246,0.2)] transition-all duration-300">
-                <Cpu className="h-8 w-8 text-violet-400" />
-              </div>
-              <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">C++ Inference</h3>
-              <p className="text-sm text-neutral-500 font-medium">Deploy a trained model to the native inference engine</p>
-            </CardContent>
-          </Card>
-        </Link>
-      </Grid>
-
-      {/* PEAK DYNAMICS: GLOBAL INTELLIGENCE FEED */}
-      <div className="mt-12 mb-4 relative z-10">
-        <div className="rounded-xl bg-neutral-900/40 border border-white/5 p-3 overflow-hidden whitespace-nowrap relative">
-          <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-neutral-900 to-transparent z-10" />
-          <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-neutral-900 to-transparent z-10" />
-          <motion.div
-            className="flex gap-12 text-[10px] font-mono font-bold text-green-500/50 uppercase"
-            animate={{ x: [0, -1000] }}
-            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          >
-            <span>[SIGNAL_LOCKED] Node 0xAF23 transmitting encryption keys...</span>
-            <span>[THREAT_NEUTRALIZED] DDoS attempt detected from cluster 14.x...</span>
-            <span>[CORE_READY] WASM engine initialized in 42ms...</span>
-            <span>[DATA_STREAM] Ingesting 14.5MB/s anomalous packet logs...</span>
-            <span>[WRAITH_SCAN] Entropy levels within nominal range...</span>
-            <span>[SIGNAL_LOCKED] Node 0xAF23 transmitting encryption keys...</span>
-            <span>[THREAT_NEUTRALIZED] DDoS attempt detected from cluster 14.x...</span>
-            <span>[CORE_READY] WASM engine initialized in 42ms...</span>
-            <span>[DATA_STREAM] Ingesting 14.5MB/s anomalous packet logs...</span>
-            <span>[WRAITH_SCAN] Entropy levels within nominal range...</span>
+      {/* Top Application Bar - OS Style */}
+      <div className="h-10 shrink-0 bg-[#0A0A0F]/80 backdrop-blur-md border-b border-white/5 flex items-center justify-between relative z-20 px-2 shadow-sm">
+        <div className="flex items-center">
+          <WindowControls />
+          <div className="w-[1px] h-4 bg-white/10 mx-2"></div>
+          <motion.div whileHover={{ scale: 1.05 }} className="cursor-pointer px-2 py-1 rounded hover:bg-white/5 flex items-center gap-1.5 group">
+            <Menu className="h-3.5 w-3.5 text-neutral-400 group-hover:text-white transition-colors" />
+            <span className="text-[11px] font-semibold text-neutral-300">File</span>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.05 }} className="cursor-pointer px-2 py-1 rounded hover:bg-white/5 flex items-center gap-1.5 group">
+            <span className="text-[11px] font-semibold text-neutral-300">Edit</span>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.05 }} className="cursor-pointer px-2 py-1 rounded hover:bg-white/5 flex items-center gap-1.5 group">
+            <span className="text-[11px] font-semibold text-neutral-300">View</span>
           </motion.div>
         </div>
+
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+          <Command className="h-3 w-3 text-neutral-500" />
+          <span className="text-[10px] font-mono text-neutral-400 bg-neutral-900 px-2 py-0.5 rounded border border-white/5 cursor-pointer hover:border-neutral-700 transition-colors" onClick={() => setCommandPaletteOpen(true)}>
+            CMD + K to search
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3 pr-2">
+          <div className="flex items-center gap-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
+            <span className="text-[10px] font-mono font-medium text-green-400">CLUSTER ONLINE</span>
+          </div>
+          <div className="h-6 w-6 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-500 p-[1px] cursor-pointer">
+            <div className="h-full w-full bg-neutral-900 rounded-full flex items-center justify-center border border-transparent hover:bg-transparent transition-colors">
+              <span className="text-[9px] font-bold text-white">{user?.username ? user.username.charAt(0).toUpperCase() : 'U'}</span>
+            </div>
+          </div>
+        </div>
       </div>
-    </Container>
+
+      {/* Advanced Tiling Window Manager */}
+      <PanelGroup orientation="horizontal" className="flex-1 w-full relative z-10 p-2 gap-2">
+
+        {/* LEFT PANEL: Context / File Tree / Active Runs */}
+        <Panel defaultSize={20} minSize={15} maxSize={30} className="flex flex-col bg-[#0D0D12]/60 backdrop-blur-2xl border border-white/5 rounded-xl shadow-2xl overflow-hidden relative group">
+          <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none"></div>
+
+          <OsPanelHeader icon={Grid} title="Explorer" active={true} />
+
+          <div className="flex-1 overflow-y-auto p-2 scrollbar-hide">
+            <div className="px-3 py-2 text-[10px] font-bold text-neutral-500 uppercase tracking-widest flex items-center justify-between">
+              Active Telemetry
+              <Activity className="h-3 w-3 text-neutral-500" />
+            </div>
+
+            <div className="space-y-0.5">
+              {recentExperiments.length === 0 ? (
+                <div className="px-3 py-4 text-[11px] text-neutral-600 italic">No active experiments.</div>
+              ) : (
+                recentExperiments.map(exp => (
+                  <Link key={exp._id} to={`/experiments/${exp._id}`}>
+                    <div className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/5 border border-transparent cursor-pointer transition-colors group/item">
+                      <div className={`h-1.5 w-1.5 rounded-full ${exp.status === 'training' ? 'bg-green-500 shadow-[0_0_5px_rgba(34,197,94,1)]' : 'bg-neutral-600'}`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-mono font-medium text-neutral-300 truncate group-hover/item:text-white">{exp.name}</p>
+                      </div>
+                    </div>
+                  </Link>
+                ))
+              )}
+            </div>
+
+            <div className="mt-6 px-3 py-2 text-[10px] font-bold text-neutral-500 uppercase tracking-widest flex items-center justify-between">
+              Data Assets
+              <Database className="h-3 w-3 text-neutral-500" />
+            </div>
+            <div className="px-3 py-2 text-[11px] font-mono text-neutral-600 hover:text-white cursor-pointer hover:bg-white/5 rounded-md transition-colors flex items-center gap-2">
+              <span className="text-violet-400">🗂️</span> production_logs.csv
+            </div>
+            <div className="px-3 py-2 text-[11px] font-mono text-neutral-600 hover:text-white cursor-pointer hover:bg-white/5 rounded-md transition-colors flex items-center gap-2">
+              <span className="text-violet-400">🗂️</span> pcap_samples_01.h5
+            </div>
+          </div>
+
+          <div className="shrink-0 p-3 bg-neutral-900/50 border-t border-white/5">
+            <div className="w-full rounded-lg bg-black/40 border border-white/5 p-3 flex flex-col relative overflow-hidden group/stats hover:border-white/10 transition-colors cursor-default">
+              <div className="flex justify-between items-center relative z-10 mb-2">
+                <span className="text-[10px] font-semibold uppercase text-neutral-400 flex items-center gap-1.5">
+                  <Terminal className="h-3 w-3" /> Compute Node 01
+                </span>
+                <span className="text-[10px] font-mono text-green-400 group-hover/stats:text-green-300 transition-colors">GPU: 92%</span>
+              </div>
+              <div className="h-1 w-full bg-neutral-800 rounded-full relative z-10 overflow-hidden">
+                <motion.div className="h-full bg-gradient-to-r from-green-600 to-green-400 shadow-[0_0_10px_rgba(34,197,94,0.8)]" initial={{ width: 0 }} animate={{ width: '92%' }} transition={{ duration: 2, ease: "easeOut" }} />
+              </div>
+            </div>
+          </div>
+        </Panel>
+
+        <ResizeHandle />
+
+        {/* CENTER PANEL: Infinite Dashboard Engine */}
+        <Panel defaultSize={55} className="flex flex-col relative rounded-xl border border-white/5 bg-[#0A0A0F]/60 backdrop-blur-2xl shadow-2xl overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent pointer-events-none"></div>
+
+          <OsPanelHeader
+            icon={Network}
+            title="Global Telemetry Engine"
+            action={
+              <Button size="sm" variant="ghost" className="h-5 text-[10px] px-2 bg-white/5 hover:bg-white/10 text-neutral-300">
+                <Maximize2 className="h-3 w-3 mr-1" /> View Full Graph
+              </Button>
+            }
+          />
+
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 scrollbar-hide relative z-10 pt-6">
+
+            <div className="grid grid-cols-3 gap-4 shrink-0">
+              {/* Premium Card 1 */}
+              <Link to="/designer" className="group/card block">
+                <div className="h-36 rounded-xl bg-gradient-to-br from-neutral-900/80 to-black/80 border border-white/5 hover:border-amber-500/30 p-4 transition-all duration-300 relative overflow-hidden hover:shadow-[0_10px_30px_rgba(245,158,11,0.1)]">
+                  <div className="absolute -right-6 -bottom-6 opacity-[0.03] group-hover/card:opacity-10 transition-opacity transform group-hover/card:scale-110 duration-500">
+                    <Layers className="h-32 w-32 text-amber-500" />
+                  </div>
+                  <div className="h-8 w-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-3">
+                    <Layers className="h-4 w-4 text-amber-400" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-white tracking-wide mb-1">Architecture Designer</h3>
+                  <p className="text-[11px] text-neutral-400 leading-relaxed font-mono">Visually engineer graph structures</p>
+                </div>
+              </Link>
+
+              {/* Premium Card 2 */}
+              <Link to="/experiments/new" className="group/card block">
+                <div className="h-36 rounded-xl bg-gradient-to-br from-neutral-900/80 to-black/80 border border-white/5 hover:border-green-500/30 p-4 transition-all duration-300 relative overflow-hidden hover:shadow-[0_10px_30px_rgba(34,197,94,0.1)]">
+                  <div className="absolute -right-6 -bottom-6 opacity-[0.03] group-hover/card:opacity-10 transition-opacity transform group-hover/card:scale-110 duration-500">
+                    <Zap className="h-32 w-32 text-green-500" />
+                  </div>
+                  <div className="h-8 w-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center mb-3">
+                    <Zap className="h-4 w-4 text-green-400" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-white tracking-wide mb-1">Initialize Training</h3>
+                  <p className="text-[11px] text-neutral-400 leading-relaxed font-mono">Deploy to K8s compute cluster</p>
+                </div>
+              </Link>
+
+              {/* Premium Card 3 */}
+              <Link to="/models" className="group/card block">
+                <div className="h-36 rounded-xl bg-gradient-to-br from-neutral-900/80 to-black/80 border border-white/5 hover:border-violet-500/30 p-4 transition-all duration-300 relative overflow-hidden hover:shadow-[0_10px_30px_rgba(139,92,246,0.1)]">
+                  <div className="absolute -right-6 -bottom-6 opacity-[0.03] group-hover/card:opacity-10 transition-opacity transform group-hover/card:scale-110 duration-500">
+                    <Cpu className="h-32 w-32 text-violet-500" />
+                  </div>
+                  <div className="h-8 w-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-3">
+                    <Cpu className="h-4 w-4 text-violet-400" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-white tracking-wide mb-1">C++ Compilation</h3>
+                  <p className="text-[11px] text-neutral-400 leading-relaxed font-mono">Export optimized ONNX/WASM binary</p>
+                </div>
+              </Link>
+            </div>
+
+            {/* Massive Compute Graph / Map Viz area */}
+            <div className="flex-1 mt-2 min-h-[300px] w-full rounded-xl border border-white/5 bg-black/50 relative overflow-hidden isolate shadow-inner group/map">
+              <WorldThreatMap />
+              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
+
+              <div className="absolute top-4 left-4 p-3 rounded-xl bg-neutral-950/80 border border-white/5 backdrop-blur-xl shadow-lg">
+                <div className="flex items-center gap-2 mb-1.5 opacity-80">
+                  <Activity className="h-3.5 w-3.5 text-green-400" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-200">World Mesh</span>
+                </div>
+                <div className="text-xs font-mono text-neutral-400 before:content-['>'] before:mr-2 before:text-green-500"><span className="text-white">Active Pipelines: 14</span></div>
+              </div>
+            </div>
+
+          </div>
+        </Panel>
+
+        <ResizeHandle />
+
+        {/* RIGHT PANEL: AI Copilot & Hardware Telemetry */}
+        <Panel defaultSize={25} minSize={20} maxSize={40} className="flex flex-col bg-[#0D0D12]/60 backdrop-blur-2xl border border-white/5 rounded-xl shadow-2xl overflow-hidden relative">
+          <div className="absolute inset-0 bg-gradient-to-tl from-white/[0.01] to-transparent pointer-events-none"></div>
+
+          <OsPanelHeader icon={Bot} title="Cybernetic Assistant" />
+
+          <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-4 scrollbar-hide">
+
+            <div className="p-4 rounded-xl bg-gradient-to-b from-green-900/10 to-transparent border border-green-500/10 shadow-[0_4px_20px_rgba(34,197,94,0.03)] backdrop-blur-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+              <div className="flex gap-3 relative z-10">
+                <div className="h-8 w-8 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center shrink-0">
+                  <Bot className="h-4 w-4 text-green-400" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-semibold text-neutral-200 mb-1">System Analyzed</h4>
+                  <p className="text-[11px] text-neutral-400 leading-relaxed font-mono">
+                    Deep telemetry hook established. Detected sub-optimal gradient flows in Layer 4 of generic ResNet configuration. Shall I optimize?
+                  </p>
+                  <Button size="sm" className="mt-3 h-6 text-[10px] font-semibold bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-black border border-green-500/20 hover:border-transparent transition-all">
+                    Apply Patch
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col border border-white/5 rounded-xl bg-black/40 overflow-hidden">
+              <div className="px-3 py-2 bg-neutral-900/50 border-b border-white/5 flex items-center gap-2">
+                <Terminal className="h-3 w-3 text-neutral-500" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Stream Log</span>
+              </div>
+              <div className="p-3 font-mono text-[10px] leading-relaxed text-neutral-500 flex-1 overflow-y-auto space-y-1">
+                <div className="flex gap-2">
+                  <span className="text-neutral-600 shrink-0">12:45:00.1</span>
+                  <span><span className="text-green-500">[SYS]</span> WebAssembly execution context ready.</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-neutral-600 shrink-0">12:45:00.4</span>
+                  <span><span className="text-green-500">[SYS]</span> Connected to orchestration pod.</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-neutral-600 shrink-0">12:45:01.2</span>
+                  <span><span className="text-violet-500">[ML_OP]</span> Prefetching tensors (4GB)...</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-neutral-600 shrink-0">12:45:04.9</span>
+                  <span className="text-amber-500">[WARN] High memory pressure on Node 04.</span>
+                </div>
+                <div className="flex gap-2 opacity-70">
+                  <span className="text-neutral-600 shrink-0">##:##:##.#</span>
+                  <span className="animate-pulse">Waiting for execution graph...</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div className="p-3 bg-neutral-900/40 border-t border-white/5 shrink-0">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Ask system array..."
+                className="w-full bg-black/50 border border-white/10 rounded-lg py-2 pl-3 pr-8 text-[11px] font-mono text-white focus:outline-none focus:border-green-500/50 focus:bg-neutral-950 transition-all placeholder:text-neutral-600 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]"
+              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                <Zap className="h-3 w-3 text-neutral-500 cursor-pointer hover:text-green-400 transition-colors" />
+              </div>
+            </div>
+          </div>
+        </Panel>
+      </PanelGroup>
+
+      {/* Footer Status Bar - Industrial Style */}
+      <div className="h-7 shrink-0 bg-[#08080C] border-t border-white/10 flex items-center justify-between px-4 font-mono text-[10px] tracking-widest z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.5)] text-neutral-500">
+        <div className="flex items-center gap-6">
+          <span className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors"><Activity className="h-3 w-3 text-green-500" /> SYSTEM NOMINAL</span>
+          <span className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors text-violet-400"><Network className="h-3 w-3" /> DIST-ORCH: CONNECTED</span>
+        </div>
+        <div className="flex items-center gap-6">
+          <span className="cursor-pointer hover:text-white transition-colors">V_OMEGA_0.2</span>
+          <span className="cursor-pointer hover:text-white transition-colors flex items-center gap-1.5"><Settings2 className="h-3 w-3 text-neutral-500" /> HARDWARE_ACCEL</span>
+        </div>
+      </div>
+    </div>
   );
 }
-
