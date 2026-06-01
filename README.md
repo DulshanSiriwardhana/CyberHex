@@ -170,7 +170,7 @@ Images below are sourced from the repository’s `doc/images` folder.
 
 ### Dashboard
 <p align="center">
-  <img src="doc/images/dashboard.png" alt="Dashboard" width="800" />
+  <img src="doc/images/dashboad.png" alt="Dashboard" width="800" />
 </p>
 
 ### Experiment Builder
