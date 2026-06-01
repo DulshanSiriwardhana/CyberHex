@@ -226,7 +226,7 @@ export function SectionHeading({
             viewport={{ once: true }}
             className="text-[10px] font-black uppercase tracking-[0.4em] text-green-500 mb-4"
           >
-            Signal Intel / v4.0
+            Signal Intel / 7.0L
           </motion.p>
 
           <motion.h2

@@ -2,8 +2,8 @@ export const V4_RELEASE = {
   version: '4.0',
   serial: '01',
   codename: 'The Word',
-  label: 'v4.0 · No. 01',
-  fullLabel: 'v4.0 · Release No. 01 — The Word',
+  label: '7.0Local.mini',
+  fullLabel: '7.0Local.mini — Omega Engine',
 } as const;
 
 export const V4_COLORS = {

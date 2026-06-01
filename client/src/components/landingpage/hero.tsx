@@ -34,7 +34,7 @@ const PHRASES = [
   "Machine Learning for Cyber Engineers",
   "Train Neural Nets in Your Browser",
   "Real-Time Threat Detection Models",
-  "C++ Speed · Python Simplicity",
+  "C++ Speed · Visual Simplicity",
   "World-Class ML Infrastructure",
 ];
 
