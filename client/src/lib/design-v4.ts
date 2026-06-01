@@ -1,7 +1,7 @@
 export const V4_RELEASE = {
-  version: '4.0',
-  serial: '01',
-  codename: 'The Word',
+  version: '7.0',
+  serial: 'L',
+  codename: 'Omega Engine',
   label: '7.0Local.mini',
   fullLabel: '7.0Local.mini — Omega Engine',
 } as const;
@@ -44,7 +44,7 @@ export const V4_WORDMARK = {
 export type WordmarkSize = keyof typeof V4_WORDMARK.sizes;
 
 export const V4_BADGE_COPY = {
-  live: 'Neural Studio + C++ Inference Engine',
+  live: 'C++ ML Engine · v7.0Local.mini',
   hero: `${V4_RELEASE.fullLabel}`,
   short: V4_RELEASE.label,
 } as const;

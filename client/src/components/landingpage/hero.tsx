@@ -32,10 +32,10 @@ const floatingIcons = [
 
 const PHRASES = [
   "Machine Learning for Cyber Engineers",
-  "Train Neural Nets in Your Browser",
+  "Train Neural Nets From Scratch — C++ Core",
   "Real-Time Threat Detection Models",
   "C++ Speed · Visual Simplicity",
-  "World-Class ML Infrastructure",
+  "Self-Hosted World-Class ML Platform",
 ];
 
 function useTypewriter(phrases: string[], speed = 45, pause = 2000) {
