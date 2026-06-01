@@ -116,6 +116,15 @@ const NavBar = () => {
           >
             Experiments
           </Link>
+          <Link
+            to="/designer"
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${location.pathname === "/designer"
+              ? "text-green-400 bg-green-500/10"
+              : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
+              }`}
+          >
+            Designer
+          </Link>
 
         </div>
 
@@ -343,6 +352,16 @@ const NavBar = () => {
                   }`}
               >
                 Experiments
+              </Link>
+              <Link
+                to="/designer"
+                onClick={closeMobile}
+                className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${location.pathname === "/designer"
+                  ? "text-green-400 bg-green-500/10"
+                  : "text-neutral-400 hover:text-white hover:bg-neutral-800/50"
+                  }`}
+              >
+                Designer
               </Link>
 
               { }

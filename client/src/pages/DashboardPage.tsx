@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Network, Command, Activity, Maximize2, Zap, Layers, Cpu, Database,
   FlaskConical, BrainCircuit, Library, BookOpen, LineChart, Code,
-  Settings, Bot
+  Settings, Bot, PenLine
 } from 'lucide-react';
 import { Link, useNavigate, useParams, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -39,10 +39,11 @@ export default function AIWorkspace() {
     { id: 'research', icon: Library, label: 'Research Mode', color: 'text-emerald-400' },
     { id: 'experiments', icon: FlaskConical, label: 'Experiment System', color: 'text-rose-400' },
     { id: 'mlops', icon: Activity, label: 'MLOps Center', color: 'text-cyan-400' },
+    { id: 'designer', icon: PenLine, label: 'Architecture Designer', color: 'text-green-400' },
   ];
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] flex flex-col bg-[#050508] relative overflow-hidden">
+    <div className="h-[calc(100vh-4rem)] mt-16 flex flex-col bg-[#050508] relative overflow-hidden">
 
       {/* Omni-Search Top Bar */}
       <div className="h-12 shrink-0 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-md flex items-center justify-between px-4 z-20 shadow-lg">
@@ -76,7 +77,12 @@ export default function AIWorkspace() {
               return (
                 <div
                   key={mod.id}
-                  onClick={() => navigate(mod.id === 'experiments' ? '/experiments' : mod.id === 'mlops' ? '/models' : `/workspace/${mod.id}`)}
+                  onClick={() => navigate(
+                    mod.id === 'experiments' ? '/experiments'
+                      : mod.id === 'mlops' ? '/models'
+                        : mod.id === 'designer' ? '/designer'
+                          : `/workspace/${mod.id}`
+                  )}
                   className={`flex items-center justify-center md:justify-start gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200
                         ${isActive ? 'bg-white/10 border border-white/10 shadow-[inset_0_1px_rgba(255,255,255,0.1)]' : 'hover:bg-white/5 border border-transparent'}
                      `}
@@ -121,7 +127,7 @@ export default function AIWorkspace() {
                     {/* Markdown Block */}
                     <div className="w-full bg-[#111116] border border-white/10 rounded-lg p-5 shadow-inner">
                       <h1 className="text-2xl font-bold text-white mb-2 font-spectral">CyberHex Architecture Note</h1>
-                      <p className="text-neutral-400 text-sm">Training an advanced causal language model using <strong className="text-amber-500">AdamW</strong> optimization with FlashAttention mechanisms. This notebook bridges markdown math and execution seamlessly.</p>
+                      <p className="text-neutral-400 text-sm">Building a feed-forward neural network using the <strong className="text-amber-500">CyberHex C++ engine</strong>. Custom AdamW optimizer with AVX-512 SIMD acceleration. Define, compile, and execute models directly against the native inference runtime.</p>
                     </div>
                     {/* Code Block */}
                     <div className="w-full bg-[#0a0a0e] border border-neutral-800 rounded-lg overflow-hidden shadow-2xl mt-2">
@@ -133,22 +139,22 @@ export default function AIWorkspace() {
                         <span className="text-emerald-500 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">Execution Complete (0.8s)</span>
                       </div>
                       <div className="p-5 font-mono text-[13px] leading-relaxed text-neutral-300 whitespace-pre bg-[#040406]">
-                        <span className="text-pink-400">import</span> torch<br />
-                        <span className="text-pink-400">from</span> torch.optim <span className="text-pink-400">import</span> AdamW<br /><br />
-                        model = Transformer(d_model=<span className="text-amber-400">4096</span>, layers=<span className="text-amber-400">32</span>)<br />
-                        optimizer = AdamW(model.parameters(), lr=<span className="text-amber-400">3e-4</span>)<br />
+                        <span className="text-sky-400">#include</span> <span className="text-amber-400">&lt;cyberhex/engine.hpp&gt;</span><br />
+                        <span className="text-sky-400">#include</span> <span className="text-amber-400">&lt;cyberhex/optimizers/adamw.hpp&gt;</span><br /><br />
+                        <span className="text-green-400">auto</span> model = cx::Sequential(<span className="text-amber-400">14</span>, <span className="text-amber-400">{64, 128, 64}</span>, <span className="text-amber-400">1</span>);<br />
+                        <span className="text-green-400">auto</span> opt = cx::AdamW(model.params(), <span className="text-amber-400">3e-4</span>);<br />
                       </div>
                     </div>
                     {/* Output block */}
                     <div className="w-full flex gap-4 mt-2">
                       <div className="flex-1 bg-black border border-white/5 rounded-lg p-5 flex flex-col shadow-inner">
-                        <span className="text-neutral-500 text-[10px] font-mono mb-3 uppercase flex items-center gap-2"><Activity className="h-3 w-3 text-cyan-400" /> STDOUT PORT 8080</span>
+                        <span className="text-neutral-500 text-[10px] font-mono mb-3 uppercase flex items-center gap-2"><Activity className="h-3 w-3 text-cyan-400" /> CyberHex Engine STDOUT</span>
                         <div className="text-emerald-400/80 font-mono text-xs leading-relaxed">
-                          ❯ Initializing Cluster Compute... OK<br />
-                          ❯ Allocating 4x H100 GPUs... OK<br />
-                          ❯ Applying Model Distribution Policy... OK<br />
-                          ❯ FlashAttention Enabled.<br />
-                          ❯ Ready for `optimizer.step()`.
+                          ❯ [CX-Engine] Initializing C++ runtime... OK<br />
+                          ❯ [CX-Engine] AVX-512 SIMD detected, enabling fast-path...<br />
+                          ❯ [CX-Engine] Custom BLAS routines loaded (matmul, conv1d).<br />
+                          ❯ [CX-Engine] AdamW optimizer wired. lr=3e-4, wd=1e-4.<br />
+                          ❯ [CX-Engine] Ready — call engine.train() to begin.
                         </div>
                       </div>
                     </div>
@@ -311,7 +317,7 @@ export default function AIWorkspace() {
       <div className="h-7 shrink-0 bg-[#030305] border-t border-white/5 flex items-center justify-between px-4 text-[9px] font-mono text-neutral-600 uppercase tracking-widest z-30 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
         <div className="flex items-center gap-6">
           <span className="flex items-center gap-1.5"><Activity className="h-3 w-3 text-emerald-500" /> ENGINE ONLINE</span>
-          <span className="text-neutral-500">Node: A100-80GB x8</span>
+          <span className="text-neutral-500">Runtime: C++17 · AVX-512 · Local</span>
         </div>
         <div className="flex items-center gap-6">
           <span className="text-emerald-500 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">CyberHex 7.0Local.mini</span>
