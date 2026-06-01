@@ -72,9 +72,9 @@ export default function ModelsPage() {
               <div className="h-1.5 w-1.5 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
               <span className="text-[10px] font-bold text-violet-500 uppercase tracking-[0.2em]">Singularity Core</span>
             </div>
-            <h1 className="text-4xl font-black tracking-tight text-white flex items-center gap-4">
-              <span className="text-gradient-max uppercase">SAVED MODELS /</span>
-              <span className="text-violet-400 glow-text-violet">DEVOPS</span>
+            <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+              <span className="text-gradient-max uppercase">Saved Models /</span>
+              <span className="text-violet-400 glow-text-violet">DevOps</span>
             </h1>
             <p className="mt-2 text-neutral-500 font-medium max-w-xl">
               Validated neural architectures archived and ready for native C++ inference deployment.
@@ -104,10 +104,10 @@ export default function ModelsPage() {
               <CardHeader className="pb-4">
                 <Flex justify="between" align="start">
                   <div>
-                    <CardTitle className="text-xl font-black text-white hover:text-violet-400 transition-colors uppercase tracking-tight">
+                    <CardTitle className="text-base font-semibold text-white hover:text-violet-400 transition-colors tracking-tight">
                       {model.name}
                     </CardTitle>
-                    <p className="text-[10px] font-bold text-neutral-500 uppercase mt-1 flex items-center gap-2">
+                    <p className="text-[10px] font-mono text-neutral-500 mt-1 flex items-center gap-1.5">
                       <Clock className="h-3 w-3" />
                       Archived: {new Date(model.createdAt).toLocaleDateString()}
                     </p>
@@ -184,7 +184,7 @@ export default function ModelsPage() {
       {models.length === 0 && !loading && (
         <div className="text-center py-20">
           <Brain className="h-16 w-16 text-neutral-800 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-neutral-400">No models yet</h3>
+          <h3 className="text-base font-semibold text-neutral-400">No models yet</h3>
           <p className="text-sm text-neutral-600 mt-1 mb-6">Train and save your first model to see it here</p>
           <Link to="/experiments/new">
             <Button>

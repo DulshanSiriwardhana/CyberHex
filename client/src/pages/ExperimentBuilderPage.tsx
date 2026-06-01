@@ -465,7 +465,7 @@ export default function ExperimentBuilderPage() {
   ];
 
   return (
-    <Container className="py-8 pt-24 max-w-7xl">
+    <Container className="py-8 pt-24 max-w-[1440px]">
       { }
       <motion.div
         initial={{ opacity: 0, y: -10 }}
