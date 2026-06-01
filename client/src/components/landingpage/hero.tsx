@@ -257,7 +257,7 @@ export default function Hero() {
         >
           Design, train, and deploy neural networks with a visual editor and a
           blazing-fast C++ inference engine.{" "}
-          <span className="text-green-500/70">No Jupyter notebooks required.</span>
+          <span className="text-green-500/70">Built entirely from scratch.</span>
         </motion.p>
 
         { }

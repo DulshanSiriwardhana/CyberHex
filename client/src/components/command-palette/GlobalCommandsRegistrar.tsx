@@ -176,7 +176,7 @@ export function GlobalCommandsRegistrar() {
                 category: 'navigation' as CommandCategory,
                 icon: 'Settings',
                 action: () => {
-                    toast('info', 'Settings', 'Opening workspace configuration...');
+                    navigate('/settings');
                 },
                 keywords: ['settings', 'config', 'preferences', 'theme', 'keys'],
             },
