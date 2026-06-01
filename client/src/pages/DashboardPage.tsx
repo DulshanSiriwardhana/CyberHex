@@ -5,7 +5,7 @@ import {
   FlaskConical, BrainCircuit, Library, BookOpen, LineChart, Code,
   Settings, Bot
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCommandPaletteStore } from '@/stores/commandPalette';
 import { useAuth } from '@/contexts/auth';
@@ -25,7 +25,10 @@ const OsPanelHeader = ({ icon: Icon, title, action, active = false }: any) => (
 export default function AIWorkspace() {
   const { user } = useAuth();
   const setCommandPaletteOpen = useCommandPaletteStore((s) => s.open);
-  const [activeTab, setActiveTab] = useState('data');
+  const navigate = useNavigate();
+  const { module } = useParams();
+
+  const activeTab = module || 'data';
 
   const WORKSPACE_MODULES = [
     { id: 'data', icon: Database, label: 'Data Science Workbench', color: 'text-blue-400' },
@@ -71,7 +74,7 @@ export default function AIWorkspace() {
               return (
                 <div
                   key={mod.id}
-                  onClick={() => setActiveTab(mod.id)}
+                  onClick={() => navigate(mod.id === 'experiments' ? '/experiments' : mod.id === 'mlops' ? '/models' : `/workspace/${mod.id}`)}
                   className={`flex items-center justify-center md:justify-start gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200
                         ${isActive ? 'bg-white/10 border border-white/10 shadow-[inset_0_1px_rgba(255,255,255,0.1)]' : 'hover:bg-white/5 border border-transparent'}
                      `}

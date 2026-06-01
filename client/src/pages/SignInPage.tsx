@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Terminal, Eye, EyeOff, LogIn, Loader2, AlertCircle, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, LogIn, Loader2, AlertCircle, ArrowLeft, BrainCircuit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth";
 
@@ -24,7 +24,7 @@ export default function SignInPage() {
     setLoading(true);
     try {
       await login(email, password);
-      navigate("/dashboard");
+      navigate("/workspace/data");
     } catch (err: any) {
       setError(err?.message || "Sign in failed. Check your credentials.");
     } finally {
@@ -33,70 +33,87 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 bg-cyber-grid flex flex-col items-center justify-center px-4 py-12 relative">
-      <div className="pointer-events-none fixed inset-0 bg-cyber-radial" />
+    <div className="os-canvas min-h-screen flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden font-spectral">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none z-10" />
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none z-0" />
+      <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-blue-500/5 blur-[150px] rounded-full pointer-events-none z-0" />
 
-      <div className="relative z-10 w-full max-w-md">
-        {}
-        <Link to="/" className="flex items-center justify-center gap-2 mb-10 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-green-700 shadow-[0_0_20px_rgba(34, 197, 94,0.35)] group-hover:shadow-[0_0_30px_rgba(34, 197, 94,0.5)] transition-shadow duration-300">
-            <Terminal className="h-5 w-5 text-white" />
-          </div>
-          <span className="text-xl font-bold text-white tracking-tight">
-            Cyber<span className="text-green-400">Hex</span>
-          </span>
-        </Link>
-
-        {}
+      <div className="relative z-20 w-full max-w-[420px]">
+        {/* Logo Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-2xl border border-neutral-800/60 bg-neutral-900/80 backdrop-blur-xl p-6 sm:p-8 shadow-[0_0_40px_rgba(34, 197, 94,0.06),0_20px_40px_rgba(0,0,0,0.5)]"
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col items-center mb-10 group"
         >
-          <h2 className="text-2xl font-bold text-white mb-1">Welcome back</h2>
-          <p className="text-sm text-neutral-400 mb-6">Sign in to your CyberHex account</p>
+          <div className="w-16 h-16 rounded-2xl bg-[#0a0a0f] border border-white/10 shadow-2xl flex items-center justify-center mb-6 relative overflow-hidden group-hover:border-emerald-500/50 transition-colors duration-500">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <BrainCircuit className="h-8 w-8 text-emerald-400 group-hover:scale-110 transition-transform duration-500" />
+          </div>
+          <h1 className="text-3xl font-light text-white tracking-tight">
+            Cyber<span className="font-semibold text-emerald-400">Hex</span>
+          </h1>
+          <p className="text-neutral-500 text-sm mt-2 font-mono tracking-widest uppercase">Omega Engine Access</p>
+        </motion.div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Main Panel */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="os-glass-panel p-8 relative overflow-hidden"
+        >
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
+
+          <h2 className="text-xl font-medium text-white mb-6 font-spectral">Authenticate into Workspace</h2>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
               <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/5 px-4 py-2.5 text-sm text-rose-400"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="flex items-center gap-3 rounded-lg border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-400 font-mono"
               >
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 {error}
               </motion.div>
             )}
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-neutral-400">Email</label>
+            <div className="space-y-2">
+              <label className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 flex justify-between">
+                <span>Identity</span>
+                <span className="text-emerald-500/50">ID_RSA</span>
+              </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="input-cyber"
+                placeholder="engineer@cyberhex.ai"
+                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-mono"
                 autoComplete="email"
                 autoFocus
               />
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-neutral-400">Password</label>
+            <div className="space-y-2">
+              <label className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 flex justify-between">
+                <span>Passkey</span>
+                <span className="text-emerald-500/50">SHA-256</span>
+              </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="input-cyber pr-10"
+                  className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 pr-10 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-mono"
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-300 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-emerald-400 transition-colors"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -104,38 +121,47 @@ export default function SignInPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full" size="lg" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-medium tracking-wide shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all border border-emerald-400/20 rounded-lg mt-2 font-mono uppercase text-xs"
+              disabled={loading}
+            >
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Signing in...
+                  Establishing Link...
                 </>
               ) : (
                 <>
                   <LogIn className="h-4 w-4 mr-2" />
-                  Sign in
+                  Initialize Session
                 </>
               )}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-8 text-center border-t border-white/5 pt-6">
             <p className="text-sm text-neutral-500">
-              Don't have an account?{" "}
-              <Link to="/signup" className="font-medium text-green-400 hover:text-green-300 transition-colors">
-                Create one
+              New to the platform?{" "}
+              <Link to="/signup" className="font-medium text-emerald-400 hover:text-emerald-300 transition-colors underline decoration-emerald-500/30 underline-offset-4">
+                Request Access
               </Link>
             </p>
           </div>
         </motion.div>
 
-        {}
-        <div className="mt-8 text-center">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-300 transition-colors">
+        {/* Footer */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="mt-8 text-center"
+        >
+          <Link to="/" className="inline-flex items-center gap-2 text-[11px] font-mono text-neutral-600 hover:text-neutral-400 transition-colors uppercase tracking-widest">
             <ArrowLeft className="h-3.5 w-3.5" />
-            Back to home
+            Terminate Connection
           </Link>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

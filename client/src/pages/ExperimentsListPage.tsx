@@ -57,14 +57,14 @@ export default function ExperimentsListPage() {
 
   if (loading) {
     return (
-      <Container className="py-8 pt-24">
+      <Container className="py-4 h-full overflow-auto w-full max-w-full">
         <SkeletonPage rows={5} />
       </Container>
     );
   }
 
   return (
-    <Container className="py-8 pt-24">
+    <Container className="py-4 h-full overflow-auto w-full max-w-full">
       <SectionHeading
         title="Command / Experiments"
         subtitle="Manage and monitor your ML training experiments with real-time telemetry."

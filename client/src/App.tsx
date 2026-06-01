@@ -68,13 +68,14 @@ function AppLayout() {
             <Route path="/signup" element={<SignUpPage />} />
 
             <Route
-              path="/dashboard"
+              path="/workspace/:module"
               element={
                 <ProtectedRoute>
                   <DashboardPage />
                 </ProtectedRoute>
               }
             />
+            <Route path="/dashboard" element={<Navigate to="/workspace/data" replace />} />
             <Route
               path="/models"
               element={
