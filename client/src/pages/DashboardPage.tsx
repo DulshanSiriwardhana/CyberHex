@@ -221,7 +221,7 @@ export default function AIWorkspace() {
 
                     <div className="flex-1 bg-[#050508] border border-white/10 rounded-xl overflow-hidden flex flex-col shadow-2xl">
                       <div className="h-10 px-4 border-b border-white/10 flex items-center gap-6 bg-[#0a0a0f]">
-                        {['churn_analysis_v4.csv', 'customer_segments.parquet', 'financials.json'].map((f, i) => (
+                        {['training_data_v7.csv', 'customer_segments.parquet', 'financials.json'].map((f, i) => (
                           <span key={i} className={`text-[12px] font-mono cursor-pointer transition-colors ${i === 0 ? 'text-blue-400 font-bold border-b-2 border-blue-500' : 'text-neutral-500 hover:text-neutral-300'}`}>{f}</span>
                         ))}
                       </div>
