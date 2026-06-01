@@ -141,7 +141,7 @@ export default function AIWorkspace() {
                       <div className="p-5 font-mono text-[13px] leading-relaxed text-neutral-300 whitespace-pre bg-[#040406]">
                         <span className="text-sky-400">#include</span> <span className="text-amber-400">&lt;cyberhex/engine.hpp&gt;</span><br />
                         <span className="text-sky-400">#include</span> <span className="text-amber-400">&lt;cyberhex/optimizers/adamw.hpp&gt;</span><br /><br />
-                        <span className="text-green-400">auto</span> model = cx::Sequential(<span className="text-amber-400">14</span>, <span className="text-amber-400">{64, 128, 64}</span>, <span className="text-amber-400">1</span>);<br />
+                        <span className="text-green-400">auto</span> model = cx::Sequential(<span className="text-amber-400">14</span>, <span className="text-amber-400">{"{"}{64}, {128}, {64}{"}"}</span>, <span className="text-amber-400">1</span>);<br />
                         <span className="text-green-400">auto</span> opt = cx::AdamW(model.params(), <span className="text-amber-400">3e-4</span>);<br />
                       </div>
                     </div>
