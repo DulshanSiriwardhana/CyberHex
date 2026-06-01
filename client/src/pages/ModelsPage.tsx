@@ -57,7 +57,7 @@ export default function ModelsPage() {
     }
   };
   return (
-    <Container className="py-8 pt-24 relative">
+    <Container className="py-4 relative h-full overflow-auto w-full max-w-full">
       <div className="absolute inset-0 cyber-grid-overlay opacity-10 pointer-events-none" />
 
       <motion.div

@@ -9,6 +9,8 @@ import { Link, useNavigate, useParams, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCommandPaletteStore } from '@/stores/commandPalette';
 import { useAuth } from '@/contexts/auth';
+import ExperimentsListPage from './ExperimentsListPage';
+import ModelsPage from './ModelsPage';
 
 const OsPanelHeader = ({ icon: Icon, title, action, active = false }: any) => (
   <div className={`h-10 px-3 flex items-center justify-between border-b 
@@ -288,14 +290,16 @@ export default function AIWorkspace() {
                 </div>
               )}
 
-              {/* Fallback to original dashboard components if experiments/mlops selected */}
-              {(activeTab === 'experiments' || activeTab === 'mlops') && (
-                <div className="h-full flex items-center justify-center relative">
-                  <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay pointer-events-none"></div>
-                  <div className="flex flex-col items-center">
-                    <div className="w-12 h-12 rounded-full border-t-2 border-rose-500 animate-spin mb-6 shadow-[0_0_15px_rgba(244,63,94,0.5)]"></div>
-                    <span className="text-neutral-400 text-sm font-mono tracking-widest uppercase">Initializing Module Architecture...</span>
-                  </div>
+              {/* Seamless integration of list components inside OS Workspace panel */}
+              {activeTab === 'experiments' && (
+                <div className="h-full flex flex-col relative w-full overflow-hidden">
+                  <ExperimentsListPage />
+                </div>
+              )}
+
+              {activeTab === 'mlops' && (
+                <div className="h-full flex flex-col relative w-full overflow-hidden">
+                  <ModelsPage />
                 </div>
               )}
             </motion.div>
