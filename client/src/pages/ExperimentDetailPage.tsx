@@ -180,6 +180,8 @@ export default function ExperimentDetailPage() {
   const [engineBusy, setEngineBusy] = useState<'export' | 'infer' | null>(null);
   const [lastPredictions, setLastPredictions] = useState<string | null>(null);
   const [inferenceInputs, setInferenceInputs] = useState<string>('');
+  const [inferMode, setInferMode] = useState<'json' | 'form'>('form');
+  const [formFeatures, setFormFeatures] = useState<string[]>(Array(14).fill('0'));
   const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabKey>('loss');
@@ -211,6 +213,7 @@ export default function ExperimentDetailPage() {
       setLoading(true);
       const data = await experimentsApi.get(id);
       setExperiment(data.experiment);
+      setFormFeatures(Array(data.experiment.config.selectedFeatures?.length || data.experiment.config.layers?.[0] || 14).fill('0.0'));
       setTotalEpochs(data.experiment.config.epochs);
 
 
@@ -285,12 +288,13 @@ export default function ExperimentDetailPage() {
     setEngineBusy('infer');
     try {
       let features: number[][];
-      if (inferenceInputs.trim()) {
+      if (inferMode === 'form') {
+        features = [formFeatures.map(f => Number(f) || 0.0)];
+      } else if (inferenceInputs.trim()) {
         try {
           const parsed = JSON.parse(inferenceInputs);
           features = Array.isArray(parsed) ? (Array.isArray(parsed[0]) ? parsed : [parsed]) : [[parsed]];
         } catch (e) {
-          // Try parsing as CSV
           const lines = inferenceInputs.trim().split('\n').filter(l => l.trim().length > 0);
           features = lines.map(line =>
             line.split(',')
@@ -299,12 +303,10 @@ export default function ExperimentDetailPage() {
               .map(Number)
               .filter(v => !isNaN(v))
           );
-          // Only use rows that match the expected input dimension if possible, 
-          // or at least ensure they are not empty
           features = features.filter(row => row.length > 0);
         }
       } else {
-        features = [Array.from({ length: experiment?.config.layers[0] ?? 5 }, (_, i) => 0.1 * (i + 1))];
+        features = [Array.from({ length: experiment?.config.layers[0] ?? 14 }, (_, i) => 0.1 * (i + 1))];
       }
       const res = await engineApi.inference({ modelPath, features, task: experiment?.config.task ?? 'regression' });
       setLastPredictions(JSON.stringify(res.predictions, null, 2));
@@ -676,19 +678,49 @@ export default function ExperimentDetailPage() {
                     <Upload className="h-3 w-3 mr-1" />
                     Load CSV
                   </Button>
+                  <div className="h-4 w-px bg-neutral-800 mx-1"></div>
+                  <Button variant={inferMode === 'json' ? "secondary" : "ghost"} size="sm" className="h-7 text-[10px]" onClick={() => setInferMode('json')}>
+                    JSON
+                  </Button>
+                  <Button variant={inferMode === 'form' ? "secondary" : "ghost"} size="sm" className="h-7 text-[10px]" onClick={() => setInferMode('form')}>
+                    Form Builder
+                  </Button>
                 </div>
               </Flex>
             </CardHeader>
             <CardContent>
-              <textarea
-                value={inferenceInputs}
-                onChange={(e) => setInferenceInputs(e.target.value)}
-                placeholder={JSON.stringify(Array.from({ length: experiment?.config.layers?.[0] ?? 5 }, (_, i) => 0.1 * (i + 1)))}
-                className="w-full h-32 bg-neutral-950 border border-neutral-800 rounded-xl p-4 font-mono text-xs text-green-500 focus:outline-none focus:border-green-500/50 resize-none"
-              />
-              <p className="text-[10px] text-neutral-500 mt-2 italic">
-                Input features as a JSON array or CSV text. Default sample used if empty.
-              </p>
+              {inferMode === 'json' ? (
+                <>
+                  <textarea
+                    value={inferenceInputs}
+                    onChange={(e) => setInferenceInputs(e.target.value)}
+                    placeholder={JSON.stringify(Array.from({ length: experiment?.config.layers?.[0] ?? 5 }, (_, i) => 0.1 * (i + 1)))}
+                    className="w-full h-32 bg-neutral-950 border border-neutral-800 rounded-xl p-4 font-mono text-xs text-green-500 focus:outline-none focus:border-green-500/50 resize-none"
+                  />
+                  <p className="text-[10px] text-neutral-500 mt-2 italic">
+                    Input features as a JSON array or CSV text. Default sample used if empty.
+                  </p>
+                </>
+              ) : (
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 overflow-y-auto max-h-[160px] p-1">
+                  {formFeatures.map((val, idx) => (
+                    <div key={idx} className="flex flex-col gap-1">
+                      <label className="text-[9px] text-neutral-500 uppercase font-bold tracking-wider truncate" title={experiment?.config?.selectedFeatures?.[idx] || `F-${idx}`}>
+                        {experiment?.config?.selectedFeatures?.[idx] || `F-${idx}`}
+                      </label>
+                      <input type="number" step="any"
+                        className="w-full bg-neutral-900 border border-neutral-800 rounded p-1.5 font-mono text-xs text-green-500 focus:border-green-500/50 focus:outline-none placeholder-neutral-700"
+                        value={val}
+                        onChange={e => {
+                          const newF = [...formFeatures];
+                          newF[idx] = e.target.value;
+                          setFormFeatures(newF);
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 

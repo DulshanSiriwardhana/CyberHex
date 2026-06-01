@@ -53,6 +53,19 @@ def main():
         X = X.reshape(1, -1)
 
     weights, biases = load_model(model_path)
+    
+    if len(weights) > 0:
+        expected_dim = weights[0].shape[0]
+        provided_dim = X.shape[1]
+        
+        if provided_dim != expected_dim:
+            if provided_dim < expected_dim:
+                padded_X = np.zeros((X.shape[0], expected_dim), dtype=np.float64)
+                padded_X[:, :provided_dim] = X
+                X = padded_X
+            else:
+                X = X[:, :expected_dim]
+
     task = cfg.get("task", "regression")
     pred = forward(weights, biases, X, task)
 

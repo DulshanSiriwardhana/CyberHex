@@ -5,6 +5,7 @@ import { ToastProvider } from "@/components/ui/toaster";
 import { ToastContainer } from "@/components/ui/toast";
 import { AmbientBackground } from "@/components/ui/ambient-background";
 import CommandPalette from "@/components/command-palette/CommandPalette";
+import { GlobalCommandsRegistrar } from "@/components/command-palette/GlobalCommandsRegistrar";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import NavBar from "@/components/navbar/navbar";
@@ -142,6 +143,7 @@ export default function App() {
         <ToastProvider>
           <Router>
             <AppLayout />
+            <GlobalCommandsRegistrar />
             <CommandPalette />
             <ToastContainer />
           </Router>

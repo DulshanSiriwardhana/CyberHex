@@ -235,7 +235,7 @@ export default function DigitalCortex() {
         const particles: Particle[] = Array.from({ length: PARTICLE_COUNT }, () => new Particle());
         const packets: DataPacket[] = [];
 
-        let lastTime = 0;
+        const lastTime = 0;
         let frameCount = 0;
         let rafId: number;
 

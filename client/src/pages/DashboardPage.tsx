@@ -1,393 +1,313 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from "react-resizable-panels";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Activity,
-  Cpu,
-  Layers,
-  Terminal,
-  Zap,
-  Bot,
-  Maximize2,
-  ChevronRight,
-  Network,
-  Command,
-  Search,
-  Grid,
-  Menu,
-  Settings2,
-  Database
-} from "lucide-react";
-import { useAuth } from "@/contexts/auth";
-import { useExperimentsStore } from "@/stores/experiments";
-import MatrixBackground from "@/components/dashboard/MatrixBackground";
-import WorldThreatMap from "@/components/dashboard/WorldThreatMap";
-import { Button } from "@/components/ui/button";
+  Network, Command, Activity, Maximize2, Zap, Layers, Cpu, Database,
+  FlaskConical, BrainCircuit, Library, BookOpen, LineChart, Code,
+  Settings, Bot
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useCommandPaletteStore } from '@/stores/commandPalette';
+import { useAuth } from '@/contexts/auth';
 
-/**
- * REASON FOR EXISTENCE: The DashboardPage is the central nervous system of CyberHex. 
- * It has been upgraded to an "AI OS Workspace" to reflect a multi-pane, highly technical environment.
- * SCALABILITY: Uses react-resizable-panels for native DOM resizing. Can be extended to arbitrary depths.
- * PERFORMANCE: Frame-motion utilized for localized hardware-accelerated updates rather than React re-renders.
- */
-
-// Premium OS-Level Panel Header
-const OsPanelHeader = ({ icon: Icon, title, active = false, action }: any) => (
-  <div className={`flex items-center justify-between px-3 py-2 border-b border-white/5 bg-neutral-900/40 backdrop-blur-md sticky top-0 z-20 group transition-colors ${active ? 'bg-neutral-800/40 border-b-neutral-700/50' : ''}`}>
+const OsPanelHeader = ({ icon: Icon, title, action, active = false }: any) => (
+  <div className={`h-10 px-3 flex items-center justify-between border-b 
+    ${active ? 'bg-gradient-to-r from-green-500/10 to-transparent border-green-500/20 text-green-400'
+      : 'bg-white/[0.02] border-white/5 text-neutral-400'}`}>
     <div className="flex items-center gap-2">
-      <Icon className={`h-3.5 w-3.5 ${active ? 'text-white' : 'text-neutral-400'}`} />
-      <span className={`text-[11px] font-semibold tracking-wider uppercase ${active ? 'text-white' : 'text-neutral-400'}`}>
-        {title}
-      </span>
+      <Icon className="h-4 w-4" />
+      <span className="text-xs font-mono font-medium tracking-wide">{title}</span>
     </div>
-    {action && <div className="opacity-0 group-hover:opacity-100 transition-opacity">{action}</div>}
+    {action}
   </div>
 );
 
-// Mac/Linux style window controls
-const WindowControls = () => (
-  <div className="flex items-center gap-1.5 px-3 py-2">
-    <div className="h-2.5 w-2.5 rounded-full bg-red-500/80 hover:bg-red-500 cursor-pointer shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all"></div>
-    <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80 hover:bg-amber-500 cursor-pointer shadow-[0_0_10px_rgba(245,158,11,0.5)] transition-all"></div>
-    <div className="h-2.5 w-2.5 rounded-full bg-green-500/80 hover:bg-green-500 cursor-pointer shadow-[0_0_10px_rgba(34,197,94,0.5)] transition-all"></div>
-  </div>
-);
-
-// High-Fidelity Resize Handle
-const ResizeHandle = () => (
-  <PanelResizeHandle className="w-[1px] bg-neutral-800 hover:bg-green-500/50 hover:w-[2px] transition-all duration-150 flex items-center justify-center cursor-col-resize z-30 group relative">
-    <div className="w-1 h-12 bg-transparent group-hover:bg-green-400 rounded-full transition-colors absolute" />
-  </PanelResizeHandle>
-);
-
-export default function DashboardPage() {
+export default function AIWorkspace() {
   const { user } = useAuth();
-  const { experiments, fetchExperiments } = useExperimentsStore();
-  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const setCommandPaletteOpen = useCommandPaletteStore((s) => s.open);
+  const [activeTab, setActiveTab] = useState('data');
 
-  useEffect(() => {
-    fetchExperiments();
-
-    // Global keyboard listener for Command Palette (CMD/CTRL + K)
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setCommandPaletteOpen(prev => !prev);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [fetchExperiments]);
-
-  if (!user) return null;
-  const recentExperiments = experiments.slice(0, 8);
+  const WORKSPACE_MODULES = [
+    { id: 'data', icon: Database, label: 'Data Science Workbench', color: 'text-blue-400' },
+    { id: 'notebook', icon: BookOpen, label: 'Notebook System', color: 'text-amber-400' },
+    { id: 'math', icon: BrainCircuit, label: 'Mathematical Engine', color: 'text-violet-400' },
+    { id: 'research', icon: Library, label: 'Research Mode', color: 'text-emerald-400' },
+    { id: 'experiments', icon: FlaskConical, label: 'Experiment System', color: 'text-rose-400' },
+    { id: 'mlops', icon: Activity, label: 'MLOps Center', color: 'text-cyan-400' },
+  ];
 
   return (
-    <div className="h-[calc(100vh-4rem)] w-full overflow-hidden flex flex-col bg-[#08080C] font-sans relative selection:bg-green-500/30">
+    <div className="h-[calc(100vh-3.5rem)] flex flex-col bg-[#050508] relative overflow-hidden">
 
-      {/* Background Ambience: Infinite OS Grid & Noise */}
-      <div className="absolute inset-0 pointer-events-none z-0 mix-blend-screen opacity-30">
-        <MatrixBackground />
-      </div>
-      <div className="absolute inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900/40 via-[#08080C]/80 to-[#08080C]"></div>
-
-      {/* Global Command Palette Overlay */}
-      <AnimatePresence>
-        {commandPaletteOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] z-50 rounded-2xl bg-neutral-900/80 backdrop-blur-2xl border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.8),0_0_40px_rgba(34,197,94,0.1)] overflow-hidden flex flex-col"
-          >
-            <div className="flex items-center px-4 py-3 border-b border-white/5">
-              <Search className="h-4 w-4 text-neutral-400 mr-3" />
-              <input
-                autoFocus
-                type="text"
-                placeholder="Search resources, commands, or settings..."
-                className="flex-1 bg-transparent border-none outline-none text-sm font-mono text-white placeholder-neutral-500"
-              />
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] text-neutral-500 font-mono border border-white/10 px-1.5 rounded bg-neutral-800/50">ESC</span>
-              </div>
-            </div>
-            <div className="p-2 py-4">
-              <div className="text-xs font-semibold text-neutral-500 mb-2 px-2">SUGGESTED ACTIONS</div>
-              <div className="space-y-1">
-                <div className="px-3 py-2 rounded-lg hover:bg-neutral-800/80 cursor-pointer flex items-center justify-between group">
-                  <div className="flex items-center gap-3"><Zap className="h-3 w-3 text-green-400" /><span className="text-sm text-neutral-200">Initialize New Training Run</span></div>
-                  <span className="text-[10px] font-mono text-neutral-600 group-hover:text-green-500">T + N</span>
-                </div>
-                <div className="px-3 py-2 rounded-lg hover:bg-neutral-800/80 cursor-pointer flex items-center justify-between group">
-                  <div className="flex items-center gap-3"><Layers className="h-3 w-3 text-violet-400" /><span className="text-sm text-neutral-200">Open Architecture Designer</span></div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Top Application Bar - OS Style */}
-      <div className="h-10 shrink-0 bg-[#0A0A0F]/80 backdrop-blur-md border-b border-white/5 flex items-center justify-between relative z-20 px-2 shadow-sm">
-        <div className="flex items-center">
-          <WindowControls />
-          <div className="w-[1px] h-4 bg-white/10 mx-2"></div>
-          <motion.div whileHover={{ scale: 1.05 }} className="cursor-pointer px-2 py-1 rounded hover:bg-white/5 flex items-center gap-1.5 group">
-            <Menu className="h-3.5 w-3.5 text-neutral-400 group-hover:text-white transition-colors" />
-            <span className="text-[11px] font-semibold text-neutral-300">File</span>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }} className="cursor-pointer px-2 py-1 rounded hover:bg-white/5 flex items-center gap-1.5 group">
-            <span className="text-[11px] font-semibold text-neutral-300">Edit</span>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }} className="cursor-pointer px-2 py-1 rounded hover:bg-white/5 flex items-center gap-1.5 group">
-            <span className="text-[11px] font-semibold text-neutral-300">View</span>
-          </motion.div>
+      {/* Omni-Search Top Bar */}
+      <div className="h-12 shrink-0 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-md flex items-center justify-between px-4 z-20 shadow-lg">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 cursor-pointer bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-md border border-white/10 transition-colors"
+            onClick={() => setCommandPaletteOpen()}>
+            <Command className="h-4 w-4 text-neutral-400" />
+            <span className="text-xs font-mono text-neutral-300">Universal Command Center...</span>
+            <span className="ml-4 text-[10px] font-mono text-neutral-500 bg-neutral-900 px-1.5 rounded border border-white/5">⌘K</span>
+          </div>
         </div>
 
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
-          <Command className="h-3 w-3 text-neutral-500" />
-          <span className="text-[10px] font-mono text-neutral-400 bg-neutral-900 px-2 py-0.5 rounded border border-white/5 cursor-pointer hover:border-neutral-700 transition-colors" onClick={() => setCommandPaletteOpen(true)}>
-            CMD + K to search
-          </span>
-        </div>
-
-        <div className="flex items-center gap-3 pr-2">
+        <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
-            <span className="text-[10px] font-mono font-medium text-green-400">CLUSTER ONLINE</span>
+            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+            <span className="text-[10px] font-mono font-medium text-emerald-400 tracking-wider">CLUSTER ALIVE</span>
           </div>
-          <div className="h-6 w-6 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-500 p-[1px] cursor-pointer">
-            <div className="h-full w-full bg-neutral-900 rounded-full flex items-center justify-center border border-transparent hover:bg-transparent transition-colors">
-              <span className="text-[9px] font-bold text-white">{user?.username ? user.username.charAt(0).toUpperCase() : 'U'}</span>
-            </div>
+          <div className="h-7 w-7 rounded-sm bg-neutral-800 border border-white/10 flex items-center justify-center cursor-pointer hover:bg-neutral-700 transition">
+            <Bot className="h-4 w-4 text-emerald-400" />
           </div>
         </div>
       </div>
 
-      {/* Advanced Tiling Window Manager */}
-      <PanelGroup orientation="horizontal" className="flex-1 w-full relative z-10 p-2 gap-2">
+      <div className="flex-1 flex overflow-hidden">
+        {/* Modern Sidebar */}
+        <div className="w-16 md:w-64 shrink-0 bg-[#0A0A0F] border-r border-white/5 flex flex-col items-center md:items-stretch py-2 z-10 shadow-2xl">
+          <div className="text-[10px] uppercase font-bold text-neutral-600 tracking-widest px-4 mb-4 hidden md:block mt-2">OMNI-MODULES</div>
+          <div className="flex flex-col gap-1 w-full px-2">
+            {WORKSPACE_MODULES.map(mod => {
+              const isActive = activeTab === mod.id;
+              return (
+                <div
+                  key={mod.id}
+                  onClick={() => setActiveTab(mod.id)}
+                  className={`flex items-center justify-center md:justify-start gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200
+                        ${isActive ? 'bg-white/10 border border-white/10 shadow-[inset_0_1px_rgba(255,255,255,0.1)]' : 'hover:bg-white/5 border border-transparent'}
+                     `}
+                >
+                  <mod.icon className={`h-5 w-5 ${isActive ? mod.color : 'text-neutral-500'}`} />
+                  <span className={`text-[13px] font-medium hidden md:block ${isActive ? 'text-white' : 'text-neutral-400'}`}>
+                    {mod.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
 
-        {/* LEFT PANEL: Context / File Tree / Active Runs */}
-        <Panel defaultSize={20} minSize={15} maxSize={30} className="flex flex-col bg-[#0D0D12]/60 backdrop-blur-2xl border border-white/5 rounded-xl shadow-2xl overflow-hidden relative group">
-          <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none"></div>
+          <div className="mt-auto px-2 w-full mb-2">
+            <Link to="/experiments/new">
+              <div
+                className="flex items-center justify-center md:justify-start gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-amber-500/90 hover:bg-amber-500/10 border border-transparent transition-all duration-200"
+              >
+                <Zap className="h-5 w-5" />
+                <span className="text-[13px] font-medium hidden md:block">Initialize Training</span>
+              </div>
+            </Link>
+          </div>
+        </div>
 
-          <OsPanelHeader icon={Grid} title="Explorer" active={true} />
-
-          <div className="flex-1 overflow-y-auto p-2 scrollbar-hide">
-            <div className="px-3 py-2 text-[10px] font-bold text-neutral-500 uppercase tracking-widest flex items-center justify-between">
-              Active Telemetry
-              <Activity className="h-3 w-3 text-neutral-500" />
-            </div>
-
-            <div className="space-y-0.5">
-              {recentExperiments.length === 0 ? (
-                <div className="px-3 py-4 text-[11px] text-neutral-600 italic">No active experiments.</div>
-              ) : (
-                recentExperiments.map(exp => (
-                  <Link key={exp._id} to={`/experiments/${exp._id}`}>
-                    <div className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/5 border border-transparent cursor-pointer transition-colors group/item">
-                      <div className={`h-1.5 w-1.5 rounded-full ${exp.status === 'training' ? 'bg-green-500 shadow-[0_0_5px_rgba(34,197,94,1)]' : 'bg-neutral-600'}`} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-mono font-medium text-neutral-300 truncate group-hover/item:text-white">{exp.name}</p>
+        {/* Dynamic Main Workspace Plane */}
+        <div className="flex-1 relative bg-gradient-to-br from-[#0c0c11] to-[#040406] overflow-hidden flex flex-col p-4">
+          {/* Rendering specific active tab */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.3 }}
+              className="h-full w-full flex flex-col"
+            >
+              {activeTab === 'notebook' && (
+                <div className="h-full flex flex-col border border-white/5 bg-[#08080c] rounded-xl shadow-2xl overflow-hidden">
+                  <OsPanelHeader icon={BookOpen} title="Jupiter/Hex Notebook Engine v2.0" active />
+                  <div className="p-6 flex-1 overflow-auto flex flex-col gap-4 bg-[url('/noise.png')]">
+                    {/* Markdown Block */}
+                    <div className="w-full bg-[#111116] border border-white/10 rounded-lg p-5 shadow-inner">
+                      <h1 className="text-2xl font-bold text-white mb-2 font-spectral">CyberHex Architecture Note</h1>
+                      <p className="text-neutral-400 text-sm">Training an advanced causal language model using <strong className="text-amber-500">AdamW</strong> optimization with FlashAttention mechanisms. This notebook bridges markdown math and execution seamlessly.</p>
+                    </div>
+                    {/* Code Block */}
+                    <div className="w-full bg-[#0a0a0e] border border-neutral-800 rounded-lg overflow-hidden shadow-2xl mt-2">
+                      <div className="bg-neutral-900/80 px-4 py-2 flex items-center justify-between text-[11px] font-mono text-neutral-500 border-b border-black">
+                        <div className="flex gap-2 items-center">
+                          <Code className="h-3 w-3" />
+                          <span>Cell [1] - Python [PyTorch]</span>
+                        </div>
+                        <span className="text-emerald-500 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">Execution Complete (0.8s)</span>
+                      </div>
+                      <div className="p-5 font-mono text-[13px] leading-relaxed text-neutral-300 whitespace-pre bg-[#040406]">
+                        <span className="text-pink-400">import</span> torch<br />
+                        <span className="text-pink-400">from</span> torch.optim <span className="text-pink-400">import</span> AdamW<br /><br />
+                        model = Transformer(d_model=<span className="text-amber-400">4096</span>, layers=<span className="text-amber-400">32</span>)<br />
+                        optimizer = AdamW(model.parameters(), lr=<span className="text-amber-400">3e-4</span>)<br />
                       </div>
                     </div>
-                  </Link>
-                ))
+                    {/* Output block */}
+                    <div className="w-full flex gap-4 mt-2">
+                      <div className="flex-1 bg-black border border-white/5 rounded-lg p-5 flex flex-col shadow-inner">
+                        <span className="text-neutral-500 text-[10px] font-mono mb-3 uppercase flex items-center gap-2"><Activity className="h-3 w-3 text-cyan-400" /> STDOUT PORT 8080</span>
+                        <div className="text-emerald-400/80 font-mono text-xs leading-relaxed">
+                          ❯ Initializing Cluster Compute... OK<br />
+                          ❯ Allocating 4x H100 GPUs... OK<br />
+                          ❯ Applying Model Distribution Policy... OK<br />
+                          ❯ FlashAttention Enabled.<br />
+                          ❯ Ready for `optimizer.step()`.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
-            </div>
 
-            <div className="mt-6 px-3 py-2 text-[10px] font-bold text-neutral-500 uppercase tracking-widest flex items-center justify-between">
-              Data Assets
-              <Database className="h-3 w-3 text-neutral-500" />
-            </div>
-            <div className="px-3 py-2 text-[11px] font-mono text-neutral-600 hover:text-white cursor-pointer hover:bg-white/5 rounded-md transition-colors flex items-center gap-2">
-              <span className="text-violet-400">🗂️</span> production_logs.csv
-            </div>
-            <div className="px-3 py-2 text-[11px] font-mono text-neutral-600 hover:text-white cursor-pointer hover:bg-white/5 rounded-md transition-colors flex items-center gap-2">
-              <span className="text-violet-400">🗂️</span> pcap_samples_01.h5
-            </div>
-          </div>
+              {activeTab === 'math' && (
+                <div className="h-full flex flex-col border border-violet-500/20 bg-[#08080c] rounded-xl shadow-[0_0_50px_rgba(139,92,246,0.05)] overflow-hidden relative group">
+                  <OsPanelHeader icon={BrainCircuit} title="Mathematical Exploration Engine" active />
+                  <div className="p-8 flex-1 overflow-auto flex flex-col gap-8 relative z-10">
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <h2 className="text-4xl font-light text-white tracking-tight mb-2 font-spectral">Stochastic Gradient Descent</h2>
+                        <p className="text-neutral-400 text-sm max-w-xl leading-relaxed">Interactive optimization landscape visualization. Manipulate learning rates, momentum, and view structural gradient flows across an arbitrary topology.</p>
+                      </div>
+                      <Button className="bg-violet-600 hover:bg-violet-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-violet-400/50">
+                        <Maximize2 className="h-4 w-4 mr-2" /> Full 3D Vector Space
+                      </Button>
+                    </div>
 
-          <div className="shrink-0 p-3 bg-neutral-900/50 border-t border-white/5">
-            <div className="w-full rounded-lg bg-black/40 border border-white/5 p-3 flex flex-col relative overflow-hidden group/stats hover:border-white/10 transition-colors cursor-default">
-              <div className="flex justify-between items-center relative z-10 mb-2">
-                <span className="text-[10px] font-semibold uppercase text-neutral-400 flex items-center gap-1.5">
-                  <Terminal className="h-3 w-3" /> Compute Node 01
-                </span>
-                <span className="text-[10px] font-mono text-green-400 group-hover/stats:text-green-300 transition-colors">GPU: 92%</span>
-              </div>
-              <div className="h-1 w-full bg-neutral-800 rounded-full relative z-10 overflow-hidden">
-                <motion.div className="h-full bg-gradient-to-r from-green-600 to-green-400 shadow-[0_0_10px_rgba(34,197,94,0.8)]" initial={{ width: 0 }} animate={{ width: '92%' }} transition={{ duration: 2, ease: "easeOut" }} />
-              </div>
-            </div>
-          </div>
-        </Panel>
+                    <div className="flex gap-6 h-[400px]">
+                      {/* Visual Engine Space */}
+                      <div className="flex-1 rounded-xl bg-gradient-to-br from-[#0c051a] to-[#04020a] border border-violet-500/30 relative overflow-hidden flex items-center justify-center group-hover:border-violet-500/50 transition-colors shadow-2xl">
+                        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8b5cf61a_1px,transparent_1px),linear-gradient(to_bottom,#8b5cf61a_1px,transparent_1px)] bg-[size:40px_40px] perspective-1000 transform scale-150 rotate-x-60"></div>
+                        <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-violet-600/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
+                        <span className="relative z-10 text-violet-300 font-mono text-xs tracking-widest border border-violet-500/50 px-4 py-2 rounded bg-violet-950/60 backdrop-blur-xl shadow-[0_0_15px_rgba(139,92,246,0.5)]">WebGPU Canvas Render Target</span>
+                      </div>
 
-        <ResizeHandle />
-
-        {/* CENTER PANEL: Infinite Dashboard Engine */}
-        <Panel defaultSize={55} className="flex flex-col relative rounded-xl border border-white/5 bg-[#0A0A0F]/60 backdrop-blur-2xl shadow-2xl overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent pointer-events-none"></div>
-
-          <OsPanelHeader
-            icon={Network}
-            title="Global Telemetry Engine"
-            action={
-              <Button size="sm" variant="ghost" className="h-5 text-[10px] px-2 bg-white/5 hover:bg-white/10 text-neutral-300">
-                <Maximize2 className="h-3 w-3 mr-1" /> View Full Graph
-              </Button>
-            }
-          />
-
-          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 scrollbar-hide relative z-10 pt-6">
-
-            <div className="grid grid-cols-3 gap-4 shrink-0">
-              {/* Premium Card 1 */}
-              <Link to="/designer" className="group/card block">
-                <div className="h-36 rounded-xl bg-gradient-to-br from-neutral-900/80 to-black/80 border border-white/5 hover:border-amber-500/30 p-4 transition-all duration-300 relative overflow-hidden hover:shadow-[0_10px_30px_rgba(245,158,11,0.1)]">
-                  <div className="absolute -right-6 -bottom-6 opacity-[0.03] group-hover/card:opacity-10 transition-opacity transform group-hover/card:scale-110 duration-500">
-                    <Layers className="h-32 w-32 text-amber-500" />
+                      {/* Interactivity Plane */}
+                      <div className="w-80 flex flex-col gap-5 bg-white/[0.02] border border-white/5 rounded-xl p-5 shadow-inner">
+                        <h4 className="text-neutral-200 font-semibold mb-2 font-spectral">Hyperplane Controls</h4>
+                        <div className="space-y-6">
+                          <div>
+                            <label className="text-[11px] font-mono text-neutral-400 flex justify-between mb-2 uppercase">Learning Rate <span className="text-violet-400">0.003</span></label>
+                            <div className="h-1.5 w-full bg-neutral-900 rounded-full overflow-hidden mb-1"><div className="h-full w-1/3 bg-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.8)] rounded-full"></div></div>
+                          </div>
+                          <div>
+                            <label className="text-[11px] font-mono text-neutral-400 flex justify-between mb-2 uppercase">Momentum <span className="text-violet-400">0.9</span></label>
+                            <div className="h-1.5 w-full bg-neutral-900 rounded-full overflow-hidden mb-1"><div className="h-full w-[90%] bg-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.8)] rounded-full"></div></div>
+                          </div>
+                          <div>
+                            <label className="text-[11px] font-mono text-neutral-400 flex justify-between mb-2 uppercase">Weight Decay <span className="text-violet-400">1e-4</span></label>
+                            <div className="h-1.5 w-full bg-neutral-900 rounded-full overflow-hidden mb-1"><div className="h-full w-1/6 bg-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.8)] rounded-full"></div></div>
+                          </div>
+                        </div>
+                        <div className="mt-auto bg-black border border-violet-500/30 p-4 rounded-lg shadow-inner">
+                          <div className="text-[13px] font-mono text-violet-300 font-bold tracking-wide">
+                            {"θ_{t+1} = θ_t - η ∇L(θ_t)"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="h-8 w-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-3">
-                    <Layers className="h-4 w-4 text-amber-400" />
+                </div>
+              )}
+
+              {activeTab === 'data' && (
+                <div className="h-full flex flex-col border border-blue-500/20 bg-[#08080c] rounded-xl shadow-[0_0_50px_rgba(59,130,246,0.05)] overflow-hidden relative">
+                  <OsPanelHeader icon={Database} title="Data Science Workbench" active />
+                  <div className="flex-1 p-6 flex flex-col gap-6 overflow-auto">
+                    <div className="grid grid-cols-4 gap-4">
+                      {['Data Profiling', 'Feature Engineering', 'Outlier Repair', 'Encodings & Scaling'].map((title, i) => (
+                        <div key={i} className="bg-gradient-to-br from-white/5 to-transparent border border-white/10 hover:border-blue-500/40 cursor-pointer transition-all p-5 rounded-xl shadow-lg flex flex-col justify-between h-32 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(59,130,246,0.1)]">
+                          <span className="text-sm font-semibold text-neutral-200">{title}</span>
+                          <Activity className="h-6 w-6 text-blue-500 opacity-60 self-end" />
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex-1 bg-[#050508] border border-white/10 rounded-xl overflow-hidden flex flex-col shadow-2xl">
+                      <div className="h-10 px-4 border-b border-white/10 flex items-center gap-6 bg-[#0a0a0f]">
+                        {['churn_analysis_v4.csv', 'customer_segments.parquet', 'financials.json'].map((f, i) => (
+                          <span key={i} className={`text-[12px] font-mono cursor-pointer transition-colors ${i === 0 ? 'text-blue-400 font-bold border-b-2 border-blue-500' : 'text-neutral-500 hover:text-neutral-300'}`}>{f}</span>
+                        ))}
+                      </div>
+                      <div className="flex-1 p-0 overflow-auto">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="bg-white/5 text-[10px] font-mono text-neutral-400 tracking-wider">
+                              <th className="p-4 border-b border-white/10 uppercase font-semibold">id</th>
+                              <th className="p-4 border-b border-white/10 uppercase font-semibold">feature_x <span className="text-blue-500 bg-blue-500/10 px-1 rounded ml-1">F32</span></th>
+                              <th className="p-4 border-b border-white/10 uppercase font-semibold">feature_y <span className="text-blue-500 bg-blue-500/10 px-1 rounded ml-1">F32</span></th>
+                              <th className="p-4 border-b border-white/10 uppercase font-semibold">category <span className="text-amber-500 bg-amber-500/10 px-1 rounded ml-1">CAT</span></th>
+                              <th className="p-4 border-b border-white/10 uppercase font-semibold">target <span className="text-rose-500 bg-rose-500/10 px-1 rounded ml-1">BOOL</span></th>
+                            </tr>
+                          </thead>
+                          <tbody className="text-[12px] text-neutral-300/80 font-mono">
+                            {Array.from({ length: 15 }).map((_, i) => (
+                              <tr key={i} className="hover:bg-blue-500/5 transition-colors border-b border-white/[0.03]">
+                                <td className="px-4 py-3 opacity-50">{1000 + i}</td>
+                                <td className="px-4 py-3">{(Math.random() * 4).toFixed(4)}</td>
+                                <td className="px-4 py-3">{(Math.random() * -2).toFixed(4)}</td>
+                                <td className="px-4 py-3"><span className="bg-neutral-800 px-2 py-0.5 rounded text-neutral-300 border border-neutral-700 font-semibold">Level_{Math.floor(Math.random() * 4)}</span></td>
+                                <td className="px-4 py-3">{Math.random() > 0.5 ? <span className="text-rose-400">1</span> : <span className="text-neutral-500">0</span>}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="text-sm font-semibold text-white tracking-wide mb-1">Architecture Designer</h3>
-                  <p className="text-[11px] text-neutral-400 leading-relaxed font-mono">Visually engineer graph structures</p>
                 </div>
-              </Link>
+              )}
 
-              {/* Premium Card 2 */}
-              <Link to="/experiments/new" className="group/card block">
-                <div className="h-36 rounded-xl bg-gradient-to-br from-neutral-900/80 to-black/80 border border-white/5 hover:border-green-500/30 p-4 transition-all duration-300 relative overflow-hidden hover:shadow-[0_10px_30px_rgba(34,197,94,0.1)]">
-                  <div className="absolute -right-6 -bottom-6 opacity-[0.03] group-hover/card:opacity-10 transition-opacity transform group-hover/card:scale-110 duration-500">
-                    <Zap className="h-32 w-32 text-green-500" />
+              {activeTab === 'research' && (
+                <div className="h-full flex flex-col border border-emerald-500/20 bg-[#08080c] rounded-xl shadow-[0_0_50px_rgba(16,185,129,0.05)] overflow-hidden relative">
+                  <OsPanelHeader icon={Library} title="Scientific Research Hub" active />
+                  <div className="flex-1 flex p-6 gap-6 overflow-hidden">
+                    <div className="w-[350px] bg-[#050508] border border-white/10 rounded-xl flex flex-col p-5 shadow-lg">
+                      <h3 className="text-neutral-200 font-semibold mb-4 font-spectral">Paper References</h3>
+                      <input placeholder="Search ArXiv Database..." className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-sm text-white mb-5 outline-none focus:border-emerald-500 focus:bg-emerald-500/5 transition-colors placeholder:text-neutral-600" />
+                      <div className="flex-1 overflow-auto space-y-3 pr-2 scrollbar-hide">
+                        {[
+                          "Attention Is All You Need (Vaswani et al.)",
+                          "AdamW Optimizer (Loshchilov et al.)",
+                          "FlashAttention (Dao et al.)",
+                          "Deep Residual Learning (He et al.)",
+                          "Generative Adversarial Nets (Goodfellow et al.)"
+                        ].map((p, i) => (
+                          <div key={i} className="p-4 rounded-lg border border-white/5 hover:border-emerald-500/50 bg-[#0a0a0f] cursor-pointer group shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                            <h4 className="text-[13px] font-medium text-emerald-100/90 group-hover:text-emerald-400 transition-colors mb-2 leading-snug">{p}</h4>
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-neutral-500 group-hover:text-emerald-500/70 transition-colors">Cite | BibTeX | PDF</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex-1 bg-gradient-to-br from-[#06110c] to-[#040605] border border-emerald-500/20 rounded-xl p-10 flex flex-col items-center justify-center shadow-2xl relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98108_1px,transparent_1px),linear-gradient(to_bottom,#10b98108_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[100px]"></div>
+                      <h2 className="text-6xl font-spectral font-light text-emerald-400 mb-6 tracking-tight z-10 drop-shadow-md">Export to LaTeX</h2>
+                      <p className="text-neutral-400 max-w-lg text-center z-10 mb-10 text-lg leading-relaxed font-light">Generate a mathematically rigorous, publication-ready scientific report corresponding to your current experiment tracking history automatically.</p>
+                      <div className="flex gap-5 z-10">
+                        <Button className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-8 py-6 text-md shadow-[0_0_20px_rgba(16,185,129,0.3)]">IEEE Proceedings</Button>
+                        <Button variant="outline" className="border-emerald-700/50 text-emerald-400 hover:bg-emerald-900/40 px-8 py-6 text-md">Nature Journal</Button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="h-8 w-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center mb-3">
-                    <Zap className="h-4 w-4 text-green-400" />
+                </div>
+              )}
+
+              {/* Fallback to original dashboard components if experiments/mlops selected */}
+              {(activeTab === 'experiments' || activeTab === 'mlops') && (
+                <div className="h-full flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay pointer-events-none"></div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 rounded-full border-t-2 border-rose-500 animate-spin mb-6 shadow-[0_0_15px_rgba(244,63,94,0.5)]"></div>
+                    <span className="text-neutral-400 text-sm font-mono tracking-widest uppercase">Initializing Module Architecture...</span>
                   </div>
-                  <h3 className="text-sm font-semibold text-white tracking-wide mb-1">Initialize Training</h3>
-                  <p className="text-[11px] text-neutral-400 leading-relaxed font-mono">Deploy to K8s compute cluster</p>
                 </div>
-              </Link>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
 
-              {/* Premium Card 3 */}
-              <Link to="/models" className="group/card block">
-                <div className="h-36 rounded-xl bg-gradient-to-br from-neutral-900/80 to-black/80 border border-white/5 hover:border-violet-500/30 p-4 transition-all duration-300 relative overflow-hidden hover:shadow-[0_10px_30px_rgba(139,92,246,0.1)]">
-                  <div className="absolute -right-6 -bottom-6 opacity-[0.03] group-hover/card:opacity-10 transition-opacity transform group-hover/card:scale-110 duration-500">
-                    <Cpu className="h-32 w-32 text-violet-500" />
-                  </div>
-                  <div className="h-8 w-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-3">
-                    <Cpu className="h-4 w-4 text-violet-400" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-white tracking-wide mb-1">C++ Compilation</h3>
-                  <p className="text-[11px] text-neutral-400 leading-relaxed font-mono">Export optimized ONNX/WASM binary</p>
-                </div>
-              </Link>
-            </div>
-
-            {/* Massive Compute Graph / Map Viz area */}
-            <div className="flex-1 mt-2 min-h-[300px] w-full rounded-xl border border-white/5 bg-black/50 relative overflow-hidden isolate shadow-inner group/map">
-              <WorldThreatMap />
-              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
-
-              <div className="absolute top-4 left-4 p-3 rounded-xl bg-neutral-950/80 border border-white/5 backdrop-blur-xl shadow-lg">
-                <div className="flex items-center gap-2 mb-1.5 opacity-80">
-                  <Activity className="h-3.5 w-3.5 text-green-400" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-200">World Mesh</span>
-                </div>
-                <div className="text-xs font-mono text-neutral-400 before:content-['>'] before:mr-2 before:text-green-500"><span className="text-white">Active Pipelines: 14</span></div>
-              </div>
-            </div>
-
-          </div>
-        </Panel>
-
-        <ResizeHandle />
-
-        {/* RIGHT PANEL: AI Copilot & Hardware Telemetry */}
-        <Panel defaultSize={25} minSize={20} maxSize={40} className="flex flex-col bg-[#0D0D12]/60 backdrop-blur-2xl border border-white/5 rounded-xl shadow-2xl overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-tl from-white/[0.01] to-transparent pointer-events-none"></div>
-
-          <OsPanelHeader icon={Bot} title="Cybernetic Assistant" />
-
-          <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-4 scrollbar-hide">
-
-            <div className="p-4 rounded-xl bg-gradient-to-b from-green-900/10 to-transparent border border-green-500/10 shadow-[0_4px_20px_rgba(34,197,94,0.03)] backdrop-blur-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-              <div className="flex gap-3 relative z-10">
-                <div className="h-8 w-8 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center shrink-0">
-                  <Bot className="h-4 w-4 text-green-400" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-semibold text-neutral-200 mb-1">System Analyzed</h4>
-                  <p className="text-[11px] text-neutral-400 leading-relaxed font-mono">
-                    Deep telemetry hook established. Detected sub-optimal gradient flows in Layer 4 of generic ResNet configuration. Shall I optimize?
-                  </p>
-                  <Button size="sm" className="mt-3 h-6 text-[10px] font-semibold bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-black border border-green-500/20 hover:border-transparent transition-all">
-                    Apply Patch
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex-1 flex flex-col border border-white/5 rounded-xl bg-black/40 overflow-hidden">
-              <div className="px-3 py-2 bg-neutral-900/50 border-b border-white/5 flex items-center gap-2">
-                <Terminal className="h-3 w-3 text-neutral-500" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Stream Log</span>
-              </div>
-              <div className="p-3 font-mono text-[10px] leading-relaxed text-neutral-500 flex-1 overflow-y-auto space-y-1">
-                <div className="flex gap-2">
-                  <span className="text-neutral-600 shrink-0">12:45:00.1</span>
-                  <span><span className="text-green-500">[SYS]</span> WebAssembly execution context ready.</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="text-neutral-600 shrink-0">12:45:00.4</span>
-                  <span><span className="text-green-500">[SYS]</span> Connected to orchestration pod.</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="text-neutral-600 shrink-0">12:45:01.2</span>
-                  <span><span className="text-violet-500">[ML_OP]</span> Prefetching tensors (4GB)...</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="text-neutral-600 shrink-0">12:45:04.9</span>
-                  <span className="text-amber-500">[WARN] High memory pressure on Node 04.</span>
-                </div>
-                <div className="flex gap-2 opacity-70">
-                  <span className="text-neutral-600 shrink-0">##:##:##.#</span>
-                  <span className="animate-pulse">Waiting for execution graph...</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <div className="p-3 bg-neutral-900/40 border-t border-white/5 shrink-0">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Ask system array..."
-                className="w-full bg-black/50 border border-white/10 rounded-lg py-2 pl-3 pr-8 text-[11px] font-mono text-white focus:outline-none focus:border-green-500/50 focus:bg-neutral-950 transition-all placeholder:text-neutral-600 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]"
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                <Zap className="h-3 w-3 text-neutral-500 cursor-pointer hover:text-green-400 transition-colors" />
-              </div>
-            </div>
-          </div>
-        </Panel>
-      </PanelGroup>
-
-      {/* Footer Status Bar - Industrial Style */}
-      <div className="h-7 shrink-0 bg-[#08080C] border-t border-white/10 flex items-center justify-between px-4 font-mono text-[10px] tracking-widest z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.5)] text-neutral-500">
+      {/* Omni Foot Navbar */}
+      <div className="h-7 shrink-0 bg-[#030305] border-t border-white/5 flex items-center justify-between px-4 text-[9px] font-mono text-neutral-600 uppercase tracking-widest z-30 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
         <div className="flex items-center gap-6">
-          <span className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors"><Activity className="h-3 w-3 text-green-500" /> SYSTEM NOMINAL</span>
-          <span className="flex items-center gap-1.5 cursor-pointer hover:text-white transition-colors text-violet-400"><Network className="h-3 w-3" /> DIST-ORCH: CONNECTED</span>
+          <span className="flex items-center gap-1.5"><Activity className="h-3 w-3 text-emerald-500" /> ENGINE ONLINE</span>
+          <span className="text-neutral-500">Node: A100-80GB x8</span>
         </div>
         <div className="flex items-center gap-6">
-          <span className="cursor-pointer hover:text-white transition-colors">V_OMEGA_0.2</span>
-          <span className="cursor-pointer hover:text-white transition-colors flex items-center gap-1.5"><Settings2 className="h-3 w-3 text-neutral-500" /> HARDWARE_ACCEL</span>
+          <span className="text-emerald-500 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">CyberHex Omega Platform v1.0.0</span>
         </div>
       </div>
     </div>
