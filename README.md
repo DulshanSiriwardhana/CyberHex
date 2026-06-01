@@ -1,7 +1,7 @@
 # CyberHex — Full-Stack Machine Learning Platform
 
 <p align="center">
-  <img src="doc/images/landingpage.png" alt="CyberHex Landing Page" width="800" />
+  <img src="doc/images/home.png" alt="CyberHex Landing Page" width="800" />
 </p>
 
 > **Project Status: Actively Under Development**
@@ -165,7 +165,7 @@ Images below are sourced from the repository’s `doc/images` folder.
 
 ### Landing Page
 <p align="center">
-  <img src="doc/images/landingpage.png" alt="Landing Page" width="800" />
+  <img src="doc/images/home.png" alt="Landing Page" width="800" />
 </p>
 
 ### Dashboard
