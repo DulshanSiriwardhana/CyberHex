@@ -57,7 +57,7 @@ export default function ModelsPage() {
     }
   };
   return (
-    <Container className="py-8 pt-24 relative h-full overflow-auto w-full max-w-full">
+    <Container className="py-8 pt-24 relative h-full overflow-auto">
       <div className="absolute inset-0 cyber-grid-overlay opacity-10 pointer-events-none" />
 
       <motion.div
@@ -72,7 +72,7 @@ export default function ModelsPage() {
               <div className="h-1.5 w-1.5 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
               <span className="text-[10px] font-bold text-violet-500 uppercase tracking-[0.2em]">Singularity Core</span>
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+            <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-3">
               <span className="text-gradient-max uppercase">Saved Models /</span>
               <span className="text-violet-400 glow-text-violet">DevOps</span>
             </h1>
@@ -91,7 +91,7 @@ export default function ModelsPage() {
         </Flex>
       </motion.div>
 
-      <Grid cols={2} gap="lg" className="relative z-10">
+      <Grid cols={3} gap="md" className="relative z-10">
         {models.map((model, i) => (
           <motion.div
             key={model._id}
@@ -115,64 +115,64 @@ export default function ModelsPage() {
                   <Badge className="bg-green-500/10 text-green-400 border-green-500/20 font-bold text-[10px] py-1">READY FOR INFERENCE</Badge>
                 </Flex>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4">
                 {/* Architecture "Ghost" Preview */}
-                <div className="h-24 w-full bg-black/40 rounded-2xl border border-white/5 flex items-center justify-center gap-4 relative overflow-hidden px-6">
+                <div className="h-16 w-full bg-black/40 rounded-xl border border-white/5 flex items-center justify-center gap-3 relative overflow-hidden px-4">
                   <div className="absolute inset-0 cyber-grid-overlay opacity-20 pointer-events-none" />
-                  <div className="h-10 w-10 rounded-full border-2 border-green-500/40 bg-green-500/10 flex items-center justify-center relative z-10">
-                    <Database className="h-5 w-5 text-green-400" />
+                  <div className="h-8 w-8 rounded-full border-2 border-green-500/40 bg-green-500/10 flex items-center justify-center relative z-10">
+                    <Database className="h-4 w-4 text-green-400" />
                   </div>
                   <div className="h-px bg-gradient-to-r from-green-500/40 to-violet-500/40 flex-1 relative z-10" />
-                  <div className="flex gap-2 relative z-10">
+                  <div className="flex gap-1.5 relative z-10">
                     {[1, 2, 3].map(j => (
-                      <div key={j} className="h-12 w-3 rounded-full bg-violet-500/20 border border-violet-500/40 shadow-[0_0_10px_rgba(139,92,246,0.1)]" />
+                      <div key={j} className="h-8 w-2 rounded-full bg-violet-500/20 border border-violet-500/40" />
                     ))}
                   </div>
                   <div className="h-px bg-gradient-to-r from-violet-500/40 to-amber-500/40 flex-1 relative z-10" />
-                  <div className="h-10 w-10 rounded-full border-2 border-amber-500/40 bg-amber-500/10 flex items-center justify-center relative z-10">
-                    <Zap className="h-5 w-5 text-amber-400" />
+                  <div className="h-8 w-8 rounded-full border-2 border-amber-500/40 bg-amber-500/10 flex items-center justify-center relative z-10">
+                    <Zap className="h-4 w-4 text-amber-400" />
                   </div>
                 </div>
 
                 <Grid cols={3} gap="sm">
-                  <div className="p-3 rounded-xl bg-neutral-900/50 border border-white/5">
-                    <p className="text-[9px] font-bold text-neutral-500 uppercase mb-1">Accuracy / Metrics</p>
-                    <div className="flex items-center gap-1.5">
-                      <BarChart3 className="h-4 w-4 text-emerald-400" />
-                      <span className="text-sm font-black text-white font-mono">
+                  <div className="p-2.5 rounded-lg bg-neutral-900/50 border border-white/5">
+                    <p className="text-[8px] font-bold text-neutral-500 uppercase mb-0.5">Accuracy</p>
+                    <div className="flex items-center gap-1">
+                      <BarChart3 className="h-3.5 w-3.5 text-emerald-400" />
+                      <span className="text-xs font-black text-white font-mono">
                         {model.metrics?.accuracy ? (model.metrics.accuracy * 100).toFixed(1) : (model.metrics?.valLoss ? (1 - model.metrics.valLoss).toFixed(3) : '0.0')}%
                       </span>
                     </div>
                   </div>
-                  <div className="p-3 rounded-xl bg-neutral-900/50 border border-white/5">
-                    <p className="text-[9px] font-bold text-neutral-500 uppercase mb-1">Engine Protocol</p>
-                    <div className="flex items-center gap-1.5">
-                      <Cpu className="h-4 w-4 text-violet-400" />
-                      <span className="text-sm font-black text-white font-mono uppercase">C++17</span>
+                  <div className="p-2.5 rounded-lg bg-neutral-900/50 border border-white/5">
+                    <p className="text-[8px] font-bold text-neutral-500 uppercase mb-0.5">Engine</p>
+                    <div className="flex items-center gap-1">
+                      <Cpu className="h-3.5 w-3.5 text-violet-400" />
+                      <span className="text-xs font-black text-white font-mono uppercase">C++17</span>
                     </div>
                   </div>
-                  <div className="p-3 rounded-xl bg-neutral-900/50 border border-white/5">
-                    <p className="text-[9px] font-bold text-neutral-500 uppercase mb-1">Status</p>
-                    <div className="flex items-center gap-1.5">
-                      <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                      <span className="text-sm font-black text-white font-mono uppercase">Live</span>
+                  <div className="p-2.5 rounded-lg bg-neutral-900/50 border border-white/5">
+                    <p className="text-[8px] font-bold text-neutral-500 uppercase mb-0.5">Status</p>
+                    <div className="flex items-center gap-1">
+                      <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-xs font-black text-white font-mono uppercase">Live</span>
                     </div>
                   </div>
                 </Grid>
 
-                <Flex gap="md" className="pt-2">
+                <Flex gap="sm" className="pt-1">
                   <Link to={`/experiments/${model.experimentId}`} className="flex-1">
-                    <Button variant="outline" className="w-full border-neutral-800 bg-neutral-900 font-bold hover:border-violet-500/40 hover:text-violet-400 transition-all">
-                      <FlaskConical className="h-4 w-4 mr-2" />
-                      VIEW ORIGIN
+                    <Button variant="outline" size="sm" className="w-full border-neutral-800 bg-neutral-900 font-bold hover:border-violet-500/40 hover:text-violet-400 transition-all text-[11px]">
+                      <FlaskConical className="h-3.5 w-3.5 mr-1.5" />
+                      ORIGIN
                     </Button>
                   </Link>
-                  <Button variant="ghost" className="bg-white/5 font-bold hover:bg-white/10 uppercase tracking-tighter text-xs">
-                    <Download className="h-4 w-4 mr-2" />
+                  <Button variant="ghost" size="sm" className="bg-white/5 font-bold hover:bg-white/10 uppercase tracking-tighter text-[11px]">
+                    <Download className="h-3.5 w-3.5 mr-1.5" />
                     Export
                   </Button>
-                  <Button variant="ghost" className="text-rose-500/50 hover:text-rose-400 hover:bg-rose-500/5" onClick={() => handleDeleteModel(model._id)}>
-                    <Trash2 className="h-4 w-4" />
+                  <Button variant="ghost" size="sm" className="text-rose-500/50 hover:text-rose-400 hover:bg-rose-500/5" onClick={() => handleDeleteModel(model._id)}>
+                    <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </Flex>
               </CardContent>
