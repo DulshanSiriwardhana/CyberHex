@@ -32,11 +32,11 @@ export function GlobalCommandsRegistrar() {
             {
                 id: 'nav-notebooks',
                 label: 'Open Notebook Engine',
-                description: 'Jupyter-style interactive development',
+                description: 'Cyber-native interactive development',
                 category: 'navigation' as CommandCategory,
                 icon: 'BookOpen',
                 action: () => navigate('/workspace/notebook'),
-                keywords: ['notebook', 'jupyter', 'code', 'interactive', 'python'],
+                keywords: ['notebook', 'interactive', 'code', 'interactive', 'python'],
             },
             {
                 id: 'nav-experiments',

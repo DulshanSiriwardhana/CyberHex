@@ -9,7 +9,7 @@ import { Link, useNavigate, useParams, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCommandPaletteStore } from '@/stores/commandPalette';
 import { useAuth } from '@/contexts/auth';
-import ExperimentsListPage from './ExperimentsListPage';
+import { ExperimentsListContent as ExperimentsListPage } from './ExperimentsListPage';
 import ModelsPage from './ModelsPage';
 
 const OsPanelHeader = ({ icon: Icon, title, action, active = false }: any) => (
@@ -116,7 +116,7 @@ export default function AIWorkspace() {
             >
               {activeTab === 'notebook' && (
                 <div className="h-full flex flex-col border border-white/5 bg-[#08080c] rounded-xl shadow-2xl overflow-hidden">
-                  <OsPanelHeader icon={BookOpen} title="Jupiter/Hex Notebook Engine v2.0" active />
+                  <OsPanelHeader icon={BookOpen} title="CyberHex Advanced Notebook Engine" active />
                   <div className="p-6 flex-1 overflow-auto flex flex-col gap-4 bg-[url('/noise.png')]">
                     {/* Markdown Block */}
                     <div className="w-full bg-[#111116] border border-white/10 rounded-lg p-5 shadow-inner">
@@ -128,7 +128,7 @@ export default function AIWorkspace() {
                       <div className="bg-neutral-900/80 px-4 py-2 flex items-center justify-between text-[11px] font-mono text-neutral-500 border-b border-black">
                         <div className="flex gap-2 items-center">
                           <Code className="h-3 w-3" />
-                          <span>Cell [1] - Python [PyTorch]</span>
+                          <span>Cell [1] - C++ [Deep Core]</span>
                         </div>
                         <span className="text-emerald-500 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">Execution Complete (0.8s)</span>
                       </div>
@@ -314,7 +314,7 @@ export default function AIWorkspace() {
           <span className="text-neutral-500">Node: A100-80GB x8</span>
         </div>
         <div className="flex items-center gap-6">
-          <span className="text-emerald-500 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">CyberHex Omega Platform v1.0.0</span>
+          <span className="text-emerald-500 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">CyberHex 7.0Local.mini</span>
         </div>
       </div>
     </div>

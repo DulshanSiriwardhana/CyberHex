@@ -99,7 +99,7 @@ export default function LandingPage() {
                             <span className="font-bold text-white">CyberHex <span className="text-neutral-500">Local</span></span>
                         </div>
                         <p className="text-xs text-neutral-600 font-mono">
-                            © 2026 CyberHex v4.0.0-local. Built for engineers.
+                            © 2026 CyberHex 7.0Local.mini. Built for engineers.
                         </p>
                     </div>
                 </Container>

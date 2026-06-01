@@ -20,7 +20,7 @@ const commands: Record<string, string> = {
 
 export default function Terminal() {
   const [history, setHistory] = useState<Command[]>([
-    { input: "", output: "Welcome to CyberHex Terminal v4.0.0 — Release No. 01" },
+    { input: "", output: "Welcome to CyberHex Terminal 7.0Local.mini — Release No. 01" },
     { input: "", output: 'Type "help" to see available commands.' },
   ]);
   const [currentInput, setCurrentInput] = useState("");
