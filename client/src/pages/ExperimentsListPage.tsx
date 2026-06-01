@@ -100,8 +100,8 @@ export function ExperimentsListContent() {
             key={s}
             onClick={() => setStatusFilter(s)}
             className={`px-3 py-1 rounded text-[10px] font-mono uppercase tracking-widest transition-all ${statusFilter === s
-                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[inset_0_1px_rgba(16,185,129,0.1)]'
-                : 'text-neutral-500 hover:text-neutral-300 border border-transparent hover:bg-white/5'
+              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[inset_0_1px_rgba(16,185,129,0.1)]'
+              : 'text-neutral-500 hover:text-neutral-300 border border-transparent hover:bg-white/5'
               }`}
           >
             {s}
@@ -202,7 +202,7 @@ export function ExperimentsListContent() {
 
 export default function ExperimentsListPageWrapper() {
   return (
-    <div className="h-full max-h-screen pt-[3.5rem] bg-[#050508] max-w-[1440px] mx-auto">
+    <div className="h-full max-h-screen pt-[3.5rem] bg-[#050508] max-w-[1720px] mx-auto">
       <ExperimentsListContent />
     </div>
   );
