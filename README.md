@@ -1,7 +1,7 @@
 # CyberHex — Full-Stack Machine Learning Platform
 
 <p align="center">
-  <img src="doc/images/landing-page.png" alt="CyberHex Landing Page" width="800" />
+  <img src="doc/images/landingpage.png" alt="CyberHex Landing Page" width="800" />
 </p>
 
 > **Project Status: Actively Under Development**
@@ -161,28 +161,32 @@ CyberHex/
 
 ## Screenshots
 
+Images below are sourced from the repository’s `doc/images` folder.
+
 ### Landing Page
 <p align="center">
-  <img src="doc/images/landing-page.png" alt="Landing Page" width="800" />
+  <img src="doc/images/landingpage.png" alt="Landing Page" width="800" />
 </p>
 
-### Dashboard & Experiment Builder
+### Dashboard
 <p align="center">
   <img src="doc/images/dashboard.png" alt="Dashboard" width="800" />
 </p>
+
+### Experiment Builder
 <p align="center">
-  <img src="doc/images/experiment-builder.png" alt="Experiment Builder" width="800" />
+  <img src="doc/images/experimentpage.png" alt="Experiment Page" width="800" />
 </p>
 
 ### Model Training & Visualization
 <p align="center">
-  <img src="doc/images/model-training.png" alt="Model Training Visualization" width="800" />
+  <img src="doc/images/trainingpage.png" alt="Training Page" width="800" />
 </p>
 
-### Authentication
+### Additional Pages
 <p align="center">
-  <img src="doc/images/signup-flow.png" alt="Sign Up Flow" width="400" />
-  <img src="doc/images/signin-page.png" alt="Sign In Page" width="400" />
+  <img src="doc/images/designerpage.png" alt="Designer Page" width="400" />
+  <img src="doc/images/modelpage.png" alt="Model Page" width="400" />
 </p>
 
 ---
